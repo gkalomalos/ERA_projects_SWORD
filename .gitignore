@@ -1,0 +1,14 @@
+# data (exposures, hazards, reports)
+/data
+
+# frontend
+frontend/node_modules
+
+# backend
+__pycache__
+
+# develop
+backend/dev.ipynb
+
+# environment
+backend/climada_env
