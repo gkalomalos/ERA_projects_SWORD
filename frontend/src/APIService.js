@@ -1,18 +1,14 @@
 export default class APIService {
   static async Run(body) {
     try {
-      const baseUrl =
-        process.env.REACT_APP_BACKEND_URL || "http://localhost:8080";
-      const response = await fetch(`${baseUrl}/api/run`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+      const scriptName = "run_scenario.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
       });
-      return await response.json();
+      return response;
     } catch (error) {
-      return console.log(error);
+      console.log(error);
     }
   }
 }

@@ -15,7 +15,7 @@ import Hazard from "./Hazard";
 import Scenario from "./Scenario";
 import TimeHorizon from "./TimeHorizon";
 
-const DataInput = () => {
+const DataInput = (props) => {
   const [annualGrowth, setAnnualGrowth] = useState(0);
   const [exposure, setExposure] = useState({ file: "", value: [] });
   const [exposureCheck, setExposureCheck] = useState("select");
@@ -38,15 +38,17 @@ const DataInput = () => {
       timeHorizon: timeHorizon,
     };
     setIsRunButtonLoading(true);
+    props.onScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
-        console.log(response)
+        console.log(response);
         setMessage(response.status.message);
         response.status.code === 2000
           ? setSeverity("success")
           : setSeverity("error");
         setShowMessage(true);
         setIsRunButtonLoading(false);
+        props.onScenarioRunning(false);
       })
       .catch((error) => {
         console.log(error);
