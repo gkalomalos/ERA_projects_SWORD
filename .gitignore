@@ -1,5 +1,6 @@
 # data (exposures, hazards, reports)
 /backend/data
+backend/climada_unu.db
 
 # frontend
 frontend/node_modules
@@ -9,7 +10,7 @@ frontend/.webpack
 __pycache__
 
 # develop
-backend/dev.ipynb
+# backend/dev.ipynb
 
 # environment
 backend/climada_env
