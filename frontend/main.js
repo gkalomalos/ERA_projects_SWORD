@@ -1,15 +1,17 @@
-const { app, BrowserWindow, ipcMain, protocol } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 
 global.pythonProcess = null;
 
-const basePath = app.getAppPath();
+const basePath = path.join(app.getAppPath(), "..");
+const backendPath = path.join(basePath, "backend");
+const frontendPath = path.join(basePath, "frontend");
 let mainWindow;
-let loaderWindow;
 
 const isDevelopmentEnv = () => {
-  return process.env.NODE_ENV == "development";
+  // return process.env.NODE_ENV == "development";
+  return true;
 };
 
 if (!app.requestSingleInstanceLock()) {
@@ -23,6 +25,16 @@ if (!app.requestSingleInstanceLock()) {
     }
   });
 }
+
+app.commandLine.appendSwitch("in-process-gpu");
+if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
+  app.disableHardwareAcceleration();
+}
+app.whenReady().then(async () => {
+  global.pythonProcess = createPythonProcess();
+  await waitForPythonProcessReady(global.pythonProcess);
+  createMainWindow(); // Create the main application window
+});
 
 const waitForPythonProcessReady = (pythonProcess) => {
   return new Promise((resolve) => {
@@ -42,58 +54,6 @@ const waitForPythonProcessReady = (pythonProcess) => {
   });
 };
 
-if (require("electron-squirrel-startup")) {
-  app.quit();
-}
-
-app.commandLine.appendSwitch("in-process-gpu");
-if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
-  app.disableHardwareAcceleration();
-}
-app.whenReady().then(async () => {
-  // Register the custom protocol
-  protocol.registerFileProtocol("static", (request, callback) => {
-    const url = request.url.replace("static://", "");
-    const filePath = isDevelopmentEnv()
-      ? path.join(app.getAppPath(), "src", "assets", url)
-      : path.join(process.resourcesPath, "assets", url);
-
-    callback({ path: filePath });
-  });
-
-  createLoaderWindow(); // Create the loader window
-  global.pythonProcess = createPythonProcess();
-  await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
-  loaderWindow.close(); // Close the loader window
-  loaderWindow = null; // Clear the loader window reference
-  createMainWindow(); // Create the main application window
-});
-
-const createLoaderWindow = () => {
-  const faviconPath = isDevelopmentEnv()
-    ? path.join(basePath, "src", "assets", "favicon.ico")
-    : path.join(process.resourcesPath, "assets", "favicon.ico");
-
-  loaderWindow = new BrowserWindow({
-    height: 200,
-    width: 300,
-    center: true,
-    alwaysOnTop: true,
-    frame: false,
-    resizable: false,
-    autoHideMenuBar: true,
-    icon: faviconPath,
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
-
-  const loaderPath = isDevelopmentEnv()
-    ? path.join(basePath, "src", "loader.html")
-    : path.join(process.resourcesPath, "loader.html");
-  loaderWindow.loadFile(loaderPath);
-};
-
 const createMainWindow = () => {
   const iconPath = isDevelopmentEnv()
     ? path.join(app.getAppPath(), "src", "assets", "favicon.ico")
@@ -111,7 +71,7 @@ const createMainWindow = () => {
     webPreferences: {
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: path.join(frontendPath, "preload.js"),
       webSecurity: true,
       nodeIntegration: true,
     },
@@ -119,7 +79,8 @@ const createMainWindow = () => {
 
   mainWindow.show();
   mainWindow.maximize();
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  // mainWindow.loadURL(path.join(frontendPath, "build", "index.html"));
+  mainWindow.loadURL(`file://${path.join(frontendPath, "build", "index.html")}`);
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
   }
@@ -174,10 +135,10 @@ const runPythonScript = (mainWindow, scriptName, data) => {
 // Create a long-running Python process
 const createPythonProcess = () => {
   const scriptPath = isDevelopmentEnv()
-    ? path.join(basePath, "backend", "app.py")
+    ? path.join(backendPath, "src", "app.py")
     : path.join(process.resourcesPath, "backend", "app.py");
   const pythonExecutable = isDevelopmentEnv()
-    ? path.join(basePath, "backend", "climada_env", "python.exe")
+    ? path.join(backendPath, "climada_env", "python.exe")
     : path.join(process.resourcesPath, "backend", "climada_env", "python.exe");
 
   try {

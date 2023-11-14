@@ -22,7 +22,7 @@ const App = () => {
 
     window.electron.on("progress", progressListener);
     return () => {
-      window.electron.remove("progress", progressListener); // Change this line
+      window.electron.remove("progress", progressListener);
     };
   }, []);
   return (

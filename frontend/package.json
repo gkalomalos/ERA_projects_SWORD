@@ -5,6 +5,8 @@
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
+  "homepage": ".",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -14,7 +16,6 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "electron-squirrel-startup": "^1.0.0",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -22,25 +23,12 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.3",
-    "@electron-forge/cli": "^6.4.2",
-    "@electron-forge/maker-deb": "^6.4.2",
-    "@electron-forge/maker-rpm": "^6.4.2",
-    "@electron-forge/maker-squirrel": "^6.4.2",
-    "@electron-forge/maker-zip": "^6.4.2",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
-    "@electron-forge/plugin-webpack": "^6.4.2",
-    "electron": "^27.0.4"
-  },
   "scripts": {
-    "start": "electron-forge start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start-electron": "electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -60,65 +48,21 @@
       "last 1 safari version"
     ]
   },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "extraResource": [
-          "./backend"
-        ],
-        "icon": "backend\\assets\\favicon.ico",
-        "executableName": "CLIMADA-Core",
-        "name": "Climada-Core-0-0-1",
-        "out": "%USERPROFILE%\\climada-core"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "climada-core"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "plugins": [
-        {
-          "name": "@electron-forge/plugin-webpack",
-          "devServer": {
-            "liveReload": false,
-            "hot": false
-          },
-          "config": {
-            "mainConfig": "./webpack.main.config.js",
-            "devContentSecurityPolicy": "default-src 'self' 'unsafe-eval' 'unsafe-inline' static: http: https: ws:",
-            "renderer": {
-              "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/index.html",
-                  "js": "./src/renderer.js",
-                  "name": "main_window",
-                  "preload": {
-                    "js": "./src/preload.js"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      ]
+  "devDependencies": {
+    "electron": "^27.0.4",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.unu.climadaunu",
+    "productName": "CLIMADA-UNU",
+    "files": [
+      "build/**/*",
+      "main.js",
+      "../backend/climada_env",
+      "../backend/src"
+    ],
+    "directories": {
+      "buildResources": "assets"
     }
-  }
+  }  
 }
