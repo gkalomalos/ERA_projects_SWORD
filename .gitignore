@@ -5,6 +5,7 @@ backend/climada_unu.db
 # frontend
 frontend/node_modules
 frontend/.webpack
+frontend/build
 
 # backend
 __pycache__
