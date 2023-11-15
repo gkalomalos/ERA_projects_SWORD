@@ -5,22 +5,29 @@
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
   "version": "0.1.0",
   "private": true,
-  "main": "main.js",
+  "main": "build/electron.js",
   "homepage": ".",
   "dependencies": {
+    "@babel/plugin-transform-class-properties": "^7.23.3",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.23.3",
+    "@babel/plugin-transform-numeric-separator": "^7.23.3",
+    "@babel/plugin-transform-optional-chaining": "^7.23.3",
+    "@babel/plugin-transform-private-methods": "^7.23.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.11",
     "@mui/lab": "^5.0.0-alpha.146",
     "@mui/material": "^5.14.11",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.1.0",
+    "@testing-library/user-event": "^14.5.1",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
+    "svgo": "^3.0.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -28,7 +35,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-electron": "electron ."
+    "start-electron": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "eslintConfig": {
     "extends": [
@@ -53,16 +62,19 @@
     "electron-builder": "^24.6.4"
   },
   "build": {
-    "appId": "com.unu.climadaunu",
+    "asar": false,
+    "appId": "com.unu.climada-unu",
     "productName": "CLIMADA-UNU",
     "files": [
       "build/**/*",
-      "main.js",
-      "../backend/climada_env",
-      "../backend/src"
+      "node_modules/**/*",
+      "backend/**/*",
+      "climada_env/"
     ],
+    "icon": "build/favicon.ico",
     "directories": {
       "buildResources": "assets"
-    }
-  }  
+    },
+    "extends": null
+  }
 }

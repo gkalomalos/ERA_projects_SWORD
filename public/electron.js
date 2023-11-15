@@ -4,14 +4,11 @@ const path = require("path");
 
 global.pythonProcess = null;
 
-const basePath = path.join(app.getAppPath(), "..");
-const backendPath = path.join(basePath, "backend");
-const frontendPath = path.join(basePath, "frontend");
+const basePath = app.getAppPath();
 let mainWindow;
 
 const isDevelopmentEnv = () => {
-  // return process.env.NODE_ENV == "development";
-  return true;
+  return !app.isPackaged;
 };
 
 if (!app.requestSingleInstanceLock()) {
@@ -55,9 +52,7 @@ const waitForPythonProcessReady = (pythonProcess) => {
 };
 
 const createMainWindow = () => {
-  const iconPath = isDevelopmentEnv()
-    ? path.join(app.getAppPath(), "src", "assets", "favicon.ico")
-    : path.join(process.resourcesPath, "assets", "favicon.ico");
+  const iconPath = path.join(basePath, "build", "favicon.ico");
 
   mainWindow = new BrowserWindow({
     minHeight: 720,
@@ -71,7 +66,7 @@ const createMainWindow = () => {
     webPreferences: {
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: path.join(frontendPath, "preload.js"),
+      preload: path.join(basePath, "build", "preload.js"),
       webSecurity: true,
       nodeIntegration: true,
     },
@@ -79,8 +74,7 @@ const createMainWindow = () => {
 
   mainWindow.show();
   mainWindow.maximize();
-  // mainWindow.loadURL(path.join(frontendPath, "build", "index.html"));
-  mainWindow.loadURL(`file://${path.join(frontendPath, "build", "index.html")}`);
+  mainWindow.loadURL(`file://${path.join(basePath, "build", "index.html")}`);
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
   }
@@ -134,12 +128,8 @@ const runPythonScript = (mainWindow, scriptName, data) => {
 
 // Create a long-running Python process
 const createPythonProcess = () => {
-  const scriptPath = isDevelopmentEnv()
-    ? path.join(backendPath, "src", "app.py")
-    : path.join(process.resourcesPath, "backend", "app.py");
-  const pythonExecutable = isDevelopmentEnv()
-    ? path.join(backendPath, "climada_env", "python.exe")
-    : path.join(process.resourcesPath, "backend", "climada_env", "python.exe");
+  const scriptPath = path.join(basePath, "backend", "app.py");
+  const pythonExecutable = path.join(basePath, "climada_env", "python.exe");
 
   try {
     const process = spawn(pythonExecutable, [scriptPath], {
