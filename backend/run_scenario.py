@@ -79,13 +79,7 @@ def run_scenario(request: dict) -> dict:
     exposure_filename = exposure_data["file"]
     hazard_filename = hazard_data["file"]
 
-    if not path.isdir(DATA_EXPOSURES_DIR):
-        makedirs(DATA_EXPOSURES_DIR)
-    if not path.isdir(DATA_HAZARDS_DIR):
-        makedirs(DATA_HAZARDS_DIR)
-
     # Clear previously generated exposure/hazard/impact maps abd temp directory
-    handlers.clear_map_images()
     handlers.clear_temp_dir()
 
     update_progress(10, "Setting up exposure...")

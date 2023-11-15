@@ -1,17 +1,19 @@
-from os import getcwd, path
+from os import path
+from pathlib import Path
+import sys
 
-# Check running env and configure base path. (simplistic)
-# Alternative IS_DEV = environ.get("NODE_ENV") == "development" can be used
-# (need also to set process.env.NODE_ENV = process.env.NODE_ENV || "production";)
-if path.exists(path.join(getcwd(), "resources")):
-    # production
-    BASE_DIR = path.join(getcwd(), "resources")
-    CLIENT_ASSETS_DIR = path.join(BASE_DIR, "assets")
-else:
-    # development
-    BASE_DIR = path.join(getcwd())  # dev
-    # BASE_DIR = path.dirname(getcwd()) #ipynb
-    CLIENT_ASSETS_DIR = path.join(BASE_DIR, "src", "assets")
+
+def get_base_dir():
+    if getattr(sys, "frozen", False):
+        # We are running in a bundle (packaged by Electron)
+        return Path(sys.executable).parent.parent
+    else:
+        # We are running in a normal Python environment (development)
+        return Path(__file__).resolve().parent.parent
+
+
+BASE_DIR = get_base_dir()
+CLIENT_ASSETS_DIR = path.join(BASE_DIR, "assets")
 
 # DATA
 DATA_DIR = path.join(BASE_DIR, "data")
