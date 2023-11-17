@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, protocol } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 
@@ -6,6 +6,7 @@ global.pythonProcess = null;
 
 const basePath = app.getAppPath();
 let mainWindow;
+let loaderWindow;
 
 const isDevelopmentEnv = () => {
   return !app.isPackaged;
@@ -28,10 +29,44 @@ if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
 app.whenReady().then(async () => {
+  // Register the custom protocol
+  protocol.registerFileProtocol("static", (request, callback) => {
+    const url = request.url.replace("static://", "");
+    const filePath = isDevelopmentEnv()
+      ? path.join(app.getAppPath(), "src", "assets", url)
+      : path.join(process.resourcesPath, "assets", url);
+
+    callback({ path: filePath });
+  });
+
+  createLoaderWindow(); // Create the loader window
   global.pythonProcess = createPythonProcess();
-  await waitForPythonProcessReady(global.pythonProcess);
+  await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
+  loaderWindow.close(); // Close the loader window
+  loaderWindow = null; // Clear the loader window reference
   createMainWindow(); // Create the main application window
 });
+
+const createLoaderWindow = () => {
+  const iconPath = path.join(basePath, "build", "favicon.ico");
+
+  loaderWindow = new BrowserWindow({
+    height: 200,
+    width: 300,
+    center: true,
+    alwaysOnTop: true,
+    frame: false,
+    resizable: false,
+    autoHideMenuBar: true,
+    icon: iconPath,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+
+  const loaderPath = path.join(basePath, "build", "loader.html");
+  loaderWindow.loadFile(loaderPath);
+};
 
 const waitForPythonProcessReady = (pythonProcess) => {
   return new Promise((resolve) => {
