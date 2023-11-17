@@ -11,4 +11,15 @@ export default class APIService {
       console.log(error);
     }
   }
+  static async Test() {
+    try {
+      const scriptName = "run_test.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

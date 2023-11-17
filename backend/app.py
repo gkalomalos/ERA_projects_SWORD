@@ -2,14 +2,18 @@ import sys
 import json
 
 from run_scenario import run_scenario
+from run_test import run_test
 
 
 def process_message(message):
-    script_name = message["scriptName"]
-    data = message["data"]
+    script_name = message.get("scriptName", "")
+    data = message.get("data", None)
 
     if script_name == "run_scenario.py":
         result = run_scenario(data)
+        response = {"success": True, "result": result}
+    elif script_name == "run_test.py":
+        result = run_test(data)
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}

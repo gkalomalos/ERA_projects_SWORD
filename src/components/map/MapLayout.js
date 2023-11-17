@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import APIService from "../../APIService";
+
 import { Paper, Box, Button, Typography } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
@@ -8,12 +10,19 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 import Map from "./Map";
 
 const MapLayout = () => {
-  const [activeMap, setActiveMap] = useState("exposures");
-  const [isExposuresSelected, setIsExposuresSelected] = useState(true);
-  const [isHazardsSelected, setIsHazardsSelected] = useState(false);
+  const [activeMap, setActiveMap] = useState("hazards");
+  const [isExposuresSelected, setIsExposuresSelected] = useState(false);
+  const [isHazardsSelected, setIsHazardsSelected] = useState(true);
   const [isRisksSelected, setIsRisksSelected] = useState(false);
+  const [mapData, setMapData] = useState(null);
+
+  const fetchMapData = async () => {
+    const fetchedData = await APIService.Test();
+    setMapData(fetchedData);
+  };
 
   const onClickExposureButtonHandler = () => {
+    fetchMapData();
     setIsExposuresSelected(true);
     setIsHazardsSelected(false);
     setIsRisksSelected(false);
@@ -33,6 +42,11 @@ const MapLayout = () => {
     setIsRisksSelected(true);
     setActiveMap("risks");
   };
+
+  useEffect(() => {
+    fetchMapData();
+  }, []);
+
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Paper
@@ -44,7 +58,7 @@ const MapLayout = () => {
           overflow: "hidden",
         }}
       >
-        <Map />
+        <Map mapData={mapData} />
       </Paper>
       <Box sx={{ textAlign: "center", marginBottom: 4 }}>
         <Button
