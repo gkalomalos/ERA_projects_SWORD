@@ -35,7 +35,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-electron": "electron .",
+    "start-electron": "npm run build && electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -58,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "electron": "^27.0.4",
     "electron-builder": "^24.6.4"
   },
