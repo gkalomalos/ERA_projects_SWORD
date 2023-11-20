@@ -18,7 +18,10 @@ const MapLayout = () => {
 
   const fetchMapData = async () => {
     const fetchedData = await APIService.Test();
-    setMapData(fetchedData);
+    if (fetchedData && fetchedData.data) {
+      setMapData(fetchedData.data.mapData);
+    }
+    console.log('mapData:', mapData)
   };
 
   const onClickExposureButtonHandler = () => {
@@ -58,7 +61,7 @@ const MapLayout = () => {
           overflow: "hidden",
         }}
       >
-        <Map mapData={mapData} />
+        <Map mapData={mapData?.mapData} />
       </Paper>
       <Box sx={{ textAlign: "center", marginBottom: 4 }}>
         <Button

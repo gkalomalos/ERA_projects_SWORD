@@ -21,6 +21,10 @@ DATA_EXPOSURES_DIR = path.join(DATA_DIR, "exposures")
 DATA_HAZARDS_DIR = path.join(DATA_DIR, "hazards")
 DATA_REPORTS_DIR = path.join(DATA_DIR, "reports")
 
+# FRONTEND
+SRC_DIR = BASE_DIR / "src"
+MAP_DIR = SRC_DIR / "components" / "map"
+
 # REQUIREMENTS
 REQUIREMENTS_DIR = path.join(BASE_DIR, "requirements")
 DATASETS_DIR = path.join(REQUIREMENTS_DIR, "list_dataset_infos")

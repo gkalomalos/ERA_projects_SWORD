@@ -6,11 +6,7 @@ from time import time
 from climada.entity import Exposures
 import geopandas as gpd
 
-from constants import (
-    DATA_EXPOSURES_DIR,
-    DATA_DIR,
-    TEMP_DIR
-)
+from constants import DATA_EXPOSURES_DIR, DATA_DIR, TEMP_DIR, MAP_DIR
 
 
 def update_progress(progress, message):
@@ -21,7 +17,6 @@ def update_progress(progress, message):
 
 
 def run_test(request: dict) -> dict:
-    print("here")
     initial_time = time()
     update_progress(10, "Initiating...")
     filepath = Path(DATA_DIR) / "dev" / "gadm41_EGY.gpkg"
@@ -41,7 +36,7 @@ def run_test(request: dict) -> dict:
     adm_gdf["value"] = adm_gdf["value"].fillna(0)
     resp_gdf = adm_gdf[["NAME_1", "geometry", "value"]]
     map_data = resp_gdf.to_json()
-    exposure_data_filepath = Path(TEMP_DIR) / "output.geojson"
+    exposure_data_filepath = MAP_DIR / "output.json"
 
     with open(exposure_data_filepath, "w") as file:
         file.write(map_data)

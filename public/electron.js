@@ -29,15 +29,6 @@ if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
 app.whenReady().then(async () => {
-  // Register the custom protocol
-  protocol.registerFileProtocol("static", (request, callback) => {
-    const url = request.url.replace("static://", "");
-    const filePath = isDevelopmentEnv()
-      ? path.join(app.getAppPath(), "src", "assets", url)
-      : path.join(process.resourcesPath, "assets", url);
-
-    callback({ path: filePath });
-  });
 
   createLoaderWindow(); // Create the loader window
   global.pythonProcess = createPythonProcess();

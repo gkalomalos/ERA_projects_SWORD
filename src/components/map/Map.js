@@ -1,45 +1,60 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const Map = ({ mapDataPath }) => {
-  const position = [30.0, 31.0];
-  const [geoJsonData, setGeoJsonData] = useState(null);
-  const mapRef = useRef(null);
+const Map = ({ mapData }) => {
+  const [geoData, setGeoData] = useState(null);
 
   useEffect(() => {
-    if (mapDataPath) {
-      fetch(mapDataPath)
+    if (mapData) {
+      fetch(mapData)
         .then((response) => response.json())
-        .then((data) => setGeoJsonData(data))
-        .catch((error) => console.error('Error loading GeoJSON:', error));
+        .then((data) => setGeoData(data))
+        .catch((error) => console.error("Error loading GeoJSON:", error));
+      console.log('mapData in map:', mapData)
     }
-  }, [mapDataPath]);
+  }, [mapData]);
 
-  useEffect(() => {
-    const map = mapRef.current;
-    if (map && geoJsonData) {
-      const geoJsonLayer = new L.GeoJSON(geoJsonData, {
-        onEachFeature: (feature, layer) => {
-          // Add popups or other feature-specific functionality
-          if (feature.properties && feature.properties.value) {
-            layer.bindPopup(`Value: ${feature.properties.value}`);
-          }
-        },
-      });
-      geoJsonLayer.addTo(map.leafletElement);
-    }
-  }, [geoJsonData]);
+  // Function to determine the color based on a value
+  const getColor = (value) => {
+    // Define your color scale here
+    return value > 1000
+      ? "#800026"
+      : value > 500
+      ? "#BD0026"
+      : value > 200
+      ? "#E31A1C"
+      : value > 100
+      ? "#FC4E2A"
+      : value > 50
+      ? "#FD8D3C"
+      : value > 20
+      ? "#FEB24C"
+      : value > 10
+      ? "#FED976"
+      : "#FFEDA0";
+  };
+
+  const styleFeature = (feature) => {
+    return {
+      fillColor: getColor(feature.properties.value),
+      weight: 2,
+      opacity: 1,
+      color: "white",
+      dashArray: "3",
+      fillOpacity: 0.7,
+    };
+  };
 
   return (
     <MapContainer
-      center={position}
+      center={[30.0, 31.0]}
       zoom={8}
       style={{ height: "100%", width: "100%" }}
-      ref={mapRef}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {geoData && <GeoJSON data={geoData} style={styleFeature} />}
     </MapContainer>
   );
 };
