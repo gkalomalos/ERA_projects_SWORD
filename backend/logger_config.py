@@ -1,9 +1,11 @@
 import logging
 import json
 
+from constants import BACKEND_DIR, LOG_DIR
+
 
 class LoggerConfig:
-    CONFIG_PATH = "logging_config.json"
+    CONFIG_PATH = BACKEND_DIR / "logging_config.json"
 
     def __init__(self, logger_types):
         try:
@@ -33,8 +35,9 @@ class LoggerConfig:
             raise ValueError("Invalid JSON in config file")
 
     def setup_file_logging(self):
+        LOG_FILE = LOG_DIR / self.filename
         try:
-            file_handler = logging.FileHandler(self.filename)
+            file_handler = logging.FileHandler(LOG_FILE)
             file_handler.setLevel(self.level)
             file_handler.setFormatter(logging.Formatter(self.format))
             self.loggers.append(file_handler)

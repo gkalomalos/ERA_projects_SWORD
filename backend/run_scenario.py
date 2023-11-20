@@ -20,7 +20,7 @@ logger = LoggerConfig(logger_types=["file"])
 def update_progress(progress, message):
     progress_data = {"type": "progress", "progress": progress, "message": message}
     print(json.dumps(progress_data))
-    logger.log(f"send progress {progress} to frontend.")
+    logger.log("debug", f"send progress {progress} to frontend.")
     sys.stdout.flush()
 
 
@@ -239,7 +239,7 @@ def run_scenario(request: dict) -> dict:
 
     # Clear files in temp directory
     handlers.clear_temp_dir()
-    logger.log(f"Finished running scenario in {time() - initial_time}sec.")
+    logger.log("debug", f"Finished running scenario in {time() - initial_time}sec.")
 
     return response
 

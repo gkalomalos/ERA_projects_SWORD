@@ -22,7 +22,10 @@ DATA_HAZARDS_DIR = path.join(DATA_DIR, "hazards")
 DATA_REPORTS_DIR = path.join(DATA_DIR, "reports")
 
 # LOGS
-LOG_DIR = path.join(BASE_DIR, "logs")
+LOG_DIR = Path(BASE_DIR) / "logs"
+
+# BACKEND
+BACKEND_DIR = Path(BASE_DIR) / "backend"
 
 # FRONTEND
 SRC_DIR = BASE_DIR / "src"
@@ -42,6 +45,7 @@ TEMPLATES_PDF_FILE = path.join(TEMPLATES_DIR, "report_template.docx")
 SHAPEFILES_01M_FILE = path.join(SHAPEFILES_DIR, "NUTS_RG_01M_2021_4326.shp")
 
 LIST_OF_RCPS = ["rcp26", "rcp45", "rcp60", "rcp85"]
+
 
 THREE_LETTER_EUROPEAN_EXPOSURE = {
     "DNK": "Denmark",

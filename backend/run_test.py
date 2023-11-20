@@ -7,12 +7,15 @@ from climada.entity import Exposures
 import geopandas as gpd
 
 from constants import DATA_EXPOSURES_DIR, DATA_DIR, TEMP_DIR, MAP_DIR
+from logger_config import LoggerConfig
+
+logger = LoggerConfig(logger_types=["file"])
 
 
 def update_progress(progress, message):
     progress_data = {"type": "progress", "progress": progress, "message": message}
     print(json.dumps(progress_data))
-    # print("\033[93m" + f"send progress {progress} to frontend." + "\033[0m")
+    logger.log("debug", f"Send progress {progress} to frontend. Message: {message}")
     sys.stdout.flush()
 
 
