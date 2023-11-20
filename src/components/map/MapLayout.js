@@ -18,10 +18,10 @@ const MapLayout = () => {
 
   const fetchMapData = async () => {
     const fetchedData = await APIService.Test();
-    if (fetchedData && fetchedData.data) {
-      setMapData(fetchedData.data.mapData);
+    // Data is fetched as: fetchedData.result.data.mapTitle
+    if (fetchedData && fetchedData.result.data.mapData) {
+      setMapData(fetchedData.result.data.mapData);
     }
-    console.log('mapData:', mapData)
   };
 
   const onClickExposureButtonHandler = () => {
@@ -46,10 +46,6 @@ const MapLayout = () => {
     setActiveMap("risks");
   };
 
-  useEffect(() => {
-    fetchMapData();
-  }, []);
-
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Paper
@@ -61,7 +57,7 @@ const MapLayout = () => {
           overflow: "hidden",
         }}
       >
-        <Map mapData={mapData?.mapData} />
+        <Map mapData={mapData} />
       </Paper>
       <Box sx={{ textAlign: "center", marginBottom: 4 }}>
         <Button
