@@ -5,19 +5,22 @@ import sys
 from time import time
 
 import handlers
-
 from constants import (
     DATA_EXPOSURES_DIR,
     DATA_HAZARDS_DIR,
     DATA_REPORTS_DIR,
     DATA_DIR,
+    LOG_DIR,
 )
+from logger_config import LoggerConfig
+
+logger = LoggerConfig(logger_types=["file"])
 
 
 def update_progress(progress, message):
     progress_data = {"type": "progress", "progress": progress, "message": message}
     print(json.dumps(progress_data))
-    # print("\033[93m" + f"send progress {progress} to frontend." + "\033[0m")
+    logger.log(f"send progress {progress} to frontend.")
     sys.stdout.flush()
 
 
@@ -30,6 +33,8 @@ if not path.exists(DATA_HAZARDS_DIR):
     makedirs(DATA_HAZARDS_DIR)
 if not path.exists(DATA_REPORTS_DIR):
     makedirs(DATA_REPORTS_DIR)
+if not path.exists(LOG_DIR):
+    makedirs(LOG_DIR)
 
 
 def run_scenario(request: dict) -> dict:
@@ -234,12 +239,7 @@ def run_scenario(request: dict) -> dict:
 
     # Clear files in temp directory
     handlers.clear_temp_dir()
-    print(
-        "\033[92m"
-        + f"Finished running scenario in {time() - initial_time}sec."
-        + "\033[0m",
-        file=sys.stderr,
-    )
+    logger.log(f"Finished running scenario in {time() - initial_time}sec.")
 
     return response
 
