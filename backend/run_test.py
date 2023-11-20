@@ -6,7 +6,7 @@ from time import time
 from climada.entity import Exposures
 import geopandas as gpd
 
-from constants import DATA_EXPOSURES_DIR, DATA_DIR, TEMP_DIR, MAP_DIR
+from constants import DATA_EXPOSURES_DIR, DATA_DIR, MAP_DIR
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])

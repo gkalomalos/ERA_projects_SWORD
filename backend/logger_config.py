@@ -1,7 +1,10 @@
 import logging
 import json
+from pathlib import Path
 
 from constants import BACKEND_DIR, LOG_DIR
+
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class LoggerConfig:

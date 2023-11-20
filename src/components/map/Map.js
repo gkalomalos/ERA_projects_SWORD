@@ -21,7 +21,7 @@ const Map = ({ mapData }) => {
         const scale = scaleSequential(interpolateRdYlGn).domain([
           maxValue,
           minValue,
-        ]); // Note the reversed domain for RdYlGn_r
+        ]);
 
         setMapInfo({ geoJson: data, colorScale: scale });
       } catch (error) {
