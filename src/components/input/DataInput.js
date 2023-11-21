@@ -43,14 +43,13 @@ const DataInput = (props) => {
     props.onScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
-        console.log(response);
         setMessage(response.result.status.message);
         response.result.status.code === 2000
           ? setSeverity("success")
           : setSeverity("error");
         setShowMessage(true);
         setIsRunButtonLoading(false);
-        setIsRunButtonDisabled(false)
+        setIsRunButtonDisabled(false);
         props.onChangeMapTitle(response.result.data.mapTitle);
         props.onScenarioRunning(false);
       })
