@@ -8,7 +8,7 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 import APIService from "../../APIService";
 import Map from "./Map";
 
-const MapLayout = () => {
+const MapLayout = (props) => {
   const [activeMap, setActiveMap] = useState("hazards");
   const [isExposuresSelected, setIsExposuresSelected] = useState(false);
   const [isHazardsSelected, setIsHazardsSelected] = useState(true);
@@ -47,6 +47,15 @@ const MapLayout = () => {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <Typography
+        id="map-title"
+        gutterBottom
+        variant="h6"
+        sx={{ fontWeight: "bold", marginTop: 4 }}
+        textAlign="center"
+      >
+        {props.mapTitle}
+      </Typography>
       <Paper
         elevation={3}
         style={{

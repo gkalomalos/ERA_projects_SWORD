@@ -22,6 +22,7 @@ const DataInput = (props) => {
   const [hazard, setHazard] = useState({ file: "", value: "" });
   const [hazardCheck, setHazardCheck] = useState("select");
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
+  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false);
   const [message, setMessage] = useState("");
   const [scenarioCheck, setScenarioCheck] = useState("historical");
   const [scenario, setScenario] = useState("");
@@ -37,17 +38,20 @@ const DataInput = (props) => {
       scenario: scenario,
       timeHorizon: timeHorizon,
     };
+    setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
     props.onScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
         console.log(response);
-        setMessage(response.status.message);
-        response.status.code === 2000
+        setMessage(response.result.status.message);
+        response.result.status.code === 2000
           ? setSeverity("success")
           : setSeverity("error");
         setShowMessage(true);
         setIsRunButtonLoading(false);
+        setIsRunButtonDisabled(false)
+        props.onChangeMapTitle(response.result.data.mapTitle);
         props.onScenarioRunning(false);
       })
       .catch((error) => {
@@ -171,7 +175,7 @@ const DataInput = (props) => {
       <Box sx={{ width: 350 }} textAlign="center">
         {!isRunButtonLoading && (
           <Button
-            disabled={exposure.value.length > 3}
+            disabled={isRunButtonDisabled}
             onClick={onRunHandler}
             size="medium"
             startIcon={<PlayCircleIcon />}
