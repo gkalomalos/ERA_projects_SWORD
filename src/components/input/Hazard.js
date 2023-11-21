@@ -13,8 +13,8 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const HAZARDS = [
-  { label: "Tropical cyclone", value: "tropical_cyclone" },
-  { label: "Storm Europe", value: "storm_europe" },
+  // { label: "Tropical cyclone", value: "tropical_cyclone" },
+  // { label: "Storm Europe", value: "storm_europe" },
   { label: "River flood", value: "river_flood" },
 ];
 

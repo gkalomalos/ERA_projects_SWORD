@@ -12,10 +12,10 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const SCENARIOS = [
-  { label: "RCP 2.6", value: "rcp26" },
-  { label: "RCP 4.5d", value: "rcp45" },
-  { label: "RCP 6.0", value: "rcp60" },
-  { label: "RCP 8.5", value: "rcp85" },
+  // { label: "RCP 2.6", value: "rcp26" },
+  // { label: "RCP 4.5d", value: "rcp45" },
+  // { label: "RCP 6.0", value: "rcp60" },
+  // { label: "RCP 8.5", value: "rcp85" },
   { label: "Historical", value: "historical" },
 ];
 

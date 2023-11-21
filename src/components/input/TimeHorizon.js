@@ -9,16 +9,16 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 
 const TIME_HORIZON = [
-  { label: "1940 - 2014", value: "1940_2014" },
-  { label: "2000", value: "1980_2020" },
-  { label: "2000", value: "1980_2000" },
-  { label: "2020", value: "2010_2030" },
-  { label: "2040", value: "2030_2050" },
-  { label: "2060", value: "2050_2070" },
-  { label: "2080", value: "2070_2090" },
-  { label: "2040", value: "2040" },
-  { label: "2060", value: "2060" },
-  { label: "2080", value: "2080" },
+  // { label: "1940 - 2014", value: "1940_2014" },
+  { label: "1980 - 2000", value: "1980_2000" },
+  // { label: "1980 - 2020", value: "1980_2020" },
+  // { label: "2010 - 2030", value: "2010_2030" },
+  // { label: "2030 - 2050", value: "2030_2050" },
+  // { label: "2050 - 2070", value: "2050_2070" },
+  // { label: "2070 - 2090", value: "2070_2090" },
+  // { label: "2040", value: "2040" },
+  // { label: "2060", value: "2060" },
+  // { label: "2080", value: "2080" },
 ];
 
 const TimeHorizon = (props) => {
