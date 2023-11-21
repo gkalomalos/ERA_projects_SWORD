@@ -91,15 +91,15 @@ def run_scenario(request: dict) -> dict:
     # FLOW 1: User selects exposure and hazard.
     if exposure_filename == "" and hazard_filename == "":
         try:
-            countries = exposure_data["value"]
+            country = exposure_data["value"][0]  # TODO: Needs refactoring
             hazard_type = hazard_data["value"]
-            exposure_present = handlers.get_exposure(countries)
+            exposure_present = handlers.get_exposure_new(country)
             update_progress(15, "Setting up hazard...")
-            hazard_present = handlers.get_hazard(
-                hazard_type, "historical", "1980_2020", countries
+            hazard_present = handlers.get_hazard_new(
+                hazard_type, "historical", time_horizon, country
             )
             if scenario != "historical":
-                hazard_future = handlers.get_hazard(
+                hazard_future = handlers.get_hazard_new(
                     hazard_type, scenario, time_horizon, countries
                 )
         except Exception as exception:
@@ -118,13 +118,9 @@ def run_scenario(request: dict) -> dict:
                 path.join(DATA_EXPOSURES_DIR, exposure_filename)
             )
             update_progress(15, "Setting up hazard...")
-            hazard_present = handlers.get_hazard(
-                hazard_type, "historical", "1980_2020", countries
-            )
+            hazard_present = handlers.get_hazard(hazard_type, "historical", "1980_2020", countries)
             if scenario != "historical":
-                hazard_future = handlers.get_hazard(
-                    hazard_type, scenario, time_horizon, countries
-                )
+                hazard_future = handlers.get_hazard(hazard_type, scenario, time_horizon, countries)
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
@@ -189,15 +185,7 @@ def run_scenario(request: dict) -> dict:
             return response
     update_progress(20, "Calculating impact...")
     # Calculate present impact
-    impact_present = handlers.calculate_impact(
-        exposure_present, hazard_present, hazard_type
-    )
-    # Calculate present impact output
-    impact_present_output = handlers.calculate_impact_output(
-        impact_present, exposure_present
-    )
-    update_progress(40, "Plotting maps. Process can take up to several minutes...")
-    # Calculate future impact and future exposure if there is annual growth
+    impact_present = handlers.calculate_impact_new(exposure_present, hazard_present, hazard_type)
 
     if scenario != "historical":
         # Cast annual growth to present exposure
@@ -209,29 +197,18 @@ def run_scenario(request: dict) -> dict:
             exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
 
             # Calculate future impact based on present exposure
-            impact_future = handlers.calculate_impact(
+            impact_future = handlers.calculate_impact_new(
                 exposure_future, hazard_future, hazard_type
-            )
-            # Calculate present impact output
-            impact_future_output = handlers.calculate_impact_output(
-                impact_future, exposure_future
             )
         else:
             # Calculate future impact based on future exposure
-            impact_future = handlers.calculate_impact(
+            impact_future = handlers.calculate_impact_new(
                 exposure_present, hazard_future, hazard_type
             )
-            # Calculate present impact output
-            impact_future_output = handlers.calculate_impact_output(
-                impact_future, exposure_present
-            )
-    else:
-        impact_future = None
-        impact_future_output = None
-    update_progress(60, "Generating .xlsx report...")
 
-    map_title = handlers.set_map_title(hazard_type, countries, time_horizon, scenario)
+    map_title = handlers.set_map_title(hazard_type, [country], time_horizon, scenario)
     run_status_message = f"Scenario run successfully."
+    update_progress(100, run_status_message)
     response = {
         "data": {"mapTitle": map_title},
         "status": {"code": 2000, "message": run_status_message},
@@ -240,7 +217,6 @@ def run_scenario(request: dict) -> dict:
     # Clear files in temp directory
     handlers.clear_temp_dir()
     logger.log("debug", f"Finished running scenario in {time() - initial_time}sec.")
-
     return response
 
 
