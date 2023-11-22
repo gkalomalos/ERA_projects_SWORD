@@ -42,7 +42,7 @@ const Header = () => {
               component="div"
               sx={{ m: 1.5, display: { xs: "none", md: "flex" } }}
             >
-              CLIMADA Core
+              CLIMADA UNU
             </Typography>
           </Toolbar>
         </Grid>
