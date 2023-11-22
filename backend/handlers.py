@@ -31,10 +31,15 @@ from constants import (
     EEA_COUNTRIES,
     FEATHERS_DIR,
     LIST_OF_RCPS,
+    MAP_DIR,
+    REQUIREMENTS_DIR,
     SHAPEFILES_01M_FILE,
     TEMP_DIR,
     THREE_LETTER_EUROPEAN_EXPOSURE,
 )
+from logger_config import LoggerConfig
+
+logger = LoggerConfig(logger_types=["file"])
 
 # EXPOSURE METHODS DEFINITION
 
@@ -126,20 +131,15 @@ def get_exposure(countries: list) -> Exposures:
         currency_convert_ratio = get_currency_rates()
         exposure.value_unit = "EUR"
         exposure_gdf = exposure.gdf
-        exposure_gdf["value"] = (
-            exposure_gdf["value"] / currency_convert_ratio
-        )  # Convert USD to EUR
+        exposure_gdf["value"] = exposure_gdf["value"] / currency_convert_ratio  # Convert USD to EUR
         exposure_gdf_weighted = assign_coords_and_weights(countries=[country])
-        gdf = pd.merge(exposure_gdf, exposure_gdf_weighted,
-                       how="inner", on="geometry")
+        gdf = pd.merge(exposure_gdf, exposure_gdf_weighted, how="inner", on="geometry")
         gdf.drop(
             columns=["latitude_y", "longitude_y", "impf_", "region_id"],
             axis=1,
             inplace=True,
         )
-        gdf.rename(
-            columns={"latitude_x": "latitude", "longitude_x": "longitude"}, inplace=True
-        )
+        gdf.rename(columns={"latitude_x": "latitude", "longitude_x": "longitude"}, inplace=True)
         exposure.set_gdf(gdf)
         exposures_list.append(exposure)
 
@@ -149,6 +149,66 @@ def get_exposure(countries: list) -> Exposures:
     # print(f"Finished fetching exposures from client in {time() - start_time}sec.")
 
     return exposures
+
+
+def get_exposure_new(country: str) -> Exposures:
+    start_time = time()
+    client = Client()
+    try:
+        exposure = client.get_litpop(
+            country=country, exponents=(1, 1), dump_dir=Path(DATA_EXPOSURES_DIR)
+        )
+        status_message = f"Finished fetching exposure from client in {time() - start_time}sec."
+        logger.log("debug", status_message)
+        return exposure
+
+    except Exception as exc:
+        status_message = f"Error while trying to fetch exposure for {country}. More info: {exc}"
+        logger.log("debug", status_message)
+        raise ValueError(status_message)
+
+
+def generate_exposure_geojson(exposure: Exposures, country_name: str):
+    try:
+        exposure_gdf = exposure.gdf
+        country_iso3 = get_iso3_country_code(country_name)
+
+        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        layers = [0, 1, 2]
+
+        for layer in layers:
+            try:
+                admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+                joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
+                aggregated_values = joined_gdf.groupby(f"GID_{layer}")["value"].sum().reset_index()
+                admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
+                admin_gdf["value"] = admin_gdf["value"].fillna(0)
+                admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
+                map_data = admin_gdf_filtered.to_json()
+                map_data_filepath = MAP_DIR / f"exp_geodata_layer_{layer}.json"
+                with open(map_data_filepath, "w") as file:
+                    json.dump(map_data, file)
+            except FileNotFoundError:
+                logger.log("debug", f"File not found: {GADM41_filename}")
+            except Exception as e:
+                logger.log("debug", f"An error occurred while processing layer {layer}: {e}")
+
+    except AttributeError as e:
+        logger.log("debug", f"Invalid Exposure object: {e}")
+    except Exception as e:
+        logger.log("debug", f"An unexpected error occurred: {e}")
+
+
+def get_iso3_country_code(country_name: str) -> str:
+    try:
+        country = pycountry.countries.search_fuzzy(country_name)[0]
+        return country.alpha_3
+    except LookupError:
+        print(f"No ISO3 code found for '{country_name}'. Please check the country name.")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
 def get_exposure_data_from_xlsx(filepath: str) -> pd.DataFrame:
@@ -174,33 +234,23 @@ def get_exposure_data_from_xlsx(filepath: str) -> pd.DataFrame:
             # print(f"Assigning weighted values to disaggregated coordinates...")
             if exposure_xlsx_category == "country":
                 countries = df["country"].unique()
-                df_assigned = assign_coords_and_weights(
-                    countries=list(countries))
-                exposure_data = pd.merge(df_assigned, df, on=[
-                                         "country", "country"])
+                df_assigned = assign_coords_and_weights(countries=list(countries))
+                exposure_data = pd.merge(df_assigned, df, on=["country", "country"])
 
             if exposure_xlsx_category == "nuts2":
                 nuts2 = df["nuts2"].unique()
                 df_assigned = assign_coords_and_weights(nuts2=list(nuts2))
-                exposure_data = pd.merge(
-                    df_assigned, df, on=["nuts2", "nuts2"])
+                exposure_data = pd.merge(df_assigned, df, on=["nuts2", "nuts2"])
 
-            exposure_data["weighted_value"] = (
-                exposure_data["weight"] * exposure_data["value"]
-            )
-            exposure_data.drop(
-                columns=["value", "weight"], inplace=True, axis=1)
-            exposure_data.rename(
-                columns={"weighted_value": "value"}, inplace=True)
+            exposure_data["weighted_value"] = exposure_data["weight"] * exposure_data["value"]
+            exposure_data.drop(columns=["value", "weight"], inplace=True, axis=1)
+            exposure_data.rename(columns={"weighted_value": "value"}, inplace=True)
             exposure_data = exposure_data.dropna(axis=0)
         else:
             polygons = get_polygons([])
-            df["geometry"] = gpd.points_from_xy(
-                df["longitude"], df["latitude"])
-            points = gpd.GeoDataFrame(
-                df, geometry="geometry", crs=polygons.crs)
-            exposure_data = sjoin(
-                points, polygons, predicate="within", how="left")
+            df["geometry"] = gpd.points_from_xy(df["longitude"], df["latitude"])
+            points = gpd.GeoDataFrame(df, geometry="geometry", crs=polygons.crs)
+            exposure_data = sjoin(points, polygons, predicate="within", how="left")
             exposure_data.drop(["index_right"], inplace=True, axis=1)
 
         exposure_data = exposure_data.dropna(axis=0)
@@ -376,14 +426,10 @@ def assign_coords_and_weights(nuts2: list = [], countries: list = []) -> pd.Data
         pandas.DataFrame with the exposure geodataframe data.
     """
     if nuts2 and not countries:
-        exposure_gdf = gpd.read_feather(
-            Path(FEATHERS_DIR, "eea_exposures_nuts2_gdf.feather")
-        )
+        exposure_gdf = gpd.read_feather(Path(FEATHERS_DIR, "eea_exposures_nuts2_gdf.feather"))
         exposure_gdf = exposure_gdf[exposure_gdf["nuts2"].isin(nuts2)]
     if countries and not nuts2:
-        exposure_gdf = gpd.read_feather(
-            Path(FEATHERS_DIR, "eea_exposures_countries_gdf.feather")
-        )
+        exposure_gdf = gpd.read_feather(Path(FEATHERS_DIR, "eea_exposures_countries_gdf.feather"))
         exposure_gdf = exposure_gdf[exposure_gdf["country"].isin(countries)]
 
     exposure_gdf.reset_index(drop=True, inplace=True)
@@ -418,9 +464,7 @@ def get_polygons(countries: list) -> gpd.GeoDataFrame:
     polygons["CNTR_CODE"] = polygons["CNTR_CODE"].replace({"UK": "GB"})
 
     # Keep specific columns and match country codes to counteis
-    polygons = polygons[["NUTS_ID", "CNTR_CODE", "NAME_LATN", "geometry"]].reset_index(
-        drop=True
-    )
+    polygons = polygons[["NUTS_ID", "CNTR_CODE", "NAME_LATN", "geometry"]].reset_index(drop=True)
     polygons["CNTR_CODE"] = polygons["CNTR_CODE"].apply(
         lambda country_code: pycountry.countries.get(alpha_2=country_code).name
     )
@@ -525,12 +569,9 @@ def get_eea_country_codes() -> list:
     """
     eea_country_codes = []
     try:
+        eea_country_codes = [pycountry.countries.search_fuzzy(c)[0].alpha_2 for c in EEA_COUNTRIES]
         eea_country_codes = [
-            pycountry.countries.search_fuzzy(c)[0].alpha_2 for c in EEA_COUNTRIES
-        ]
-        eea_country_codes = [
-            "EL" if code == "GR" else "UK" if code == "GB" else code
-            for code in eea_country_codes
+            "EL" if code == "GR" else "UK" if code == "GB" else code for code in eea_country_codes
         ]
     except Exception as exc:
         # print(
@@ -544,12 +585,10 @@ def get_country_country_codes_from_country_names(countries: list):
     country_codes = []
     try:
         for country_name in countries:
-            country_code = pycountry.countries.search_fuzzy(country_name)[
-                0].alpha_2
+            country_code = pycountry.countries.search_fuzzy(country_name)[0].alpha_2
             country_codes.append(country_code)
         country_codes = [
-            "EL" if code == "GR" else "UK" if code == "GB" else code
-            for code in country_codes
+            "EL" if code == "GR" else "UK" if code == "GB" else code for code in country_codes
         ]
     except Exception as exception:
         # print(
@@ -647,30 +686,25 @@ def convert_exposure_to_gdf(exposure_type: str = "litpop") -> gpd.GeoDataFrame:
                 exp_gdf = exp_gdf[exp_gdf["country_code"] == country_code_iso2]
 
                 # Calculate weighted values on country level
-                exp_gdf["sum_value_country"] = exp_gdf.groupby(["country_code"])[
-                    "value"
-                ].transform("sum")
-                exp_gdf["weight_country"] = (
-                    exp_gdf["value"] / exp_gdf["sum_value_country"]
+                exp_gdf["sum_value_country"] = exp_gdf.groupby(["country_code"])["value"].transform(
+                    "sum"
                 )
+                exp_gdf["weight_country"] = exp_gdf["value"] / exp_gdf["sum_value_country"]
                 # Calculate weighted values on nuts1 level
-                exp_gdf["sum_value_nuts1"] = exp_gdf.groupby(["nuts1_code"])[
-                    "value"
-                ].transform("sum")
-                exp_gdf["weight_nuts1"] = exp_gdf["value"] / \
-                    exp_gdf["sum_value_nuts1"]
+                exp_gdf["sum_value_nuts1"] = exp_gdf.groupby(["nuts1_code"])["value"].transform(
+                    "sum"
+                )
+                exp_gdf["weight_nuts1"] = exp_gdf["value"] / exp_gdf["sum_value_nuts1"]
                 # Calculate weighted values on nuts2 level
-                exp_gdf["sum_value_nuts2"] = exp_gdf.groupby(["nuts2_code"])[
-                    "value"
-                ].transform("sum")
-                exp_gdf["weight_nuts2"] = exp_gdf["value"] / \
-                    exp_gdf["sum_value_nuts2"]
+                exp_gdf["sum_value_nuts2"] = exp_gdf.groupby(["nuts2_code"])["value"].transform(
+                    "sum"
+                )
+                exp_gdf["weight_nuts2"] = exp_gdf["value"] / exp_gdf["sum_value_nuts2"]
                 # Calculate weighted values on nuts3 level
-                exp_gdf["sum_value_nuts3"] = exp_gdf.groupby(["nuts3_code"])[
-                    "value"
-                ].transform("sum")
-                exp_gdf["weight_nuts3"] = exp_gdf["value"] / \
-                    exp_gdf["sum_value_nuts3"]
+                exp_gdf["sum_value_nuts3"] = exp_gdf.groupby(["nuts3_code"])["value"].transform(
+                    "sum"
+                )
+                exp_gdf["weight_nuts3"] = exp_gdf["value"] / exp_gdf["sum_value_nuts3"]
                 exp_gdf.drop(
                     columns=[
                         "sum_value_country",
@@ -772,8 +806,7 @@ def __assign_country_weights_to_eea_countries__():
             "weight",
         ]
     ]
-    points.to_feather(
-        Path(FEATHERS_DIR, "eea_exposures_countries_gdf.feather"))
+    points.to_feather(Path(FEATHERS_DIR, "eea_exposures_countries_gdf.feather"))
 
 
 def __assign_nuts2_weights_to_eea_countries__():
@@ -925,9 +958,7 @@ def get_hazard_dataset_infos(
     return hazard_dataset_infos
 
 
-def get_hazard(
-    hazard_type: str, scenario: str, time_horizon: str, countries: list
-) -> Hazard:
+def get_hazard(hazard_type: str, scenario: str, time_horizon: str, countries: list) -> Hazard:
     """
     Queries the data api for hazard datasets of the given type, downloads associated
     hdf5 files and turns them into a climada.hazard.Hazard object.
@@ -1013,6 +1044,33 @@ def get_hazard(
         raise ValueError(status_message)
 
 
+def get_hazard_new(hazard_type: str, scenario: str, time_horizon: str, country: str) -> Hazard:
+    start_time = time()
+    hazard_properties = {
+        "country_name": country,
+        "climate_scenario": scenario,
+        "year_range": time_horizon,
+    }
+    logger.log("debug", f"properties: {hazard_properties}")
+    try:
+        client = Client()
+        hazard = client.get_hazard(
+            hazard_type=hazard_type,
+            properties=hazard_properties,
+            dump_dir=Path(
+                DATA_HAZARDS_DIR,
+            ),
+        )
+        status_message = f"Finished fetching hazards from client in {time() - start_time}sec."
+        logger.log("debug", status_message)
+        return hazard
+
+    except Exception as exc:
+        status_message = f"Error while trying to create hazard object. More info: {exc}"
+        logger.log("debug", status_message)
+        raise ValueError(status_message)
+
+
 def get_hazard_from_hdf5(filepath) -> Hazard:
     """
     Read the selected .hdf5 input file and build the necessary hazard data to
@@ -1033,9 +1091,7 @@ def get_hazard_from_hdf5(filepath) -> Hazard:
     try:
         filepath = Path(DATA_HAZARDS_DIR, filepath)
         if filepath.exists():
-            print(
-                f"File {filepath} already exists and will be used to create Hazard object."
-            )
+            print(f"File {filepath} already exists and will be used to create Hazard object.")
             hazard = Hazard.from_hdf5(filepath)
 
             # print(f"Finished creating hazard from hdf5 in {time() - start_time}sec.")
@@ -1072,9 +1128,7 @@ def get_hazard_type_from_Hazard(hazard: Hazard) -> str:
         elif hazard_code == "RF":
             return "river_flood"
         else:
-            raise Exception(
-                "Hazard type not in list (storm_europe, tropical_cyclone, river_flood"
-            )
+            raise Exception("Hazard type not in list (storm_europe, tropical_cyclone, river_flood")
     except Exception as exc:
         status_message = f"Error while trying to match hazard type. More info: {exc}"
         raise Exception(status_message)
@@ -1120,9 +1174,7 @@ def get_hazard_scenario_from_Hazard(hazard: Hazard) -> list:
             sc = "historical"
         scenario = [sc]
     except Exception as exc:
-        status_message = (
-            f"Error while trying to match hazard type and scenario. More info: {exc}"
-        )
+        status_message = f"Error while trying to match hazard type and scenario. More info: {exc}"
         raise Exception(status_message)
 
     return scenario
@@ -1190,14 +1242,11 @@ def get_hazard_time_horizon_from_Hazard(hazard: Hazard) -> list:
             matching_range = next(
                 (start_year, end_year)
                 for start_year, end_year in year_ranges
-                if start_year <= min_date.year < end_year
-                and start_year <= max_date.year < end_year
+                if start_year <= min_date.year < end_year and start_year <= max_date.year < end_year
             )
 
             # Return the matching range as a list of formatted strings, or an empty list if no match was found
-            return (
-                [f"{matching_range[0]}-{matching_range[1]}"] if matching_range else []
-            )
+            return [f"{matching_range[0]}-{matching_range[1]}"] if matching_range else []
     except Exception as e:
         print("e:", e)
         return []
@@ -1226,9 +1275,7 @@ def get_hazard_type_from_impact(impact: Impact) -> str:
         elif hazard_code == "RF":
             return "river_flood"
         else:
-            raise Exception(
-                "Hazard type not in list (storm_europe, tropical_cyclone, river_flood"
-            )
+            raise Exception("Hazard type not in list (storm_europe, tropical_cyclone, river_flood")
     except Exception as exc:
         status_message = f"Error while trying to match hazard type. More info: {exc}"
         raise Exception(status_message)
@@ -1269,9 +1316,7 @@ def get_fields_from_hazard_file(filename: str) -> dict:
         pass
 
 
-def generate_hazard_gdf(
-    hazard: Hazard, return_periods: tuple = (250, 100, 50, 10)
-) -> pd.DataFrame:
+def generate_hazard_gdf(hazard: Hazard, return_periods: tuple = (250, 100, 50, 10)) -> pd.DataFrame:
     """
     Generate a pandas DataFrame containing latitude, longitude, and local exceedance intensity values for the specified return periods.
 
@@ -1314,17 +1359,14 @@ def generate_hazard_gdf(
         # Extract the intensity values for each return period and stack them into a NumPy array
         intensity_data = []
         for rp in return_periods:
-            intensity_data.append(
-                local_exceedance_inten.loc[rp].values.tolist()
-            )  # convert to list
+            intensity_data.append(local_exceedance_inten.loc[rp].values.tolist())  # convert to list
         intensity_data = np.array(intensity_data)
 
         # Stack the coordinate values and intensity values horizontally into a NumPy array
         data = np.column_stack((coords, local_exceedance_inten))
 
         # Create column names for the DataFrame based on the return periods
-        columns = ["latitude", "longitude"] + \
-            [f"rp{rp}" for rp in return_periods]
+        columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
         # Create a pandas DataFrame from the stacked data with the specified column names
         hazard_gdf = pd.DataFrame(data, columns=columns)
@@ -1334,7 +1376,9 @@ def generate_hazard_gdf(
         return hazard_gdf
 
     except Exception as exc:
-        status_message = f"An error occurred while generating the hazard geodataframe. More info: {str(exc)}"
+        status_message = (
+            f"An error occurred while generating the hazard geodataframe. More info: {str(exc)}"
+        )
         raise ValueError(status_message)
 
 
@@ -1385,8 +1429,7 @@ def calculate_impact(exposure: Exposures, hazard: Hazard, hazard_type: str) -> I
                 [0.00, 0.25, 0.40, 0.50, 0.60, 0.75, 0.85, 0.95, 1.00, 1.00]
             )
             impact_function.mdr = np.array(
-                [0.000, 0.250, 0.400, 0.500, 0.600,
-                    0.750, 0.850, 0.950, 1.000, 1.000]
+                [0.000, 0.250, 0.400, 0.500, 0.600, 0.750, 0.850, 0.950, 1.000, 1.000]
             )
             impact_function.paa = np.ones(len(impact_function.intensity))
             impact_function_set = ImpactFuncSet()
@@ -1402,8 +1445,7 @@ def calculate_impact(exposure: Exposures, hazard: Hazard, hazard_type: str) -> I
 
         # Reset exposure gdf columns to avoid errors when trying to reuse exposure object
         exp_gdf = exposure.gdf.drop(
-            columns=[f"impf_{hazard.tag.haz_type}",
-                     f"centr_{hazard.tag.haz_type}"],
+            columns=[f"impf_{hazard.tag.haz_type}", f"centr_{hazard.tag.haz_type}"],
             axis=1,
         )
         exposure.set_gdf(exp_gdf)
@@ -1413,6 +1455,61 @@ def calculate_impact(exposure: Exposures, hazard: Hazard, hazard_type: str) -> I
     except Exception as exception:
         # print("Error while trying to create Impact object. More info: ", exception)
         pass
+
+
+def calculate_impact_new(exposure: Exposures, hazard: Hazard, hazard_type: str) -> Impact:
+    start_time = time()
+    try:
+        # Set impact function according to hazard_type
+        if hazard_type == "tropical_cyclone":
+            impact_function = ImpfTropCyclone.from_emanuel_usa()
+            impact_function_set = ImpfSetTropCyclone.from_calibrated_regional_ImpfSet()
+            impf_id = 1
+        # TODO: Adjust this for Asia/Africa
+        if hazard_type == "river_flood":
+            hazard.intensity_thres = 1
+            impact_function = ImpactFunc()
+            impact_function.haz_type = "RF"
+            impact_function.intensity_unit = "m"
+            impact_function.id = 3
+            impact_function.name = "Flood Europe JRC Residential"
+            impact_function.intensity = np.array(
+                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
+            )
+            impact_function.mdd = np.array(
+                [0.00, 0.25, 0.40, 0.50, 0.60, 0.75, 0.85, 0.95, 1.00, 1.00]
+            )
+            impact_function.mdr = np.array(
+                [0.000, 0.250, 0.400, 0.500, 0.600, 0.750, 0.850, 0.950, 1.000, 1.000]
+            )
+            impact_function.paa = np.ones(len(impact_function.intensity))
+            impact_function_set = ImpactFuncSet()
+            impf_id = 3
+
+        # Create ImpactFuncSet object to pass to impact.calc
+        impact_function_set.append(impact_function)
+        exposure.gdf[f"impf_{hazard.haz_type}"] = impf_id
+        exposure.impact_funcs = impact_function_set
+        impact = Impact()
+        # Calculate impact
+        impact.calc(exposure, impact_function_set, hazard, save_mat=True)
+
+        # Reset exposure gdf columns to avoid errors when trying to reuse exposure object
+        exp_gdf = exposure.gdf.drop(
+            columns=[f"impf_{hazard.haz_type}", f"centr_{hazard.haz_type}"],
+            axis=1,
+        )
+        exposure.set_gdf(exp_gdf)
+        status_message = f"Finished generating impact in {time() - start_time}sec."
+        logger.log("debug", status_message)
+
+        return impact
+
+    except Exception as exception:
+        status_message = (
+            f"Finished generating impact in {time() - start_time}sec. More info: {exception}"
+        )
+        logger.log("debug", status_message)
 
 
 def filter_impact_coords(impact: Impact) -> Impact:
@@ -1479,9 +1576,7 @@ def calculate_impact_output(impact: Impact, exposure: Exposures) -> pd.DataFrame
         "annual_rate": event_frequencies[event_indices.ravel()],
         "loss": impact_matrix.ravel(),
         "nuts2": exposure_gdf.nuts2.values[exposure_indices.ravel()],
-        "nuts_description": exposure_gdf.nuts_description.values[
-            exposure_indices.ravel()
-        ],
+        "nuts_description": exposure_gdf.nuts_description.values[exposure_indices.ravel()],
         "country": exposure_gdf.country.values[exposure_indices.ravel()],
     }
     impact_output = gpd.GeoDataFrame(data)
@@ -1522,36 +1617,28 @@ def calculate_impact_output_per_country(impact_output: pd.DataFrame) -> pd.DataF
             country = country_group["country"].iloc[0]
 
             # Calculate the sum of losses for each event
-            country_group["sum_loss"] = country_group.groupby(["event_id"])[
-                "loss"
-            ].transform("sum")
+            country_group["sum_loss"] = country_group.groupby(["event_id"])["loss"].transform("sum")
             country_group = country_group.drop_duplicates("event_id")
 
             # Sort sum of losses for each event from higher to lower
-            country_group = country_group.sort_values(
-                "sum_loss", ascending=False
-            ).reset_index(drop=True)
+            country_group = country_group.sort_values("sum_loss", ascending=False).reset_index(
+                drop=True
+            )
 
             # Calculate rpl
-            country_group["exceedance_probability"] = country_group[
-                "annual_rate"
-            ].cumsum()
+            country_group["exceedance_probability"] = country_group["annual_rate"].cumsum()
             country_group["RP"] = 1 / country_group["exceedance_probability"]
 
             # Calculate rpl values
-            interpolated_values = get_interp1d_value(
-                country_group[["RP", "sum_loss"]])
-            interpolated_values["RP"] = interpolated_values["RP"].apply(
-                lambda rp: f"RPL {str(rp)}"
-            )
+            interpolated_values = get_interp1d_value(country_group[["RP", "sum_loss"]])
+            interpolated_values["RP"] = interpolated_values["RP"].apply(lambda rp: f"RPL {str(rp)}")
             interpolated_values["country"] = country
 
             all_country_metrics = pd.concat(
                 [all_country_metrics, interpolated_values], ignore_index=True
             )
 
-        all_country_metrics = all_country_metrics[[
-            "country", "RP", "sum_loss"]]
+        all_country_metrics = all_country_metrics[["country", "RP", "sum_loss"]]
 
     except Exception as exc:
         # print(
@@ -1564,8 +1651,7 @@ def calculate_impact_output_per_country(impact_output: pd.DataFrame) -> pd.DataF
 
 def calculate_impact_output_per_nuts2(impact: Impact) -> pd.DataFrame:
     start_time = time()
-    europe_gdf = gpd.read_feather(
-        Path(FEATHERS_DIR, "EEA_RG_01M_2021_values.feather"))
+    europe_gdf = gpd.read_feather(Path(FEATHERS_DIR, "EEA_RG_01M_2021_values.feather"))
     europe_gdf = europe_gdf[europe_gdf["LEVL_CODE"] == 2]
 
     impact_matrix = impact.imp_mat
@@ -1586,8 +1672,7 @@ def calculate_impact_output_per_nuts2(impact: Impact) -> pd.DataFrame:
     )
 
     # perform spatial join and extract NUTS_ID values
-    joined = gpd.sjoin(impact_df_transposed, europe_gdf,
-                       how="left", predicate="within")
+    joined = gpd.sjoin(impact_df_transposed, europe_gdf, how="left", predicate="within")
     nuts2 = joined["NUTS_ID"]
     country_codes = joined["CNTR_CODE"]
     nuts_description = joined["NAME_LATN"]
@@ -1613,31 +1698,23 @@ def calculate_impact_output_per_nuts2(impact: Impact) -> pd.DataFrame:
             country = get_country_name_from_country_code(country_code)
             nuts2_name = group["nuts_description"].iloc[0]
             impact_df = group.drop(
-                columns=["geometry", "nuts2",
-                         "country_code", "nuts_description"]
+                columns=["geometry", "nuts2", "country_code", "nuts_description"]
             )
             impact_df = impact_df.T
             impact_df["sum_loss"] = impact_df.sum(axis=1)
             impact_df["annual_rate"] = annual_rate
             impact_df = impact_df[["sum_loss", "annual_rate"]]
-            impact_df = impact_df.sort_values("sum_loss", ascending=False).reset_index(
-                drop=True
-            )
+            impact_df = impact_df.sort_values("sum_loss", ascending=False).reset_index(drop=True)
             # Calculate rpl
             impact_df["exceedance_probability"] = impact_df["annual_rate"].cumsum()
             impact_df["RP"] = 1 / impact_df["exceedance_probability"]
             # Calculate rpl values
-            interpolated_values = get_interp1d_value(
-                impact_df[["RP", "sum_loss"]])
-            interpolated_values["RP"] = interpolated_values["RP"].apply(
-                lambda rp: f"RPL {str(rp)}"
-            )
+            interpolated_values = get_interp1d_value(impact_df[["RP", "sum_loss"]])
+            interpolated_values["RP"] = interpolated_values["RP"].apply(lambda rp: f"RPL {str(rp)}")
             interpolated_values["country"] = country
             interpolated_values["nuts2"] = nuts2_code
             interpolated_values["nuts_description"] = nuts2_name
-            all_nuts_metrics = pd.concat(
-                [all_nuts_metrics, interpolated_values], ignore_index=True
-            )
+            all_nuts_metrics = pd.concat([all_nuts_metrics, interpolated_values], ignore_index=True)
 
         all_nuts_metrics = all_nuts_metrics[
             ["country", "nuts2", "nuts_description", "RP", "sum_loss"]
@@ -1700,14 +1777,12 @@ def get_interp1d_value(df: pd.DataFrame) -> float:
             return interp1d_df
 
         if len(df) == 1:
-            nearest_rp = get_nearest_value(
-                interp1d_df["RP"].values, df["RP"].values)
+            nearest_rp = get_nearest_value(interp1d_df["RP"].values, df["RP"].values)
             rp = df.iloc[0]["RP"]
             value = df.iloc[0]["sum_loss"]
             f = interp1d([0, rp], [0, value], fill_value="extrapolate")
             exp_value = f(nearest_rp)
-            interp1d_df.loc[interp1d_df["RP"] ==
-                            nearest_rp, "sum_loss"] = exp_value
+            interp1d_df.loc[interp1d_df["RP"] == nearest_rp, "sum_loss"] = exp_value
             return interp1d_df
 
         rpl_high = get_nearest_value(np.array(rpls), df["RP"].max())
@@ -1751,9 +1826,7 @@ def get_nearest_value(arr: list, value: float) -> float:
     return arr[index]
 
 
-def set_map_title(
-    hazard_type: str, countries: list, time_horizon: str, scenario: str
-) -> str:
+def set_map_title(hazard_type: str, countries: list, time_horizon: str, scenario: str) -> str:
     """
     Generate the map title to present in the UI for the user specified scenario.
 
@@ -1808,8 +1881,7 @@ def get_currency_rates() -> float:
             data = json.load(file)
             euro_rate = data["rates"]["EUR"]
     except Exception as exc:
-        raise Exception(
-            f"Error while trying to get currency rates. More info: {exc}")
+        raise Exception(f"Error while trying to get currency rates. More info: {exc}")
 
     return euro_rate
 
@@ -2046,10 +2118,7 @@ def get_fields_from_h5(exposures: list, hazard_file: str) -> dict:
                         exposure = key
 
                 scenario = ""
-                if (
-                    exposure == ""
-                    or THREE_LETTER_EUROPEAN_EXPOSURE[exposure] not in exposures
-                ):
+                if exposure == "" or THREE_LETTER_EUROPEAN_EXPOSURE[exposure] not in exposures:
                     data = {
                         "data": {},
                         "status": {
@@ -2075,11 +2144,8 @@ def get_fields_from_h5(exposures: list, hazard_file: str) -> dict:
                         flag = False
                 else:
                     try:
-                        if isinstance(
-                            int(hazard_file.split(".")[0].split("_")[-1]), int
-                        ):
-                            time_horizon = hazard_file.split(
-                                ".")[0].split("_")[-1]
+                        if isinstance(int(hazard_file.split(".")[0].split("_")[-1]), int):
+                            time_horizon = hazard_file.split(".")[0].split("_")[-1]
                     except:
                         flag = False
             else:
@@ -2110,11 +2176,7 @@ def get_fields_from_h5(exposures: list, hazard_file: str) -> dict:
             ):
                 # Check if the exposure of the hazard file imported is not in
                 # the list of exposures selected or loaded in the previous step.
-                if (
-                    THREE_LETTER_EUROPEAN_EXPOSURE[hazard_file.split(".")[
-                        0][-3:]]
-                    not in exposures
-                ):
+                if THREE_LETTER_EUROPEAN_EXPOSURE[hazard_file.split(".")[0][-3:]] not in exposures:
                     data = {
                         "data": {},
                         "status": {
@@ -2149,10 +2211,7 @@ def get_fields_from_h5(exposures: list, hazard_file: str) -> dict:
                         exposure = key
 
                 scenario = ""
-                if (
-                    exposure == ""
-                    or THREE_LETTER_EUROPEAN_EXPOSURE[exposure] not in exposures
-                ):
+                if exposure == "" or THREE_LETTER_EUROPEAN_EXPOSURE[exposure] not in exposures:
                     data = {
                         "data": {},
                         "status": {
@@ -2335,7 +2394,6 @@ def read_dtst_infos() -> dict:
     for dataset_infos_filename in dataset_infos_filenames:
         with open(dataset_infos_filename) as file:
             for idx, line in enumerate(file):
-
                 rstripped_line = line.rstrip()
                 preprocessed_line = (
                     rstripped_line.replace(" ", "")
@@ -2354,8 +2412,7 @@ def read_dtst_infos() -> dict:
                 )  # Used regex to exclude commas inside parentheses.
 
                 for idx, i in enumerate(post_processed_line):
-                    post_processed_line[idx] = i.replace(
-                        "({", "{").replace("})", "}")
+                    post_processed_line[idx] = i.replace("({", "{").replace("})", "}")
 
                 tmp_d = dict()
                 for pair in post_processed_line:
@@ -2372,9 +2429,7 @@ def read_dtst_infos() -> dict:
                 # ****** Handle data_type field. ******
                 data_type_d = dict()
                 processed_data_type = (
-                    tmp_d["data_type"]
-                    .replace("DataTypeShortInfo(", "")
-                    .replace(")", "")
+                    tmp_d["data_type"].replace("DataTypeShortInfo(", "").replace(")", "")
                 )
                 for item in processed_data_type.split(","):
                     try:
@@ -2384,9 +2439,7 @@ def read_dtst_infos() -> dict:
                         pass
 
                 # ****** Handle files field. ******
-                processed_files = (
-                    tmp_d["files"].replace(")]", "").replace("[FileInfo(", "")
-                )
+                processed_files = tmp_d["files"].replace(")]", "").replace("[FileInfo(", "")
 
                 files_d = dict()
 
@@ -2399,7 +2452,6 @@ def read_dtst_infos() -> dict:
                         flag = False
 
                 if flag == True:
-
                     files = [
                         FileInfo(
                             uuid=files_d["uuid"],
@@ -2440,7 +2492,6 @@ def read_dtst_infos() -> dict:
                     properties_jsonised = loads(jsonise_properties)
 
                 if dataset_infos_filename.split("\\")[-1] == "dataset_infos_tc.txt":
-
                     tc.append(
                         get_list_of_datasetInfo_objects(
                             tmp_d, data_type_d, properties_jsonised, files
@@ -2448,7 +2499,6 @@ def read_dtst_infos() -> dict:
                     )
 
                 elif dataset_infos_filename.split("\\")[-1] == "dataset_infos_se.txt":
-
                     se.append(
                         get_list_of_datasetInfo_objects(
                             tmp_d, data_type_d, properties_jsonised, files
@@ -2456,7 +2506,6 @@ def read_dtst_infos() -> dict:
                     )
 
                 elif dataset_infos_filename.split("\\")[-1] == "dataset_infos_rf.txt":
-
                     rf.append(
                         get_list_of_datasetInfo_objects(
                             tmp_d, data_type_d, properties_jsonised, files
@@ -2464,7 +2513,6 @@ def read_dtst_infos() -> dict:
                     )
 
                 else:
-
                     rc.append(
                         get_list_of_datasetInfo_objects(
                             tmp_d, data_type_d, properties_jsonised, files
@@ -2503,7 +2551,6 @@ def get_valid_hazards(hazard_list_dataset_infos: dict, exposures: list) -> dict:
         [] for _ in exposures
     ]  # Create list of empty lists based on number of given (selected) exposures.
     try:
-
         client = Client()
         for idx, exposure in enumerate(exposures):
             try:
@@ -2529,7 +2576,6 @@ def get_valid_hazards(hazard_list_dataset_infos: dict, exposures: list) -> dict:
                 ):
                     hazards_for_exposures[idx].append("river_flood")
             except:
-
                 pass
 
             try:
@@ -2549,7 +2595,6 @@ def get_valid_hazards(hazard_list_dataset_infos: dict, exposures: list) -> dict:
             hazards = list(set(hazards) & set(hazard_for_exposures))
 
         if len(hazards) == 0:
-
             hazards = dict()
             status = {
                 "code": 3000,
@@ -2557,7 +2602,6 @@ def get_valid_hazards(hazard_list_dataset_infos: dict, exposures: list) -> dict:
             }
 
         else:
-
             status = {
                 "code": 2000,
                 "message": "Hazard params set successfully.",
@@ -2578,9 +2622,7 @@ def get_valid_hazards(hazard_list_dataset_infos: dict, exposures: list) -> dict:
     return response
 
 
-def get_valid_scenarios(
-    hazard_list_dataset_infos: list, exposures: list, hazard: str
-) -> dict:
+def get_valid_scenarios(hazard_list_dataset_infos: list, exposures: list, hazard: str) -> dict:
     """
     A method to help populate the climate scenario drop down list in the Climada UI
     based on the selected exposure/s and hazard.
@@ -2623,8 +2665,7 @@ def get_valid_scenarios(
 
     except Exception as exception:
         data = {"scenarios": [], "horizon": []}
-        status = {"code": 3000,
-                  "message": f"Exception occured: {str(exception)}"}
+        status = {"code": 3000, "message": f"Exception occured: {str(exception)}"}
 
     data = {"scenarios": valid_scenarios, "horizon": []}
     status = {
@@ -2665,61 +2706,41 @@ def get_valid_horizons(
             [] for item in exposures
         ]  # Create list of empty lists based on number of exposures.
         for idx, xpsr in enumerate(exposures):
-
             if hazard == "river_flood":
-                horizons_for_exposures_hazard_scenario[
-                    idx
-                ] = client.get_property_values(
+                horizons_for_exposures_hazard_scenario[idx] = client.get_property_values(
                     hazard_list_dataset_infos[hazard],
                     known_property_values={
                         "country_name": exposures[idx],
                         "climate_scenario": scenario,
                     },
-                )[
-                    "year_range"
-                ]
+                )["year_range"]
             if hazard == "storm_europe":
-                horizons_for_exposures_hazard_scenario[
-                    idx
-                ] = client.get_property_values(
+                horizons_for_exposures_hazard_scenario[idx] = client.get_property_values(
                     hazard_list_dataset_infos[hazard],
                     known_property_values={
                         "country_name": exposures[idx],
                     },
-                )[
-                    "year_range"
-                ]
+                )["year_range"]
 
             # The list_dataset_infos data for the tropical_cyclone hazard do not contain a year_range property.
             elif hazard == "tropical_cyclone":
-
                 if scenario == "historical":
-
-                    horizons_for_exposures_hazard_scenario[
-                        idx
-                    ] = client.get_property_values(
+                    horizons_for_exposures_hazard_scenario[idx] = client.get_property_values(
                         hazard_list_dataset_infos[hazard],
                         known_property_values={
                             "country_name": exposures[idx],
                             "climate_scenario": scenario,
                         },
-                    )[
-                        "tracks_year_range"
-                    ]
+                    )["tracks_year_range"]
 
                 else:
-
-                    horizons_for_exposures_hazard_scenario[
-                        idx
-                    ] = client.get_property_values(
+                    horizons_for_exposures_hazard_scenario[idx] = client.get_property_values(
                         hazard_list_dataset_infos[hazard],
                         known_property_values={
                             "country_name": exposures[idx],
                             "climate_scenario": scenario,
                         },
-                    )[
-                        "ref_year"
-                    ]
+                    )["ref_year"]
             else:
                 pass
 
@@ -2731,16 +2752,13 @@ def get_valid_horizons(
             data = list(set(data) & set(horizon_for_exposures_hazard_scenario))
 
         if len(data) == 0:
-
             status = {
                 "code": 3000,
                 "message": "No time horizons found for Exposures, hazard and climate scenario provided.",
             }
 
         else:
-
-            status = {"code": 2000,
-                      "message": "Time horizon params set successfully"}
+            status = {"code": 2000, "message": "Time horizon params set successfully"}
 
     except Exception as exception:
         data = []
@@ -2795,13 +2813,10 @@ def get_exposure_per_country(exposure: Exposures) -> pd.DataFrame:
     exposure_per_country["sum_value"] = exposure_per_country.groupby(["country"])[
         "value"
     ].transform("sum")
-    exposure_per_country = exposure_per_country.drop_duplicates(subset=[
-                                                                "country"])
+    exposure_per_country = exposure_per_country.drop_duplicates(subset=["country"])
     exposure_per_country = exposure_per_country[["country", "sum_value"]]
     exposure_per_country = exposure_per_country.dropna()
-    exposure_per_country = exposure_per_country.sort_values("country").reset_index(
-        drop=True
-    )
+    exposure_per_country = exposure_per_country.sort_values("country").reset_index(drop=True)
     exposure_per_country.columns = ["Country", "Total exposed value in EUR"]
 
     return exposure_per_country
@@ -2820,7 +2835,7 @@ def is_connected() -> bool:
     """
     try:
         # Attempt to connect to a known website (google.com) with a short timeout (1 second)
-        urllib.request.urlopen('http://google.com', timeout=1)
+        urllib.request.urlopen("http://google.com", timeout=1)
         return True  # Connection was successful
     except urllib.request.URLError:
         return False  # An error occurred, indicating no internet connection

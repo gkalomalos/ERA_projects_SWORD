@@ -1,23 +1,43 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import sys
+import json
 
-def create_app():
-    app = Flask(__name__)
-    
-    # Configure CORS if needed
-    CORS(app)
+from run_scenario import run_scenario
+from run_test import run_test
 
-    # Setup your routes
-    @app.route('/run-scenario', methods=['POST'])
-    def run_scenario():
-        data = request.json
-        # Process data using Climada or other logic
-        result = {'status': 'success', 'data': 'Processed data here'}
-        return jsonify(result)
 
-    return app
+def process_message(message):
+    script_name = message.get("scriptName", "")
+    data = message.get("data", None)
 
+    if script_name == "run_scenario.py":
+        result = run_scenario(data)
+        response = {"success": True, "result": result}
+    elif script_name == "run_test.py":
+        result = run_test(data)
+        response = {"success": True, "result": result}
+    else:
+        response = {"success": False, "error": f"Unknown script: {script_name}"}
+
+    return response
+
+
+def main():
+    # Send the 'ready' event to the Node.js process
+    ready_event = {"type": "event", "name": "ready"}
+    print(json.dumps(ready_event))
+    sys.stdout.flush()
+
+    while True:
+        raw_message = sys.stdin.readline().strip()
+
+        if raw_message:
+            message = json.loads(raw_message)
+            response = process_message(message)
+            # Send the response back through stdout as a JSON string
+            sys.stdout.write(json.dumps(response) + "\n")
+            sys.stdout.flush()
+
+
+# Add this condition to ensure the infinite loop is only executed when app.py is run as the main script
 if __name__ == "__main__":
-    # Only for running in local development
-    app = create_app()
-    app.run(debug=True)
+    main()
