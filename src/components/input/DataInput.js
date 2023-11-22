@@ -10,6 +10,7 @@ import Stack from "@mui/material/Stack";
 
 import APIService from "../../APIService";
 import AnnualGrowth from "./AnnualGrowth";
+import Country from "./Country";
 import Exposure from "./Exposure";
 import Hazard from "./Hazard";
 import Scenario from "./Scenario";
@@ -17,6 +18,7 @@ import TimeHorizon from "./TimeHorizon";
 
 const DataInput = (props) => {
   const [annualGrowth, setAnnualGrowth] = useState(0);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const [exposure, setExposure] = useState({ file: "", value: [] });
   const [exposureCheck, setExposureCheck] = useState("select");
   const [hazard, setHazard] = useState({ file: "", value: "" });
@@ -74,6 +76,10 @@ const DataInput = (props) => {
       file: "",
       value: typeof value === "string" ? value.split(",") : value,
     });
+  };
+
+  const onSelectCountryHandler = (event) => {
+    setSelectedCountry(event.target.value);
   };
 
   const onSelectHazardHandler = (event) => {
@@ -143,6 +149,10 @@ const DataInput = (props) => {
 
   return (
     <>
+      <Country
+        selectedCountry={selectedCountry}
+        onCountryChange={onSelectCountryHandler}
+      />
       <Exposure
         chipDelete={handleChipDelete}
         defaultValue={exposureCheck}
