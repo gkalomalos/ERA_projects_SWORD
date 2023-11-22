@@ -14,7 +14,8 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
-const COUNTRIES = ["Egypt", "Thailand"];
+const COUNTRIES = ["Egypt"];
+// const COUNTRIES = ["Egypt", "Thailand"];
 
 const Exposure = (props) => {
   return (

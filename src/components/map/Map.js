@@ -1,12 +1,32 @@
 import React, { useEffect, useState } from "react";
 
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import L from "leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
 const Map = ({ mapData }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
+
+  const LayerControls = ({ layers }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      const control = L.control.layers(null, layers).addTo(map);
+      return () => {
+        control.remove();
+      };
+    }, [map, layers]);
+
+    return null;
+  };
+
+  const layers = {
+    'Admin level 0': L.layerGroup(),
+    'Admin level 1': L.layerGroup(),
+    'Admin level 2': L.layerGroup(),
+  };
 
   useEffect(() => {
     const fetchGeoJson = async () => {
@@ -65,6 +85,7 @@ const Map = ({ mapData }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      <LayerControls layers={layers} />
       {mapInfo.geoJson && mapInfo.colorScale && (
         <GeoJSON
           data={mapInfo.geoJson}
