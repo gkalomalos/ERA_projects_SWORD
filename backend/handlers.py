@@ -31,6 +31,8 @@ from constants import (
     EEA_COUNTRIES,
     FEATHERS_DIR,
     LIST_OF_RCPS,
+    MAP_DIR,
+    REQUIREMENTS_DIR,
     SHAPEFILES_01M_FILE,
     TEMP_DIR,
     THREE_LETTER_EUROPEAN_EXPOSURE,
@@ -164,6 +166,49 @@ def get_exposure_new(country: str) -> Exposures:
         status_message = f"Error while trying to fetch exposure for {country}. More info: {exc}"
         logger.log("debug", status_message)
         raise ValueError(status_message)
+
+
+def generate_exposure_geojson(exposure: Exposures, country_name: str):
+    try:
+        exposure_gdf = exposure.gdf
+        country_iso3 = get_iso3_country_code(country_name)
+
+        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        layers = [0, 1, 2]
+
+        for layer in layers:
+            try:
+                admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+                joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
+                aggregated_values = joined_gdf.groupby(f"GID_{layer}")["value"].sum().reset_index()
+                admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
+                admin_gdf["value"] = admin_gdf["value"].fillna(0)
+                admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
+                map_data = admin_gdf_filtered.to_json()
+                map_data_filepath = MAP_DIR / f"exp_geodata_layer_{layer}.json"
+                with open(map_data_filepath, "w") as file:
+                    json.dump(map_data, file)
+            except FileNotFoundError:
+                logger.log("debug", f"File not found: {GADM41_filename}")
+            except Exception as e:
+                logger.log("debug", f"An error occurred while processing layer {layer}: {e}")
+
+    except AttributeError as e:
+        logger.log("debug", f"Invalid Exposure object: {e}")
+    except Exception as e:
+        logger.log("debug", f"An unexpected error occurred: {e}")
+
+
+def get_iso3_country_code(country_name: str) -> str:
+    try:
+        country = pycountry.countries.search_fuzzy(country_name)[0]
+        return country.alpha_3
+    except LookupError:
+        print(f"No ISO3 code found for '{country_name}'. Please check the country name.")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
 def get_exposure_data_from_xlsx(filepath: str) -> pd.DataFrame:

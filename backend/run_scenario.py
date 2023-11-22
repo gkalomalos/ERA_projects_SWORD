@@ -94,7 +94,10 @@ def run_scenario(request: dict) -> dict:
             country = exposure_data["value"][0]  # TODO: Needs refactoring
             hazard_type = hazard_data["value"]
             exposure_present = handlers.get_exposure_new(country)
-            update_progress(15, "Setting up hazard...")
+            update_progress(20, "Generating geojson data files")
+            handlers.generate_exposure_geojson(exposure_present, country)
+
+            update_progress(30, "Setting up hazard...")
             hazard_present = handlers.get_hazard_new(
                 hazard_type, "historical", time_horizon, country
             )
@@ -117,7 +120,10 @@ def run_scenario(request: dict) -> dict:
             exposure_present = handlers.get_exposure_from_xlsx(
                 path.join(DATA_EXPOSURES_DIR, exposure_filename)
             )
-            update_progress(15, "Setting up hazard...")
+            update_progress(20, "Generating geojson data files")
+            handlers.generate_exposure_geojson(exposure_present, countries[0])
+
+            update_progress(30, "Setting up hazard...")
             hazard_present = handlers.get_hazard(hazard_type, "historical", "1980_2020", countries)
             if scenario != "historical":
                 hazard_future = handlers.get_hazard(hazard_type, scenario, time_horizon, countries)
@@ -132,9 +138,12 @@ def run_scenario(request: dict) -> dict:
         scenario = h5_hazard_data["scenario"]
         time_horizon = h5_hazard_data["time_horizon"]
         try:
-            countries = exposure_data["value"]
+            country = exposure_data["value"][0]
             exposure_present = handlers.get_exposure(countries)
-            update_progress(15, "Setting up hazard...")
+            update_progress(20, "Generating geojson data files")
+            handlers.generate_exposure_geojson(exposure_present, country)
+
+            update_progress(30, "Setting up hazard...")
             if scenario == "historical":
                 hazard_present = handlers.get_hazard_from_hdf5(
                     path.join(DATA_HAZARDS_DIR, hazard_filename)
@@ -165,7 +174,10 @@ def run_scenario(request: dict) -> dict:
             exposure_present = handlers.get_exposure_from_xlsx(
                 path.join(DATA_EXPOSURES_DIR, exposure_filename)
             )
-            update_progress(15, "Setting up hazard...")
+            update_progress(20, "Generating geojson data files")
+            handlers.generate_exposure_geojson(exposure_present, countries[0])
+
+            update_progress(30, "Setting up hazard...")
             if scenario == "historical":
                 hazard_present = handlers.get_hazard_from_hdf5(
                     path.join(DATA_HAZARDS_DIR, hazard_filename)
