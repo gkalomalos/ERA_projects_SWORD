@@ -1,33 +1,26 @@
 import React, { useState } from "react";
 
 import { Paper, Box, Button, Typography } from "@mui/material";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import PublicIcon from "@mui/icons-material/Public";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import TimelineIcon from "@mui/icons-material/Timeline";
 
-import APIService from "../../APIService";
 import Map from "./Map";
 
 const MapLayout = (props) => {
-  const [activeMap, setActiveMap] = useState("hazards");
+  const [activeMap, setActiveMap] = useState("exposures");
   const [isExposuresSelected, setIsExposuresSelected] = useState(false);
   const [isHazardsSelected, setIsHazardsSelected] = useState(true);
   const [isRisksSelected, setIsRisksSelected] = useState(false);
+  const [isCostsSelected, setIsCostsSelected] = useState(false);
   const [mapData, setMapData] = useState(null);
 
-  const fetchMapData = async () => {
-    const fetchedData = await APIService.Test();
-    // Data is fetched as: fetchedData.result.data.mapTitle
-    if (fetchedData && fetchedData.result.data.mapData) {
-      setMapData(fetchedData.result.data.mapData);
-    }
-  };
-
   const onClickExposureButtonHandler = () => {
-    fetchMapData();
     setIsExposuresSelected(true);
     setIsHazardsSelected(false);
     setIsRisksSelected(false);
+    setIsCostsSelected(false);
     setActiveMap("exposures");
   };
 
@@ -35,6 +28,7 @@ const MapLayout = (props) => {
     setIsExposuresSelected(false);
     setIsHazardsSelected(true);
     setIsRisksSelected(false);
+    setIsCostsSelected(false);
     setActiveMap("hazards");
   };
 
@@ -42,7 +36,16 @@ const MapLayout = (props) => {
     setIsExposuresSelected(false);
     setIsHazardsSelected(false);
     setIsRisksSelected(true);
+    setIsCostsSelected(false);
     setActiveMap("risks");
+  };
+
+  const onClickCostButtonHandler = () => {
+    setIsExposuresSelected(false);
+    setIsHazardsSelected(false);
+    setIsRisksSelected(false);
+    setIsCostsSelected(true);
+    setActiveMap("costs");
   };
 
   return (
@@ -67,12 +70,23 @@ const MapLayout = (props) => {
       >
         <Map mapData={mapData} />
       </Paper>
-      <Box sx={{ textAlign: "center", marginBottom: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexWrap: "wrap",
+          textAlign: "center",
+          marginBottom: 4,
+        }}
+      >
         <Button
           onClick={onClickExposureButtonHandler}
           size="medium"
           startIcon={<PublicIcon />}
           sx={{
+            flexGrow: 1,
+            margin: 1,
             marginRight: 4,
             minWidth: "120px",
             maxWidth: "120px",
@@ -88,6 +102,8 @@ const MapLayout = (props) => {
           size="medium"
           startIcon={<ReportProblemIcon />}
           sx={{
+            flexGrow: 1,
+            margin: 1,
             marginRight: 4,
             minWidth: "120px",
             maxWidth: "120px",
@@ -103,6 +119,9 @@ const MapLayout = (props) => {
           size="medium"
           startIcon={<TimelineIcon />}
           sx={{
+            flexGrow: 1,
+            margin: 1,
+            marginRight: 4,
             minWidth: "120px",
             maxWidth: "120px",
             bgcolor: isRisksSelected ? "#2A4D69" : "#5C87B1",
@@ -110,7 +129,23 @@ const MapLayout = (props) => {
           }}
           variant="contained"
         >
-          Risk
+          Impact
+        </Button>
+        <Button
+          onClick={onClickCostButtonHandler}
+          size="medium"
+          startIcon={<AttachMoneyIcon />}
+          sx={{
+            flexGrow: 1,
+            margin: 1,
+            minWidth: "120px",
+            maxWidth: "120px",
+            bgcolor: isCostsSelected ? "#2A4D69" : "#5C87B1",
+            "&:hover": { bgcolor: "9886D6" },
+          }}
+          variant="contained"
+        >
+          Cost
         </Button>
       </Box>
     </div>
