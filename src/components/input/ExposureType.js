@@ -7,6 +7,16 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
+const exposureTypeOptions = [
+  { key: "economical-label", value: "", name: "Economical", isLabel: true },
+  { key: "litpop", value: "litpop", name: "LitPop" },
+  { key: "crop-production", value: "crop-production", name: "Crop production" },
+  { key: "non-economical-label", value: "", name: "Non-Economical", isLabel: true },
+  { key: "crops", value: "crops", name: "Crops" },
+  { key: "education", value: "education", name: "Education" }
+];
+
+
 const ExposureType = (props) => {
   return (
     <Box sx={{ minWidth: 250, maxWidth: 250, margin: 4 }}>
@@ -27,20 +37,11 @@ const ExposureType = (props) => {
           label="Exposure Type"
           onChange={props.onExposureTypeChange}
         >
-          <MenuItem disabled>Economical</MenuItem>
-          <MenuItem key="litpop" value="litpop">
-            LitPop
-          </MenuItem>
-          <MenuItem key="crop-production" value="crop-production">
-            Crop production
-          </MenuItem>
-          <MenuItem disabled>Non-Economical</MenuItem>
-          <MenuItem key="crops" value="crops">
-            Crops
-          </MenuItem>
-          <MenuItem key="education" value="education">
-            Education
-          </MenuItem>
+          {exposureTypeOptions.map((option) => (
+            <MenuItem key={option.key} value={option.value} disabled={option.isLabel}>
+              {option.name}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </Box>
