@@ -12,7 +12,6 @@ import APIService from "../../APIService";
 import AnnualGrowth from "./AnnualGrowth";
 import Country from "./Country";
 import Exposure from "./Exposure";
-import ExposureType from "./ExposureType";
 import Hazard from "./Hazard";
 import Scenario from "./Scenario";
 import TimeHorizon from "./TimeHorizon";
@@ -47,9 +46,7 @@ const DataInput = (props) => {
     APIService.Run(body)
       .then((response) => {
         setMessage(response.result.status.message);
-        response.result.status.code === 2000
-          ? setSeverity("success")
-          : setSeverity("error");
+        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
         setShowMessage(true);
         setIsRunButtonLoading(false);
         setIsRunButtonDisabled(false);
@@ -69,10 +66,9 @@ const DataInput = (props) => {
     props.onScenarioRunning(true);
     APIService.FetchExposure(body)
       .then((response) => {
+        console.log("response:", response);
         setMessage(response.result.status.message);
-        response.result.status.code === 2000
-          ? setSeverity("success")
-          : setSeverity("error");
+        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
         setShowMessage(true);
         props.onScenarioRunning(false);
       })
@@ -138,11 +134,7 @@ const DataInput = (props) => {
           onClose={handleCloseMessage}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          <Alert
-            onClose={handleCloseMessage}
-            severity={severity}
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={handleCloseMessage} severity={severity} sx={{ width: "100%" }}>
             {message}
           </Alert>
         </Snackbar>
@@ -152,17 +144,12 @@ const DataInput = (props) => {
 
   return (
     <>
-      <Country
-        selectedCountry={selectedCountry}
-        onCountryChange={onSelectCountryHandler}
-      />
-      <ExposureType
-        selectedExposureType={selectedExposureType}
-        onExposureTypeChange={onSelectExposureTypeHandler}
-      />
+      <Country selectedCountry={selectedCountry} onCountryChange={onSelectCountryHandler} />
       <Exposure
         onFetchChange={onFetchExposureHandler}
         onLoadChange={onLoadChangeExposureHandler}
+        selectedExposureType={selectedExposureType}
+        onExposureTypeChange={onSelectExposureTypeHandler}
       />
       <Hazard
         defaultValue={hazardCheck}
@@ -178,10 +165,7 @@ const DataInput = (props) => {
         scenarioCheck={scenarioCheck}
         value={scenario}
       />
-      <TimeHorizon
-        onSelectChange={onSelectTimeHorizonHandler}
-        value={timeHorizon}
-      />
+      <TimeHorizon onSelectChange={onSelectTimeHorizonHandler} value={timeHorizon} />
       <AnnualGrowth onChange={onAnnualGrowthChangeHandler} />
       <Box sx={{ width: 350 }} textAlign="center">
         {!isRunButtonLoading && (

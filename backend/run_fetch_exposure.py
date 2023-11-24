@@ -16,8 +16,8 @@ def update_progress(progress, message):
 
 def run_fetch_exposure(request: dict) -> dict:
     initial_time = time()
-    country_name = request["selectedCountry"]
-    exposure_type = request["selectedExposureType"]
+    country_name = request["country"]
+    exposure_type = request["exposureType"]
 
     run_status_message = f"Scenario run successfully."
     data = {"country_name": country_name, "exposure_type": exposure_type}
