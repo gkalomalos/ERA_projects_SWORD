@@ -22,7 +22,6 @@ const DataInput = (props) => {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedExposureType, setSelectedExposureType] = useState(null);
   const [exposure, setExposure] = useState({ file: "", value: [] });
-  const [exposureCheck, setExposureCheck] = useState("select");
   const [hazard, setHazard] = useState({ file: "", value: "" });
   const [hazardCheck, setHazardCheck] = useState("select");
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -62,22 +61,24 @@ const DataInput = (props) => {
       });
   };
 
-  const handleChipDelete = (e, value) => {
-    e.preventDefault();
-    setExposure({
-      file: "",
-      value: exposure.value.filter((country) => country !== value),
-    });
-  };
-
-  const onSelectExposureHandler = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setExposure({
-      file: "",
-      value: typeof value === "string" ? value.split(",") : value,
-    });
+  const onFetchExposureHandler = () => {
+    const body = {
+      country: selectedCountry,
+      exposureType: selectedExposureType,
+    };
+    props.onScenarioRunning(true);
+    APIService.FetchExposure(body)
+      .then((response) => {
+        setMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setSeverity("success")
+          : setSeverity("error");
+        setShowMessage(true);
+        props.onScenarioRunning(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const onSelectCountryHandler = (event) => {
@@ -98,10 +99,6 @@ const DataInput = (props) => {
 
   const handleCloseMessage = () => {
     setShowMessage(false);
-  };
-
-  const onChangeExposureRadioButtonHandler = (event) => {
-    setExposureCheck(event.target.value);
   };
 
   const onChangeHazardRadioButtonHandler = (event) => {
@@ -164,13 +161,8 @@ const DataInput = (props) => {
         onExposureTypeChange={onSelectExposureTypeHandler}
       />
       <Exposure
-        chipDelete={handleChipDelete}
-        defaultValue={exposureCheck}
-        exposureCheck={exposureCheck}
-        onChangeRadio={onChangeExposureRadioButtonHandler}
-        onChangeSelect={onSelectExposureHandler}
+        onFetchChange={onFetchExposureHandler}
         onLoadChange={onLoadChangeExposureHandler}
-        value={exposure.value}
       />
       <Hazard
         defaultValue={hazardCheck}

@@ -2,7 +2,7 @@ import sys
 import json
 
 from run_scenario import run_scenario
-from run_test import run_test
+from run_fetch_exposure import run_fetch_exposure
 
 
 def process_message(message):
@@ -12,8 +12,8 @@ def process_message(message):
     if script_name == "run_scenario.py":
         result = run_scenario(data)
         response = {"success": True, "result": result}
-    elif script_name == "run_test.py":
-        result = run_test(data)
+    elif script_name == "run_fetch_exposure.py":
+        result = run_fetch_exposure(data)
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}
