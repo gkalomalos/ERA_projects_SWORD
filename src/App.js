@@ -45,7 +45,7 @@ const App = () => {
           />
         </Grid>
         <Grid item xs={12} md={9}>
-          <MapLayout mapTitle={mapTitle}/>
+          <MapLayout mapTitle={mapTitle} />
         </Grid>
       </Grid>
       {isScenarioRunning && (

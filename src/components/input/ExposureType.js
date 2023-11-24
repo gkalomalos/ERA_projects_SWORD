@@ -1,12 +1,11 @@
-import React from 'react';
+import React from "react";
+
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-
-const EXPOSURE_TYPES = ["Litpop", "Buildings"];
 
 const ExposureType = (props) => {
   return (
@@ -26,13 +25,22 @@ const ExposureType = (props) => {
           id="exposure-type-select"
           value={props.selectedExposureType}
           label="Exposure Type"
-          onChange={props.onSelectExposureTypeChange}
+          onChange={props.onExposureTypeChange}
         >
-          {EXPOSURE_TYPES.map((exposureType) => (
-            <MenuItem key={exposureType} value={exposureType}>
-              {exposureType}
-            </MenuItem>
-          ))}
+          <MenuItem disabled>Economical</MenuItem>
+          <MenuItem key="litpop" value="litpop">
+            LitPop
+          </MenuItem>
+          <MenuItem key="crop-production" value="crop-production">
+            Crop production
+          </MenuItem>
+          <MenuItem disabled>Non-Economical</MenuItem>
+          <MenuItem key="crops" value="crops">
+            Crops
+          </MenuItem>
+          <MenuItem key="education" value="education">
+            Education
+          </MenuItem>
         </Select>
       </FormControl>
     </Box>
