@@ -23,9 +23,9 @@ const Map = ({ mapData }) => {
   };
 
   const layers = {
-    'Admin level 0': L.layerGroup(),
-    'Admin level 1': L.layerGroup(),
-    'Admin level 2': L.layerGroup(),
+    "Admin level 0": L.layerGroup(),
+    "Admin level 1": L.layerGroup(),
+    "Admin level 2": L.layerGroup(),
   };
 
   useEffect(() => {
@@ -38,10 +38,7 @@ const Map = ({ mapData }) => {
         const minValue = Math.min(...values);
         const maxValue = Math.max(...values);
 
-        const scale = scaleSequential(interpolateRdYlGn).domain([
-          maxValue,
-          minValue,
-        ]);
+        const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
         setMapInfo({ geoJson: data, colorScale: scale });
       } catch (error) {
@@ -56,9 +53,7 @@ const Map = ({ mapData }) => {
 
   const style = (feature) => {
     return {
-      fillColor: mapInfo.colorScale
-        ? mapInfo.colorScale(feature.properties.value)
-        : "#FFF",
+      fillColor: mapInfo.colorScale ? mapInfo.colorScale(feature.properties.value) : "#FFF",
       weight: 2,
       opacity: 1,
       color: "white",
@@ -69,29 +64,16 @@ const Map = ({ mapData }) => {
 
   const onEachFeature = (feature, layer) => {
     if (feature.properties) {
-      layer.bindPopup(
-        `Name: ${feature.properties.NAME_1}<br>Value: ${feature.properties.value}`
-      );
+      layer.bindPopup(`Name: ${feature.properties.NAME_1}<br>Value: ${feature.properties.value}`);
     }
   };
 
   return (
-    <MapContainer
-      center={[30.0, 31.0]}
-      zoom={7}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+    <MapContainer center={[27.5, 31.0]} zoom={7} style={{ height: "100%", width: "100%" }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <LayerControls layers={layers} />
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <GeoJSON
-          data={mapInfo.geoJson}
-          style={style}
-          onEachFeature={onEachFeature}
-        />
+        <GeoJSON data={mapInfo.geoJson} style={style} onEachFeature={onEachFeature} />
       )}
     </MapContainer>
   );

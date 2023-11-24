@@ -30,14 +30,11 @@ const App = () => {
       window.electron.remove("progress", progressListener);
     };
   }, []);
+
   return (
     <>
       <Header />
-      <Grid
-        container
-        spacing={2}
-        style={{ padding: "16px", height: "calc(100vh - 64px)" }}
-      >
+      <Grid container spacing={2} style={{ padding: "16px", height: "calc(100vh - 64px)" }}>
         <Grid item xs={12} md={3}>
           <DataInput
             onChangeMapTitle={setMapTitleHandler}
@@ -48,9 +45,7 @@ const App = () => {
           <MapLayout mapTitle={mapTitle} />
         </Grid>
       </Grid>
-      {isScenarioRunning && (
-        <LoadModal message={modalMessage} open={isScenarioRunning} />
-      )}
+      {isScenarioRunning && <LoadModal message={modalMessage} open={isScenarioRunning} />}
     </>
   );
 };
