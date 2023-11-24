@@ -19,8 +19,9 @@ import TimeHorizon from "./TimeHorizon";
 const DataInput = (props) => {
   const [annualGrowth, setAnnualGrowth] = useState(0);
   const [selectedCountry, setSelectedCountry] = useState(null);
-  const [selectedExposureType, setSelectedExposureType] = useState(null);
+  const [selectedExposure, setSelectedExposure] = useState(null);
   const [exposure, setExposure] = useState({ file: "", value: [] });
+  const [exposureCheck, setExposureCheck] = useState("select");
   const [hazard, setHazard] = useState({ file: "", value: "" });
   const [hazardCheck, setHazardCheck] = useState("select");
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -58,31 +59,12 @@ const DataInput = (props) => {
       });
   };
 
-  const onFetchExposureHandler = () => {
-    const body = {
-      country: selectedCountry,
-      exposureType: selectedExposureType,
-    };
-    props.onScenarioRunning(true);
-    APIService.FetchExposure(body)
-      .then((response) => {
-        console.log("response:", response);
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
-        props.onScenarioRunning(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const onSelectCountryHandler = (event) => {
     setSelectedCountry(event.target.value);
   };
 
-  const onSelectExposureTypeHandler = (event) => {
-    setSelectedExposureType(event.target.value);
+  const onSelectExposureHandler = (event) => {
+    setSelectedExposure(event.target.value);
   };
 
   const onSelectHazardHandler = (event) => {
@@ -95,6 +77,10 @@ const DataInput = (props) => {
 
   const handleCloseMessage = () => {
     setShowMessage(false);
+  };
+
+  const onChangeExposureRadioButtonHandler = (event) => {
+    setExposureCheck(event.target.value);
   };
 
   const onChangeHazardRadioButtonHandler = (event) => {
@@ -146,10 +132,12 @@ const DataInput = (props) => {
     <>
       <Country selectedCountry={selectedCountry} onCountryChange={onSelectCountryHandler} />
       <Exposure
-        onFetchChange={onFetchExposureHandler}
+        defaultValue={exposureCheck}
+        exposureCheck={exposureCheck}
+        onChangeRadio={onChangeExposureRadioButtonHandler}
+        onSelectChange={onSelectExposureHandler}
         onLoadChange={onLoadChangeExposureHandler}
-        selectedExposureType={selectedExposureType}
-        onExposureTypeChange={onSelectExposureTypeHandler}
+        value={exposure.value}
       />
       <Hazard
         defaultValue={hazardCheck}

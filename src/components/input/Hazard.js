@@ -13,20 +13,30 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const HAZARDS = [
-  // { label: "Tropical cyclone", value: "tropical_cyclone" },
-  // { label: "Storm Europe", value: "storm_europe" },
-  { label: "River flood", value: "river_flood" },
+  { key: "hydrological-label", value: "", name: "Hydrological", isLabel: true },
+  { key: "river-flood", value: "river_flood", name: "River flood" },
+  { key: "flood", value: "flood", name: "Flood" },
+  { key: "geophysical-label", value: "", name: "Geophysical", isLabel: true },
+  { key: "eartquake", value: "crops", name: "Crops" },
+  { key: "meteorological-label", value: "", name: "Meteorological", isLabel: true },
+  { key: "tropical-cyclone", value: "tropical_cyclone", name: "Tropical Cyclone" },
+  { key: "climatological-label", value: "", name: "Climatological", isLabel: true },
+  { key: "wildfire", value: "wildfire", name: "Wildfire" },
 ];
 
 const Hazard = (props) => {
   return (
-    <Box sx={{ minWidth: 250, maxWidth: 350, margin: 4 }}>
-      <Typography
-        id="hazard-dropdown"
-        gutterBottom
-        sx={{ fontWeight: "bold" }}
-        variant="h6"
-      >
+    <Box
+      sx={{
+        minWidth: 250,
+        maxWidth: 350,
+        marginBottom: 4,
+        marginLeft: 4,
+        marginTop: 4,
+        marginRight: 0,
+      }}
+    >
+      <Typography id="hazard-dropdown" gutterBottom sx={{ fontWeight: "bold" }} variant="h6">
         Hazard
       </Typography>
       <FormControl>
@@ -62,9 +72,14 @@ const Hazard = (props) => {
             onChange={props.onSelectChange}
             value={props.value}
           >
-            {HAZARDS.map((hazard) => (
-              <MenuItem key={hazard.value} value={hazard.value}>
-                {hazard.label}
+            {HAZARDS.map((option) => (
+              <MenuItem
+                key={option.key}
+                value={option.value}
+                disabled={option.isLabel}
+                style={{ paddingLeft: option.isLabel ? "20px" : "30px" }}
+              >
+                {option.name}
               </MenuItem>
             ))}
           </Select>

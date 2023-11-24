@@ -78,7 +78,7 @@ const Map = ({ mapData }) => {
   return (
     <MapContainer
       center={[30.0, 31.0]}
-      zoom={8}
+      zoom={7}
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer

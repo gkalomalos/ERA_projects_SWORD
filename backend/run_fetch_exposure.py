@@ -19,7 +19,7 @@ def run_fetch_exposure(request: dict) -> dict:
     country_name = request["country"]
     exposure_type = request["exposureType"]
 
-    run_status_message = f"Scenario run successfully."
+    run_status_message = f"Fetched exposure data successfully."
     data = {"country_name": country_name, "exposure_type": exposure_type}
     update_progress(100, run_status_message)
     response = {

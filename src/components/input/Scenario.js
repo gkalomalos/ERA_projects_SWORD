@@ -21,13 +21,17 @@ const SCENARIOS = [
 
 const Scenario = (props) => {
   return (
-    <Box sx={{ minWidth: 250, maxWidth: 350, margin: 4 }}>
-      <Typography
-        id="scenario-dropdown"
-        gutterBottom
-        variant="h6"
-        sx={{ fontWeight: "bold" }}
-      >
+    <Box
+      sx={{
+        minWidth: 250,
+        maxWidth: 350,
+        marginBottom: 4,
+        marginLeft: 4,
+        marginTop: 4,
+        marginRight: 0,
+      }}
+    >
+      <Typography id="scenario-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
         Scenario
       </Typography>
 
@@ -43,7 +47,7 @@ const Scenario = (props) => {
           <FormControlLabel
             value="historical"
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Historical events"
+            label="Historical"
           />
           <FormControlLabel
             value="future"
