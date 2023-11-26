@@ -2,9 +2,9 @@ import React from 'react';
 
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
 
 const COUNTRIES = ["Egypt", "Thailand"];
@@ -13,28 +13,30 @@ const Country = (props) => {
   return (
     <Box sx={{ minWidth: 250, maxWidth: 250, margin: 4 }}>
       <Typography
-        id="country-dropdown"
+        id="country-radio-group-label"
         gutterBottom
         variant="h6"
         sx={{ fontWeight: "bold" }}
       >
         Country
       </Typography>
-      <FormControl fullWidth>
-        <InputLabel id="country-select-label">Country</InputLabel>
-        <Select
-          labelId="country-select-label"
-          id="country-select"
+      <FormControl component="fieldset">
+        <RadioGroup
+          aria-labelledby="country-radio-group-label"
+          name="country-radio-buttons-group"
           value={props.selectedCountry}
-          label="Country"
           onChange={props.onCountryChange}
+          row
         >
           {COUNTRIES.map((country) => (
-            <MenuItem key={country} value={country}>
-              {country}
-            </MenuItem>
+            <FormControlLabel
+              key={country}
+              value={country}
+              control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
+              label={country}
+            />
           ))}
-        </Select>
+        </RadioGroup>
       </FormControl>
     </Box>
   );

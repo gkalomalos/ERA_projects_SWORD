@@ -18,7 +18,7 @@ import TimeHorizon from "./TimeHorizon";
 
 const DataInput = (props) => {
   const [annualGrowth, setAnnualGrowth] = useState(0);
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("Egypt");
   const [exposure, setExposure] = useState({ file: "", value: [] });
   const [exposureCheck, setExposureCheck] = useState("select");
   const [hazard, setHazard] = useState({ file: "", value: "" });
@@ -35,6 +35,7 @@ const DataInput = (props) => {
   const onRunHandler = () => {
     const body = {
       annualGrowth: annualGrowth,
+      country: selectedCountry,
       exposure: exposure,
       hazard: hazard,
       scenario: scenario,
