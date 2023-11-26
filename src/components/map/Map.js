@@ -32,30 +32,26 @@ const Map = ({ activeMap }) => {
     const fetchGeoJson = async () => {
       try {
         const response = await fetch(`./${activeMap}_geodata_layer_1.json`);
+        if (!response.ok) {
+          // Check if the response is not ok (404 or other HTTP errors)
+          throw new Error(`HTTP error! status: ${response.status}`); // Throw an error to go to the catch block
+        }
         const data = await response.json();
-        console.log("keys:", Object.keys(data));
-
-        console.log("data:", data);
-
         const values = data.features.map((f) => f.properties.value);
-        console.log("values:", values);
         const minValue = Math.min(...values);
         const maxValue = Math.max(...values);
-        console.log("minValue:", minValue);
-        console.log("maxValue:", maxValue);
-
         const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
-        console.log("scale:", scale);
 
         setMapInfo({ geoJson: data, colorScale: scale });
       } catch (error) {
         console.error("Error fetching GeoJSON data for " + activeMap, error);
+        setMapInfo({ geoJson: null, colorScale: null }); // Set to default state for empty map
       }
     };
     if (activeMap) {
       fetchGeoJson();
     }
-  }, [activeMap]); // Depend on activeMap to refetch data when it changes
+  }, [activeMap]);
 
   const style = (feature) => {
     return {

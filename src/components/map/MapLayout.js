@@ -10,8 +10,8 @@ import Map from "./Map";
 
 const MapLayout = (props) => {
   const [activeMap, setActiveMap] = useState("exposures");
-  const [isExposuresSelected, setIsExposuresSelected] = useState(false);
-  const [isHazardsSelected, setIsHazardsSelected] = useState(true);
+  const [isExposuresSelected, setIsExposuresSelected] = useState(true);
+  const [isHazardsSelected, setIsHazardsSelected] = useState(false);
   const [isRisksSelected, setIsRisksSelected] = useState(false);
   const [isCostsSelected, setIsCostsSelected] = useState(false);
 
