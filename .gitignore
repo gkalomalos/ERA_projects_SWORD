@@ -16,11 +16,10 @@ project_structure.py
 exposures_geodata_layer_0.json
 exposures_geodata_layer_1.json
 exposures_geodata_layer_2.json
+gadm41_EGY.gpkg
 
 # logs
 logs/
 
 # environment
 climada_env
-
-
