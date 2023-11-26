@@ -1,9 +1,10 @@
 import * as React from "react";
 
 import AppBar from "@mui/material/AppBar";
-import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import LanguageIcon from "@mui/icons-material/Language";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
@@ -12,9 +13,10 @@ import css from "./Header.module.css";
 
 const Header = () => {
   const [language, setLanguage] = React.useState("EN");
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -48,17 +50,23 @@ const Header = () => {
         >
           CLIMADA UNU
         </Typography>
-        <Select
-          value={language}
-          onChange={handleLanguageChange}
-          displayEmpty
-          inputProps={{ "aria-label": "Without label" }}
-          sx={{ m: 1, color: "white", width: 120 }}
-        >
-          <MenuItem value="EN">English</MenuItem>
-          <MenuItem value="AR">Arabic</MenuItem>
-          <MenuItem value="TH">Thai</MenuItem>
-        </Select>
+        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <LanguageIcon />
+        </IconButton>
+        <Menu id="language-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+          {["EN", "AR", "TH"].map((lang) => (
+            <MenuItem
+              key={lang}
+              selected={lang === language}
+              onClick={() => {
+                setLanguage(lang);
+                handleClose();
+              }}
+            >
+              {lang === "EN" ? "English" : lang === "AR" ? "Arabic" : "Thai"}
+            </MenuItem>
+          ))}
+        </Menu>
       </Toolbar>
     </AppBar>
   );
