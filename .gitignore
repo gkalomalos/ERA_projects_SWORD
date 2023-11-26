@@ -13,9 +13,14 @@ __pycache__
 # develop
 # backend/dev.ipynb
 project_structure.py
+exposures_geodata_layer_0.json
+exposures_geodata_layer_1.json
+exposures_geodata_layer_2.json
 
 # logs
 logs/
 
 # environment
 climada_env
+
+
