@@ -2,9 +2,9 @@ import React from 'react';
 
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
 
 const COUNTRIES = ["Egypt", "Thailand"];

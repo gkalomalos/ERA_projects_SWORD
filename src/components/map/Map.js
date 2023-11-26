@@ -6,7 +6,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
-const Map = ({ mapData }) => {
+const Map = ({ activeMap }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
 
   const LayerControls = ({ layers }) => {
@@ -31,25 +31,31 @@ const Map = ({ mapData }) => {
   useEffect(() => {
     const fetchGeoJson = async () => {
       try {
-        const response = await fetch(mapData);
+        const response = await fetch(`./${activeMap}_geodata_layer_1.json`);
         const data = await response.json();
+        console.log("keys:", Object.keys(data));
+
+        console.log("data:", data);
 
         const values = data.features.map((f) => f.properties.value);
+        console.log("values:", values);
         const minValue = Math.min(...values);
         const maxValue = Math.max(...values);
+        console.log("minValue:", minValue);
+        console.log("maxValue:", maxValue);
 
         const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
+        console.log("scale:", scale);
 
         setMapInfo({ geoJson: data, colorScale: scale });
       } catch (error) {
-        console.error("Error fetching GeoJSON data:", error);
+        console.error("Error fetching GeoJSON data for " + activeMap, error);
       }
     };
-
-    if (mapData) {
+    if (activeMap) {
       fetchGeoJson();
     }
-  }, [mapData]);
+  }, [activeMap]); // Depend on activeMap to refetch data when it changes
 
   const style = (feature) => {
     return {
@@ -71,9 +77,11 @@ const Map = ({ mapData }) => {
   return (
     <MapContainer center={[27.5, 31.0]} zoom={7} style={{ height: "100%", width: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <LayerControls layers={layers} />
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <GeoJSON data={mapInfo.geoJson} style={style} onEachFeature={onEachFeature} />
+        <>
+          <LayerControls layers={layers} />
+          <GeoJSON data={mapInfo.geoJson} style={style} onEachFeature={onEachFeature} />
+        </>
       )}
     </MapContainer>
   );

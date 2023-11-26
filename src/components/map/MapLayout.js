@@ -14,7 +14,6 @@ const MapLayout = (props) => {
   const [isHazardsSelected, setIsHazardsSelected] = useState(true);
   const [isRisksSelected, setIsRisksSelected] = useState(false);
   const [isCostsSelected, setIsCostsSelected] = useState(false);
-  const [mapData, setMapData] = useState(null);
 
   const onClickExposureButtonHandler = () => {
     setIsExposuresSelected(true);
@@ -68,7 +67,7 @@ const MapLayout = (props) => {
           overflow: "hidden",
         }}
       >
-        <Map mapData={mapData} />
+        <Map activeMap={activeMap} />
       </Paper>
       <Box
         sx={{
