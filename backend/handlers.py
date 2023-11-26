@@ -185,7 +185,7 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 admin_gdf["value"] = admin_gdf["value"].fillna(0)
                 admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
                 map_data = admin_gdf_filtered.to_json()
-                map_data_filepath = MAP_DIR / f"exp_geodata_layer_{layer}.json"
+                map_data_filepath = MAP_DIR / f"exposures_geodata_layer_{layer}.json"
                 with open(map_data_filepath, "w") as file:
                     json.dump(map_data, file)
             except FileNotFoundError:
@@ -1051,7 +1051,6 @@ def get_hazard_new(hazard_type: str, scenario: str, time_horizon: str, country: 
         "climate_scenario": scenario,
         "year_range": time_horizon,
     }
-    logger.log("debug", f"properties: {hazard_properties}")
     try:
         client = Client()
         hazard = client.get_hazard(
