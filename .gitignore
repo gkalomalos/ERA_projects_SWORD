@@ -13,9 +13,7 @@ __pycache__
 # develop
 # backend/dev.ipynb
 project_structure.py
-exposures_geodata_layer_0.json
-exposures_geodata_layer_1.json
-exposures_geodata_layer_2.json
+exposures_geodata.json
 gadm41_EGY.gpkg
 
 # logs

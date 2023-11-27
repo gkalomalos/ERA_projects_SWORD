@@ -176,6 +176,8 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
         GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
         layers = [0, 1, 2]
 
+        all_layers_geojson = {"type": "FeatureCollection", "features": []}
+
         for layer in layers:
             try:
                 admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
@@ -184,12 +186,22 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
                 admin_gdf["value"] = admin_gdf["value"].fillna(0)
                 admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
-                map_data_filepath = MAP_DIR / f"exposures_geodata_layer_{layer}.json"
-                map_data = admin_gdf_filtered.to_file(map_data_filepath, driver="GeoJSON")
+
+                # Convert each layer to a GeoJSON Feature and add it to the collection
+                layer_features = admin_gdf_filtered.__geo_interface__["features"]
+                for feature in layer_features:
+                    feature["properties"]["layer"] = layer
+                    all_layers_geojson["features"].append(feature)
+
             except FileNotFoundError:
                 logger.log("debug", f"File not found: {GADM41_filename}")
             except Exception as e:
                 logger.log("debug", f"An error occurred while processing layer {layer}: {e}")
+
+        # Save the combined GeoJSON file
+        map_data_filepath = MAP_DIR / "exposures_geodata.json"
+        with open(map_data_filepath, "w") as f:
+            json.dump(all_layers_geojson, f)
 
     except AttributeError as e:
         logger.log("debug", f"Invalid Exposure object: {e}")
