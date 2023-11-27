@@ -8,14 +8,7 @@ import "leaflet/dist/leaflet.css";
 
 const Map = ({ activeMap }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [activeLayer, setActiveLayer] = useState("0"); // State to track the active layer
-
-  // Mapping of layer names to specific numbers or strings
-  const layerMapping = {
-    "Admin level 0": "0",
-    "Admin level 1": "1",
-    "Admin level 2": "2",
-  };
+  const [activeLayer, setActiveLayer] = useState("1"); // State to track the active layer
 
   const LayerControls = ({ layers }) => {
     const map = useMap();
@@ -23,31 +16,10 @@ const Map = ({ activeMap }) => {
     useEffect(() => {
       const control = L.control.layers(null, layers).addTo(map);
 
-      // Modify DOM to change checkboxes to radio buttons and attach event listeners
-      const layerControlElement = control.getContainer();
-      const inputs = layerControlElement.getElementsByTagName("input");
-      for (let i = 0; i < inputs.length; i++) {
-        inputs[i].type = "radio";
-        inputs[i].name = "leaflet-base-layers"; // Ensure all radios have the same name
-        inputs[i].onchange = (e) => {
-          const layerName = e.target.value;
-          const mappedValue = layerMapping[layerName]; // Get the mapped value
-          setActiveLayer(mappedValue); // Update active layer state with the mapped value
-        };
-      }
-
-      // Set default layer (optional)
-      if (inputs.length > 0) {
-        inputs[0].checked = true;
-        setActiveLayer(layerMapping[Object.keys(layers)[0]]); // Set initial active layer using mapping
-      }
-
       return () => {
         control.remove();
       };
-    }, [map, layers, layerMapping]);
-
-    return null;
+    }, [map, layers]);
   };
 
   useEffect(() => {
