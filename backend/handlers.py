@@ -184,10 +184,8 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
                 admin_gdf["value"] = admin_gdf["value"].fillna(0)
                 admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
-                map_data = admin_gdf_filtered.to_json()
                 map_data_filepath = MAP_DIR / f"exposures_geodata_layer_{layer}.json"
-                with open(map_data_filepath, "w") as file:
-                    json.dump(map_data, file)
+                map_data = admin_gdf_filtered.to_file(map_data_filepath, driver="GeoJSON")
             except FileNotFoundError:
                 logger.log("debug", f"File not found: {GADM41_filename}")
             except Exception as e:
