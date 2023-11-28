@@ -56,7 +56,11 @@ const Map = ({ activeMap, selectedCountry }) => {
 
   const onEachFeature = (feature, layer) => {
     if (feature.properties) {
-      layer.bindPopup(`Name: ${feature.properties.GID_1}<br>Value: ${feature.properties.value}`);
+      const gidKey = `GID_${activeLayer}`;
+      const name = feature.properties[gidKey];
+      const value = feature.properties.value;
+
+      layer.bindPopup(`Name: ${name}<br>Value: ${value}`);
     }
   };
 
