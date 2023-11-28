@@ -18,7 +18,6 @@ import TimeHorizon from "./TimeHorizon";
 
 const DataInput = (props) => {
   const [annualGrowth, setAnnualGrowth] = useState(0);
-  const [selectedCountry, setSelectedCountry] = useState("Egypt");
   const [exposure, setExposure] = useState({ file: "", value: [] });
   const [exposureCheck, setExposureCheck] = useState("select");
   const [hazard, setHazard] = useState({ file: "", value: "" });
@@ -35,7 +34,7 @@ const DataInput = (props) => {
   const onRunHandler = () => {
     const body = {
       annualGrowth: annualGrowth,
-      country: selectedCountry,
+      country: props.selectedCountry,
       exposure: exposure,
       hazard: hazard,
       scenario: scenario,
@@ -60,7 +59,7 @@ const DataInput = (props) => {
   };
 
   const onSelectCountryHandler = (event) => {
-    setSelectedCountry(event.target.value);
+    props.onChangeCountry(event.target.value);
   };
 
   const onSelectExposureHandler = (event) => {
@@ -130,7 +129,7 @@ const DataInput = (props) => {
 
   return (
     <>
-      <Country selectedCountry={selectedCountry} onCountryChange={onSelectCountryHandler} />
+      <Country selectedCountry={props.selectedCountry} onCountryChange={onSelectCountryHandler} />
       <Exposure
         defaultValue={exposureCheck}
         exposureCheck={exposureCheck}

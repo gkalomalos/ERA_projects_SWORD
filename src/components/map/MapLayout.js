@@ -67,7 +67,7 @@ const MapLayout = (props) => {
           overflow: "hidden",
         }}
       >
-        <Map activeMap={activeMap} />
+        <Map activeMap={activeMap} selectedCountry={props.selectedCountry} />
       </Paper>
       <Box
         sx={{

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
@@ -6,9 +6,11 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
-const Map = ({ activeMap }) => {
+const Map = ({ activeMap, selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeLayer, setActiveLayer] = useState(1);
+
+  const mapRef = useRef();
 
   useEffect(() => {
     // Fetch GeoJSON data when activeLayer or activeMap changes
@@ -86,8 +88,26 @@ const Map = ({ activeMap }) => {
     flexDirection: "row",
   };
 
+  const countryCoordinates = {
+    Egypt: [26.8206, 30.8025],
+    Thailand: [15.87, 100.9925],
+  };
+
+  useEffect(() => {
+    if (mapRef.current && selectedCountry in countryCoordinates) {
+      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
+    }
+    console.log("selectedCountry:", selectedCountry);
+  }, [selectedCountry]);
+
   return (
-    <MapContainer center={[30.0, 31.0]} zoom={7} style={{ height: "100%", width: "100%" }}>
+    <MapContainer
+      key={selectedCountry}
+      center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
+      zoom={6}
+      style={{ height: "100%", width: "100%" }}
+      whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
+    >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <div style={buttonContainerStyle}>
         {[0, 1, 2].map((layer) => (

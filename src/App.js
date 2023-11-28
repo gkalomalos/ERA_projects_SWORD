@@ -9,6 +9,7 @@ import LoadModal from "./components/nav/LoadModal";
 
 const App = () => {
   const [mapTitle, setMapTitle] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("Egypt");
   const [isScenarioRunning, setIsScenarioRunning] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
@@ -18,6 +19,10 @@ const App = () => {
 
   const setIsScenarioRunningHandler = (data) => {
     setIsScenarioRunning(data);
+  };
+
+  const setSelectedCountryHandler = (country) => {
+    setSelectedCountry(country);
   };
 
   useEffect(() => {
@@ -37,12 +42,14 @@ const App = () => {
       <Grid container spacing={2} style={{ padding: "16px", height: "calc(100vh - 64px)" }}>
         <Grid item xs={12} md={3}>
           <DataInput
+            selectedCountry={selectedCountry}
+            onChangeCountry={setSelectedCountryHandler}
             onChangeMapTitle={setMapTitleHandler}
             onScenarioRunning={setIsScenarioRunningHandler}
           />
         </Grid>
         <Grid item xs={12} md={9}>
-          <MapLayout mapTitle={mapTitle} />
+          <MapLayout mapTitle={mapTitle} selectedCountry={selectedCountry} />
         </Grid>
       </Grid>
       {isScenarioRunning && <LoadModal message={modalMessage} open={isScenarioRunning} />}
