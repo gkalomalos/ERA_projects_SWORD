@@ -97,7 +97,6 @@ const Map = ({ activeMap, selectedCountry }) => {
     if (mapRef.current && selectedCountry in countryCoordinates) {
       mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
     }
-    console.log("selectedCountry:", selectedCountry);
   }, [selectedCountry]);
 
   return (
