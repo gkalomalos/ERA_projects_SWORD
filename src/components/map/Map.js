@@ -8,43 +8,40 @@ import "leaflet/dist/leaflet.css";
 
 const Map = ({ activeMap, selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [activeLayer, setActiveLayer] = useState(1);
-
+  const [activeLayer, setActiveLayer] = useState(null);
   const mapRef = useRef();
 
-  useEffect(() => {
-    // Fetch GeoJSON data when activeLayer or activeMap changes
-    const fetchGeoJson = async () => {
-      try {
-        const response = await fetch(
-          `C:\\Users\\gkalomalos\\Projects\\unu\\climada-unu\\src\\components\\map\\${activeMap}_geodata.json`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        // Filter data for the active layer
-        const filteredFeatures = data.features.filter(
-          (feature) => feature.properties.layer === activeLayer
-        );
-        const filteredData = { ...data, features: filteredFeatures };
-        const values = filteredFeatures.map((f) => f.properties.value);
-        const minValue = Math.min(...values);
-        const maxValue = Math.max(...values);
-        const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
-
-        setMapInfo({ geoJson: filteredData, colorScale: scale });
-      } catch (error) {
-        console.error("Error fetching GeoJSON data:", error);
-        setMapInfo({ geoJson: null, colorScale: null });
+  const fetchGeoJson = async (layer) => {
+    try {
+      const response = await fetch(
+        `C:\\Users\\gkalomalos\\Projects\\unu\\climada-unu\\src\\components\\map\\${activeMap}_geodata.json`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      // Filter data for the active layer
+      const filteredFeatures = data.features.filter(
+        (feature) => feature.properties.layer === layer
+      );
+      const filteredData = { ...data, features: filteredFeatures };
+      const values = filteredFeatures.map((f) => f.properties.value);
+      const minValue = Math.min(...values);
+      const maxValue = Math.max(...values);
+      const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
-    if (activeMap) {
-      fetchGeoJson();
+      setMapInfo({ geoJson: filteredData, colorScale: scale });
+    } catch (error) {
+      console.error("Error fetching GeoJSON data:", error);
+      setMapInfo({ geoJson: null, colorScale: null });
     }
-  }, [activeMap, activeLayer]);
+  };
+
+  useEffect(() => {
+    if (activeMap && activeLayer !== null) {
+      fetchGeoJson(activeLayer);
+    }
+  }, [activeMap]);
 
   const style = (feature) => {
     return {
@@ -63,7 +60,8 @@ const Map = ({ activeMap, selectedCountry }) => {
     }
   };
 
-  const handleLayerChange = (newLayer) => {
+  const handleLayerChange = async (newLayer) => {
+    await fetchGeoJson(newLayer);
     setActiveLayer(newLayer);
   };
 
@@ -73,7 +71,7 @@ const Map = ({ activeMap, selectedCountry }) => {
     margin: 1,
     minWidth: "60px",
     maxWidth: "60px",
-    fontSize: "0.75rem", // Smaller font size for the text
+    fontSize: "0.75rem",
     bgcolor: layer === activeLayer ? "#2A4D69" : "#5C87B1",
     "&:hover": { bgcolor: "#9886D6" },
   });
@@ -122,7 +120,12 @@ const Map = ({ activeMap, selectedCountry }) => {
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <GeoJSON data={mapInfo.geoJson} style={style} onEachFeature={onEachFeature} />
+        <GeoJSON
+          key={`${selectedCountry}-${activeLayer}`}
+          data={mapInfo.geoJson}
+          style={style}
+          onEachFeature={onEachFeature}
+        />
       )}
     </MapContainer>
   );
