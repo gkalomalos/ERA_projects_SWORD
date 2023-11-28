@@ -15,6 +15,7 @@ __pycache__
 project_structure.py
 exposures_geodata.json
 gadm41_EGY.gpkg
+gadm41_THA.gpkg
 
 # logs
 logs/
