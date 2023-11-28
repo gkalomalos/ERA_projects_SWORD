@@ -13,9 +13,8 @@ const Map = ({ activeMap, selectedCountry }) => {
 
   const fetchGeoJson = async (layer) => {
     try {
-      const response = await fetch(
-        `C:\\Users\\gkalomalos\\Projects\\unu\\climada-unu\\src\\components\\map\\${activeMap}_geodata.json`
-      );
+      const tempPath = await window.electron.fetchTempDir();
+      const response = await fetch(`${tempPath}/${activeMap}_geodata.json`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

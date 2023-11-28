@@ -29,7 +29,6 @@ if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
 app.whenReady().then(async () => {
-
   createLoaderWindow(); // Create the loader window
   global.pythonProcess = createPythonProcess();
   await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
@@ -189,6 +188,15 @@ ipcMain.handle("runPythonScript", async (_, { scriptName, data }) => {
     console.error(error);
     return { success: false, error: error.message };
   }
+});
+
+ipcMain.handle("is-development-env", () => {
+  return !app.isPackaged;
+});
+
+ipcMain.handle("fetch-temp-dir", () => {
+  const tempFolderPath = path.join(app.getAppPath(), "src", "temp");
+  return tempFolderPath;
 });
 
 app.on("window-all-closed", () => {

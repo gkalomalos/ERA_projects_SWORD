@@ -29,7 +29,7 @@ BACKEND_DIR = Path(BASE_DIR) / "backend"
 
 # FRONTEND
 SRC_DIR = BASE_DIR / "src"
-MAP_DIR = SRC_DIR / "components" / "map"
+MAP_DIR = SRC_DIR / "temp"
 
 # REQUIREMENTS
 REQUIREMENTS_DIR = path.join(BASE_DIR, "requirements")
