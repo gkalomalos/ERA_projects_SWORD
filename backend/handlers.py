@@ -185,7 +185,14 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 aggregated_values = joined_gdf.groupby(f"GID_{layer}")["value"].sum().reset_index()
                 admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
                 admin_gdf["value"] = admin_gdf["value"].fillna(0)
-                admin_gdf_filtered = admin_gdf[[f"GID_{layer}", "geometry", "value"]]
+                if layer == 0:
+                    admin_gdf_filtered = admin_gdf[["COUNTRY", "geometry", "value"]]
+                elif layer == 1:
+                    admin_gdf_filtered = admin_gdf[["COUNTRY", f"NAME_1", "geometry", "value"]]
+                elif layer == 2:
+                    admin_gdf_filtered = admin_gdf[["COUNTRY", f"NAME_1", "NAME_2", "geometry", "value"]]
+                else:
+                    admin_gdf_filtered = admin_gdf[["COUNTRY", "geometry", "value"]]
 
                 # Convert each layer to a GeoJSON Feature and add it to the collection
                 layer_features = admin_gdf_filtered.__geo_interface__["features"]

@@ -55,11 +55,22 @@ const Map = ({ activeMap, selectedCountry }) => {
 
   const onEachFeature = (feature, layer) => {
     if (feature.properties) {
-      const gidKey = `GID_${activeLayer}`;
-      const name = feature.properties[gidKey];
+      const country = feature.properties["COUNTRY"];
       const value = feature.properties.value;
-
-      layer.bindPopup(`Name: ${name}<br>Value: ${value}`);
+      if (activeLayer == 0) {
+        layer.bindPopup(`Country: ${country}<br>Value: ${value}`);
+      }
+      if (activeLayer == 1) {
+        const name1 = feature.properties["NAME_1"];
+        layer.bindPopup(`Country: ${country}<br>Admin 1: ${name1}<br>Value: ${value}`);
+      }
+      if (activeLayer == 2) {
+        const name1 = feature.properties["NAME_1"];
+        const name2 = feature.properties["NAME_2"];
+        layer.bindPopup(
+          `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
+        );
+      }
     }
   };
 
