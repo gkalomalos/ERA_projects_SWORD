@@ -11,24 +11,35 @@ const returnPeriods = [10, 50, 100, 250]; // Return periods
 
 const HazardMap = ({ activeMap, selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [activeRPLayer, setActiveRPLayer] = useState(null);
-  const [activeAdminLayer, setActiveAdminLayer] = useState(null);
+  const [activeAdminLayer, setActiveAdminLayer] = useState(0);
+  const [activeRPLayer, setActiveRPLayer] = useState(10);
   const mapRef = useRef();
 
-  const fetchGeoJson = async (layer, rp) => {
+  const fetchGeoJson = async (layer, rp, selectedMap) => {
     try {
       const tempPath = await window.electron.fetchTempDir();
-      const response = await fetch(`${tempPath}/${activeMap}_geodata.json`);
+      const response = await fetch(`${tempPath}/${selectedMap}_geodata.json`);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const filteredFeatures = data.features.filter(
-        (feature) =>
-          feature.properties.layer === layer && feature.properties.hasOwnProperty(`rp${rp}`)
-      );
+      let filteredFeatures;
+      if (selectedMap === "exposures") {
+        filteredFeatures = data.features.filter((feature) => feature.properties.layer === layer);
+      } else {
+        filteredFeatures = data.features.filter(
+          (feature) =>
+            feature.properties.layer === layer && feature.properties.hasOwnProperty(`rp${rp}`)
+        );
+      }
       const filteredData = { ...data, features: filteredFeatures };
-      const values = filteredFeatures.map((f) => f.properties[`rp${rp}`]);
+      let values;
+      if (selectedMap === "exposures") {
+        values = filteredFeatures.map((f) => f.properties.value);
+      } else {
+        values = filteredFeatures.map((f) => f.properties[`rp${rp}`]);
+      }
       const minValue = Math.min(...values);
       const maxValue = Math.max(...values);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
@@ -41,13 +52,13 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
   };
 
   const handleAdminLayerChange = async (newLayer) => {
-    await fetchGeoJson(newLayer, returnPeriods[0]);
+    await fetchGeoJson(newLayer, returnPeriods[0], activeMap);
     setActiveAdminLayer(newLayer);
-    setActiveRPLayer(returnPeriods[0]);
+    setActiveRPLayer(10);
   };
 
   const handleRPLayerChange = async (rp) => {
-    await fetchGeoJson(activeAdminLayer, rp);
+    await fetchGeoJson(activeAdminLayer, rp, activeMap);
     setActiveRPLayer(rp);
   };
 
@@ -121,18 +132,19 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
 
   useEffect(() => {
     if (activeMap && activeAdminLayer !== null && activeRPLayer !== null) {
-      fetchGeoJson(activeAdminLayer, activeRPLayer);
+      fetchGeoJson(activeAdminLayer, activeRPLayer, activeMap);
     }
   }, [activeRPLayer, activeAdminLayer, activeMap]);
 
   useEffect(() => {
     if (mapRef.current && selectedCountry in countryCoordinates) {
-      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6);
+      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
     }
   }, [selectedCountry]);
 
   return (
     <MapContainer
+      key={selectedCountry}
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
       style={{ height: "100%", width: "100%" }}
@@ -151,17 +163,18 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
             Admin{layer}
           </Button>
         ))}
-        {returnPeriods.map((rp) => (
-          <Button
-            key={`rp-${rp}`}
-            size="small"
-            sx={RPButtonStyle(rp)}
-            onClick={() => handleRPLayerChange(rp)}
-            variant="contained"
-          >
-            RP{rp}
-          </Button>
-        ))}
+        {activeMap !== "exposures" &&
+          returnPeriods.map((rp) => (
+            <Button
+              key={`rp-${rp}`}
+              size="small"
+              sx={RPButtonStyle(rp)}
+              onClick={() => handleRPLayerChange(rp)}
+              variant="contained"
+            >
+              RP{rp}
+            </Button>
+          ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
         <GeoJSON
