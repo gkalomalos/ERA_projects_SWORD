@@ -7,6 +7,7 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import TimelineIcon from "@mui/icons-material/Timeline";
 
 import Map from "./Map";
+import HazardMap from "./HazardMap";
 
 const MapLayout = (props) => {
   const [activeMap, setActiveMap] = useState("exposures");
@@ -67,7 +68,7 @@ const MapLayout = (props) => {
           overflow: "hidden",
         }}
       >
-        <Map activeMap={activeMap} selectedCountry={props.selectedCountry} />
+        <HazardMap activeMap={activeMap} selectedCountry={props.selectedCountry} />
       </Paper>
       <Box
         sx={{
