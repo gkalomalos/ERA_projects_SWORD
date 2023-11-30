@@ -190,7 +190,9 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 elif layer == 1:
                     admin_gdf_filtered = admin_gdf[["COUNTRY", f"NAME_1", "geometry", "value"]]
                 elif layer == 2:
-                    admin_gdf_filtered = admin_gdf[["COUNTRY", f"NAME_1", "NAME_2", "geometry", "value"]]
+                    admin_gdf_filtered = admin_gdf[
+                        ["COUNTRY", f"NAME_1", "NAME_2", "geometry", "value"]
+                    ]
                 else:
                     admin_gdf_filtered = admin_gdf[["COUNTRY", "geometry", "value"]]
 
@@ -1085,6 +1087,63 @@ def get_hazard_new(hazard_type: str, scenario: str, time_horizon: str, country: 
         status_message = f"Error while trying to create hazard object. More info: {exc}"
         logger.log("debug", status_message)
         raise ValueError(status_message)
+
+
+def mean_nonzero(series):
+    non_zeros = series[series != 0]
+    return non_zeros.mean() if not non_zeros.empty else 0
+
+
+def generate_hazard_geojson(hazard, country_name, return_periods=(250, 100, 50, 10)):
+    try:
+        country_iso3 = get_iso3_country_code(country_name)
+        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        layers = [0, 1, 2]
+
+        all_layers_geojson = {"type": "FeatureCollection", "features": []}
+
+        for layer in layers:
+            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+
+            country_iso3 = get_iso3_country_code(country_name)
+            GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+            # Assuming hazard.centroids.coord gives a list of [longitude, latitude]
+            coords = np.array(hazard.centroids.coord)
+            local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
+            local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+            data = np.column_stack((coords, local_exceedance_inten))
+            columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
+            hazard_gdf = gpd.GeoDataFrame(
+                pd.DataFrame(data, columns=columns),
+                geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
+            )
+            hazard_gdf.set_crs("EPSG:4326", inplace=True)
+
+            # Spatial join with administrative areas
+            joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
+
+            # Aggregating non-zero mean values for each administrative area
+            agg_dict = {f"rp{rp}": mean_nonzero for rp in return_periods}
+
+            # Aggregated GeoDataFrame for this layer
+            aggregated_gdf = joined_gdf.groupby(f"GID_{layer}").agg(agg_dict)
+            aggregated_gdf = aggregated_gdf.merge(
+                admin_gdf[[f"GID_{layer}", "geometry"]], on=f"GID_{layer}"
+            )
+
+            # Convert to GeoJSON for this layer and add to all_layers_geojson
+            layer_geojson = gpd.GeoDataFrame(aggregated_gdf).__geo_interface__
+            for feature in layer_geojson["features"]:
+                feature["properties"]["layer"] = layer
+                all_layers_geojson["features"].append(feature)
+
+        # Save the combined GeoJSON file
+        map_data_filepath = MAP_DIR / f"hazards_geodata.json"
+        with open(map_data_filepath, "w") as f:
+            json.dump(all_layers_geojson, f)
+    except Exception as e:
+        logger.log("debug", f"An unexpected error occurred: {e}")
 
 
 def get_hazard_from_hdf5(filepath) -> Hazard:
