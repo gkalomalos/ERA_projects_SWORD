@@ -62,7 +62,18 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
     setActiveRPLayer(rp);
   };
 
-  const style = (feature) => {
+  const exposureStyle = (feature) => {
+    return {
+      fillColor: mapInfo.colorScale ? mapInfo.colorScale(feature.properties.value) : "#FFF",
+      weight: 2,
+      opacity: 1,
+      color: "white",
+      dashArray: "3",
+      fillOpacity: 0.7,
+    };
+  };
+
+  const hazardStyle = (feature) => {
     return {
       fillColor: mapInfo.colorScale
         ? mapInfo.colorScale(feature.properties[`rp${activeRPLayer}`])
@@ -180,7 +191,7 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
         <GeoJSON
           key={`${selectedCountry}-${activeAdminLayer}-${activeRPLayer}`}
           data={mapInfo.geoJson}
-          style={style}
+          style={activeMap === "exposures" ? exposureStyle : hazardStyle}
           onEachFeature={onEachFeature}
         />
       )}
