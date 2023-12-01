@@ -101,10 +101,13 @@ def run_scenario(request: dict) -> dict:
             hazard_present = handlers.get_hazard_new(
                 hazard_type, "historical", time_horizon, country
             )
+            handlers.generate_hazard_geojson(hazard_present, country)
             if scenario != "historical":
                 hazard_future = handlers.get_hazard_new(
                     hazard_type, scenario, time_horizon, country
                 )
+                handlers.generate_hazard_geojson(hazard_future, country)
+
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
