@@ -7,39 +7,26 @@ import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
 const adminLayers = [0, 1, 2]; // Administrative layers
-const returnPeriods = [10, 50, 100, 250]; // Return periods
 
-const HazardMap = ({ activeMap, selectedCountry }) => {
+const ExposureMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
-  const [activeRPLayer, setActiveRPLayer] = useState(10);
   const mapRef = useRef();
 
-  const fetchGeoJson = async (layer, rp, selectedMap) => {
+  const fetchGeoJson = async (layer) => {
     try {
       const tempPath = await window.electron.fetchTempDir();
-      const response = await fetch(`${tempPath}/${selectedMap}_geodata.json`);
+      const response = await fetch(`${tempPath}/exposures_geodata.json`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      let filteredFeatures;
-      if (selectedMap === "exposures") {
-        filteredFeatures = data.features.filter((feature) => feature.properties.layer === layer);
-      } else {
-        filteredFeatures = data.features.filter(
-          (feature) =>
-            feature.properties.layer === layer && feature.properties.hasOwnProperty(`rp${rp}`)
-        );
-      }
+      const filteredFeatures = data.features.filter(
+        (feature) => feature.properties.layer === layer
+      );
       const filteredData = { ...data, features: filteredFeatures };
-      let values;
-      if (selectedMap === "exposures") {
-        values = filteredFeatures.map((f) => f.properties.value);
-      } else {
-        values = filteredFeatures.map((f) => f.properties[`rp${rp}`]);
-      }
+      const values = filteredFeatures.map((f) => f.properties.value);
       const minValue = Math.min(...values);
       const maxValue = Math.max(...values);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
@@ -52,32 +39,13 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
   };
 
   const handleAdminLayerChange = async (newLayer) => {
-    await fetchGeoJson(newLayer, returnPeriods[0], activeMap);
+    await fetchGeoJson(newLayer);
     setActiveAdminLayer(newLayer);
-    setActiveRPLayer(10);
   };
 
-  const handleRPLayerChange = async (rp) => {
-    await fetchGeoJson(activeAdminLayer, rp, activeMap);
-    setActiveRPLayer(rp);
-  };
-
-  const exposureStyle = (feature) => {
+  const style = (feature) => {
     return {
       fillColor: mapInfo.colorScale ? mapInfo.colorScale(feature.properties.value) : "#FFF",
-      weight: 2,
-      opacity: 1,
-      color: "white",
-      dashArray: "3",
-      fillOpacity: 0.7,
-    };
-  };
-
-  const hazardStyle = (feature) => {
-    return {
-      fillColor: mapInfo.colorScale
-        ? mapInfo.colorScale(feature.properties[`rp${activeRPLayer}`])
-        : "#FFF",
       weight: 2,
       opacity: 1,
       color: "white",
@@ -93,16 +61,6 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
     maxWidth: "60px",
     fontSize: "0.75rem",
     bgcolor: layer === activeAdminLayer ? "#2A4D69" : "#5C87B1",
-    "&:hover": { bgcolor: "#9886D6" },
-  });
-
-  const RPButtonStyle = (rp) => ({
-    flexGrow: 0,
-    margin: 1,
-    minWidth: "60px",
-    maxWidth: "60px",
-    fontSize: "0.75rem",
-    bgcolor: rp === activeRPLayer ? "#2A4D69" : "#5C87B1",
     "&:hover": { bgcolor: "#9886D6" },
   });
 
@@ -142,10 +100,10 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
   };
 
   useEffect(() => {
-    if (activeMap && activeAdminLayer !== null && activeRPLayer !== null) {
-      fetchGeoJson(activeAdminLayer, activeRPLayer, activeMap);
+    if (activeAdminLayer !== null) {
+      fetchGeoJson(activeAdminLayer);
     }
-  }, [activeRPLayer, activeAdminLayer, activeMap]);
+  }, [activeAdminLayer]);
 
   useEffect(() => {
     if (mapRef.current && selectedCountry in countryCoordinates) {
@@ -174,24 +132,12 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
             Admin{layer}
           </Button>
         ))}
-        {activeMap !== "exposures" &&
-          returnPeriods.map((rp) => (
-            <Button
-              key={`rp-${rp}`}
-              size="small"
-              sx={RPButtonStyle(rp)}
-              onClick={() => handleRPLayerChange(rp)}
-              variant="contained"
-            >
-              RP{rp}
-            </Button>
-          ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
         <GeoJSON
-          key={`${selectedCountry}-${activeAdminLayer}-${activeRPLayer}`}
+          key={`${selectedCountry}-${activeAdminLayer}`}
           data={mapInfo.geoJson}
-          style={activeMap === "exposures" ? exposureStyle : hazardStyle}
+          style={style}
           onEachFeature={onEachFeature}
         />
       )}
@@ -199,4 +145,4 @@ const HazardMap = ({ activeMap, selectedCountry }) => {
   );
 };
 
-export default HazardMap;
+export default ExposureMap;
