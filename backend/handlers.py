@@ -1094,7 +1094,12 @@ def mean_nonzero(series):
     return non_zeros.mean() if not non_zeros.empty else 0
 
 
-def generate_hazard_geojson(hazard, country_name, return_periods=(250, 100, 50, 10)):
+def generate_hazard_geojson(
+    hazard: Hazard,
+    country_name: str,
+    return_periods: tuple = (250, 100, 50, 10),
+    intensity_thres: float = None,
+):
     try:
         country_iso3 = get_iso3_country_code(country_name)
         GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
@@ -1102,12 +1107,18 @@ def generate_hazard_geojson(hazard, country_name, return_periods=(250, 100, 50, 
 
         all_layers_geojson = {"type": "FeatureCollection", "features": []}
 
+        if intensity_thres:
+            try:
+                if hazard.haz_type == "RF":
+                    hazard.intensity_thres = intensity_thres
+            except AttributeError as e:
+                logger.log("debug", f"Attribute error in hazard object: {e}")
+            except Exception as e:
+                logger.log("debug", f"An unexpected error occurred: {e}")
+
         for layer in layers:
             admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
 
-            country_iso3 = get_iso3_country_code(country_name)
-            GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
-            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
             # Assuming hazard.centroids.coord gives a list of [longitude, latitude]
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
@@ -1119,22 +1130,17 @@ def generate_hazard_geojson(hazard, country_name, return_periods=(250, 100, 50, 
                 geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
             )
             hazard_gdf.set_crs("EPSG:4326", inplace=True)
+            # Filter hazard_gdf to exclude rows where all return period values are zero
+            hazard_gdf = hazard_gdf[
+                (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
+            ]
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
 
-            # Aggregating non-zero mean values for each administrative area
-            agg_dict = {f"rp{rp}": mean_nonzero for rp in return_periods}
-
-            # Aggregated GeoDataFrame for this layer
-            aggregated_gdf = joined_gdf.groupby(f"GID_{layer}").agg(agg_dict)
-            aggregated_gdf = aggregated_gdf.merge(
-                admin_gdf[[f"GID_{layer}", "geometry"]], on=f"GID_{layer}"
-            )
-
             # Convert to GeoJSON for this layer and add to all_layers_geojson
-            layer_geojson = gpd.GeoDataFrame(aggregated_gdf).__geo_interface__
-            for feature in layer_geojson["features"]:
+            layer_geojson = joined_gdf.__geo_interface__["features"]
+            for feature in layer_geojson:
                 feature["properties"]["layer"] = layer
                 all_layers_geojson["features"].append(feature)
 

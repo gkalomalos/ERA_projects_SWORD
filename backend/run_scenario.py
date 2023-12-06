@@ -101,12 +101,16 @@ def run_scenario(request: dict) -> dict:
             hazard_present = handlers.get_hazard_new(
                 hazard_type, "historical", time_horizon, country
             )
-            handlers.generate_hazard_geojson(hazard_present, country)
+            handlers.generate_hazard_geojson(
+                hazard=hazard_present, country_name=country, intensity_thres=1
+            )
             if scenario != "historical":
                 hazard_future = handlers.get_hazard_new(
                     hazard_type, scenario, time_horizon, country
                 )
-                handlers.generate_hazard_geojson(hazard_future, country)
+                handlers.generate_hazard_geojson(
+                    hazard=hazard_future, country_name=country, intensity_thres=1
+                )
 
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
@@ -121,12 +125,18 @@ def run_scenario(request: dict) -> dict:
                 path.join(DATA_EXPOSURES_DIR, exposure_filename)
             )
             update_progress(20, "Generating geojson data files")
-            handlers.generate_exposure_geojson(exposure_present, country)
+            handlers.generate_hazard_geojson(
+                hazard=hazard_present, country_name=country, intensity_thres=1
+            )
 
             update_progress(30, "Setting up hazard...")
-            hazard_present = handlers.get_hazard(hazard_type, "historical", "1980_2020", country)
+            handlers.generate_hazard_geojson(
+                hazard=hazard_present, country_name=country, intensity_thres=1
+            )
             if scenario != "historical":
-                hazard_future = handlers.get_hazard(hazard_type, scenario, time_horizon, country)
+                handlers.generate_hazard_geojson(
+                    hazard=hazard_future, country_name=country, intensity_thres=1
+                )
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
@@ -140,7 +150,9 @@ def run_scenario(request: dict) -> dict:
         try:
             exposure_present = handlers.get_exposure(country)
             update_progress(20, "Generating geojson data files")
-            handlers.generate_exposure_geojson(exposure_present, country)
+            handlers.generate_hazard_geojson(
+                hazard=hazard_present, country_name=country, intensity_thres=1
+            )
 
             update_progress(30, "Setting up hazard...")
             if scenario == "historical":

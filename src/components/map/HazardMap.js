@@ -1,21 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 
+import L from "leaflet";
 import Button from "@mui/material/Button";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
-const adminLayers = [0, 1, 2]; // Administrative layers
-const returnPeriods = [10, 50, 100, 250]; // Return periods
+const returnPeriods = [10, 50, 100, 250];
 
 const HazardMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const mapRef = useRef();
 
-  const fetchGeoJson = async (layer, rp) => {
+  const fetchGeoJson = async () => {
     try {
       const tempPath = await window.electron.fetchTempDir();
       const response = await fetch(`${tempPath}/hazards_geodata.json`);
@@ -24,56 +23,53 @@ const HazardMap = ({ selectedCountry }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      const filteredFeatures = data.features.filter(
-        (feature) =>
-          feature.properties.layer === layer && feature.properties.hasOwnProperty(`rp${rp}`)
-      );
-      const filteredData = { ...data, features: filteredFeatures };
-      const values = filteredFeatures.map((f) => f.properties[`rp${rp}`]);
+      const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
       const maxValue = Math.max(...values);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
-      setMapInfo({ geoJson: filteredData, colorScale: scale });
+      setMapInfo({ geoJson: data, colorScale: scale });
     } catch (error) {
       console.error("Error fetching GeoJSON data:", error);
       setMapInfo({ geoJson: null, colorScale: null });
     }
   };
 
-  const handleAdminLayerChange = async (newLayer) => {
-    await fetchGeoJson(newLayer, returnPeriods[0]);
-    setActiveAdminLayer(newLayer);
-    setActiveRPLayer(10);
+  const CircleLayer = ({ data, colorScale }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      const layerGroup = L.layerGroup().addTo(map);
+
+      data.features.forEach((feature) => {
+        const { coordinates } = feature.geometry;
+        const value = feature.properties[`rp${activeRPLayer}`];
+        const country = feature.properties["COUNTRY"];
+        const name1 = feature.properties["NAME_1"];
+        const name2 = feature.properties["NAME_2"];
+
+        L.circle([coordinates[0], coordinates[1]], {
+          color: colorScale(value),
+          fillColor: colorScale(value),
+          fillOpacity: 0.7,
+          radius: 2000,
+        })
+          .bindPopup(
+            `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
+          )
+          .addTo(layerGroup);
+      });
+
+      return () => layerGroup.clearLayers();
+    }, [data, colorScale, map]);
+
+    return null;
   };
 
   const handleRPLayerChange = async (rp) => {
-    await fetchGeoJson(activeAdminLayer, rp);
+    await fetchGeoJson();
     setActiveRPLayer(rp);
   };
-
-  const style = (feature) => {
-    return {
-      fillColor: mapInfo.colorScale
-        ? mapInfo.colorScale(feature.properties[`rp${activeRPLayer}`])
-        : "#FFF",
-      weight: 2,
-      opacity: 1,
-      color: "white",
-      dashArray: "3",
-      fillOpacity: 0.7,
-    };
-  };
-
-  const adminButtonStyle = (layer) => ({
-    flexGrow: 0,
-    margin: 1,
-    minWidth: "60px",
-    maxWidth: "60px",
-    fontSize: "0.75rem",
-    bgcolor: layer === activeAdminLayer ? "#2A4D69" : "#5C87B1",
-    "&:hover": { bgcolor: "#9886D6" },
-  });
 
   const RPButtonStyle = (rp) => ({
     flexGrow: 0,
@@ -99,32 +95,11 @@ const HazardMap = ({ selectedCountry }) => {
     Thailand: [15.87, 100.9925],
   };
 
-  const onEachFeature = (feature, layer) => {
-    if (feature.properties) {
-      const country = feature.properties["COUNTRY"];
-      const value = feature.properties.value;
-      if (activeAdminLayer == 0) {
-        layer.bindPopup(`Country: ${country}<br>Value: ${value}`);
-      }
-      if (activeAdminLayer == 1) {
-        const name1 = feature.properties["NAME_1"];
-        layer.bindPopup(`Country: ${country}<br>Admin 1: ${name1}<br>Value: ${value}`);
-      }
-      if (activeAdminLayer == 2) {
-        const name1 = feature.properties["NAME_1"];
-        const name2 = feature.properties["NAME_2"];
-        layer.bindPopup(
-          `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
-        );
-      }
-    }
-  };
-
   useEffect(() => {
-    if (activeAdminLayer !== null && activeRPLayer !== null) {
-      fetchGeoJson(activeAdminLayer, activeRPLayer);
+    if (activeRPLayer !== null) {
+      fetchGeoJson(activeRPLayer);
     }
-  }, [activeRPLayer, activeAdminLayer]);
+  }, [activeRPLayer]);
 
   useEffect(() => {
     if (mapRef.current && selectedCountry in countryCoordinates) {
@@ -142,17 +117,6 @@ const HazardMap = ({ selectedCountry }) => {
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <div style={buttonContainerStyle}>
-        {adminLayers.map((layer) => (
-          <Button
-            key={`admin-${layer}`}
-            size="small"
-            sx={adminButtonStyle(layer)}
-            onClick={() => handleAdminLayerChange(layer)}
-            variant="contained"
-          >
-            Admin{layer}
-          </Button>
-        ))}
         {returnPeriods.map((rp) => (
           <Button
             key={`rp-${rp}`}
@@ -166,12 +130,7 @@ const HazardMap = ({ selectedCountry }) => {
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <GeoJSON
-          key={`${selectedCountry}-${activeAdminLayer}-${activeRPLayer}`}
-          data={mapInfo.geoJson}
-          style={style}
-          onEachFeature={onEachFeature}
-        />
+        <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
       )}
     </MapContainer>
   );
