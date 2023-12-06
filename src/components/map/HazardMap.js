@@ -51,7 +51,7 @@ const HazardMap = ({ selectedCountry }) => {
         L.circle([coordinates[0], coordinates[1]], {
           color: colorScale(value),
           fillColor: colorScale(value),
-          fillOpacity: 0.7,
+          fillOpacity: 0.3,
           radius: 2000,
         })
           .bindPopup(
