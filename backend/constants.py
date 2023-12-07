@@ -20,6 +20,7 @@ DATA_DIR = path.join(BASE_DIR, "data")
 DATA_EXPOSURES_DIR = path.join(DATA_DIR, "exposures")
 DATA_HAZARDS_DIR = path.join(DATA_DIR, "hazards")
 DATA_REPORTS_DIR = path.join(DATA_DIR, "reports")
+TEMP_DIR = Path(DATA_DIR) / "temp"
 
 # LOGS
 LOG_DIR = Path(BASE_DIR) / "logs"
@@ -29,15 +30,12 @@ BACKEND_DIR = Path(BASE_DIR) / "backend"
 
 # FRONTEND
 SRC_DIR = BASE_DIR / "src"
-MAP_DIR = SRC_DIR / "temp"
 
 # REQUIREMENTS
 REQUIREMENTS_DIR = path.join(BASE_DIR, "requirements")
 DATASETS_DIR = path.join(REQUIREMENTS_DIR, "list_dataset_infos")
 RESOURCES_DIR = path.join(REQUIREMENTS_DIR, "resources")
 CURRENCY_RATES = path.join(REQUIREMENTS_DIR, "currency_rates.json")
-TEMP_DIR = path.join(DATA_DIR, "temp")
-# TEMP_DIR = path.join(REQUIREMENTS_DIR, "temp")
 TEMPLATES_DIR = path.join(REQUIREMENTS_DIR, "templates")
 SHAPEFILES_DIR = path.join(REQUIREMENTS_DIR, "shapefiles")
 FEATHERS_DIR = path.join(REQUIREMENTS_DIR, "featherfiles")

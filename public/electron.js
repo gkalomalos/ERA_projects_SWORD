@@ -195,7 +195,7 @@ ipcMain.handle("is-development-env", () => {
 });
 
 ipcMain.handle("fetch-temp-dir", () => {
-  const tempFolderPath = path.join(app.getAppPath(), "src", "temp");
+  const tempFolderPath = path.join(app.getAppPath(), "data", "temp");
   return tempFolderPath;
 });
 

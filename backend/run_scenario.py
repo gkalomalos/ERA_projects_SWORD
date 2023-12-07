@@ -11,6 +11,7 @@ from constants import (
     DATA_REPORTS_DIR,
     DATA_DIR,
     LOG_DIR,
+    TEMP_DIR
 )
 from logger_config import LoggerConfig
 
@@ -35,6 +36,8 @@ if not path.exists(DATA_REPORTS_DIR):
     makedirs(DATA_REPORTS_DIR)
 if not path.exists(LOG_DIR):
     makedirs(LOG_DIR)
+if not path.exists(TEMP_DIR):
+    makedirs(TEMP_DIR)
 
 
 def run_scenario(request: dict) -> dict:
@@ -252,7 +255,7 @@ def run_scenario(request: dict) -> dict:
     }
 
     # Clear files in temp directory
-    handlers.clear_temp_dir()
+    # handlers.clear_temp_dir()
     logger.log("debug", f"Finished running scenario in {time() - initial_time}sec.")
     return response
 

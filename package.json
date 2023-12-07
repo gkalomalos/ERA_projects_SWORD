@@ -72,7 +72,8 @@
       "build/**/*",
       "node_modules/**/*",
       "backend/**/*",
-      "climada_env/"
+      "climada_env/",
+      "requirements/"
     ],
     "icon": "build/favicon.ico",
     "directories": {

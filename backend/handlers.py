@@ -31,7 +31,7 @@ from constants import (
     EEA_COUNTRIES,
     FEATHERS_DIR,
     LIST_OF_RCPS,
-    MAP_DIR,
+    TEMP_DIR,
     REQUIREMENTS_DIR,
     SHAPEFILES_01M_FILE,
     TEMP_DIR,
@@ -208,7 +208,7 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 logger.log("debug", f"An error occurred while processing layer {layer}: {e}")
 
         # Save the combined GeoJSON file
-        map_data_filepath = MAP_DIR / "exposures_geodata.json"
+        map_data_filepath = TEMP_DIR / "exposures_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(all_layers_geojson, f)
 
@@ -1135,7 +1135,7 @@ def generate_hazard_geojson(
         hazard_geojson = joined_gdf.__geo_interface__
 
         # Save the combined GeoJSON file
-        map_data_filepath = MAP_DIR / f"hazards_geodata.json"
+        map_data_filepath = TEMP_DIR / f"hazards_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(hazard_geojson, f)
     except Exception as exception:
@@ -1567,7 +1567,7 @@ def generate_impact_geojson(
         impact_geojson = joined_gdf.__geo_interface__
 
         # Save the combined GeoJSON file
-        map_data_filepath = MAP_DIR / f"risks_geodata.json"
+        map_data_filepath = TEMP_DIR / f"risks_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(impact_geojson, f)
     except Exception as exception:
