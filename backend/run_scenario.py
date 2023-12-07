@@ -203,9 +203,19 @@ def run_scenario(request: dict) -> dict:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
             return response
-    update_progress(20, "Calculating impact...")
+    update_progress(40, "Calculating impact...")
+
+    # Calculate impact function
+    impact_function_set = handlers.calculate_impact_function_set(
+        hazard=hazard_present,
+        impact_function_name="Flood Africa JRC Residential",  # TODO: Needs change
+    )
     # Calculate present impact
-    impact_present = handlers.calculate_impact_new(exposure_present, hazard_present, hazard_type)
+    impact_present = handlers.calculate_impact(
+        exposure=exposure_present,
+        hazard=hazard_present,
+        impact_function_set=impact_function_set,
+    )
 
     if scenario != "historical":
         # Cast annual growth to present exposure
@@ -217,13 +227,17 @@ def run_scenario(request: dict) -> dict:
             exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
 
             # Calculate future impact based on present exposure
-            impact_future = handlers.calculate_impact_new(
-                exposure_future, hazard_future, hazard_type
+            impact_future = handlers.calculate_impact(
+                exposure=exposure_future,
+                hazard=hazard_future,
+                impact_function_set=impact_function_set,
             )
         else:
             # Calculate future impact based on future exposure
-            impact_future = handlers.calculate_impact_new(
-                exposure_present, hazard_future, hazard_type
+            impact_future = handlers.calculate_impact(
+                exposure=exposure_present,
+                hazard=hazard_future,
+                impact_function_set=impact_function_set,
             )
 
     map_title = handlers.set_map_title(hazard_type, [country], time_horizon, scenario)

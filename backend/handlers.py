@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import pycountry
 
-from climada.engine import Impact
+from climada.engine import Impact, ImpactCalc
 from climada.entity import Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet, ImpfTropCyclone
 from climada.entity.impact_funcs.storm_europe import ImpfStormEurope
@@ -1103,9 +1103,6 @@ def generate_hazard_geojson(
     try:
         country_iso3 = get_iso3_country_code(country_name)
         GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
-        layers = [0, 1, 2]
-
-        all_layers_geojson = {"type": "FeatureCollection", "features": []}
 
         if intensity_thres:
             try:
@@ -1116,38 +1113,32 @@ def generate_hazard_geojson(
             except Exception as e:
                 logger.log("debug", f"An unexpected error occurred: {e}")
 
-        for layer in layers:
-            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+        admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
+        # Assuming hazard.centroids.coord gives a list of [longitude, latitude]
+        coords = np.array(hazard.centroids.coord)
+        local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
+        local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+        data = np.column_stack((coords, local_exceedance_inten))
+        columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
+        hazard_gdf = gpd.GeoDataFrame(
+            pd.DataFrame(data, columns=columns),
+            geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
+        )
+        hazard_gdf.set_crs("EPSG:4326", inplace=True)
+        # Filter hazard_gdf to exclude rows where all return period values are zero
+        hazard_gdf = hazard_gdf[(hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)]
+        hazard_gdf = hazard_gdf.drop(columns=["latitude", "longitude"])
+        hazard_gdf = hazard_gdf.reset_index(drop=True)
 
-            # Assuming hazard.centroids.coord gives a list of [longitude, latitude]
-            coords = np.array(hazard.centroids.coord)
-            local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
-            local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
-            data = np.column_stack((coords, local_exceedance_inten))
-            columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
-            hazard_gdf = gpd.GeoDataFrame(
-                pd.DataFrame(data, columns=columns),
-                geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
-            )
-            hazard_gdf.set_crs("EPSG:4326", inplace=True)
-            # Filter hazard_gdf to exclude rows where all return period values are zero
-            hazard_gdf = hazard_gdf[
-                (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
-            ]
-
-            # Spatial join with administrative areas
-            joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
-
-            # Convert to GeoJSON for this layer and add to all_layers_geojson
-            layer_geojson = joined_gdf.__geo_interface__["features"]
-            for feature in layer_geojson:
-                feature["properties"]["layer"] = layer
-                all_layers_geojson["features"].append(feature)
+        # Spatial join with administrative areas
+        joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
+        # Convert to GeoJSON for this layer and add to all_layers_geojson
+        hazard_geojson = joined_gdf.__geo_interface__
 
         # Save the combined GeoJSON file
         map_data_filepath = MAP_DIR / f"hazards_geodata.json"
         with open(map_data_filepath, "w") as f:
-            json.dump(all_layers_geojson, f)
+            json.dump(hazard_geojson, f)
     except Exception as e:
         logger.log("debug", f"An unexpected error occurred: {e}")
 
@@ -1466,133 +1457,84 @@ def generate_hazard_gdf(hazard: Hazard, return_periods: tuple = (250, 100, 50, 1
 # IMPACT METHODS DEFINITION
 
 
-def calculate_impact(exposure: Exposures, hazard: Hazard, hazard_type: str) -> Impact:
-    """
-    Create an climada.entity.Impact object from the specified Exposures and Hazard objects.
+def calculate_impact_function_set(hazard: Hazard, impact_function_name: str = "") -> ImpactFuncSet:
+    impact_function = ImpactFunc()
+    impact_function.haz_type = hazard.haz_type
+    impact_function.intensity_unit = hazard.units
+    impact_function.name = impact_function_name
 
-    Parameters
-    ----------
-    exposure: climada.entity.exposures.Exposures, required
-        Exposure object for which to calculate Impact
-    hazard: climada.hazard.Hazard, required
-        Hazard object for which to calculate Impact
-    hazard_type: str, required
-        Hazard type to search datasets.
-        Example: river_flood, tropical_cyclone, storm_europe.
-
-    Returns
-    -------
-    impact: climada.entity.Impact.
-    """
-    try:
-        # Set impact function according to hazard_type
-        if hazard_type == "tropical_cyclone":
-            impact_function = ImpfTropCyclone.from_emanuel_usa()
-            impact_function_set = ImpfSetTropCyclone.from_calibrated_regional_ImpfSet()
-            impf_id = 1
-
-        if hazard_type == "storm_europe":
-            impact_function = ImpfStormEurope.from_welker()
-            impact_function_set = ImpactFuncSet()
-            impf_id = 1
-
-        if hazard_type == "river_flood":
-            hazard.intensity_thres = 1
-            impact_function = ImpactFunc()
-            impact_function.haz_type = "RF"
-            impact_function.intensity_unit = "m"
-            impact_function.id = 3
-            impact_function.name = "Flood Europe JRC Residential"
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
-            )
-            impact_function.mdd = np.array(
-                [0.00, 0.25, 0.40, 0.50, 0.60, 0.75, 0.85, 0.95, 1.00, 1.00]
-            )
-            impact_function.mdr = np.array(
-                [0.000, 0.250, 0.400, 0.500, 0.600, 0.750, 0.850, 0.950, 1.000, 1.000]
-            )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-            impact_function_set = ImpactFuncSet()
-            impf_id = 3
-
-        # Create ImpactFuncSet object to pass to impact.calc
-        impact_function_set.append(impact_function)
-        exposure.gdf[f"impf_{hazard.tag.haz_type}"] = impf_id
-        exposure.impact_funcs = impact_function_set
-        impact = Impact()
-        # Calculate impact
-        impact.calc(exposure, impact_function_set, hazard, save_mat=True)
-
-        # Reset exposure gdf columns to avoid errors when trying to reuse exposure object
-        exp_gdf = exposure.gdf.drop(
-            columns=[f"impf_{hazard.tag.haz_type}", f"centr_{hazard.tag.haz_type}"],
-            axis=1,
+    if hazard.haz_type == "TC":
+        impact_function.id = 1
+        impact_function_set = ImpfSetTropCyclone.from_calibrated_regional_ImpfSet()
+    elif hazard.haz_type == "RF":
+        impact_function.id = 3
+        impact_function.intensity = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0])
+        impact_function.mdd = np.array(
+            [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
         )
-        exposure.set_gdf(exp_gdf)
+        impact_function.paa = np.ones(len(impact_function.intensity))
+    elif hazard.haz_type == "BF":  # Wildfire
+        impact_function.id = 4
+        # TODO: Needs to be calidated
+        impact_function.intensity = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0])
+        impact_function.mdd = np.array(
+            [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        )
+        impact_function.paa = np.ones(len(impact_function.intensity))
+    elif hazard.haz_type == "FL":  # Flood
+        impact_function.id = 5
+        # TODO: Needs to be calidated
+        impact_function.intensity = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0])
+        impact_function.mdd = np.array(
+            [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        )
+        impact_function.paa = np.ones(len(impact_function.intensity))
+    elif hazard.haz_type == "EQ":  # Eartquake
+        impact_function.id = 6
+        # TODO: Needs to be calidated
+        impact_function.intensity = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0])
+        impact_function.mdd = np.array(
+            [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        )
+        impact_function.paa = np.ones(len(impact_function.intensity))
+    else:  # TODO: Test if we need a default one or filter others out
+        impact_function.id = 6
+        # TODO: Needs to be calidated
+        impact_function.intensity = np.array([0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0])
+        impact_function.mdd = np.array(
+            [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        )
+        impact_function.paa = np.ones(len(impact_function.intensity))
 
-        return impact
-
-    except Exception as exception:
-        # print("Error while trying to create Impact object. More info: ", exception)
-        pass
+    impact_function_set = ImpactFuncSet([impact_function])
+    return impact_function_set
 
 
-def calculate_impact_new(exposure: Exposures, hazard: Hazard, hazard_type: str) -> Impact:
-    start_time = time()
+def get_impf_id(hazard_type: str) -> int:
+    impf_ids = {'TC': 1, 'RF': 3, 'BF': 4, 'FL': 5, 'EQ': 6, 'DEFAULT': 9}
+    return impf_ids.get(hazard_type, impf_ids['DEFAULT'])
+
+
+def calculate_impact(exposure: Exposures, hazard: Hazard, impact_function_set: ImpactFuncSet) -> Impact:
     try:
-        # Set impact function according to hazard_type
-        if hazard_type == "tropical_cyclone":
-            impact_function = ImpfTropCyclone.from_emanuel_usa()
-            impact_function_set = ImpfSetTropCyclone.from_calibrated_regional_ImpfSet()
-            impf_id = 1
-        # TODO: Adjust this for Asia/Africa
-        if hazard_type == "river_flood":
-            hazard.intensity_thres = 1
-            impact_function = ImpactFunc()
-            impact_function.haz_type = "RF"
-            impact_function.intensity_unit = "m"
-            impact_function.id = 3
-            impact_function.name = "Flood Europe JRC Residential"
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
-            )
-            impact_function.mdd = np.array(
-                [0.00, 0.25, 0.40, 0.50, 0.60, 0.75, 0.85, 0.95, 1.00, 1.00]
-            )
-            impact_function.mdr = np.array(
-                [0.000, 0.250, 0.400, 0.500, 0.600, 0.750, 0.850, 0.950, 1.000, 1.000]
-            )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-            impact_function_set = ImpactFuncSet()
-            impf_id = 3
-
-        # Create ImpactFuncSet object to pass to impact.calc
-        impact_function_set.append(impact_function)
+        # Assign a default impact function ID to the exposure data
+        impf_id = get_impf_id(hazard.haz_type)
         exposure.gdf[f"impf_{hazard.haz_type}"] = impf_id
-        exposure.impact_funcs = impact_function_set
-        impact = Impact()
-        # Calculate impact
-        impact.calc(exposure, impact_function_set, hazard, save_mat=True)
 
-        # Reset exposure gdf columns to avoid errors when trying to reuse exposure object
-        exp_gdf = exposure.gdf.drop(
-            columns=[f"impf_{hazard.haz_type}", f"centr_{hazard.haz_type}"],
-            axis=1,
+        # Prepare the impact calculator with the given parameters
+        impact_calc = ImpactCalc(
+            exposures=exposure,
+            impfset=impact_function_set,
+            hazard=hazard,
         )
-        exposure.set_gdf(exp_gdf)
-        status_message = f"Finished generating impact in {time() - start_time}sec."
-        logger.log("debug", status_message)
-
+        # Calculate the impact
+        impact = impact_calc.impact()
         return impact
-
     except Exception as exception:
-        status_message = (
-            f"Finished generating impact in {time() - start_time}sec. More info: {exception}"
-        )
+        status_message = f"An error occurred during impact calculation: More info: {exception}"
         logger.log("debug", status_message)
-
-
+        return None
+    
 def filter_impact_coords(impact: Impact) -> Impact:
     """
     Filters out non-european continent coordinates.
