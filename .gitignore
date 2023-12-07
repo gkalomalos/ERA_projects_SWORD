@@ -1,6 +1,9 @@
-# data (exposures, hazards, reports)
+# data & temp(exposures, hazards, reports)
 data
 climada_unu.db
+src/temp
+gadm41_EGY.gpkg
+gadm41_THA.gpkg
 
 # frontend
 node_modules
@@ -8,18 +11,14 @@ build
 dist
 
 # backend
-__pycache__
-
-# develop
-# backend/dev.ipynb
-project_structure.py
-exposures_geodata.json
-hazards_geodata.json
-gadm41_EGY.gpkg
-gadm41_THA.gpkg
+__pycache_
 
 # logs
 logs/
 
 # environment
 climada_env
+
+# python
+*.pyc
+__pycache_
