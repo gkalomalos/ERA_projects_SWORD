@@ -1114,7 +1114,6 @@ def generate_hazard_geojson(
                 logger.log("debug", f"An unexpected error occurred: {e}")
 
         admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
-        # Assuming hazard.centroids.coord gives a list of [longitude, latitude]
         coords = np.array(hazard.centroids.coord)
         local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
         local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
@@ -1139,8 +1138,8 @@ def generate_hazard_geojson(
         map_data_filepath = MAP_DIR / f"hazards_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(hazard_geojson, f)
-    except Exception as e:
-        logger.log("debug", f"An unexpected error occurred: {e}")
+    except Exception as exception:
+        logger.log("debug", f"An unexpected error occurred. More info: {exception}")
 
 
 def get_hazard_from_hdf5(filepath) -> Hazard:
@@ -1511,11 +1510,13 @@ def calculate_impact_function_set(hazard: Hazard, impact_function_name: str = ""
 
 
 def get_impf_id(hazard_type: str) -> int:
-    impf_ids = {'TC': 1, 'RF': 3, 'BF': 4, 'FL': 5, 'EQ': 6, 'DEFAULT': 9}
-    return impf_ids.get(hazard_type, impf_ids['DEFAULT'])
+    impf_ids = {"TC": 1, "RF": 3, "BF": 4, "FL": 5, "EQ": 6, "DEFAULT": 9}
+    return impf_ids.get(hazard_type, impf_ids["DEFAULT"])
 
 
-def calculate_impact(exposure: Exposures, hazard: Hazard, impact_function_set: ImpactFuncSet) -> Impact:
+def calculate_impact(
+    exposure: Exposures, hazard: Hazard, impact_function_set: ImpactFuncSet
+) -> Impact:
     try:
         # Assign a default impact function ID to the exposure data
         impf_id = get_impf_id(hazard.haz_type)
@@ -1534,7 +1535,45 @@ def calculate_impact(exposure: Exposures, hazard: Hazard, impact_function_set: I
         status_message = f"An error occurred during impact calculation: More info: {exception}"
         logger.log("debug", status_message)
         return None
-    
+
+
+def generate_impact_geojson(
+    impact: Impact, country_name: str, return_periods: tuple = (250, 100, 50, 10)
+):
+    try:
+        country_iso3 = get_iso3_country_code(country_name)
+        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+
+        admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
+        coords = np.array(impact.coord_exp)
+        local_exceedance_imp = impact.local_exceedance_imp(return_periods)
+        local_exceedance_imp = pd.DataFrame(local_exceedance_imp).T
+        data = np.column_stack((coords, local_exceedance_imp))
+        columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
+        impact_gdf = gpd.GeoDataFrame(
+            pd.DataFrame(data, columns=columns),
+            geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
+        )
+        impact_gdf.set_crs("EPSG:4326", inplace=True)
+
+        # Filter hazard_gdf to exclude rows where all return period values are zero
+        impact_gdf = impact_gdf[(impact_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)]
+        impact_gdf = impact_gdf.drop(columns=["latitude", "longitude"])
+        impact_gdf = impact_gdf.reset_index(drop=True)
+
+        # Spatial join with administrative areas
+        joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
+        # Convert to GeoJSON for this layer and add to all_layers_geojson
+        impact_geojson = joined_gdf.__geo_interface__
+
+        # Save the combined GeoJSON file
+        map_data_filepath = MAP_DIR / f"risks_geodata.json"
+        with open(map_data_filepath, "w") as f:
+            json.dump(impact_geojson, f)
+    except Exception as exception:
+        logger.log("debug", f"An unexpected error occurred. More info: {exception}")
+
+
 def filter_impact_coords(impact: Impact) -> Impact:
     """
     Filters out non-european continent coordinates.

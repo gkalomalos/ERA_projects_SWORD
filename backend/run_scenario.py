@@ -203,7 +203,7 @@ def run_scenario(request: dict) -> dict:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
             return response
-    update_progress(40, "Calculating impact...")
+    update_progress(50, "Calculating impact...")
 
     # Calculate impact function
     impact_function_set = handlers.calculate_impact_function_set(
@@ -216,6 +216,7 @@ def run_scenario(request: dict) -> dict:
         hazard=hazard_present,
         impact_function_set=impact_function_set,
     )
+    handlers.generate_impact_geojson(impact_present, country)
 
     if scenario != "historical":
         # Cast annual growth to present exposure
@@ -232,6 +233,7 @@ def run_scenario(request: dict) -> dict:
                 hazard=hazard_future,
                 impact_function_set=impact_function_set,
             )
+            handlers.generate_impact_geojson(impact_future, country)
         else:
             # Calculate future impact based on future exposure
             impact_future = handlers.calculate_impact(
@@ -239,6 +241,7 @@ def run_scenario(request: dict) -> dict:
                 hazard=hazard_future,
                 impact_function_set=impact_function_set,
             )
+            handlers.generate_impact_geojson(impact_future, country)
 
     map_title = handlers.set_map_title(hazard_type, [country], time_horizon, scenario)
     run_status_message = f"Scenario run successfully."
