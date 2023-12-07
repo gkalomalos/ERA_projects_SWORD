@@ -8,6 +8,7 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 
 import ExposureMap from "./ExposureMap";
 import HazardMap from "./HazardMap";
+import RiskMap from "./RiskMap";
 
 const MapLayout = (props) => {
   const [activeMap, setActiveMap] = useState("exposures");
@@ -70,6 +71,7 @@ const MapLayout = (props) => {
       >
         {activeMap === "exposures" && <ExposureMap selectedCountry={props.selectedCountry} />}
         {activeMap === "hazards" && <HazardMap selectedCountry={props.selectedCountry} />}
+        {activeMap === "risks" && <RiskMap selectedCountry={props.selectedCountry} />}
       </Paper>
       <Box
         sx={{
