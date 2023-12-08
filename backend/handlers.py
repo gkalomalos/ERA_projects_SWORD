@@ -1063,13 +1063,81 @@ def get_hazard(hazard_type: str, scenario: str, time_horizon: str, countries: li
         raise ValueError(status_message)
 
 
+def get_hazard_time_horizon(hazard_type: str, scenario: str, time_horizon: str) -> str:
+    try:
+        historical_time_horizons = {
+            "storm_europe": "1940_2014",
+            "river_flood": "1980_2000",
+            "tropical_cyclone": "1980_2000",
+            "earthquake": "",
+            "flood": "2002_2019",
+            "wildfire": "2001_2020",
+        }
+
+        tropical_cyclone_future_mapping = {
+            "2010_2030": "2020",
+            "2030_2050": "2040",
+            "2050_2070": "2060",
+            "2070_2090": "2080",
+        }
+
+        if scenario == "historical":
+            return historical_time_horizons.get(hazard_type, "")
+        else:
+            if hazard_type == "river_flood":
+                return time_horizon
+            elif hazard_type == "tropical_cyclone":
+                return tropical_cyclone_future_mapping.get(time_horizon, "")
+
+        return ""  # Default return if no match found
+    except Exception as exception:
+        logger.log(
+            "debug",
+            f"Error while trying to match hazard time horizon datasets. More info: {exception}",
+        )
+        return ""
+
+
+def get_hazard_dataset_properties(
+    hazard_type: str, scenario: str, time_horizon: str, country: str
+) -> dict:
+    hazard_properties = {}
+    time_horizon = get_hazard_time_horizon(hazard_type, scenario, time_horizon)
+    if hazard_type == "river_flood":
+        hazard_properties = {
+            "country_name": country,
+            "climate_scenario": scenario,
+            "year_range": time_horizon,
+        }
+    if hazard_type == "tropical_cyclone":
+        hazard_properties = {
+            "country_name": country,
+            "climate_scenario": scenario if scenario != "historical" else None,
+            "ref_year": time_horizon,
+        }
+    if hazard_type == "wildfire":
+        hazard_properties = {
+            "country_name": country,
+            "climate_scenario": "histocial",
+            "year_range": time_horizon,
+        }
+    if hazard_type == "earthquake":
+        hazard_properties = {
+            "country_name": country,
+        }
+    if hazard_type == "flood":
+        hazard_properties = {
+            "country_name": country,
+            "year_range": time_horizon,
+        }
+
+    return hazard_properties
+
+
 def get_hazard_new(hazard_type: str, scenario: str, time_horizon: str, country: str) -> Hazard:
     start_time = time()
-    hazard_properties = {
-        "country_name": country,
-        "climate_scenario": scenario,
-        "year_range": time_horizon,
-    }
+
+    hazard_properties = get_hazard_dataset_properties(hazard_type, scenario, time_horizon, country)
     try:
         client = Client()
         hazard = client.get_hazard(
@@ -1094,24 +1162,24 @@ def mean_nonzero(series):
     return non_zeros.mean() if not non_zeros.empty else 0
 
 
+# TODO: Extract this to settings file
+def set_hazard_intensity_thres(hazard: Hazard) -> float:
+    hazard_type = hazard.haz_type
+    intensity_thres = hazard.intensity_thres
+    if hazard_type == "RF":
+        intensity_thres = 1
+    return intensity_thres
+
+
 def generate_hazard_geojson(
     hazard: Hazard,
     country_name: str,
     return_periods: tuple = (250, 100, 50, 10),
-    intensity_thres: float = None,
 ):
     try:
         country_iso3 = get_iso3_country_code(country_name)
         GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
-
-        if intensity_thres:
-            try:
-                if hazard.haz_type == "RF":
-                    hazard.intensity_thres = intensity_thres
-            except AttributeError as e:
-                logger.log("debug", f"Attribute error in hazard object: {e}")
-            except Exception as e:
-                logger.log("debug", f"An unexpected error occurred: {e}")
+        intensity_thres = set_hazard_intensity_thres(hazard)
 
         admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
         coords = np.array(hazard.centroids.coord)
@@ -1291,6 +1359,13 @@ def get_hazard_time_horizon_from_Hazard(hazard: Hazard) -> list:
                 return ["1980_2000"]
             if hazard_type == "tropical_cyclone":
                 return ["1980_2000"]
+            if hazard_type == "earthquake":
+                return ["1980_2000"]
+            if hazard_type == "tropical_cyclone":
+                return ["1980_2000"]
+            if hazard_type == "tropical_cyclone":
+                return ["1980_2000"]
+
         else:
             # Get event dates as a list of strings and convert them to datetime objects
             dates = [
