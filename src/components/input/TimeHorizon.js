@@ -9,7 +9,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 
 const FUTURE_TIME_HORIZON = [
-  { label: "2020 - 2030", value: "2010_2030" },
+  { label: "2010 - 2030", value: "2010_2030" },
   { label: "2030 - 2050", value: "2030_2050" },
   { label: "2050 - 2070", value: "2050_2070" },
   { label: "2070 - 2090", value: "2070_2090" },

@@ -82,14 +82,14 @@ const ExposureMap = ({ selectedCountry }) => {
     if (feature.properties) {
       const country = feature.properties["COUNTRY"];
       const value = feature.properties.value;
-      if (activeAdminLayer == 0) {
+      if (activeAdminLayer === 0) {
         layer.bindPopup(`Country: ${country}<br>Value: ${value}`);
       }
-      if (activeAdminLayer == 1) {
+      if (activeAdminLayer === 1) {
         const name1 = feature.properties["NAME_1"];
         layer.bindPopup(`Country: ${country}<br>Admin 1: ${name1}<br>Value: ${value}`);
       }
-      if (activeAdminLayer == 2) {
+      if (activeAdminLayer === 2) {
         const name1 = feature.properties["NAME_1"];
         const name2 = feature.properties["NAME_2"];
         layer.bindPopup(
