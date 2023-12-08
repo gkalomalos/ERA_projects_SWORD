@@ -8,28 +8,21 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 
-const TIME_HORIZON = [
-  // { label: "1940 - 2014", value: "1940_2014" },
-  { label: "1980 - 2000", value: "1980_2000" },
-  // { label: "1980 - 2020", value: "1980_2020" },
-  // { label: "2010 - 2030", value: "2010_2030" },
-  // { label: "2030 - 2050", value: "2030_2050" },
-  // { label: "2050 - 2070", value: "2050_2070" },
-  // { label: "2070 - 2090", value: "2070_2090" },
-  // { label: "2040", value: "2040" },
-  // { label: "2060", value: "2060" },
-  // { label: "2080", value: "2080" },
+const FUTURE_TIME_HORIZON = [
+  { label: "2020 - 2030", value: "2010_2030" },
+  { label: "2030 - 2050", value: "2030_2050" },
+  { label: "2050 - 2070", value: "2050_2070" },
+  { label: "2070 - 2090", value: "2070_2090" },
 ];
 
+const HISTORICAL_TIME_HORIZON = [{ label: "1980 - 2020", value: "1980_2020" }];
+
 const TimeHorizon = (props) => {
+  const timeHorizonsToShow =
+    props.scenario === "historical" ? HISTORICAL_TIME_HORIZON : FUTURE_TIME_HORIZON;
   return (
     <Box sx={{ minWidth: 250, maxWidth: 350, margin: 4 }}>
-      <Typography
-        id="time-horizon-dropdown"
-        gutterBottom
-        variant="h6"
-        sx={{ fontWeight: "bold" }}
-      >
+      <Typography id="time-horizon-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
         Time Horizon
       </Typography>
       <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
@@ -43,7 +36,7 @@ const TimeHorizon = (props) => {
           onChange={props.onSelectChange}
           value={props.value}
         >
-          {TIME_HORIZON.map((horizon) => (
+          {timeHorizonsToShow.map((horizon) => (
             <MenuItem key={horizon.value} value={horizon.value}>
               {horizon.label}
             </MenuItem>

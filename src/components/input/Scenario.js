@@ -11,15 +11,19 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
-const SCENARIOS = [
-  // { label: "RCP 2.6", value: "rcp26" },
-  // { label: "RCP 4.5d", value: "rcp45" },
-  // { label: "RCP 6.0", value: "rcp60" },
-  // { label: "RCP 8.5", value: "rcp85" },
-  { label: "Historical", value: "historical" },
+const FUTURE_SCENARIOS = [
+  { label: "RCP 2.6", value: "rcp26" },
+  { label: "RCP 4.5d", value: "rcp45" },
+  { label: "RCP 6.0", value: "rcp60" },
+  { label: "RCP 8.5", value: "rcp85" },
 ];
 
+const HISTORICAL_SCENARIOS = [{ label: "Historical", value: "historical" }];
+
 const Scenario = (props) => {
+  const scenariosToShow =
+    props.scenarioCheck === "historical" ? HISTORICAL_SCENARIOS : FUTURE_SCENARIOS;
+
   return (
     <Box
       sx={{
@@ -67,7 +71,7 @@ const Scenario = (props) => {
           onChange={props.onChange}
           value={props.value}
         >
-          {SCENARIOS.map((scenario) => (
+          {scenariosToShow.map((scenario) => (
             <MenuItem key={scenario.value} value={scenario.value}>
               {scenario.label}
             </MenuItem>

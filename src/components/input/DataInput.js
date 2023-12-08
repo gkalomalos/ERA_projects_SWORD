@@ -152,7 +152,11 @@ const DataInput = (props) => {
         scenarioCheck={scenarioCheck}
         value={scenario}
       />
-      <TimeHorizon onSelectChange={onSelectTimeHorizonHandler} value={timeHorizon} />
+      <TimeHorizon
+        onSelectChange={onSelectTimeHorizonHandler}
+        value={timeHorizon}
+        scenario={scenarioCheck}
+      />
       <AnnualGrowth onChange={onAnnualGrowthChangeHandler} />
       <Box sx={{ width: 350 }} textAlign="center">
         {!isRunButtonLoading && (
