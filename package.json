@@ -70,7 +70,6 @@
     "productName": "CLIMADA-UNU",
     "files": [
       "build/**/*",
-      "node_modules/**/*",
       "backend/**/*",
       "climada_env/",
       "requirements/"

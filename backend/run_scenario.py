@@ -4,15 +4,15 @@ from os import makedirs, path
 import sys
 from time import time
 
-import handlers
 from constants import (
     DATA_EXPOSURES_DIR,
     DATA_HAZARDS_DIR,
     DATA_REPORTS_DIR,
     DATA_DIR,
     LOG_DIR,
-    TEMP_DIR
+    TEMP_DIR,
 )
+import handlers
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -91,30 +91,34 @@ def run_scenario(request: dict) -> dict:
     # Clear previously generated exposure/hazard/impact maps abd temp directory
     handlers.clear_temp_dir()
 
-    update_progress(10, "Setting up exposure...")
+    update_progress(10, "Setting up scenario parameters...")
     # FLOW 1: User selects exposure and hazard.
     if exposure_filename == "" and hazard_filename == "":
         try:
             hazard_type = hazard_data["value"]
-            exposure_present = handlers.get_exposure_new(country)
-            update_progress(20, "Generating geojson data files")
-            handlers.generate_exposure_geojson(exposure_present, country)
+            update_progress(20, "Generating Exposure object...")
+            exposure = handlers.get_exposure_new(country)
+            # Cast annual growth to present exposure
+            if annual_growth > 1:
+                update_progress(30, "Cast annual growth to present Exposure object...")
+                exposure_future = deepcopy(exposure)
+                exposure_future.ref_year = handlers.get_ref_year(hazard_type, time_horizon)
+                n_years = exposure_future.ref_year - exposure.ref_year + 1
+                growth = annual_growth**n_years
+                exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
+                exposure = exposure_future
 
-            update_progress(30, "Setting up hazard...")
-            hazard_present = handlers.get_hazard_new(
-                hazard_type, "historical", time_horizon, country
+            update_progress(40, "Generating Exposure geojson data files...")
+            handlers.generate_exposure_geojson(exposure, country)
+
+            update_progress(50, "Generating Hazard object...")
+            hazard = handlers.get_hazard_new(
+                hazard_type, scenario, time_horizon, country
             )
+            update_progress(60, "Generating Hazard geojson data files...")
             handlers.generate_hazard_geojson(
-                hazard=hazard_present, country_name=country, intensity_thres=1
+                hazard=hazard, country_name=country, intensity_thres=1
             )
-            if scenario != "historical":
-                hazard_future = handlers.get_hazard_new(
-                    hazard_type, scenario, time_horizon, country
-                )
-                handlers.generate_hazard_geojson(
-                    hazard=hazard_future, country_name=country, intensity_thres=1
-                )
-
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
@@ -206,45 +210,21 @@ def run_scenario(request: dict) -> dict:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
             return response
-    update_progress(50, "Calculating impact...")
+    update_progress(70, "Generating Impact object...")
 
     # Calculate impact function
     impact_function_set = handlers.calculate_impact_function_set(
-        hazard=hazard_present,
+        hazard=hazard,
         impact_function_name="Flood Africa JRC Residential",  # TODO: Needs change
     )
     # Calculate present impact
-    impact_present = handlers.calculate_impact(
-        exposure=exposure_present,
-        hazard=hazard_present,
+    impact = handlers.calculate_impact(
+        exposure=exposure,
+        hazard=hazard,
         impact_function_set=impact_function_set,
     )
-    handlers.generate_impact_geojson(impact_present, country)
-
-    if scenario != "historical":
-        # Cast annual growth to present exposure
-        if annual_growth > 1:
-            exposure_future = deepcopy(exposure_present)
-            exposure_future.ref_year = handlers.get_ref_year(hazard_type, time_horizon)
-            n_years = exposure_future.ref_year - exposure_present.ref_year + 1
-            growth = annual_growth**n_years
-            exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
-
-            # Calculate future impact based on present exposure
-            impact_future = handlers.calculate_impact(
-                exposure=exposure_future,
-                hazard=hazard_future,
-                impact_function_set=impact_function_set,
-            )
-            handlers.generate_impact_geojson(impact_future, country)
-        else:
-            # Calculate future impact based on future exposure
-            impact_future = handlers.calculate_impact(
-                exposure=exposure_present,
-                hazard=hazard_future,
-                impact_function_set=impact_function_set,
-            )
-            handlers.generate_impact_geojson(impact_future, country)
+    update_progress(80, "Generating Impact geojson data files...")
+    handlers.generate_impact_geojson(impact, country)
 
     map_title = handlers.set_map_title(hazard_type, [country], time_horizon, scenario)
     run_status_message = f"Scenario run successfully."
@@ -253,9 +233,6 @@ def run_scenario(request: dict) -> dict:
         "data": {"mapTitle": map_title},
         "status": {"code": 2000, "message": run_status_message},
     }
-
-    # Clear files in temp directory
-    # handlers.clear_temp_dir()
     logger.log("debug", f"Finished running scenario in {time() - initial_time}sec.")
     return response
 
