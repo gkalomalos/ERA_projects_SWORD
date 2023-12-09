@@ -17,6 +17,7 @@ CLIENT_ASSETS_DIR = path.join(BASE_DIR, "assets")
 
 # DATA
 DATA_DIR = path.join(BASE_DIR, "data")
+DATA_ENTITIES_DIR = path.join(DATA_DIR, "entities")
 DATA_EXPOSURES_DIR = path.join(DATA_DIR, "exposures")
 DATA_HAZARDS_DIR = path.join(DATA_DIR, "hazards")
 DATA_REPORTS_DIR = path.join(DATA_DIR, "reports")

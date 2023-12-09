@@ -5,6 +5,7 @@ import sys
 from time import time
 
 from constants import (
+    DATA_ENTITIES_DIR,
     DATA_EXPOSURES_DIR,
     DATA_HAZARDS_DIR,
     DATA_REPORTS_DIR,
@@ -28,6 +29,8 @@ def update_progress(progress, message):
 # Initialize data folder and subfolders if not exist
 if not path.exists(DATA_DIR):
     makedirs(DATA_DIR)
+if not path.exists(DATA_ENTITIES_DIR):
+    makedirs(DATA_ENTITIES_DIR)
 if not path.exists(DATA_EXPOSURES_DIR):
     makedirs(DATA_EXPOSURES_DIR)
 if not path.exists(DATA_HAZARDS_DIR):
