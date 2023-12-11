@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import L from "leaflet";
 import Button from "@mui/material/Button";
@@ -10,6 +11,7 @@ import "leaflet/dist/leaflet.css";
 const returnPeriods = [10, 50, 100, 250];
 
 const RiskMap = ({ selectedCountry }) => {
+  const { t } = useTranslation();
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const mapRef = useRef();
@@ -55,7 +57,9 @@ const RiskMap = ({ selectedCountry }) => {
           radius: 2000,
         })
           .bindPopup(
-            `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
+            `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t(
+              "admin_2"
+            )}: ${name2}<br>${t("value")}: ${value}`
           )
           .addTo(layerGroup);
       });
@@ -125,7 +129,8 @@ const RiskMap = ({ selectedCountry }) => {
             onClick={() => handleRPLayerChange(rp)}
             variant="contained"
           >
-            RP{rp}
+            {t("return_period")}
+            {rp}
           </Button>
         ))}
       </div>

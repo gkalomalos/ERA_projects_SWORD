@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -13,19 +14,21 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const EXPOSURES = [
-  { key: "economical-label", value: "", name: "Economical", isLabel: true },
-  { key: "litpop", value: "litpop", name: "LitPop" },
-  { key: "crop-production", value: "crop_production", name: "Crop production" },
+  { key: "economical-label", value: "", name: "economical_label", isLabel: true },
+  { key: "litpop", value: "litpop", name: "litpop" },
+  { key: "crop-production", value: "crop_production", name: "crop_production" },
   {
     key: "non-economical-label",
     value: "",
-    name: "Non-Economical",
+    name: "non_economical_label",
     isLabel: true,
   },
-  { key: "crops", value: "crops", name: "Crops" },
+  { key: "crops", value: "crops", name: "crops" },
 ];
 
 const Exposure = (props) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -38,7 +41,7 @@ const Exposure = (props) => {
       }}
     >
       <Typography id="exposure-dropdown" gutterBottom sx={{ fontWeight: "bold" }} variant="h6">
-        Exposure
+        {t('exposure_title')}
       </Typography>
       <FormControl>
         <RadioGroup
@@ -51,24 +54,24 @@ const Exposure = (props) => {
         >
           <FormControlLabel
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Select exposure"
+            label={t('select_exposure_label')}
             value="select"
           />
           <FormControlLabel
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Load exposure"
+            label={t('load_exposure_label')}
             value="load"
           />
         </RadioGroup>
       </FormControl>
       {props.exposureCheck === "select" && (
         <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-          <InputLabel id="exposure-select-label">Exposure</InputLabel>
+          <InputLabel id="exposure-select-label">{t('exposure_dropdown_label')}</InputLabel>
           <Select
             defaultValue=""
             disabled={props.disabled}
             id="exposure-select"
-            input={<OutlinedInput label="Exposure" />}
+            input={<OutlinedInput label={t('exposure_dropdown_label')} />}
             labelId="exposure-select-label"
             onChange={props.onSelectChange}
             value={props.value}
@@ -80,7 +83,7 @@ const Exposure = (props) => {
                 disabled={option.isLabel}
                 style={{ paddingLeft: option.isLabel ? "20px" : "30px" }}
               >
-                {option.name}
+                {t(option.name)}
               </MenuItem>
             ))}
           </Select>
@@ -94,7 +97,7 @@ const Exposure = (props) => {
             sx={{ bgcolor: "#2A4D69", "&:hover": { bgcolor: "5C87B1" } }}
             variant="contained"
           >
-            Load
+            {t('load_button')}
             <input
               accept=".hdf5"
               hidden

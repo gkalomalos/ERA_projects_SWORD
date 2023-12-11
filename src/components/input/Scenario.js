@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
@@ -12,15 +13,16 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const FUTURE_SCENARIOS = [
-  { label: "RCP 2.6", value: "rcp26" },
-  { label: "RCP 4.5d", value: "rcp45" },
-  { label: "RCP 6.0", value: "rcp60" },
-  { label: "RCP 8.5", value: "rcp85" },
+  { label: "rcp26_label", value: "rcp26" },
+  { label: "rcp45_label", value: "rcp45" },
+  { label: "rcp60_label", value: "rcp60" },
+  { label: "rcp85_label", value: "rcp85" },
 ];
 
-const HISTORICAL_SCENARIOS = [{ label: "Historical", value: "historical" }];
+const HISTORICAL_SCENARIOS = [{ label: "historical_scenario_label", value: "historical" }];
 
 const Scenario = (props) => {
+  const { t } = useTranslation();
   const scenariosToShow =
     props.scenarioCheck === "historical" ? HISTORICAL_SCENARIOS : FUTURE_SCENARIOS;
 
@@ -36,7 +38,7 @@ const Scenario = (props) => {
       }}
     >
       <Typography id="scenario-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
-        Scenario
+        {t("scenario_title")}
       </Typography>
 
       <FormControl>
@@ -51,29 +53,29 @@ const Scenario = (props) => {
           <FormControlLabel
             value="historical"
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Historical"
+            label={t("historical_label")}
           />
           <FormControlLabel
             value="future"
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Future projection"
+            label={t("future_projection_label")}
           />
         </RadioGroup>
       </FormControl>
       <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-        <InputLabel id="scenario-select-label">Scenario</InputLabel>
+        <InputLabel id="scenario-select-label">{t("scenario_title")}</InputLabel>
         <Select
           defaultValue=""
           disabled={props.disabled}
           id="scenario-select"
-          input={<OutlinedInput label="Scenario" />}
+          input={<OutlinedInput label={t("scenario_title")} />}
           labelId="scenario-select-label"
           onChange={props.onChange}
           value={props.value}
         >
           {scenariosToShow.map((scenario) => (
             <MenuItem key={scenario.value} value={scenario.value}>
-              {scenario.label}
+              {t(scenario.label)}
             </MenuItem>
           ))}
         </Select>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -13,18 +14,20 @@ import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
 const HAZARDS = [
-  { key: "hydrological-label", value: "", name: "Hydrological", isLabel: true },
-  { key: "river-flood", value: "river_flood", name: "River flood" },
-  { key: "flood", value: "flood", name: "Flood" },
-  { key: "geophysical-label", value: "", name: "Geophysical", isLabel: true },
-  { key: "eartquake", value: "crops", name: "Crops" },
-  { key: "meteorological-label", value: "", name: "Meteorological", isLabel: true },
-  { key: "tropical-cyclone", value: "tropical_cyclone", name: "Tropical Cyclone" },
-  { key: "climatological-label", value: "", name: "Climatological", isLabel: true },
-  { key: "wildfire", value: "wildfire", name: "Wildfire" },
+  { key: "hydrological-label", value: "", name: "hydrological_label", isLabel: true },
+  { key: "river-flood", value: "river_flood", name: "river_flood" },
+  { key: "flood", value: "flood", name: "flood" },
+  { key: "geophysical-label", value: "", name: "geophysical_label", isLabel: true },
+  { key: "earthquake", value: "earthquake", name: "earthquake" },
+  { key: "meteorological-label", value: "", name: "meteorological_label", isLabel: true },
+  { key: "tropical-cyclone", value: "tropical_cyclone", name: "tropical_cyclone" },
+  { key: "climatological-label", value: "", name: "climatological_label", isLabel: true },
+  { key: "wildfire", value: "wildfire", name: "wildfire" },
 ];
 
 const Hazard = (props) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -37,7 +40,7 @@ const Hazard = (props) => {
       }}
     >
       <Typography id="hazard-dropdown" gutterBottom sx={{ fontWeight: "bold" }} variant="h6">
-        Hazard
+        {t("hazard_title")}
       </Typography>
       <FormControl>
         <RadioGroup
@@ -50,24 +53,24 @@ const Hazard = (props) => {
         >
           <FormControlLabel
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Select hazard"
+            label={t("select_hazard_label")}
             value="select"
           />
           <FormControlLabel
             control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label="Load hazard"
+            label={t("load_hazard_label")}
             value="load"
           />
         </RadioGroup>
       </FormControl>
       {props.hazardCheck === "select" && (
         <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-          <InputLabel id="hazard-select-label">Hazard</InputLabel>
+          <InputLabel id="hazard-select-label">{t("hazard_title")}</InputLabel>
           <Select
             defaultValue=""
             disabled={props.disabled}
             id="hazard-select"
-            input={<OutlinedInput label="Hazard" />}
+            input={<OutlinedInput label={t("hazard_title")} />}
             labelId="hazard-select-label"
             onChange={props.onSelectChange}
             value={props.value}
@@ -79,7 +82,7 @@ const Hazard = (props) => {
                 disabled={option.isLabel}
                 style={{ paddingLeft: option.isLabel ? "20px" : "30px" }}
               >
-                {option.name}
+                {t(option.name)}
               </MenuItem>
             ))}
           </Select>
@@ -93,7 +96,7 @@ const Hazard = (props) => {
             sx={{ bgcolor: "#2A4D69", "&:hover": { bgcolor: "5C87B1" } }}
             variant="contained"
           >
-            Load
+            {t("load_hazard_label")}
             <input
               accept=".hdf5"
               hidden

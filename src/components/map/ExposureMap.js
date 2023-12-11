@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
@@ -9,6 +10,7 @@ import "leaflet/dist/leaflet.css";
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = ({ selectedCountry }) => {
+  const { t } = useTranslation();
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const mapRef = useRef();
@@ -83,17 +85,24 @@ const ExposureMap = ({ selectedCountry }) => {
       const country = feature.properties["COUNTRY"];
       const value = feature.properties.value;
       if (activeAdminLayer === 0) {
-        layer.bindPopup(`Country: ${country}<br>Value: ${value}`);
+        layer.bindPopup(`${t("country")}: ${country}<br>${t("value")}: ${value}`);
       }
       if (activeAdminLayer === 1) {
         const name1 = feature.properties["NAME_1"];
-        layer.bindPopup(`Country: ${country}<br>Admin 1: ${name1}<br>Value: ${value}`);
+        layer.bindPopup(
+          `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t("value")}: ${value}`
+        );
       }
       if (activeAdminLayer === 2) {
         const name1 = feature.properties["NAME_1"];
         const name2 = feature.properties["NAME_2"];
         layer.bindPopup(
           `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
+        );
+        layer.bindPopup(
+          `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t(
+            "admin_2"
+          )}: ${name2}<br>${t("value")}: ${value}`
         );
       }
     }
@@ -129,7 +138,7 @@ const ExposureMap = ({ selectedCountry }) => {
             onClick={() => handleAdminLayerChange(layer)}
             variant="contained"
           >
-            Admin{layer}
+            {t("admin")}{layer}
           </Button>
         ))}
       </div>

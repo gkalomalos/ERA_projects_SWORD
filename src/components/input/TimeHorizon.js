@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -18,12 +19,14 @@ const FUTURE_TIME_HORIZON = [
 const HISTORICAL_TIME_HORIZON = [{ label: "1980 - 2020", value: "1980_2020" }];
 
 const TimeHorizon = (props) => {
+  const { t } = useTranslation();
+
   const timeHorizonsToShow =
     props.scenario === "historical" ? HISTORICAL_TIME_HORIZON : FUTURE_TIME_HORIZON;
   return (
     <Box sx={{ minWidth: 250, maxWidth: 350, margin: 4 }}>
       <Typography id="time-horizon-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
-        Time Horizon
+        {t("time_horizon_title")}
       </Typography>
       <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
         <InputLabel id="scenario-select-label">Time Horizon</InputLabel>

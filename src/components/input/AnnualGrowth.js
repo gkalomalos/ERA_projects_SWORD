@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -14,15 +15,12 @@ const ANNUAL_GROWTH = [
 ];
 
 const AnnualGrowth = (props) => {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ minWidth: 250, maxWidth: 300, margin: 4 }}>
-      <Typography
-        id="annual-growth-slider"
-        gutterBottom
-        variant="h6"
-        sx={{ fontWeight: "bold" }}
-      >
-        Annual Growth
+      <Typography id="annual-growth-slider" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
+        {t("annual_growth")}
       </Typography>
       <Slider
         defaultValue={0}

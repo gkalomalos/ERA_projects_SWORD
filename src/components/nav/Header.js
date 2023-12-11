@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
@@ -12,10 +13,21 @@ import climada_logo from "../../assets/climada_logo.png";
 import css from "./Header.module.css";
 
 const Header = () => {
-  const [language, setLanguage] = React.useState("EN");
+  const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+  const languages = [
+    { code: "en", label: t("language_en"), short: t("language_en_short") },
+    { code: "ar", label: t("language_ar"), short: t("language_ar_short") },
+    { code: "th", label: t("language_th"), short: t("language_th_short") },
+  ];
+
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLanguageChange = (langCode) => {
+    i18n.changeLanguage(langCode);
     setAnchorEl(null);
   };
 
@@ -48,22 +60,19 @@ const Header = () => {
           component="div"
           sx={{ m: 1.5, display: { xs: "none", md: "flex" } }}
         >
-          CLIMADA UNU
+          {t("application_title")}
         </Typography>
         <IconButton color="inherit" onClick={(e) => setAnchorEl(e.currentTarget)}>
           <LanguageIcon />
         </IconButton>
         <Menu id="language-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          {["EN", "AR", "TH"].map((lang) => (
+          {languages.map((lang) => (
             <MenuItem
-              key={lang}
-              selected={lang === language}
-              onClick={() => {
-                setLanguage(lang);
-                handleClose();
-              }}
+              key={lang.code}
+              selected={i18n.language === lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
             >
-              {lang === "EN" ? "English" : lang === "AR" ? "Arabic" : "Thai"}
+              {lang.label}
             </MenuItem>
           ))}
         </Menu>

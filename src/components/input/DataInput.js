@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -17,6 +18,8 @@ import Scenario from "./Scenario";
 import TimeHorizon from "./TimeHorizon";
 
 const DataInput = (props) => {
+  const { t } = useTranslation();
+
   const [annualGrowth, setAnnualGrowth] = useState(0);
   const [exposure, setExposure] = useState({ file: "", value: [] });
   const [exposureCheck, setExposureCheck] = useState("select");
@@ -174,6 +177,7 @@ const DataInput = (props) => {
             variant="contained"
           >
             Run
+            {t('run_button')}
           </Button>
         )}
         {isRunButtonLoading && (
@@ -185,6 +189,7 @@ const DataInput = (props) => {
             variant="contained"
           >
             Run...
+            {t('run_loading_button')}
           </LoadingButton>
         )}
       </Box>

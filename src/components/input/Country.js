@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
@@ -10,6 +11,8 @@ import Typography from "@mui/material/Typography";
 const COUNTRIES = ["Egypt", "Thailand"];
 
 const Country = (props) => {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ minWidth: 250, maxWidth: 250, margin: 4 }}>
       <Typography
@@ -18,7 +21,7 @@ const Country = (props) => {
         variant="h6"
         sx={{ fontWeight: "bold" }}
       >
-        Country
+        {t("country")}
       </Typography>
       <FormControl component="fieldset">
         <RadioGroup
@@ -33,7 +36,7 @@ const Country = (props) => {
               key={country}
               value={country}
               control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-              label={country}
+              label={t(country)}
             />
           ))}
         </RadioGroup>

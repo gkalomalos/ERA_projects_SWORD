@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Paper, Box, Button, Typography } from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
@@ -11,6 +12,7 @@ import HazardMap from "./HazardMap";
 import RiskMap from "./RiskMap";
 
 const MapLayout = (props) => {
+  const { t } = useTranslation();
   const [activeMap, setActiveMap] = useState("exposures");
   const [isExposuresSelected, setIsExposuresSelected] = useState(true);
   const [isHazardsSelected, setIsHazardsSelected] = useState(false);
@@ -98,7 +100,7 @@ const MapLayout = (props) => {
           }}
           variant="contained"
         >
-          Exposure
+          {t("exposure_title")}
         </Button>
         <Button
           onClick={onClickHazardButtonHandler}
@@ -115,7 +117,7 @@ const MapLayout = (props) => {
           }}
           variant="contained"
         >
-          Hazard
+          {t("hazard_title")}
         </Button>
         <Button
           onClick={onClickRiskButtonHandler}
@@ -132,7 +134,7 @@ const MapLayout = (props) => {
           }}
           variant="contained"
         >
-          Impact
+          {t("impact_title")}
         </Button>
         <Button
           onClick={onClickCostButtonHandler}
@@ -148,7 +150,7 @@ const MapLayout = (props) => {
           }}
           variant="contained"
         >
-          Cost
+          {t("cost_title")}
         </Button>
       </Box>
     </div>
