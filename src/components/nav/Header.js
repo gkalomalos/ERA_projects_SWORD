@@ -9,12 +9,18 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
+import SettingsIcon from "@mui/icons-material/Settings";
+
+import SettingsModal from "./SettingsModal";
+import LoadModal from "./LoadModal";
+
 import climada_logo from "../../assets/climada_logo.png";
 import css from "./Header.module.css";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [isSettingsModalOpen, setSettingsModalOpen] = React.useState(false);
 
   const languages = [
     { code: "en", label: t("language_en"), short: t("language_en_short") },
@@ -31,51 +37,78 @@ const Header = () => {
     setAnchorEl(null);
   };
 
+  const handleOpenSettings = () => {
+    setSettingsModalOpen(true);
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsModalOpen(false);
+  };
+
   return (
     <AppBar position="static" sx={{ bgcolor: "#2A4D69" }}>
       <Toolbar
         disableGutters
         sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}
       >
-        <img src={climada_logo} alt="climada_logo" className={css.logo_climada} />
-        <Typography
-          variant="h3"
-          fontFamily={[
-            '"FFKievitStdBook"',
-            "Calibri",
-            "-apple-system",
-            "BlinkMacSystemFont",
-            '"Segoe UI"',
-            "Roboto",
-            '"Helvetica Neue"',
-            "Arial",
-            '"Noto Sans"',
-            "sans-serif",
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-            '"Noto Color Emoji"',
-          ].join(",")}
-          noWrap
-          component="div"
-          sx={{ m: 1.5, display: { xs: "none", md: "flex" } }}
-        >
-          {t("application_title")}
-        </Typography>
-        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.currentTarget)}>
-          <LanguageIcon />
-        </IconButton>
-        <Menu id="language-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          {languages.map((lang) => (
-            <MenuItem
-              key={lang.code}
-              selected={i18n.language === lang.code}
-              onClick={() => handleLanguageChange(lang.code)}
-            >
-              {lang.label}
-            </MenuItem>
-          ))}
-        </Menu>
+        <div style={{ flex: 1 }}>
+          <img src={climada_logo} alt="climada_logo" className={css.logo_climada} />
+        </div>
+        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          {" "}
+          <Typography
+            variant="h3"
+            fontFamily={[
+              '"FFKievitStdBook"',
+              "Calibri",
+              "-apple-system",
+              "BlinkMacSystemFont",
+              '"Segoe UI"',
+              "Roboto",
+              '"Helvetica Neue"',
+              "Arial",
+              '"Noto Sans"',
+              "sans-serif",
+              '"Apple Color Emoji"',
+              '"Segoe UI Emoji"',
+              '"Segoe UI Symbol"',
+              '"Noto Color Emoji"',
+            ].join(",")}
+            noWrap
+            component="div"
+            sx={{ m: 1.5, display: { xs: "none", md: "flex" } }}
+          >
+            {t("application_title")}
+          </Typography>
+        </div>
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <IconButton color="inherit" onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <LanguageIcon />
+          </IconButton>
+          <IconButton color="inherit" onClick={handleOpenSettings}>
+            <SettingsIcon />
+          </IconButton>
+          <SettingsModal
+            isSettingsModalOpen={isSettingsModalOpen}
+            handleCloseSettings={handleCloseSettings}
+          />
+          <Menu
+            id="language-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            {languages.map((lang) => (
+              <MenuItem
+                key={lang.code}
+                selected={i18n.language === lang.code}
+                onClick={() => handleLanguageChange(lang.code)}
+              >
+                {lang.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </div>
       </Toolbar>
     </AppBar>
   );
