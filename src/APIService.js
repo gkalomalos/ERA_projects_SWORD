@@ -1,7 +1,7 @@
 export default class APIService {
-  static async FetchExposure(body) {
+  static async Run(body) {
     try {
-      const scriptName = "run_fetch_exposure.py";
+      const scriptName = "run_scenario.py";
       const response = await window.api.runPythonScript({
         scriptName,
         data: body,
@@ -12,13 +12,9 @@ export default class APIService {
     }
   }
 
-  static async Run(body) {
+  static async Shutdown() {
     try {
-      const scriptName = "run_scenario.py";
-      const response = await window.api.runPythonScript({
-        scriptName,
-        data: body,
-      });
+      const response = await window.electron.send("shutdown");
       return response;
     } catch (error) {
       console.log(error);

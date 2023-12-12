@@ -16,7 +16,7 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on("second-instance", (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
+    // If second instance is instantiated, the app focuses on the current window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -82,7 +82,7 @@ const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     minHeight: 720,
     minWidth: 1280,
-    frame: true,
+    frame: false,
     resizable: true,
     autoHideMenuBar: true,
     thickFrame: true,
@@ -203,6 +203,16 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("shutdown", () => {
+  console.log("Shutting down application...");
+
+  if (global.pythonProcess && !global.pythonProcess.killed) {
+    global.pythonProcess.kill();
+  }
+
+  app.quit();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

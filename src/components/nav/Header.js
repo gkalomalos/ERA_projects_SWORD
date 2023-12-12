@@ -10,6 +10,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import LanguageSelector from "./LanguageSelector";
 import SettingsModal from "./SettingsModal";
+import ShutdownButton from "./ShutdownButton";
 
 import climada_logo from "../../assets/climada_logo.png";
 import css from "./Header.module.css";
@@ -65,6 +66,7 @@ const Header = () => {
             <SettingsIcon />
           </IconButton>
           <SettingsModal ref={settingsModalRef} />
+          <ShutdownButton />
         </div>
       </Toolbar>
     </AppBar>
