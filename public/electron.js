@@ -205,6 +205,10 @@ app.on("window-all-closed", () => {
   }
 });
 
+ipcMain.on("minimize", () => {
+  mainWindow.minimize();
+});
+
 ipcMain.on("shutdown", () => {
   console.log("Shutting down application...");
 

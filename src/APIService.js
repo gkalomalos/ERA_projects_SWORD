@@ -20,4 +20,13 @@ export default class APIService {
       console.log(error);
     }
   }
+
+  static async Minimize() {
+    try {
+      const response = await window.electron.send("minimize");
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
