@@ -22,7 +22,7 @@ const LanguageSelector = () => {
 
   const handleLanguageChange = (langCode) => {
     i18n.changeLanguage(langCode);
-    setAnchorEl(null);
+    handleClose();
   };
 
   return (

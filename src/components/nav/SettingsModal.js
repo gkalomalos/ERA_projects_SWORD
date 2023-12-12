@@ -1,8 +1,17 @@
-import React from "react";
-
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import Modal from "@mui/material/Modal";
 
-const SettingsModal = ({ isSettingsModalOpen, handleCloseSettings }) => {
+const SettingsModal = forwardRef((props, ref) => {
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    openModal: () => setSettingsModalOpen(true),
+  }));
+
+  const handleCloseSettings = () => {
+    setSettingsModalOpen(false);
+  };
+
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -28,6 +37,6 @@ const SettingsModal = ({ isSettingsModalOpen, handleCloseSettings }) => {
       </div>
     </Modal>
   );
-};
+});
 
 export default SettingsModal;

@@ -3,33 +3,25 @@ import { useTranslation } from "react-i18next";
 
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
-import LanguageIcon from "@mui/icons-material/Language";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
 import SettingsIcon from "@mui/icons-material/Settings";
 
 import LanguageSelector from "./LanguageSelector";
-
 import SettingsModal from "./SettingsModal";
-import LoadModal from "./LoadModal";
 
 import climada_logo from "../../assets/climada_logo.png";
 import css from "./Header.module.css";
 
 const Header = () => {
-  const { t, i18n } = useTranslation();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isSettingsModalOpen, setSettingsModalOpen] = React.useState(false);
+  const { t } = useTranslation();
+  const settingsModalRef = React.useRef();
 
   const handleOpenSettings = () => {
-    setSettingsModalOpen(true);
-  };
-
-  const handleCloseSettings = () => {
-    setSettingsModalOpen(false);
+    if (settingsModalRef.current) {
+      settingsModalRef.current.openModal();
+    }
   };
 
   return (
@@ -72,10 +64,7 @@ const Header = () => {
           <IconButton color="inherit" onClick={handleOpenSettings}>
             <SettingsIcon />
           </IconButton>
-          <SettingsModal
-            isSettingsModalOpen={isSettingsModalOpen}
-            handleCloseSettings={handleCloseSettings}
-          />
+          <SettingsModal ref={settingsModalRef} />
         </div>
       </Toolbar>
     </AppBar>
