@@ -11,6 +11,8 @@ import Typography from "@mui/material/Typography";
 
 import SettingsIcon from "@mui/icons-material/Settings";
 
+import LanguageSelector from "./LanguageSelector";
+
 import SettingsModal from "./SettingsModal";
 import LoadModal from "./LoadModal";
 
@@ -21,21 +23,6 @@ const Header = () => {
   const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [isSettingsModalOpen, setSettingsModalOpen] = React.useState(false);
-
-  const languages = [
-    { code: "en", label: t("language_en"), short: t("language_en_short") },
-    { code: "ar", label: t("language_ar"), short: t("language_ar_short") },
-    { code: "th", label: t("language_th"), short: t("language_th_short") },
-  ];
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLanguageChange = (langCode) => {
-    i18n.changeLanguage(langCode);
-    setAnchorEl(null);
-  };
 
   const handleOpenSettings = () => {
     setSettingsModalOpen(true);
@@ -55,7 +42,6 @@ const Header = () => {
           <img src={climada_logo} alt="climada_logo" className={css.logo_climada} />
         </div>
         <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-          {" "}
           <Typography
             variant="h3"
             fontFamily={[
@@ -82,9 +68,7 @@ const Header = () => {
           </Typography>
         </div>
         <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-          <IconButton color="inherit" onClick={(e) => setAnchorEl(e.currentTarget)}>
-            <LanguageIcon />
-          </IconButton>
+          <LanguageSelector />
           <IconButton color="inherit" onClick={handleOpenSettings}>
             <SettingsIcon />
           </IconButton>
@@ -92,22 +76,6 @@ const Header = () => {
             isSettingsModalOpen={isSettingsModalOpen}
             handleCloseSettings={handleCloseSettings}
           />
-          <Menu
-            id="language-menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            {languages.map((lang) => (
-              <MenuItem
-                key={lang.code}
-                selected={i18n.language === lang.code}
-                onClick={() => handleLanguageChange(lang.code)}
-              >
-                {lang.label}
-              </MenuItem>
-            ))}
-          </Menu>
         </div>
       </Toolbar>
     </AppBar>
