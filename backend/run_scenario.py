@@ -1,43 +1,15 @@
 from copy import deepcopy
 import json
-from os import makedirs, path
 import sys
 from time import time
 
-from constants import (
-    DATA_ENTITIES_DIR,
-    DATA_EXPOSURES_DIR,
-    DATA_HAZARDS_DIR,
-    DATA_DIR,
-    LOG_DIR,
-    DATA_TEMP_DIR,
-)
 import handlers
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
 
-
-def update_progress(progress, message):
-    progress_data = {"type": "progress", "progress": progress, "message": message}
-    print(json.dumps(progress_data))
-    logger.log("debug", f"send progress {progress} to frontend.")
-    sys.stdout.flush()
-
-
 # Initialize data folder and subfolders if not exist
-if not path.exists(DATA_DIR):
-    makedirs(DATA_DIR)
-if not path.exists(DATA_ENTITIES_DIR):
-    makedirs(DATA_ENTITIES_DIR)
-if not path.exists(DATA_EXPOSURES_DIR):
-    makedirs(DATA_EXPOSURES_DIR)
-if not path.exists(DATA_HAZARDS_DIR):
-    makedirs(DATA_HAZARDS_DIR)
-if not path.exists(LOG_DIR):
-    makedirs(LOG_DIR)
-if not path.exists(DATA_TEMP_DIR):
-    makedirs(DATA_TEMP_DIR)
+handlers.initalize_data_directories()
 
 
 def run_scenario(request: dict) -> dict:
@@ -50,7 +22,7 @@ def run_scenario(request: dict) -> dict:
     :rtype: dict
     """
     initial_time = time()
-    update_progress(10, "Setting up scenario parameters...")
+    handlers.update_progress(10, "Setting up scenario parameters...")
 
     annual_population_growth = request.get("annualPopulationGrowth", 0)
     annual_gdp_growth = request.get("annualGDPGrowth", 0)
@@ -71,7 +43,7 @@ def run_scenario(request: dict) -> dict:
 
     try:
         # Generate exposure objects
-        update_progress(20, "Generating Exposure object...")
+        handlers.update_progress(20, "Generating Exposure object...")
         if exposure_filename == "":
             exposure_present = handlers.get_exposure(country_name)
         else:
@@ -79,22 +51,22 @@ def run_scenario(request: dict) -> dict:
             exposure_present = entity_present.exposures
 
         # Generate geojson data files
-        update_progress(30, "Generating Exposure geojson data files...")
+        handlers.update_progress(30, "Generating Exposure geojson data files...")
         handlers.generate_exposure_geojson(exposure_present, country_name)
 
         # Generate hazard objects
-        update_progress(40, "Generating Hazard object...")
+        handlers.update_progress(40, "Generating Hazard object...")
         if hazard_filename == "":
             hazard_present = handlers.get_hazard(hazard_type, scenario, time_horizon, country_name)
         else:
             hazard_present = handlers.get_hazard_from_xlsx(hazard_filename)
 
         # Generate Hazard geojson data files
-        update_progress(50, "Generating Hazard geojson data files...")
+        handlers.update_progress(50, "Generating Hazard geojson data files...")
         handlers.generate_hazard_geojson(hazard_present, country_name)
 
         # Calculate impact
-        update_progress(60, "Generating Impact object...")
+        handlers.update_progress(60, "Generating Impact object...")
 
         # Calculate impact function
         impact_function_set = handlers.calculate_impact_function_set(hazard=hazard_present)
@@ -105,7 +77,7 @@ def run_scenario(request: dict) -> dict:
         )
 
         # Calculate impact geojson data files
-        update_progress(70, "Generating Impact geojson data files...")
+        handlers.update_progress(70, "Generating Impact geojson data files...")
         handlers.generate_impact_geojson(impact_present, country_name)
 
         map_title = handlers.set_map_title(hazard_type, country_name, time_horizon, scenario)
@@ -115,7 +87,7 @@ def run_scenario(request: dict) -> dict:
         return response
 
     run_status_message = f"Scenario run successfully."
-    update_progress(100, run_status_message)
+    handlers.update_progress(100, run_status_message)
     response = {
         "data": {"mapTitle": map_title},
         "status": {"code": 2000, "message": run_status_message},

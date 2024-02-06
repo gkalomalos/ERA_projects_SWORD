@@ -1,5 +1,7 @@
 from datetime import datetime
 import json
+from os import makedirs, path
+import sys
 from time import time
 
 import geopandas as gpd
@@ -14,7 +16,15 @@ from climada.entity.impact_funcs.trop_cyclone import ImpfSetTropCyclone
 from climada.hazard import Hazard
 from climada.util.api_client import Client
 from scipy.interpolate import interp1d
-from constants import DATA_EXPOSURES_DIR, DATA_HAZARDS_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
+from constants import (
+    DATA_DIR,
+    DATA_ENTITIES_DIR,
+    DATA_EXPOSURES_DIR,
+    DATA_HAZARDS_DIR,
+    DATA_TEMP_DIR,
+    LOG_DIR,
+    REQUIREMENTS_DIR,
+)
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -772,12 +782,54 @@ def beautify_time_horizon(time_horizon: str) -> str:
     return time_horizon_beautified
 
 
-def clear_temp_dir():
+def clear_temp_dir() -> None:
     """
-    Clear all helper temp files from the temp directory.
+    Clears the temporary directory.
+
+    This function deletes all files in the temporary directory.
+
+    :return: None
     """
     try:
         for file in DATA_TEMP_DIR.glob("*"):
             file.unlink(missing_ok=True)
     except Exception as exc:
-        logger.log("ερρορ", f"Error while trying to clear temp directory. More info: {exc}")
+        logger.log("error", f"Error while trying to clear temp directory. More info: {exc}")
+
+
+def initalize_data_directories() -> None:
+    """
+    Initializes the data directories for the application.
+
+    This function creates the necessary folders for storing data, including entities, exposures, hazards, logs, and temporary files.
+    If the directories already exist, this function does nothing.
+
+    :return: None
+    """
+    # Initialize data folder and subfolders if not exist
+    if not path.exists(DATA_DIR):
+        makedirs(DATA_DIR)
+    if not path.exists(DATA_ENTITIES_DIR):
+        makedirs(DATA_ENTITIES_DIR)
+    if not path.exists(DATA_EXPOSURES_DIR):
+        makedirs(DATA_EXPOSURES_DIR)
+    if not path.exists(DATA_HAZARDS_DIR):
+        makedirs(DATA_HAZARDS_DIR)
+    if not path.exists(LOG_DIR):
+        makedirs(LOG_DIR)
+    if not path.exists(DATA_TEMP_DIR):
+        makedirs(DATA_TEMP_DIR)
+
+
+def update_progress(progress: int, message: str) -> None:
+    """
+    Update the progress and message for the frontend.
+
+    :param progress: An integer representing the progress value.
+    :param message: A string containing the progress message.
+    :return: None
+    """
+    progress_data = {"type": "progress", "progress": progress, "message": message}
+    print(json.dumps(progress_data))
+    logger.log("debug", f"send progress {progress} to frontend.")
+    sys.stdout.flush()
