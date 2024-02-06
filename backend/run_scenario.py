@@ -105,7 +105,7 @@ def run_scenario(request: dict) -> dict:
         # Generate exposure objects
         update_progress(20, "Generating Exposure object...")
         if exposure_filename == "":
-            exposure_present = handlers.get_exposure_new(country_name)
+            exposure_present = handlers.get_exposure(country_name)
         else:
             entity_present = handlers.get_entity_from_xlsx(exposure_filename)
             exposure_present = entity_present.exposures
@@ -117,9 +117,7 @@ def run_scenario(request: dict) -> dict:
         # Generate hazard objects
         update_progress(40, "Generating Hazard object...")
         if hazard_filename == "":
-            hazard_present = handlers.get_hazard_new(
-                hazard_type, scenario, time_horizon, country_name
-            )
+            hazard_present = handlers.get_hazard(hazard_type, scenario, time_horizon, country_name)
         else:
             hazard_present = handlers.get_hazard_from_xlsx(hazard_filename)
 
@@ -142,7 +140,7 @@ def run_scenario(request: dict) -> dict:
         update_progress(70, "Generating Impact geojson data files...")
         handlers.generate_impact_geojson(impact_present, country_name)
 
-        map_title = handlers.set_map_title(hazard_type, [country_name], time_horizon, scenario)
+        map_title = handlers.set_map_title(hazard_type, country_name, time_horizon, scenario)
     except Exception as exception:
         status = {"code": 3000, "message": str(exception)}
         response = {"data": {"mapTitle": ""}, "status": status}
