@@ -15,7 +15,7 @@ import pandas as pd
 import pycountry
 
 from climada.engine import Impact, ImpactCalc
-from climada.entity import Exposures
+from climada.entity import Entity, Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet, ImpfTropCyclone
 from climada.entity.impact_funcs.storm_europe import ImpfStormEurope
 from climada.entity.impact_funcs.trop_cyclone import ImpfSetTropCyclone
@@ -356,6 +356,16 @@ def get_exposure_from_xlsx(filepath: str) -> Exposures:
 
     # print(f"Finished creating exposures from xlsx in {time() - start_time}sec.")
     return exposure
+
+
+def get_entity_from_xlsx(filepath: str) -> Entity:
+    try:
+        entity_filepath = Path(DATA_EXPOSURES_DIR) / filepath
+        entity = Entity.from_excel(entity_filepath)
+        return entity
+    except Exception as exc:
+        logger.log("debug", f"An error occurred while trying to create entity from xlsx: {exc}")
+        return None
 
 
 def get_countries_from_exposure_xlsx(filepath: str) -> list:
@@ -1208,7 +1218,7 @@ def mean_nonzero(series):
 
 
 # TODO: Extract this to settings file
-def set_hazard_intensity_thres(hazard: Hazard) -> float:
+def get_hazard_intensity_thres(hazard: Hazard) -> float:
     hazard_type = hazard.haz_type
     intensity_thres = hazard.intensity_thres
     if hazard_type == "RF":
@@ -1224,7 +1234,8 @@ def generate_hazard_geojson(
     try:
         country_iso3 = get_iso3_country_code(country_name)
         GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
-        intensity_thres = set_hazard_intensity_thres(hazard)
+        intensity_thres = get_hazard_intensity_thres(hazard)
+        hazard.intensity_thres = intensity_thres
 
         admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
         coords = np.array(hazard.centroids.coord)
@@ -1286,6 +1297,20 @@ def get_hazard_from_hdf5(filepath) -> Hazard:
         return None
     except Exception as e:
         # Handle any other exception that may occur
+        return None
+
+
+def get_hazard_from_xlsx(filepath) -> Hazard:
+    try:
+        hazard_filepath = Path(DATA_HAZARDS_DIR, filepath)
+        hazard = Hazard()
+        hazard.from_excel(hazard_filepath)
+        return hazard
+    except Exception as exception:
+        logger.log(
+            "debug",
+            f"An unexpected error occurred while trying to create hazard object from xlsx file. More info: {exception}",
+        )
         return None
 
 
@@ -1576,11 +1601,11 @@ def generate_hazard_gdf(hazard: Hazard, return_periods: tuple = (250, 100, 50, 1
 # IMPACT METHODS DEFINITION
 
 
-def calculate_impact_function_set(hazard: Hazard, impact_function_name: str = "") -> ImpactFuncSet:
+def calculate_impact_function_set(hazard: Hazard) -> ImpactFuncSet:
     impact_function = ImpactFunc()
     impact_function.haz_type = hazard.haz_type
     impact_function.intensity_unit = hazard.units
-    impact_function.name = impact_function_name
+    impact_function.name = ("Flood Africa JRC Residential",)  # TODO: Needs change
 
     if hazard.haz_type == "TC":
         impact_function.id = 1

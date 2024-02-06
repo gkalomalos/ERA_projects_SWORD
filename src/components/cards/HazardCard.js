@@ -16,8 +16,8 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const hazardDict = {
-  thailand: ["flood", "drought", "heatwaves"],
-  egypt: ["flash_flood", "heatwaves"],
+  thailand: ["flood", "drought", "heatwaves", "river_flood"],
+  egypt: ["flash_flood", "heatwaves", "river_flood"],
 };
 
 const HazardCard = ({
