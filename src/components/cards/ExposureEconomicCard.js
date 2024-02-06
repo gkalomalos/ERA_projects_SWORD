@@ -42,6 +42,9 @@ const ExposureEconomicCard = ({
     } else {
       onExposureEconomicSelect(exposure);
     }
+    onChangeExposureFile("");
+    onChangeValidEconomicExposure(false);
+    setFetchExposureMessage("");
   };
 
   const isButtonSelected = (exposure) => selectedExposureEconomic === exposure;
@@ -49,9 +52,12 @@ const ExposureEconomicCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
+    onChangeExposureFile("");
+    onChangeValidEconomicExposure(false);
     const file = event.target.files[0];
     if (file) {
       onChangeExposureFile(file.name);
+      onChangeValidEconomicExposure(true);
     }
   };
 
@@ -61,17 +67,21 @@ const ExposureEconomicCard = ({
 
   const clearUploadedFile = () => {
     onChangeExposureFile("");
+    onChangeValidEconomicExposure(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-economic-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchExposureMessage("");
+    onChangeValidEconomicExposure(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
     onChangeExposureFile("");
+    setFetchExposureMessage("");
+    onChangeValidEconomicExposure(false);
     const body = {
       country: selectedCountry,
       dataType: selectedExposureEconomic,

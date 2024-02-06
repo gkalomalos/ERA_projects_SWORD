@@ -43,6 +43,7 @@ const HazardCard = ({
     } else {
       onHazardSelect(hazard);
     }
+    onChangeHazardFile("");
     onChangeValidHazard(false);
     setFetchHazardMessage("");
   };
@@ -52,6 +53,7 @@ const HazardCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Hazard data if existing
     setFetchHazardMessage("");
+    onChangeHazardFile("");
     onChangeValidHazard(false);
     const file = event.target.files[0];
     if (file) {

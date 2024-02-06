@@ -30,8 +30,8 @@ const ExposureNonEconomicCard = ({
 }) => {
   const { t } = useTranslation();
 
-  const [message, setMessage] = useState("");
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
+  const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
 
@@ -43,6 +43,9 @@ const ExposureNonEconomicCard = ({
     } else {
       onExposureNonEconomicSelect(exposure);
     }
+    onChangeExposureFile("");
+    onChangeValidNonEconomicExposure(false);
+    setFetchExposureMessage("");
   };
 
   const isButtonSelected = (exposure) => selectedExposureNonEconomic === exposure;
@@ -50,9 +53,12 @@ const ExposureNonEconomicCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
+    onChangeExposureFile("");
+    onChangeValidNonEconomicExposure(false);
     const file = event.target.files[0];
     if (file) {
       onChangeExposureFile(file.name);
+      onChangeValidNonEconomicExposure(true);
     }
   };
 
@@ -62,17 +68,21 @@ const ExposureNonEconomicCard = ({
 
   const clearUploadedFile = () => {
     onChangeExposureFile("");
+    onChangeValidNonEconomicExposure(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-non-economic-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchExposureMessage("");
+    onChangeValidNonEconomicExposure(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
     onChangeExposureFile("");
+    setFetchExposureMessage("");
+    onChangeValidNonEconomicExposure(false);
     const body = {
       country: selectedCountry,
       dataType: selectedExposureNonEconomic,
