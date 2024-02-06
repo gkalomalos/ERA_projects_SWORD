@@ -1,47 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import MuiAlert from "@mui/material/Alert";
+import { Box, Button, Grid } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import Snackbar from "@mui/material/Snackbar";
-import Stack from "@mui/material/Stack";
 
 import APIService from "../../APIService";
 import AnnualGrowth from "./AnnualGrowth";
 import Country from "./Country";
-import Exposure from "./Exposure";
+import DataInputViewTitle from "../title/DataInputViewTitle";
+import ExposureEconomic from "./ExposureEconomic";
+import ExposureNonEconomic from "./ExposureNonEconomic";
 import Hazard from "./Hazard";
 import Scenario from "./Scenario";
 import TimeHorizon from "./TimeHorizon";
 
+import AlertMessage from "../alerts/AlertMessage";
+
 const DataInput = (props) => {
   const { t } = useTranslation();
 
-  const [annualGrowth, setAnnualGrowth] = useState(0);
-  const [exposure, setExposure] = useState({ file: "", value: [] });
-  const [exposureCheck, setExposureCheck] = useState("select");
-  const [hazard, setHazard] = useState({ file: "", value: "" });
-  const [hazardCheck, setHazardCheck] = useState("select");
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
-  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false);
+  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(true);
   const [message, setMessage] = useState("");
-  const [scenarioCheck, setScenarioCheck] = useState("historical");
-  const [scenario, setScenario] = useState("");
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
-  const [timeHorizon, setTimeHorizon] = useState("");
 
   const onRunHandler = () => {
     const body = {
-      annualGrowth: annualGrowth,
-      country: props.selectedCountry,
-      exposure: exposure,
-      hazard: hazard,
-      scenario: scenario,
-      timeHorizon: timeHorizon,
+      annualPopulationGrowth: props.selectedAnnualPopulationGrowth,
+      annualGDPGrowth: props.selectedAnnualGDPGrowth,
+      countryName: props.selectedCountry,
+      exposureEconomic: props.selectedExposureEconomic,
+      exposureFile: "",
+      exposureNonEconomic: props.selectedExposureNonEconomic,
+      hazardType: props.selectedHazard,
+      hazardFile: "",
+      scenario: props.selectedScenario,
+      timeHorizon: props.selectedTimeHorizon,
     };
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
@@ -61,139 +57,139 @@ const DataInput = (props) => {
       });
   };
 
-  const onSelectCountryHandler = (event) => {
-    props.onChangeCountry(event.target.value);
-  };
-
-  const onSelectExposureHandler = (event) => {
-    setExposure({ file: "", value: event.target.value });
-  };
-
-  const onSelectHazardHandler = (event) => {
-    setHazard({ file: "", value: event.target.value });
-  };
-
-  const onSelectTimeHorizonHandler = (event) => {
-    setTimeHorizon(event.target.value);
-  };
-
   const handleCloseMessage = () => {
     setShowMessage(false);
   };
 
-  const onChangeExposureRadioButtonHandler = (event) => {
-    setExposureCheck(event.target.value);
+  const onCardClickHandler = (card) => {
+    props.onChangeCard(card);
   };
 
-  const onChangeHazardRadioButtonHandler = (event) => {
-    setHazardCheck(event.target.value);
+  const handleRunButton = () => {
+    if (
+      props.selectedCountry &&
+      props.selectedHazard &&
+      props.selectedScenario &&
+      (props.isValidExposureEconomic || props.isValidExposureNonEconomic)
+    ) {
+      setIsRunButtonDisabled(false);
+    } else {
+      setIsRunButtonDisabled(true);
+    }
   };
 
-  const onLoadChangeExposureHandler = (event) => {
-    setExposure({ file: event.target.files[0].name, value: [] });
-  };
-
-  const onLoadChangeHazardHandler = (event) => {
-    setHazard({ file: event.target.files[0].name, value: [] });
-  };
-
-  const onChangeScenarioRadioButtonHandler = (event) => {
-    setScenarioCheck(event.target.value);
-  };
-
-  const onAnnualGrowthChangeHandler = (event) => {
-    setAnnualGrowth(event.target.value);
-  };
-
-  const onScenarioChangeHandler = (event) => {
-    setScenario(event.target.value);
-  };
-
-  const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
-
-  const Message = () => {
-    return (
-      <Stack spacing={2} sx={{ width: "100%" }}>
-        <Snackbar
-          open={showMessage}
-          autoHideDuration={6000}
-          onClose={handleCloseMessage}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert onClose={handleCloseMessage} severity={severity} sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        </Snackbar>
-      </Stack>
-    );
-  };
+  useEffect(() => {
+    handleRunButton();
+  }, [props]);
 
   return (
     <>
-      <Country selectedCountry={props.selectedCountry} onCountryChange={onSelectCountryHandler} />
-      <Exposure
-        defaultValue={exposureCheck}
-        exposureCheck={exposureCheck}
-        onChangeRadio={onChangeExposureRadioButtonHandler}
-        onSelectChange={onSelectExposureHandler}
-        onLoadChange={onLoadChangeExposureHandler}
-        value={exposure.value}
-      />
-      <Hazard
-        defaultValue={hazardCheck}
-        hazardCheck={hazardCheck}
-        onChangeRadio={onChangeHazardRadioButtonHandler}
-        onSelectChange={onSelectHazardHandler}
-        onLoadChange={onLoadChangeHazardHandler}
-        value={hazard.value}
-      />
-      <Scenario
-        onChange={onScenarioChangeHandler}
-        onChangeRadio={onChangeScenarioRadioButtonHandler}
-        scenarioCheck={scenarioCheck}
-        value={scenario}
-      />
-      <TimeHorizon
-        onSelectChange={onSelectTimeHorizonHandler}
-        value={timeHorizon}
-        scenario={scenarioCheck}
-      />
-      <AnnualGrowth onChange={onAnnualGrowthChangeHandler} />
-      <Box sx={{ width: 350 }} textAlign="center">
-        {!isRunButtonLoading && (
-          <Button
-            disabled={isRunButtonDisabled}
-            onClick={onRunHandler}
-            size="medium"
-            startIcon={<PlayCircleIcon />}
-            sx={{
-              minWidth: "120px",
-              maxWidth: "120px",
-              bgcolor: "#2A4D69",
-              "&:hover": { bgcolor: "5c87b1" },
-            }}
-            variant="contained"
-          >
-            Run
-            {t('run_button')}
-          </Button>
-        )}
-        {isRunButtonLoading && (
-          <LoadingButton
-            loading={isRunButtonLoading}
-            loadingPosition="center"
-            sx={{ minWidth: "120px", maxWidth: "120px" }}
-            color="secondary"
-            variant="contained"
-          >
-            Run...
-            {t('run_loading_button')}
-          </LoadingButton>
+      {/* DataInput title section */}
+      <DataInputViewTitle />
+
+      {/* DataInput parameters section */}
+      <Box sx={{ backgroundColor: "#DDEBEF", padding: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Country
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedCountry={props.selectedCountry}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Hazard
+              isValidHazard={props.isValidHazard}
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedHazard={props.selectedHazard}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Scenario
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedScenario={props.selectedScenario}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TimeHorizon
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedTimeHorizon={props.selectedTimeHorizon}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <AnnualGrowth
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
+              selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ExposureEconomic
+              isValidExposureEconomic={props.isValidExposureEconomic}
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedExposureEconomic={props.selectedExposureEconomic}
+              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ExposureNonEconomic
+              isValidExposureNonEconomic={props.isValidExposureNonEconomic}
+              onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedExposureEconomic={props.selectedExposureEconomic}
+              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Run button section */}
+        <Grid item xs={12}>
+          <Box sx={{ textAlign: "center", mt: 2 }}>
+            {!isRunButtonLoading ? (
+              <Button
+                key="runButton"
+                disabled={isRunButtonDisabled}
+                onClick={onRunHandler}
+                size="medium"
+                startIcon={<PlayCircleIcon />}
+                sx={{
+                  minWidth: "120px",
+                  bgcolor: "#FFCCCC",
+                  "&:hover": { bgcolor: "#F79191" },
+                }}
+                variant="contained"
+              >
+                {t("run_button")}
+              </Button>
+            ) : (
+              <LoadingButton
+                loading={isRunButtonLoading}
+                loadingPosition="center"
+                sx={{ minWidth: "120px" }}
+                color="secondary"
+                variant="contained"
+              >
+                {t("run_loading_button")}
+              </LoadingButton>
+            )}
+          </Box>
+        </Grid>
+
+        {/* Alert message section */}
+        {message && showMessage && (
+          <AlertMessage
+            handleCloseMessage={handleCloseMessage}
+            message={message}
+            severity={severity}
+            showMessage={showMessage}
+          />
         )}
       </Box>
-      {showMessage && message !== "" && <Message />}
     </>
   );
 };

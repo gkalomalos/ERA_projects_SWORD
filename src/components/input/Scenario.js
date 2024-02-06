@@ -1,86 +1,86 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Select from "@mui/material/Select";
-import Typography from "@mui/material/Typography";
-
-const FUTURE_SCENARIOS = [
-  { label: "rcp26_label", value: "rcp26" },
-  { label: "rcp45_label", value: "rcp45" },
-  { label: "rcp60_label", value: "rcp60" },
-  { label: "rcp85_label", value: "rcp85" },
-];
-
-const HISTORICAL_SCENARIOS = [{ label: "historical_scenario_label", value: "historical" }];
+import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
 const Scenario = (props) => {
   const { t } = useTranslation();
-  const scenariosToShow =
-    props.scenarioCheck === "historical" ? HISTORICAL_SCENARIOS : FUTURE_SCENARIOS;
+  const [clicked, setClicked] = useState(false); // State to manage click animation
+  const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
+
+  const handleMouseDown = () => {
+    setClicked(true); // Trigger animation
+  };
+
+  const handleMouseUp = () => {
+    setClicked(false); // Reset animation
+  };
+
+  const handleClick = () => {
+    props.onCardClick("scenario");
+    props.onSelectTab(0);
+  };
+
+  const handleBgColor = () => {
+    if (props.selectedScenario) {
+      setBgcolor("#EBF3F5"); //change to #E5F5EB
+    } else {
+      setBgcolor("#EBF3F5") // Change to FFCCCC
+    }
+  };
+
+  useEffect(() => {
+    handleBgColor();
+  }, [props.selectedScenario]);
 
   return (
-    <Box
+    <Card
+      variant="outlined"
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
+      onClick={handleClick}
       sx={{
-        minWidth: 250,
-        maxWidth: 350,
-        marginBottom: 4,
-        marginLeft: 4,
-        marginTop: 4,
-        marginRight: 0,
+        cursor: "pointer",
+        bgcolor: bgcolor,
+        transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
+        "&:hover": {
+          bgcolor: "#DAE7EA",
+        },
+        ".MuiCardContent-root:last-child": {
+          padding: 2,
+        },
+        transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
       }}
     >
-      <Typography id="scenario-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
-        {t("scenario_title")}
-      </Typography>
+      <CardContent>
+        <Box>
+          <Typography id="scenario-dropdown" gutterBottom variant="h6" component="div">
+            {t("scenario_title")}
+          </Typography>
 
-      <FormControl>
-        <RadioGroup
-          row
-          aria-labelledby="timehorizon-radio-button-label"
-          name="timehorizon-row-radio-buttons-group"
-          onChange={props.onChangeRadio}
-          defaultValue={"historical"}
-          defaultChecked
-        >
-          <FormControlLabel
-            value="historical"
-            control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label={t("historical_label")}
-          />
-          <FormControlLabel
-            value="future"
-            control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label={t("future_projection_label")}
-          />
-        </RadioGroup>
-      </FormControl>
-      <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-        <InputLabel id="scenario-select-label">{t("scenario_title")}</InputLabel>
-        <Select
-          defaultValue=""
-          disabled={props.disabled}
-          id="scenario-select"
-          input={<OutlinedInput label={t("scenario_title")} />}
-          labelId="scenario-select-label"
-          onChange={props.onChange}
-          value={props.value}
-        >
-          {scenariosToShow.map((scenario) => (
-            <MenuItem key={scenario.value} value={scenario.value}>
-              {t(scenario.label)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+          {props.selectedScenario && (
+            <TextField
+              id="scenario"
+              fullWidth
+              variant="outlined"
+              value={t(`input_scenario_scenarios_${props.selectedScenario}`)}
+              disabled
+              InputProps={{
+                readOnly: true,
+              }}
+              sx={{
+                ".MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#A6A6A6", // Change the text color for disabled content
+                  bgcolor: "#E6E6E6", // Change background for disabled TextField
+                  padding: 1,
+                },
+              }}
+            />
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 

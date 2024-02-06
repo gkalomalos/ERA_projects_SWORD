@@ -1,67 +1,14 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
 
-import { Paper, Box, Button, Typography } from "@mui/material";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import PublicIcon from "@mui/icons-material/Public";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import TimelineIcon from "@mui/icons-material/Timeline";
+import { Paper } from "@mui/material";
 
 import ExposureMap from "./ExposureMap";
 import HazardMap from "./HazardMap";
 import RiskMap from "./RiskMap";
 
-const MapLayout = (props) => {
-  const { t } = useTranslation();
-  const [activeMap, setActiveMap] = useState("exposures");
-  const [isExposuresSelected, setIsExposuresSelected] = useState(true);
-  const [isHazardsSelected, setIsHazardsSelected] = useState(false);
-  const [isRisksSelected, setIsRisksSelected] = useState(false);
-  const [isCostsSelected, setIsCostsSelected] = useState(false);
-
-  const onClickExposureButtonHandler = () => {
-    setIsExposuresSelected(true);
-    setIsHazardsSelected(false);
-    setIsRisksSelected(false);
-    setIsCostsSelected(false);
-    setActiveMap("exposures");
-  };
-
-  const onClickHazardButtonHandler = () => {
-    setIsExposuresSelected(false);
-    setIsHazardsSelected(true);
-    setIsRisksSelected(false);
-    setIsCostsSelected(false);
-    setActiveMap("hazards");
-  };
-
-  const onClickRiskButtonHandler = () => {
-    setIsExposuresSelected(false);
-    setIsHazardsSelected(false);
-    setIsRisksSelected(true);
-    setIsCostsSelected(false);
-    setActiveMap("risks");
-  };
-
-  const onClickCostButtonHandler = () => {
-    setIsExposuresSelected(false);
-    setIsHazardsSelected(false);
-    setIsRisksSelected(false);
-    setIsCostsSelected(true);
-    setActiveMap("costs");
-  };
-
+const MapLayout = ({ activeMap, selectedCountry }) => {
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Typography
-        id="map-title"
-        gutterBottom
-        variant="h6"
-        sx={{ fontWeight: "bold", marginTop: 4 }}
-        textAlign="center"
-      >
-        {props.mapTitle}
-      </Typography>
+    <div style={{ height: "80%", display: "flex", flexDirection: "column" }}>
       <Paper
         elevation={3}
         style={{
@@ -71,88 +18,10 @@ const MapLayout = (props) => {
           overflow: "hidden",
         }}
       >
-        {activeMap === "exposures" && <ExposureMap selectedCountry={props.selectedCountry} />}
-        {activeMap === "hazards" && <HazardMap selectedCountry={props.selectedCountry} />}
-        {activeMap === "risks" && <RiskMap selectedCountry={props.selectedCountry} />}
+        {activeMap === "exposure" && <ExposureMap selectedCountry={selectedCountry} />}
+        {activeMap === "hazard" && <HazardMap selectedCountry={selectedCountry} />}
+        {activeMap === "impact" && <RiskMap selectedCountry={selectedCountry} />}
       </Paper>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexWrap: "wrap",
-          textAlign: "center",
-          marginBottom: 4,
-        }}
-      >
-        <Button
-          onClick={onClickExposureButtonHandler}
-          size="medium"
-          startIcon={<PublicIcon />}
-          sx={{
-            flexGrow: 1,
-            margin: 1,
-            marginRight: 4,
-            minWidth: "120px",
-            maxWidth: "120px",
-            bgcolor: isExposuresSelected ? "#2A4D69" : "#5C87B1",
-            "&:hover": { bgcolor: "9886D6" },
-          }}
-          variant="contained"
-        >
-          {t("exposure_title")}
-        </Button>
-        <Button
-          onClick={onClickHazardButtonHandler}
-          size="medium"
-          startIcon={<ReportProblemIcon />}
-          sx={{
-            flexGrow: 1,
-            margin: 1,
-            marginRight: 4,
-            minWidth: "120px",
-            maxWidth: "120px",
-            bgcolor: isHazardsSelected ? "#2A4D69" : "#5C87B1",
-            "&:hover": { bgcolor: "9886D6" },
-          }}
-          variant="contained"
-        >
-          {t("hazard_title")}
-        </Button>
-        <Button
-          onClick={onClickRiskButtonHandler}
-          size="medium"
-          startIcon={<TimelineIcon />}
-          sx={{
-            flexGrow: 1,
-            margin: 1,
-            marginRight: 4,
-            minWidth: "120px",
-            maxWidth: "120px",
-            bgcolor: isRisksSelected ? "#2A4D69" : "#5C87B1",
-            "&:hover": { bgcolor: "9886D6" },
-          }}
-          variant="contained"
-        >
-          {t("impact_title")}
-        </Button>
-        <Button
-          onClick={onClickCostButtonHandler}
-          size="medium"
-          startIcon={<AttachMoneyIcon />}
-          sx={{
-            flexGrow: 1,
-            margin: 1,
-            minWidth: "120px",
-            maxWidth: "120px",
-            bgcolor: isCostsSelected ? "#2A4D69" : "#5C87B1",
-            "&:hover": { bgcolor: "9886D6" },
-          }}
-          variant="contained"
-        >
-          {t("cost_title")}
-        </Button>
-      </Box>
     </div>
   );
 };

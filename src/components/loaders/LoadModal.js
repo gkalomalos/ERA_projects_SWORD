@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Slide from "@mui/material/Slide";
 
-import Loader from "../loader/Loader";
+import Loader from "./Loader";
 import GearLoader from "../../assets/gear-loader.svg";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

@@ -1,114 +1,99 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Select from "@mui/material/Select";
-import Typography from "@mui/material/Typography";
-
-const HAZARDS = [
-  { key: "hydrological-label", value: "", name: "hydrological_label", isLabel: true },
-  { key: "river-flood", value: "river_flood", name: "river_flood" },
-  { key: "flood", value: "flood", name: "flood" },
-  { key: "geophysical-label", value: "", name: "geophysical_label", isLabel: true },
-  { key: "earthquake", value: "earthquake", name: "earthquake" },
-  { key: "meteorological-label", value: "", name: "meteorological_label", isLabel: true },
-  { key: "tropical-cyclone", value: "tropical_cyclone", name: "tropical_cyclone" },
-  { key: "climatological-label", value: "", name: "climatological_label", isLabel: true },
-  { key: "wildfire", value: "wildfire", name: "wildfire" },
-];
+import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
 const Hazard = (props) => {
   const { t } = useTranslation();
+  const [clicked, setClicked] = useState(false); // State to manage click animation
+  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+
+  const handleMouseDown = () => {
+    setClicked(true); // Trigger animation
+  };
+
+  const handleMouseUp = () => {
+    setClicked(false); // Reset animation
+  };
+
+  const handleClick = () => {
+    props.onCardClick("hazard");
+    props.onSelectTab(0);
+  };
+
+  const handleBgColor = () => {
+    if (props.selectedHazard && props.isValidHazard) {
+      setBgColor("#E5F5EB"); //green
+    } else if (props.selectedHazard && !props.isValidHazard) {
+      setBgColor("#FFCCCC"); //red
+    } else {
+      setBgColor("#EBF3F5"); //default light blue
+    }
+  };
+
+  // TODO:
+  // 1. Define the Function Inside useEffect
+  // If handleBgColor is only used in this useEffect and doesn't depend on external variables that
+  // change over time, you could define it inside the useEffect itself. This way, it doesn't need to
+  // be included in the dependency array:
+  // 2. Use useCallback
+  // If handleBgColor is used outside the useEffect or depends on props or state, you could wrap it
+  // with useCallback to ensure it only gets redefined when its own dependencies change.
+  // This makes it safe to include in the useEffect dependency array:
+  // 3. Exclude the Function with a Justification
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    handleBgColor();
+  }, [props.selectedHazard, props.isValidHazard]);
 
   return (
-    <Box
+    <Card
+      variant="outlined"
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
+      onClick={handleClick}
       sx={{
-        minWidth: 250,
-        maxWidth: 350,
-        marginBottom: 4,
-        marginLeft: 4,
-        marginTop: 4,
-        marginRight: 0,
+        cursor: "pointer",
+        bgcolor: bgColor,
+        transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
+        "&:hover": {
+          bgcolor: "#DAE7EA",
+        },
+        ".MuiCardContent-root:last-child": {
+          padding: 2,
+        },
+        transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
       }}
     >
-      <Typography id="hazard-dropdown" gutterBottom sx={{ fontWeight: "bold" }} variant="h6">
-        {t("hazard_title")}
-      </Typography>
-      <FormControl>
-        <RadioGroup
-          aria-labelledby="hazard-radio-button-label"
-          defaultChecked
-          defaultValue={props.defaultValue}
-          name="hazard-row-radio-buttons-group"
-          onChange={props.onChangeRadio}
-          row
-        >
-          <FormControlLabel
-            control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label={t("select_hazard_label")}
-            value="select"
-          />
-          <FormControlLabel
-            control={<Radio sx={{ "&.Mui-checked": { color: "#2A4D69" } }} />}
-            label={t("load_hazard_label")}
-            value="load"
-          />
-        </RadioGroup>
-      </FormControl>
-      {props.hazardCheck === "select" && (
-        <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-          <InputLabel id="hazard-select-label">{t("hazard_title")}</InputLabel>
-          <Select
-            defaultValue=""
-            disabled={props.disabled}
-            id="hazard-select"
-            input={<OutlinedInput label={t("hazard_title")} />}
-            labelId="hazard-select-label"
-            onChange={props.onSelectChange}
-            value={props.value}
-          >
-            {HAZARDS.map((option) => (
-              <MenuItem
-                key={option.key}
-                value={option.value}
-                disabled={option.isLabel}
-                style={{ paddingLeft: option.isLabel ? "20px" : "30px" }}
-              >
-                {t(option.name)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-      {props.hazardCheck === "load" && (
-        <label htmlFor="hazard-contained-button-file">
-          <Button
-            component="span"
-            disabled={props.disabled}
-            sx={{ bgcolor: "#2A4D69", "&:hover": { bgcolor: "5C87B1" } }}
-            variant="contained"
-          >
-            {t("load_hazard_label")}
-            <input
-              accept=".hdf5"
-              hidden
-              id="hazard-contained-button-file"
-              multiple={false}
-              onChange={props.onLoadChange}
-              type="file"
+      <CardContent>
+        <Box>
+          <Typography id="hazard-dropdown" gutterBottom variant="h6" component="div">
+            {t("hazard_title")}
+          </Typography>
+          {props.selectedHazard && (
+            <TextField
+              id="hazard"
+              fullWidth
+              variant="outlined"
+              value={t(`input_hazard_${props.selectedHazard}`)}
+              disabled
+              InputProps={{
+                readOnly: true,
+              }}
+              sx={{
+                ".MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#A6A6A6", // Change the text color for disabled content
+                  bgcolor: "#E6E6E6", // Change background for disabled TextField
+                  padding: 1,
+                },
+              }}
             />
-          </Button>
-        </label>
-      )}
-    </Box>
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 

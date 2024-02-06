@@ -219,6 +219,11 @@ ipcMain.on("shutdown", () => {
   app.quit();
 });
 
+ipcMain.on("reload", () => {
+  console.log("Reload CLIMADA App...");
+  mainWindow.webContents.reloadIgnoringCache();
+});
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
