@@ -1,8 +1,8 @@
-import sys
 import json
+import sys
 
-from run_scenario import run_scenario
 from run_check_data_type import run_check_data_type
+from run_scenario import run_scenario
 
 
 def process_message(message):

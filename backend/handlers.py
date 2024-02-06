@@ -1,7 +1,6 @@
-import json
-from pathlib import Path
-from time import time
 from datetime import datetime
+import json
+from time import time
 
 import geopandas as gpd
 import numpy as np
@@ -15,13 +14,7 @@ from climada.entity.impact_funcs.trop_cyclone import ImpfSetTropCyclone
 from climada.hazard import Hazard
 from climada.util.api_client import Client
 from scipy.interpolate import interp1d
-from constants import (
-    DATA_EXPOSURES_DIR,
-    DATA_HAZARDS_DIR,
-    TEMP_DIR,
-    REQUIREMENTS_DIR,
-    TEMP_DIR,
-)
+from constants import DATA_EXPOSURES_DIR, DATA_HAZARDS_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -34,9 +27,7 @@ def get_exposure(country: str) -> Exposures:
     start_time = time()
     client = Client()
     try:
-        exposure = client.get_litpop(
-            country=country, exponents=(1, 1), dump_dir=Path(DATA_EXPOSURES_DIR)
-        )
+        exposure = client.get_litpop(country=country, exponents=(1, 1), dump_dir=DATA_EXPOSURES_DIR)
         status_message = f"Finished fetching exposure from client in {time() - start_time}sec."
         logger.log("info", status_message)
         return exposure
@@ -52,7 +43,7 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
         exposure_gdf = exposure.gdf
         country_iso3 = get_iso3_country_code(country_name)
 
-        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
         layers = [0, 1, 2]
 
         all_layers_geojson = {"type": "FeatureCollection", "features": []}
@@ -87,7 +78,7 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
                 logger.log("error", f"An error occurred while processing layer {layer}: {e}")
 
         # Save the combined GeoJSON file
-        map_data_filepath = TEMP_DIR / "exposures_geodata.json"
+        map_data_filepath = DATA_TEMP_DIR / "exposures_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(all_layers_geojson, f)
 
@@ -99,7 +90,7 @@ def generate_exposure_geojson(exposure: Exposures, country_name: str):
 
 def get_entity_from_xlsx(filepath: str) -> Entity:
     try:
-        entity_filepath = Path(DATA_EXPOSURES_DIR) / filepath
+        entity_filepath = DATA_EXPOSURES_DIR / filepath
         entity = Entity.from_excel(entity_filepath)
         return entity
     except Exception as exc:
@@ -240,9 +231,7 @@ def get_hazard(hazard_type: str, scenario: str, time_horizon: str, country: str)
         hazard = client.get_hazard(
             hazard_type=hazard_type,
             properties=hazard_properties,
-            dump_dir=Path(
-                DATA_HAZARDS_DIR,
-            ),
+            dump_dir=DATA_HAZARDS_DIR,
         )
         status_message = f"Finished fetching hazards from client in {time() - start_time}sec."
         logger.log("info", status_message)
@@ -270,7 +259,7 @@ def generate_hazard_geojson(
 ):
     try:
         country_iso3 = get_iso3_country_code(country_name)
-        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
         intensity_thres = get_hazard_intensity_thres(hazard)
         hazard.intensity_thres = intensity_thres
 
@@ -296,7 +285,7 @@ def generate_hazard_geojson(
         hazard_geojson = joined_gdf.__geo_interface__
 
         # Save the combined GeoJSON file
-        map_data_filepath = TEMP_DIR / f"hazards_geodata.json"
+        map_data_filepath = DATA_TEMP_DIR / f"hazards_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(hazard_geojson, f)
     except Exception as exception:
@@ -319,7 +308,7 @@ def get_hazard_from_hdf5(filepath) -> Hazard:
         The combined hazard object if the file exists. None if the file does not exist.
     """
     try:
-        filepath = Path(DATA_HAZARDS_DIR, filepath)
+        filepath = DATA_HAZARDS_DIR / filepath
         if filepath.exists():
             logger.log(
                 "info", f"File {filepath} already exists and will be used to create Hazard object."
@@ -338,7 +327,7 @@ def get_hazard_from_hdf5(filepath) -> Hazard:
 
 def get_hazard_from_xlsx(filepath) -> Hazard:
     try:
-        hazard_filepath = Path(DATA_HAZARDS_DIR, filepath)
+        hazard_filepath = DATA_HAZARDS_DIR / filepath
         hazard = Hazard()
         hazard.from_excel(hazard_filepath)
         return hazard
@@ -545,7 +534,7 @@ def generate_impact_geojson(
 ):
     try:
         country_iso3 = get_iso3_country_code(country_name)
-        GADM41_filename = Path(REQUIREMENTS_DIR) / f"gadm41_{country_iso3}.gpkg"
+        GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
 
         admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
         coords = np.array(impact.coord_exp)
@@ -570,7 +559,7 @@ def generate_impact_geojson(
         impact_geojson = joined_gdf.__geo_interface__
 
         # Save the combined GeoJSON file
-        map_data_filepath = TEMP_DIR / f"risks_geodata.json"
+        map_data_filepath = DATA_TEMP_DIR / f"risks_geodata.json"
         with open(map_data_filepath, "w") as f:
             json.dump(impact_geojson, f)
     except Exception as exception:
@@ -786,18 +775,9 @@ def beautify_time_horizon(time_horizon: str) -> str:
 def clear_temp_dir():
     """
     Clear all helper temp files from the temp directory.
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-
     """
-    path = Path(TEMP_DIR)
     try:
-        for file in path.glob("*"):
-            Path(path, file).unlink(missing_ok=True)
+        for file in DATA_TEMP_DIR.glob("*"):
+            file.unlink(missing_ok=True)
     except Exception as exc:
-        logger.log("error", f"Error while trying to clear temp directort. More info: {exc}")
-        pass
+        logger.log("ερρορ", f"Error while trying to clear temp directory. More info: {exc}")

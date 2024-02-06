@@ -8,10 +8,9 @@ from constants import (
     DATA_ENTITIES_DIR,
     DATA_EXPOSURES_DIR,
     DATA_HAZARDS_DIR,
-    DATA_REPORTS_DIR,
     DATA_DIR,
     LOG_DIR,
-    TEMP_DIR,
+    DATA_TEMP_DIR,
 )
 import handlers
 from logger_config import LoggerConfig
@@ -35,55 +34,24 @@ if not path.exists(DATA_EXPOSURES_DIR):
     makedirs(DATA_EXPOSURES_DIR)
 if not path.exists(DATA_HAZARDS_DIR):
     makedirs(DATA_HAZARDS_DIR)
-if not path.exists(DATA_REPORTS_DIR):
-    makedirs(DATA_REPORTS_DIR)
 if not path.exists(LOG_DIR):
     makedirs(LOG_DIR)
-if not path.exists(TEMP_DIR):
-    makedirs(TEMP_DIR)
+if not path.exists(DATA_TEMP_DIR):
+    makedirs(DATA_TEMP_DIR)
 
 
 def run_scenario(request: dict) -> dict:
     """
-    Run a scenario based on the given request and return the response.
+    Run a scenario based on the provided request parameters.
 
-    This function processes the request and runs the appropriate scenario, generates
-    maps and plots, and creates .xlsx and .pdf reports for the scenario. It returns
-    a dictionary containing the map title and status message.
-
-    Parameters
-    ----------
-    request : dict
-        A dictionary containing the necessary information for running the scenario,
-        including keys such as "annualGrowth", "exposure", "hazard", "scenario",
-        and "timeHorizon".
-
-    Returns
-    -------
-    dict
-        A dictionary containing the map title and status message, with keys "data" and "status".
-
-    Example
-    -------
-    request = {
-        "annualGrowth": 1.02,
-        "exposure": {
-            "file": "exposure_file.xlsx",
-            "value": ["Country1", "Country2"],
-        },
-        "hazard": {
-            "file": "hazard_file.hdf5",
-            "value": "hazard_type",
-        },
-        "scenario": "historical",
-        "timeHorizon": "2030",
-    }
-    response = run_scenario(request)
+    :param request: A dictionary containing the request parameters.
+    :type request: dict
+    :return: A dictionary containing the response data and status.
+    :rtype: dict
     """
     initial_time = time()
     update_progress(10, "Setting up scenario parameters...")
 
-    annual_growth = request.get("annualGrowth", 0)  # TODO: Delete
     annual_population_growth = request.get("annualPopulationGrowth", 0)
     annual_gdp_growth = request.get("annualGDPGrowth", 0)
     country_name = request.get("countryName", "")
