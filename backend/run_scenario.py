@@ -81,26 +81,30 @@ def run_scenario(request: dict) -> dict:
     response = run_scenario(request)
     """
     initial_time = time()
-    annual_growth = request["annualGrowth"]
-    country = request["country"]
-    exposure_data = request["exposure"]
-    hazard_data = request["hazard"]
-    scenario = request["scenario"]
-    time_horizon = request["timeHorizon"]
+    annual_growth = request.get("annualGrowth", 0)  # TODO: Delete
+    annual_population_growth = request.get("annualPopulationGrowth", 0)
+    annual_gdp_growth = request.get("annualGDPGrowth", 0)
+    country_name = request.get("countryName", "")
+    exposure_economic = request.get("exposureEconomic", "")
+    exposure_non_economic = request.get("exposureNonEconomic", "")
+    hazard_type = request.get("hazardType", "")
+    scenario = request.get("scenario", "")
+    time_horizon = request.get("timeHorizon", "")
 
-    exposure_filename = exposure_data["file"]
-    hazard_filename = hazard_data["file"]
+    country_name = handlers.sanitize_country_name(country_name)
+    exposure_type = exposure_economic if exposure_economic else exposure_non_economic
+    exposure_filename = request.get("exposureFile", "")
+    hazard_filename = request.get("hazardFile", "")
 
-    # Clear previously generated exposure/hazard/impact maps abd temp directory
+    # # Clear previously generated exposure/hazard/impact maps abd temp directory
     handlers.clear_temp_dir()
 
     update_progress(10, "Setting up scenario parameters...")
     # FLOW 1: User selects exposure and hazard.
     if exposure_filename == "" and hazard_filename == "":
         try:
-            hazard_type = hazard_data["value"]
             update_progress(20, "Generating Exposure object...")
-            exposure = handlers.get_exposure_new(country)
+            exposure = handlers.get_exposure_new(country_name)
             # Cast annual growth to present exposure
             if annual_growth > 1:
                 update_progress(30, "Cast annual growth to present Exposure object...")
@@ -112,96 +116,96 @@ def run_scenario(request: dict) -> dict:
                 exposure = exposure_future
 
             update_progress(40, "Generating Exposure geojson data files...")
-            handlers.generate_exposure_geojson(exposure, country)
+            handlers.generate_exposure_geojson(exposure, country_name)
 
             update_progress(50, "Generating Hazard object...")
-            hazard = handlers.get_hazard_new(hazard_type, scenario, time_horizon, country)
+            hazard = handlers.get_hazard_new(hazard_type, scenario, time_horizon, country_name)
             update_progress(60, "Generating Hazard geojson data files...")
-            handlers.generate_hazard_geojson(hazard=hazard, country_name=country)
+            handlers.generate_hazard_geojson(hazard, country_name)
         except Exception as exception:
             status = {"code": 3000, "message": str(exception)}
             response = {"data": {"mapTitle": ""}, "status": status}
             return response
 
-    # FLOW 2: User loads exposure and selects hazard.
-    elif exposure_filename != "" and hazard_filename == "":
-        try:
-            hazard_type = hazard_data["value"]
-            exposure_present = handlers.get_exposure_from_xlsx(
-                path.join(DATA_EXPOSURES_DIR, exposure_filename)
-            )
-            update_progress(20, "Generating geojson data files")
-            handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
+    # # FLOW 2: User loads exposure and selects hazard.
+    # elif exposure_filename != "" and hazard_filename == "":
+    #     try:
+    #         hazard_type = hazard_data["value"]
+    #         exposure_present = handlers.get_exposure_from_xlsx(
+    #             path.join(DATA_EXPOSURES_DIR, exposure_filename)
+    #         )
+    #         update_progress(20, "Generating geojson data files")
+    #         handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
 
-            update_progress(30, "Setting up hazard...")
-            handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
-            if scenario != "historical":
-                handlers.generate_hazard_geojson(hazard=hazard_future, country_name=country)
-        except Exception as exception:
-            status = {"code": 3000, "message": str(exception)}
-            response = {"data": {"mapTitle": ""}, "status": status}
-            return response
+    #         update_progress(30, "Setting up hazard...")
+    #         handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
+    #         if scenario != "historical":
+    #             handlers.generate_hazard_geojson(hazard=hazard_future, country_name=country)
+    #     except Exception as exception:
+    #         status = {"code": 3000, "message": str(exception)}
+    #         response = {"data": {"mapTitle": ""}, "status": status}
+    #         return response
 
-    # FLOW 3: User selects exposure and loads hazard.
-    elif exposure_filename == "" and hazard_filename != "":
-        h5_hazard_data = handlers.get_fields_from_hazard_file(hazard_filename)
-        scenario = h5_hazard_data["scenario"]
-        time_horizon = h5_hazard_data["time_horizon"]
-        try:
-            exposure_present = handlers.get_exposure(country)
-            update_progress(20, "Generating geojson data files")
-            handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
+    # # FLOW 3: User selects exposure and loads hazard.
+    # elif exposure_filename == "" and hazard_filename != "":
+    #     h5_hazard_data = handlers.get_fields_from_hazard_file(hazard_filename)
+    #     scenario = h5_hazard_data["scenario"]
+    #     time_horizon = h5_hazard_data["time_horizon"]
+    #     try:
+    #         exposure_present = handlers.get_exposure(country)
+    #         update_progress(20, "Generating geojson data files")
+    #         handlers.generate_hazard_geojson(hazard=hazard_present, country_name=country)
 
-            update_progress(30, "Setting up hazard...")
-            if scenario == "historical":
-                hazard_present = handlers.get_hazard_from_hdf5(
-                    path.join(DATA_HAZARDS_DIR, hazard_filename)
-                )
-                hazard_type = handlers.get_hazard_type_from_Hazard(hazard_present)
-            else:
-                hazard_future = handlers.get_hazard_from_hdf5(
-                    path.join(DATA_HAZARDS_DIR, hazard_filename)
-                )
-                hazard_type = handlers.get_hazard_type_from_Hazard(hazard_future)
-                hazard_present = handlers.get_hazard(
-                    hazard_type, "historical", "1980_2020", country
-                )
-        except Exception as exception:
-            status = {"code": 3000, "message": str(exception)}
-            response = {"data": {"mapTitle": ""}, "status": status}
-            return response
+    #         update_progress(30, "Setting up hazard...")
+    #         if scenario == "historical":
+    #             hazard_present = handlers.get_hazard_from_hdf5(
+    #                 path.join(DATA_HAZARDS_DIR, hazard_filename)
+    #             )
+    #             hazard_type = handlers.get_hazard_type_from_Hazard(hazard_present)
+    #         else:
+    #             hazard_future = handlers.get_hazard_from_hdf5(
+    #                 path.join(DATA_HAZARDS_DIR, hazard_filename)
+    #             )
+    #             hazard_type = handlers.get_hazard_type_from_Hazard(hazard_future)
+    #             hazard_present = handlers.get_hazard(
+    #                 hazard_type, "historical", "1980_2020", country
+    #             )
+    #     except Exception as exception:
+    #         status = {"code": 3000, "message": str(exception)}
+    #         response = {"data": {"mapTitle": ""}, "status": status}
+    #         return response
 
-    # FLOW 4: User loads exposure and loads hazard.
-    elif exposure_filename != "" and hazard_filename != "":
-        h5_hazard_data = handlers.get_fields_from_hazard_file(hazard_filename)
-        scenario = h5_hazard_data["scenario"]
-        time_horizon = h5_hazard_data["time_horizon"]
-        try:
-            exposure_present = handlers.get_exposure_from_xlsx(
-                path.join(DATA_EXPOSURES_DIR, exposure_filename)
-            )
-            update_progress(20, "Generating geojson data files")
-            handlers.generate_exposure_geojson(exposure_present, country)
+    # # FLOW 4: User loads exposure and loads hazard.
+    # elif exposure_filename != "" and hazard_filename != "":
+    #     h5_hazard_data = handlers.get_fields_from_hazard_file(hazard_filename)
+    #     scenario = h5_hazard_data["scenario"]
+    #     time_horizon = h5_hazard_data["time_horizon"]
+    #     try:
+    #         exposure_present = handlers.get_exposure_from_xlsx(
+    #             path.join(DATA_EXPOSURES_DIR, exposure_filename)
+    #         )
+    #         update_progress(20, "Generating geojson data files")
+    #         handlers.generate_exposure_geojson(exposure_present, country)
 
-            update_progress(30, "Setting up hazard...")
-            if scenario == "historical":
-                hazard_present = handlers.get_hazard_from_hdf5(
-                    path.join(DATA_HAZARDS_DIR, hazard_filename)
-                )
-                hazard_type = handlers.get_hazard_type_from_Hazard(hazard_present)
-            else:
-                hazard_future = handlers.get_hazard_from_hdf5(
-                    path.join(DATA_HAZARDS_DIR, hazard_filename)
-                )
-                hazard_type = handlers.get_hazard_type_from_Hazard(hazard_future)
-                hazard_present = handlers.get_hazard(
-                    hazard_type, "historical", "1980_2020", country
-                )
-        except Exception as exception:
-            status = {"code": 3000, "message": str(exception)}
-            response = {"data": {"mapTitle": ""}, "status": status}
-            return response
-    update_progress(70, "Generating Impact object...")
+    #         update_progress(30, "Setting up hazard...")
+    #         if scenario == "historical":
+    #             hazard_present = handlers.get_hazard_from_hdf5(
+    #                 path.join(DATA_HAZARDS_DIR, hazard_filename)
+    #             )
+    #             hazard_type = handlers.get_hazard_type_from_Hazard(hazard_present)
+    #         else:
+    #             hazard_future = handlers.get_hazard_from_hdf5(
+    #                 path.join(DATA_HAZARDS_DIR, hazard_filename)
+    #             )
+    #             hazard_type = handlers.get_hazard_type_from_Hazard(hazard_future)
+    #             hazard_present = handlers.get_hazard(
+    #                 hazard_type, "historical", "1980_2020", country
+    #             )
+    #     except Exception as exception:
+    #         status = {"code": 3000, "message": str(exception)}
+    #         response = {"data": {"mapTitle": ""}, "status": status}
+    #         return response
+    # update_progress(70, "Generating Impact object...")
 
     # Calculate impact function
     impact_function_set = handlers.calculate_impact_function_set(
@@ -209,15 +213,12 @@ def run_scenario(request: dict) -> dict:
         impact_function_name="Flood Africa JRC Residential",  # TODO: Needs change
     )
     # Calculate present impact
-    impact = handlers.calculate_impact(
-        exposure=exposure,
-        hazard=hazard,
-        impact_function_set=impact_function_set,
-    )
+    impact = handlers.calculate_impact(exposure, hazard, impact_function_set)
     update_progress(80, "Generating Impact geojson data files...")
-    handlers.generate_impact_geojson(impact, country)
+    handlers.generate_impact_geojson(impact, country_name)
 
-    map_title = handlers.set_map_title(hazard_type, [country], time_horizon, scenario)
+    map_title = handlers.set_map_title(hazard_type, [country_name], time_horizon, scenario)
+
     run_status_message = f"Scenario run successfully."
     update_progress(100, run_status_message)
     response = {

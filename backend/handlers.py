@@ -168,6 +168,51 @@ def get_exposure_new(country: str) -> Exposures:
         raise ValueError(status_message)
 
 
+def sanitize_country_name(country_name):
+    try:
+        country = pycountry.countries.search_fuzzy(country_name)[0]
+        return country.name
+    except LookupError as exception:
+        logger.log(
+            "debug",
+            f"Error while trying to sanitize country name. More info: {exception}",
+        )
+        raise ValueError(f"Failed to sanitize country name: {country_name}. More info: {exception}")
+
+
+def get_iso3_country_code(country_name: str):
+    try:
+        country_code = pycountry.countries.search_fuzzy(country_name)[0].alpha_3
+        return country_code
+    except Exception as exception:
+        logger.log(
+            "debug",
+            f"Error while trying to match hazard time horizon datasets. More info: {exception}",
+        )
+        raise ValueError(
+            f"Failed to retrieve ISO3 country code for country {country_name}. More info: {exception}"
+        )
+
+
+def check_data_type(country_name: str, data_type: str) -> list:
+    """
+    Checks if CLIMADA API offers this data type for the specific country.
+    """
+    dataset_infos = []
+    try:
+        client = Client()
+        dataset_infos = client.list_dataset_infos(
+            data_type=data_type,
+            properties={
+                "country_name": country_name,
+            },
+        )
+        return len(dataset_infos) > 0
+    except Exception as exception:
+        logger.log("debug", f"An error has occured. More info: {exception}")
+        return False
+
+
 def generate_exposure_geojson(exposure: Exposures, country_name: str):
     try:
         exposure_gdf = exposure.gdf

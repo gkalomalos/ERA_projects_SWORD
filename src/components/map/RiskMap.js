@@ -95,8 +95,8 @@ const RiskMap = ({ selectedCountry }) => {
   };
 
   const countryCoordinates = {
-    Egypt: [26.8206, 30.8025],
-    Thailand: [15.87, 100.9925],
+    egypt: [26.8206, 30.8025],
+    thailand: [15.87, 100.9925],
   };
 
   useEffect(() => {

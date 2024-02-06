@@ -1,3 +1,5 @@
+import React from "react";
+
 import IconButton from "@mui/material/IconButton";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 

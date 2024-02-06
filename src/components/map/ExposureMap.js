@@ -76,8 +76,8 @@ const ExposureMap = ({ selectedCountry }) => {
   };
 
   const countryCoordinates = {
-    Egypt: [26.8206, 30.8025],
-    Thailand: [15.87, 100.9925],
+    egypt: [26.8206, 30.8025],
+    thailand: [15.87, 100.9925],
   };
 
   const onEachFeature = (feature, layer) => {
@@ -85,24 +85,36 @@ const ExposureMap = ({ selectedCountry }) => {
       const country = feature.properties["COUNTRY"];
       const value = feature.properties.value;
       if (activeAdminLayer === 0) {
-        layer.bindPopup(`${t("country")}: ${country}<br>${t("value")}: ${value}`);
+        layer.bindPopup(
+          `${t("map_exposure_popup_country")}: ${country}<br>${t(
+            "map_exposure_popup_value"
+          )}: ${value}`
+        );
       }
       if (activeAdminLayer === 1) {
         const name1 = feature.properties["NAME_1"];
         layer.bindPopup(
-          `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t("value")}: ${value}`
+          `${t("map_exposure_popup_country")}: ${country}<br>${t(
+            "map_exposure_popup_admin1"
+          )}: ${name1}<br>${t("map_exposure_popup_value")}: ${value}`
         );
       }
       if (activeAdminLayer === 2) {
         const name1 = feature.properties["NAME_1"];
         const name2 = feature.properties["NAME_2"];
         layer.bindPopup(
-          `Country: ${country}<br>Admin 1: ${name1}<br>Admin 2: ${name2}<br>Value: ${value}`
+          `${t("map_exposure_popup_country")}: ${country}<br>${t(
+            "map_exposure_popup_admin1"
+          )}: ${name1}<br>${t("map_exposure_popup_admin2")}: ${name2}<br>${t(
+            "map_exposure_popup_value"
+          )}: ${value}`
         );
         layer.bindPopup(
-          `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t(
-            "admin_2"
-          )}: ${name2}<br>${t("value")}: ${value}`
+          `${t("map_exposure_popup_country")}: ${country}<br>${t(
+            "map_exposure_popup_admin1"
+          )}: ${name1}<br>${t("map_exposure_popup_admin2")}: ${name2}<br>${t(
+            "map_exposure_popup_value"
+          )}: ${value}`
         );
       }
     }
@@ -138,7 +150,8 @@ const ExposureMap = ({ selectedCountry }) => {
             onClick={() => handleAdminLayerChange(layer)}
             variant="contained"
           >
-            {t("admin")}{layer}
+            {t("map_exposure_button_admin")}
+            {layer}
           </Button>
         ))}
       </div>

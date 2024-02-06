@@ -1,52 +1,72 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Select from "@mui/material/Select";
-
-const FUTURE_TIME_HORIZON = [
-  { label: "2010 - 2030", value: "2010_2030" },
-  { label: "2030 - 2050", value: "2030_2050" },
-  { label: "2050 - 2070", value: "2050_2070" },
-  { label: "2070 - 2090", value: "2070_2090" },
-];
-
-const HISTORICAL_TIME_HORIZON = [{ label: "1980 - 2020", value: "1980_2020" }];
+import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
 const TimeHorizon = (props) => {
   const { t } = useTranslation();
+  const [clicked, setClicked] = useState(false); // State to manage click animation
 
-  const timeHorizonsToShow =
-    props.scenario === "historical" ? HISTORICAL_TIME_HORIZON : FUTURE_TIME_HORIZON;
+  const handleMouseDown = () => {
+    setClicked(true); // Trigger animation
+  };
+
+  const handleMouseUp = () => {
+    setClicked(false); // Reset animation
+  };
+
+  const handleClick = () => {
+    props.onCardClick("timeHorizon");
+    props.onSelectTab(0);
+  };
+
   return (
-    <Box sx={{ minWidth: 250, maxWidth: 350, margin: 4 }}>
-      <Typography id="time-horizon-dropdown" gutterBottom variant="h6" sx={{ fontWeight: "bold" }}>
-        {t("time_horizon_title")}
-      </Typography>
-      <FormControl sx={{ m: 1, minWidth: 250, maxWidth: 300 }}>
-        <InputLabel id="scenario-select-label">Time Horizon</InputLabel>
-        <Select
-          defaultValue=""
-          disabled={props.disabled}
-          id="time-horizon-select"
-          input={<OutlinedInput label="Time Horizon" />}
-          labelId="time-horizon-select-label"
-          onChange={props.onSelectChange}
-          value={props.value}
-        >
-          {timeHorizonsToShow.map((horizon) => (
-            <MenuItem key={horizon.value} value={horizon.value}>
-              {horizon.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+    <Card
+      variant="outlined"
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
+      onClick={handleClick}
+      sx={{
+        cursor: "pointer",
+        bgcolor: "#EBF3F5",
+        transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
+        "&:hover": {
+          bgcolor: "#DAE7EA",
+        },
+        ".MuiCardContent-root:last-child": {
+          padding: 2,
+        },
+        transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
+      }}
+    >
+      <CardContent>
+        <Box>
+          <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div">
+            {t("time_horizon_title")}
+          </Typography>
+          {props.selectedTimeHorizon && (
+            <TextField
+              id="timeHorizon"
+              fullWidth
+              variant="outlined"
+              value={props.selectedTimeHorizon}
+              disabled
+              InputProps={{
+                readOnly: true,
+              }}
+              sx={{
+                ".MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#A6A6A6", // Change the text color for disabled content
+                  bgcolor: "#E6E6E6", // Change background for disabled TextField
+                  padding: 1,
+                },
+              }}
+            />
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
