@@ -21,10 +21,12 @@ const exposureNonEconomicDict = {
 };
 
 const ExposureNonEconomicCard = ({
+  onChangeExposureFile,
   onChangeValidNonEconomicExposure,
   onExposureNonEconomicSelect,
   selectedCountry,
   selectedExposureNonEconomic,
+  selectedExposureFile,
 }) => {
   const { t } = useTranslation();
 
@@ -32,7 +34,6 @@ const ExposureNonEconomicCard = ({
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
-  const [uploadedFileName, setUploadedFileName] = useState("");
 
   const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry] || [];
 
@@ -51,7 +52,7 @@ const ExposureNonEconomicCard = ({
     setFetchExposureMessage("");
     const file = event.target.files[0];
     if (file) {
-      setUploadedFileName(file.name);
+      onChangeExposureFile(file.name);
     }
   };
 
@@ -60,7 +61,7 @@ const ExposureNonEconomicCard = ({
   };
 
   const clearUploadedFile = () => {
-    setUploadedFileName("");
+    onChangeExposureFile("");
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-non-economic-contained-button-file").value = "";
   };
@@ -71,7 +72,7 @@ const ExposureNonEconomicCard = ({
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    setUploadedFileName("");
+    onChangeExposureFile("");
     const body = {
       country: selectedCountry,
       dataType: selectedExposureNonEconomic,
@@ -199,7 +200,7 @@ const ExposureNonEconomicCard = ({
         )}
 
         {/* Display uploaded file name section */}
-        {uploadedFileName && (
+        {selectedExposureFile && (
           <Box
             sx={{
               display: "flex",
@@ -209,7 +210,7 @@ const ExposureNonEconomicCard = ({
             }}
           >
             <Typography variant="body2" color="text.primary" sx={{ textAlign: "center" }}>
-              {t("card_exposure_non_economic_upload_file")}: {uploadedFileName}
+              {t("card_exposure_non_economic_upload_file")}: {selectedExposureFile}
             </Typography>
             <IconButton onClick={clearUploadedFile} size="small" sx={{ color: "#F35A5A" }}>
               <CloseIcon />

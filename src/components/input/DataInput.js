@@ -32,10 +32,10 @@ const DataInput = (props) => {
       annualGDPGrowth: props.selectedAnnualGDPGrowth,
       countryName: props.selectedCountry,
       exposureEconomic: props.selectedExposureEconomic,
-      exposureFile: "",
+      exposureFile: props.selectedExposureFile,
       exposureNonEconomic: props.selectedExposureNonEconomic,
       hazardType: props.selectedHazard,
-      hazardFile: "",
+      hazardFile: props.selectedHazardFile,
       scenario: props.selectedScenario,
       timeHorizon: props.selectedTimeHorizon,
     };

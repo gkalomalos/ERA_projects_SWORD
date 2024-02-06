@@ -20,9 +20,11 @@ const ViewCard = (props) => {
       {props.selectedCard === "hazard" && (
         <HazardCard
           onChangeValidHazard={props.onChangeValidHazard}
+          onChangeHazardFile={props.onChangeHazardFile}
           onHazardSelect={props.onChangeHazard}
           selectedCountry={props.selectedCountry}
           selectedHazard={props.selectedHazard}
+          selectedHazardFile={props.selectedHazardFile}
         />
       )}
       {props.selectedCard === "scenario" && (
@@ -47,17 +49,21 @@ const ViewCard = (props) => {
       )}
       {props.selectedCard === "exposureEconomic" && (
         <ExposureEconomicCard
+          onChangeExposureFile={props.onChangeExposureFile}
           onChangeValidEconomicExposure={props.onChangeValidEconomicExposure}
           onExposureEconomicSelect={props.onChangeExposureEconomic}
           selectedCountry={props.selectedCountry}
+          selectedExposureFile={props.selectedExposureFile}
           selectedExposureEconomic={props.selectedExposureEconomic}
         />
       )}
       {props.selectedCard === "exposureNonEconomic" && (
         <ExposureNonEconomicCard
+          onChangeExposureFile={props.onChangeExposureFile}
           onChangeValidNonEconomicExposure={props.onChangeValidNonEconomicExposure}
           onExposureNonEconomicSelect={props.onChangeExposureNonEconomic}
           selectedCountry={props.selectedCountry}
+          selectedExposureFile={props.selectedExposureFile}
           selectedExposureNonEconomic={props.selectedExposureNonEconomic}
         />
       )}

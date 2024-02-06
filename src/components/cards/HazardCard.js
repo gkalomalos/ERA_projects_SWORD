@@ -20,14 +20,20 @@ const hazardDict = {
   egypt: ["flash_flood", "heatwaves"],
 };
 
-const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, selectedHazard }) => {
+const HazardCard = ({
+  onChangeHazardFile,
+  onChangeValidHazard,
+  onHazardSelect,
+  selectedCountry,
+  selectedHazard,
+  selectedHazardFile,
+}) => {
   const { t } = useTranslation();
 
   const [fetchHazardMessage, setFetchHazardMessage] = useState("");
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
-  const [uploadedFileName, setUploadedFileName] = useState("");
 
   const hazards = hazardDict[selectedCountry] || [];
 
@@ -37,6 +43,8 @@ const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, sele
     } else {
       onHazardSelect(hazard);
     }
+    onChangeValidHazard(false);
+    setFetchHazardMessage("");
   };
 
   const isButtonSelected = (hazard) => selectedHazard === hazard;
@@ -44,9 +52,11 @@ const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, sele
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Hazard data if existing
     setFetchHazardMessage("");
+    onChangeValidHazard(false);
     const file = event.target.files[0];
     if (file) {
-      setUploadedFileName(file.name);
+      onChangeHazardFile(file.name);
+      onChangeValidHazard(true);
     }
   };
 
@@ -55,18 +65,22 @@ const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, sele
   };
 
   const clearUploadedFile = () => {
-    setUploadedFileName("");
+    onChangeHazardFile("");
+    onChangeValidHazard(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("hazard-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchHazardMessage("");
+    onChangeValidHazard(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    setUploadedFileName("");
+    onChangeHazardFile("");
+    setFetchHazardMessage("");
+    onChangeValidHazard(false);
     const body = {
       country: selectedCountry,
       dataType: selectedHazard,
@@ -196,7 +210,7 @@ const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, sele
         )}
 
         {/* Display uploaded file name section */}
-        {uploadedFileName && (
+        {selectedHazardFile && (
           <Box
             sx={{
               display: "flex",
@@ -206,7 +220,7 @@ const HazardCard = ({ onChangeValidHazard, onHazardSelect, selectedCountry, sele
             }}
           >
             <Typography variant="body2" color="text.primary" sx={{ textAlign: "center" }}>
-              {t("card_exposure_economic_upload_file")}: {uploadedFileName}
+              {t("card_exposure_economic_upload_file")}: {selectedHazardFile}
             </Typography>
             <IconButton onClick={clearUploadedFile} size="small" sx={{ color: "#F35A5A" }}>
               <CloseIcon />

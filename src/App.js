@@ -22,8 +22,10 @@ const App = () => {
   const [selectedCard, setSelectedCard] = useState("country");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedExposureEconomic, setSelectedExposureEconomic] = useState("");
+  const [selectedExposureFile, setSelectedExposureFile] = useState("");
   const [selectedExposureNonEconomic, setSelectedExposureNonEconomic] = useState("");
   const [selectedHazard, setSelectedHazard] = useState("");
+  const [selectedHazardFile, setSelectedHazardFile] = useState("");
   const [selectedScenario, setSelectedScenario] = useState("");
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedTimeHorizon, setSelectedTimeHorizon] = useState(2024);
@@ -44,6 +46,10 @@ const App = () => {
     setSelectedExposureEconomic(exposureEconomic);
   };
 
+  const setSelectedExposureFileHandler = (exposureFile) => {
+    setSelectedExposureFile(exposureFile);
+  };
+
   const setValidExposureEconomicHandler = (isValid) => {
     setIsValidExposureEconomic(isValid);
   };
@@ -62,6 +68,10 @@ const App = () => {
 
   const setSelectedHazardHandler = (hazard) => {
     setSelectedHazard(hazard);
+  };
+
+  const setSelectedHazardFileHandler = (hazardFile) => {
+    setSelectedHazardFile(hazardFile);
   };
 
   const setSelectedScenarioHandler = (scenario) => {
@@ -97,10 +107,15 @@ const App = () => {
     setSelectedAnnualPopulationGrowth(0);
     setSelectedAnnualGDPGrowth(0);
     setSelectedExposureEconomic("");
+    setSelectedExposureFile("");
     setSelectedExposureNonEconomic("");
     setSelectedHazard("");
+    setSelectedHazardFile("");
     setSelectedScenario("");
     setSelectedTimeHorizon(2024);
+    setValidExposureEconomicHandler(false);
+    setValidExposureNonEconomicHandler(false);
+    setValidHazardHandler(false);
   }, [selectedCountry]);
 
   useEffect(() => {
@@ -131,8 +146,10 @@ const App = () => {
             selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
             selectedCountry={selectedCountry}
             selectedExposureEconomic={selectedExposureEconomic}
+            selectedExposureFile={selectedExposureFile}
             selectedExposureNonEconomic={selectedExposureNonEconomic}
             selectedHazard={selectedHazard}
+            selectedHazardFile={selectedHazardFile}
             selectedScenario={selectedScenario}
             selectedTimeHorizon={selectedTimeHorizon}
           />
@@ -146,8 +163,10 @@ const App = () => {
             selectedCard={selectedCard}
             selectedCountry={selectedCountry}
             selectedExposureEconomic={selectedExposureEconomic}
+            selectedExposureFile={selectedExposureFile}
             selectedExposureNonEconomic={selectedExposureNonEconomic}
             selectedHazard={selectedHazard}
+            selectedHazardFile={selectedHazardFile}
             selectedScenario={selectedScenario}
             selectedTimeHorizon={selectedTimeHorizon}
             selectedTab={selectedTab}
@@ -156,8 +175,10 @@ const App = () => {
             onChangeAnnualGDPGrowth={setSelectedAnnualGDPGrowthHandler}
             onChangeCountry={setSelectedCountryHandler}
             onChangeExposureEconomic={setSelectedExposureEconomicHandler}
+            onChangeExposureFile={setSelectedExposureFileHandler}
             onChangeExposureNonEconomic={setSelectedExposureNonEconomicHandler}
             onChangeHazard={setSelectedHazardHandler}
+            onChangeHazardFile={setSelectedHazardFileHandler}
             onChangeScenario={setSelectedScenarioHandler}
             onChangeTimeHorizon={setSelectedTimeHorizonHandler}
             onChangeValidEconomicExposure={setValidExposureEconomicHandler}
