@@ -22,8 +22,7 @@ const MainViewTitle = ({ selectedTab, mapTitle }) => {
           borderRadius: "4px",
         }}
       >
-        {t(`main_view_tab_${selectedTab}_title`)}
-        {mapTitle ? `${mapTitle}` : ""}
+        {mapTitle ? `${mapTitle}` : t(`main_view_tab_${selectedTab}_title`)}
       </Typography>
     </Box>
   );
