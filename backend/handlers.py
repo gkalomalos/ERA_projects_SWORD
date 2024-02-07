@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 import json
 from os import makedirs, path
@@ -105,6 +106,24 @@ def get_entity_from_xlsx(filepath: str) -> Entity:
         return entity
     except Exception as exc:
         logger.log("error", f"An error occurred while trying to create entity from xlsx: {exc}")
+        return None
+
+
+def calculate_exposure_growth_rate(
+    exposure: Exposures, annual_growth: float, future_year: int
+) -> Exposures:
+    try:
+        present_year = exposure.ref_year
+        exposure_future = deepcopy(exposure)
+        exposure_future.ref_year = future_year
+        number_of_years = future_year - present_year + 1
+        growth = annual_growth**number_of_years
+        exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
+        return exposure_future
+    except Exception as exc:
+        logger.log(
+            "error", f"An error occurred while trying to calculate exposure growth rate: {exc}"
+        )
         return None
 
 
