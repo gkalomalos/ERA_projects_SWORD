@@ -49,6 +49,22 @@ def get_exposure(country: str) -> Exposures:
         raise ValueError(status_message)
 
 
+def get_growth_exposure(exposure: Exposures, annual_growth: float, future_year: int) -> Exposures:
+    try:
+        present_year = exposure.ref_year
+        exposure_future = deepcopy(exposure)
+        exposure_future.ref_year = future_year
+        number_of_years = future_year - present_year + 1
+        growth = annual_growth**number_of_years
+        exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
+        return exposure_future
+    except Exception as exc:
+        logger.log(
+            "error", f"An error occurred while trying to calculate exposure growth rate: {exc}"
+        )
+        return None
+
+
 def generate_exposure_geojson(exposure: Exposures, country_name: str):
     try:
         exposure_gdf = exposure.gdf
@@ -106,24 +122,6 @@ def get_entity_from_xlsx(filepath: str) -> Entity:
         return entity
     except Exception as exc:
         logger.log("error", f"An error occurred while trying to create entity from xlsx: {exc}")
-        return None
-
-
-def calculate_exposure_growth_rate(
-    exposure: Exposures, annual_growth: float, future_year: int
-) -> Exposures:
-    try:
-        present_year = exposure.ref_year
-        exposure_future = deepcopy(exposure)
-        exposure_future.ref_year = future_year
-        number_of_years = future_year - present_year + 1
-        growth = annual_growth**number_of_years
-        exposure_future.gdf["value"] = exposure_future.gdf["value"] * growth
-        return exposure_future
-    except Exception as exc:
-        logger.log(
-            "error", f"An error occurred while trying to calculate exposure growth rate: {exc}"
-        )
         return None
 
 
@@ -593,6 +591,9 @@ def generate_impact_geojson(
             json.dump(impact_geojson, f)
     except Exception as exception:
         logger.log("error", f"An unexpected error occurred. More info: {exception}")
+
+
+# COST BENEFIT ANALYSIS METHODS DEFINITION
 
 
 # GENERIC METHODS DEFINITION

@@ -54,7 +54,7 @@ def run_scenario(request: dict) -> dict:
             exposure_present = handlers.get_exposure(country_name)
             if annual_growth != 0:
                 future_year = int(time_horizon)
-                exposure_future = handlers.calculate_exposure_growth_rate(
+                exposure_future = handlers.get_growth_exposure(
                     exposure_present, annual_growth, future_year
                 )
         else:
@@ -63,9 +63,9 @@ def run_scenario(request: dict) -> dict:
             exposure_present = entity_present.exposures
             if annual_growth != 0:
                 future_year = int(time_horizon)
-                exposure_future = handlers.calculate_exposure_growth_rate(
+                exposure_future = handlers.get_growth_exposure(
                     exposure_present, annual_growth, future_year
-                )            
+                )
 
         # Generate geojson data files
         handlers.update_progress(30, "Generating Exposure geojson data files...")
