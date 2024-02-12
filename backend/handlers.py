@@ -173,7 +173,7 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
     time_horizon_beautified = beautify_time_horizon(time_horizon)
 
     if scenario == "historical":
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon_beautified} ({scenario_beautified} scenario)."
+        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon_beautified} {scenario_beautified} scenario."
     else:
         map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon_beautified} (scenario {scenario_beautified})."
     return map_title

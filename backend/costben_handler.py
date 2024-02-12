@@ -1,6 +1,6 @@
 from climada.entity.measures import Measure, MeasureSet
 
-from hazard_handler import HazardHandler
+from hazard.hazard_handler import HazardHandler
 from logger_config import LoggerConfig
 
 hazard_handler = HazardHandler()

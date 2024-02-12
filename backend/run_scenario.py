@@ -11,9 +11,9 @@ from handlers import (
 )
 
 from costben_handler import CostBenefitHandler
-from exposure_handler import ExposureHandler
-from hazard_handler import HazardHandler
-from impact_handler import ImpactHandler
+from exposure.exposure_handler import ExposureHandler
+from hazard.hazard_handler import HazardHandler
+from impact.impact_handler import ImpactHandler
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
