@@ -1,9 +1,9 @@
 {
-  "name": "climada-unu",
-  "productName": "CLIMADA-UNU",
+  "name": "climadera",
+  "productName": "CLIMADERA",
   "description": "Desktop GUI application for fully probabilistic climate risk assessment tool Climada. Provides a framework for users to combine exposure, hazard and vulnerability or impact data to calculate risk.",
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "main": "build/electron.js",
   "homepage": ".",
@@ -69,8 +69,8 @@
   },
   "build": {
     "asar": false,
-    "appId": "com.unu.climada-unu",
-    "productName": "CLIMADA-UNU",
+    "appId": "com.unu.climadera",
+    "productName": "CLIMADERA",
     "files": [
       "build/**/*",
       "backend/**/*",
