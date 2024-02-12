@@ -1,9 +1,11 @@
 from copy import deepcopy
+from dataclasses import dataclass, field
 from datetime import datetime
 import json
 from os import makedirs, path
 import sys
 from time import time
+from typing import Optional, Tuple
 
 import geopandas as gpd
 import numpy as np
@@ -14,6 +16,7 @@ from climada.engine import Impact, ImpactCalc
 from climada.entity import Entity, Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet
 from climada.entity.impact_funcs.trop_cyclone import ImpfSetTropCyclone
+from climada.entity.measures import Measure, MeasureSet
 from climada.hazard import Hazard
 from climada.util.api_client import Client
 from scipy.interpolate import interp1d
@@ -366,110 +369,36 @@ def get_hazard_from_xlsx(filepath) -> Hazard:
         return None
 
 
-def get_hazard_scenario_from_Hazard(hazard: Hazard) -> list:
+def get_hazard_code(hazard_type: str) -> str:
     """
-    Determine the hazard scenario from the given Hazard object.
+    Retrieve the code corresponding to a given hazard type.
 
-    Parameters
-    -----------
-    hazard : Hazard
-        The Hazard object containing the file name information used to identify the scenario.
+    This function maps a hazard type to its corresponding hazard code. If the hazard type is not recognized, it raises a ValueError.
 
-    Returns
-    --------
-    str
-        The identified hazard scenario as a string, or an empty string if no scenario is found.
-
-    Notes
-    ------
-    This method attempts to match the scenario of a given Hazard object by analyzing its file name attribute. It
-    iterates through a predefined list of possible scenarios and returns the first scenario found in the file names.
-    If no matching scenario is found, an empty string is returned.
+    :param hazard_type: The type of hazard as a string.
+    :type hazard_type: str
+    :return: The hazard code corresponding to the provided hazard type.
+    :rtype: str
+    :raises ValueError: If the hazard type is not recognized.
     """
-    # Split the file names by ';' and store them in a list
-    file_names = hazard.file_name.split(";")
+    # Mapping of hazard types to their corresponding codes
+    hazard_codes = {
+        "tropical_cyclone": "TC",
+        "river_flood": "RF",
+        "storm_europe": "WS",
+        "wildfire": "BF",
+        "earthquake": "EQ",
+        "flood": "FL",
+    }
 
-    # Define the list of possible scenarios
-    scenarios = ["rcp26", "rcp60", "rcp85", "hist"]
-    scenario = []
-    try:
-        # Find the first matching scenario in the file names
-        sc = next((s for s in scenarios for fn in file_names if s in fn), "")
-        if sc == "hist":
-            sc = "historical"
-        scenario = [sc]
-    except Exception as exc:
-        status_message = f"Error while trying to match hazard type and scenario. More info: {exc}"
-        raise Exception(status_message)
+    # Attempt to retrieve the code for the given hazard type
+    code = hazard_codes.get(hazard_type)
 
-    return scenario
+    # Raise an exception if the hazard type is not found
+    if code is None:
+        raise ValueError(f"Hazard type '{hazard_type}' is not recognized.")
 
-
-def get_hazard_time_horizon_from_Hazard(hazard: Hazard) -> list:
-    """
-    Determine the hazard time horizon from the given Hazard object.
-
-    Parameters
-    -----------
-    hazard : Hazard
-        The Hazard object containing event date information used to identify the time horizon.
-
-    Returns
-    --------
-    list
-        A list containing a single string representing the matching time horizon in the format "start_year-end_year".
-        If no matching time horizon is found, the list will be empty.
-
-    Notes
-    ------
-    This method attempts to match the time horizon of a given Hazard object by analyzing its event dates.
-    It iterates through a predefined list of possible year ranges and returns the first matching range
-    where the minimum and maximum event dates fall within the same range.
-    If no matching range is found, an empty list is returned.
-    """
-    try:
-        scenario = get_hazard_scenario_from_Hazard(hazard)
-        hazard_type = hazard.haz_type
-        if scenario == ["historical"]:
-            if hazard_type == "WS":
-                return ["1940_2014"]
-            if hazard_type == "RF":
-                return ["1980_2000"]
-            if hazard_type == "TC":
-                return ["1980_2000"]
-            if hazard_type == "EQ":
-                return ["1980_2000"]
-
-        else:
-            # Get event dates as a list of strings and convert them to datetime objects
-            dates = [
-                datetime.strptime(date_string, "%Y-%m-%d")
-                for date_string in hazard.get_event_date()
-            ]
-
-            # Find the min and max dates
-            min_date, max_date = min(dates), max(dates)
-
-            # Define year ranges as a list of tuples
-            year_ranges = [
-                (2010, 2030),
-                (2030, 2050),
-                (2050, 2070),
-                (2070, 2090),
-            ]
-
-            # Find the matching year range
-            matching_range = next(
-                (start_year, end_year)
-                for start_year, end_year in year_ranges
-                if start_year <= min_date.year < end_year and start_year <= max_date.year < end_year
-            )
-
-            # Return the matching range as a list of formatted strings, or an empty list if no match was found
-            return [f"{matching_range[0]}-{matching_range[1]}"] if matching_range else []
-    except Exception as e:
-        print("e:", e)
-        return []
+    return code
 
 
 # IMPACT METHODS DEFINITION
@@ -594,6 +523,33 @@ def generate_impact_geojson(
 
 
 # COST BENEFIT ANALYSIS METHODS DEFINITION
+
+
+def get_measures(adaptation_measures: list, hazard_type: str) -> list:
+    hazard_code = get_hazard_code(hazard_type)
+    measures = []
+    if adaptation_measures:
+        for adaptation_measure in adaptation_measures:
+            measure = get_measure(adaptation_measure)
+            measures.append(measure)
+    else:
+        measure = Measure(haz_type=hazard_code, name="Measure A", cost=0)
+        measures.append(measure)
+    return measures
+
+
+def get_measure(adaptation_measures: dict = None) -> Measure:
+    if adaptation_measures is None:
+        return Measure()
+    return Measure(**adaptation_measures)
+
+
+
+def get_measure_set(file_path, measures: list = None) -> MeasureSet:
+    if file_path:
+        return MeasureSet.from_excel(file_path)
+    else:
+        return MeasureSet(measures)
 
 
 # GENERIC METHODS DEFINITION

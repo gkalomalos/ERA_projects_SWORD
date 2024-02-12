@@ -23,6 +23,7 @@ def run_scenario(request: dict) -> dict:
     initial_time = time()
     handlers.update_progress(10, "Setting up scenario parameters...")
 
+    adaptation_measures = request.get("adaptationMeasures", [])
     annual_population_growth = request.get("annualPopulationGrowth", 0)
     annual_gdp_growth = request.get("annualGDPGrowth", 0)
     country_name = request.get("countryName", "")
@@ -116,6 +117,14 @@ def run_scenario(request: dict) -> dict:
             handlers.generate_impact_geojson(impact_present, country_name)
         else:
             handlers.generate_impact_geojson(impact_future, country_name)
+
+        # Calculate adaptation measures
+        if exposure_filename == "":
+            measures = handlers.get_measures(hazard_present)
+            measure_set = handlers.get_measure_set(measures=measures)
+            pass
+        else:
+            measure_set = handlers.get_measure_set(exposure_filename)
 
         map_title = handlers.set_map_title(hazard_type, country_name, time_horizon, scenario)
     except Exception as exception:
