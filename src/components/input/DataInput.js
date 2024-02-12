@@ -159,8 +159,8 @@ const DataInput = (props) => {
                 startIcon={<PlayCircleIcon />}
                 sx={{
                   minWidth: "120px",
-                  bgcolor: "#FFCCCC",
-                  "&:hover": { bgcolor: "#F79191" },
+                  bgcolor: "#F79191",
+                  "&:hover": { bgcolor: "#FFCCCC" },
                 }}
                 variant="contained"
               >
