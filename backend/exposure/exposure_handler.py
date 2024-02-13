@@ -6,7 +6,7 @@ import geopandas as gpd
 
 from climada.entity import Entity, Exposures
 from climada.util.api_client import Client
-from constants import DATA_EXPOSURES_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
+from constants import DATA_ENTITIES_DIR, DATA_EXPOSURES_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
 from handlers import get_iso3_country_code
 from logger_config import LoggerConfig
 
@@ -102,9 +102,31 @@ class ExposureHandler:
 
     def get_entity_from_xlsx(self, filepath: str) -> Entity:
         try:
-            entity_filepath = DATA_EXPOSURES_DIR / filepath
+            entity_filepath = DATA_ENTITIES_DIR / filepath
             entity = Entity.from_excel(entity_filepath)
+            entity.check()
+
+            columns = columns = [
+                "Category_ID",
+                "latitude",
+                "longitude",
+                "value",
+                "Value unit",
+                "Deductible",
+                "Cover",
+                "DamageFunID",
+                "Region_ID",
+                "impf_",
+            ]
+
+            exposure = entity.exposures
+            exposure.gdf = exposure.gdf[columns]
+            exposure.check()
+
             return entity
         except Exception as exc:
-            logger.log("error", f"An error occurred while trying to create entity from xlsx: {exc}")
+            logger.log(
+                "error",
+                f"An error occurred while trying to create entity from xlsx. More info: {exc}",
+            )
             return None

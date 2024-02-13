@@ -224,7 +224,7 @@ class HazardHandler:
         :rtype: str
         :raises ValueError: If the hazard type is not recognized.
         """
-        # Mapping of hazard types to their corresponding codes
+        # Map hazard types to their corresponding codes
         hazard_codes = {
             "tropical_cyclone": "TC",
             "river_flood": "RF",
@@ -234,7 +234,7 @@ class HazardHandler:
             "flood": "FL",
         }
 
-        # Attempt to retrieve the code for the given hazard type
+        # Retrieve the code for the given hazard type
         code = hazard_codes.get(hazard_type)
 
         # Raise an exception if the hazard type is not found
