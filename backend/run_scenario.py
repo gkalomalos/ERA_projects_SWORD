@@ -10,7 +10,7 @@ from handlers import (
     update_progress,
 )
 
-from costben_handler import CostBenefitHandler
+from costben.costben_handler import CostBenefitHandler
 from exposure.exposure_handler import ExposureHandler
 from hazard.hazard_handler import HazardHandler
 from impact.impact_handler import ImpactHandler
@@ -34,6 +34,12 @@ def run_scenario(request: dict) -> dict:
     initial_time = time()
     update_progress(10, "Setting up scenario parameters...")
 
+    # Initialize the handler instances
+    costben_handler = CostBenefitHandler()
+    exposure_handler = ExposureHandler()
+    hazard_handler = HazardHandler()
+    impact_handler = ImpactHandler()
+
     adaptation_measures = request.get("adaptationMeasures", [])
     annual_population_growth = request.get("annualPopulationGrowth", 0)
     annual_gdp_growth = request.get("annualGDPGrowth", 0)
@@ -45,6 +51,8 @@ def run_scenario(request: dict) -> dict:
     time_horizon = request.get("timeHorizon", "")
 
     country_name = sanitize_country_name(country_name)
+    hazard_code = hazard_handler.get_hazard_code(hazard_type)
+
     exposure_type = (
         exposure_economic if exposure_economic else exposure_non_economic
     )  # TODO: Needs redesign
@@ -53,12 +61,6 @@ def run_scenario(request: dict) -> dict:
     )  # TODO: Needs redesign
     exposure_filename = request.get("exposureFile", "")
     hazard_filename = request.get("hazardFile", "")
-
-    # Initialize the handler instances
-    costben_handler = CostBenefitHandler()
-    exposure_handler = ExposureHandler()
-    hazard_handler = HazardHandler()
-    impact_handler = ImpactHandler()
 
     # Clear previously generated exposure/hazard/impact maps abd temp directory
     clear_temp_dir()
@@ -138,12 +140,7 @@ def run_scenario(request: dict) -> dict:
             impact_handler.generate_impact_geojson(impact_future, country_name)
 
         # Calculate adaptation measures
-        # if exposure_filename == "":
-        #     measures = costben_handler.get_measures(hazard_present)
-        #     measure_set = costben_handler.get_measure_set(measures=measures)
-        #     pass
-        # else:
-        #     measure_set = costben_handler.get_measure_set(exposure_filename)
+        measure_set = costben_handler.get_measure_set(hazard_code, adaptation_measures)
 
         map_title = set_map_title(hazard_type, country_name, time_horizon, scenario)
     except Exception as exception:
