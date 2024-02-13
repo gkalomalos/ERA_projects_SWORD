@@ -49,3 +49,31 @@ class CostBenefitHandler:
         measure_set.check()
 
         return measure_set
+
+    def get_discount_rates_from_excel(self, file_path: str) -> DiscRates:
+        """
+        Load discount rates from an Excel file.
+
+        This function loads discount rates defined in an Excel file into a DiscRates object.
+        It validates the existence of the file and uses the DiscRates class method `from_excel`
+        to initialize the object. It also performs a check on the loaded data before returning.
+
+        :param file_path: The relative path to the Excel file within DATA_ENTITIES_DIR.
+        :return: A DiscRates instance populated with data from the Excel file.
+                Returns None if an error occurs during file loading or data checking.
+        :raises FileNotFoundError: If the specified Excel file does not exist.
+        """
+        full_path = DATA_ENTITIES_DIR / file_path
+        if not full_path.exists():
+            raise FileNotFoundError(f"The file {full_path} does not exist.")
+
+        try:
+            discount_rates = DiscRates.from_excel(full_path)
+            discount_rates.check()
+            return discount_rates
+        except Exception as exc:
+            logger.log(
+                "error",
+                f"An error occurred while trying to load discount rates from the Excel file. More info: {exc}",
+            )
+        return None
