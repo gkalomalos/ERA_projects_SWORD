@@ -154,7 +154,7 @@ def run_scenario(request: dict) -> dict:
         "data": {"mapTitle": map_title},
         "status": {"code": 2000, "message": run_status_message},
     }
-    logger.log("debug", f"Finished running scenario in {time() - initial_time}sec.")
+    logger.log("info", f"Finished running scenario in {time() - initial_time}sec.")
     return response
 
 

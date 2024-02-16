@@ -322,5 +322,5 @@ def update_progress(progress: int, message: str) -> None:
     """
     progress_data = {"type": "progress", "progress": progress, "message": message}
     print(json.dumps(progress_data))
-    logger.log("debug", f"send progress {progress} to frontend.")
+    logger.log("info", f"send progress {progress} to frontend.")
     sys.stdout.flush()

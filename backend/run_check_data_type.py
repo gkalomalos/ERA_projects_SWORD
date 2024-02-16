@@ -11,7 +11,7 @@ logger = LoggerConfig(logger_types=["file"])
 def update_progress(progress, message):
     progress_data = {"type": "progress", "progress": progress, "message": message}
     print(json.dumps(progress_data))
-    logger.log("debug", f"send progress {progress} to frontend.")
+    logger.log("info", f"send progress {progress} to frontend.")
     sys.stdout.flush()
 
 
@@ -43,7 +43,7 @@ def run_check_data_type(request: dict) -> dict:
     }
 
     # Clear files in temp directory
-    logger.log("debug", f"Finished fetching {data_type} data in {time() - initial_time}sec.")
+    logger.log("info", f"Finished fetching {data_type} data in {time() - initial_time}sec.")
     return response
 
 
