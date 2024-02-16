@@ -101,12 +101,14 @@ class HazardHandler:
         hazard_properties = self.get_hazard_dataset_properties(
             hazard_type, scenario, time_horizon, country
         )
+        hazard_code = self.get_hazard_code(hazard_type)
         try:
             hazard = self.client.get_hazard(
                 hazard_type=hazard_type,
                 properties=hazard_properties,
                 dump_dir=DATA_HAZARDS_DIR,
             )
+            hazard.intensity_thres = self.get_hazard_intensity_thres(hazard)
             status_message = f"Finished fetching hazards from client in {time() - start_time}sec."
             logger.log("info", status_message)
             return hazard
@@ -202,8 +204,7 @@ class HazardHandler:
     def get_hazard_from_xlsx(self, filepath: Path) -> Hazard:
         try:
             hazard_filepath = DATA_HAZARDS_DIR / filepath
-            hazard = Hazard()
-            hazard.from_excel(hazard_filepath)
+            hazard = Hazard().from_excel(hazard_filepath)
             return hazard
         except Exception as exception:
             logger.log(
