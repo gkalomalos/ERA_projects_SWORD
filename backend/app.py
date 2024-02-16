@@ -3,6 +3,7 @@ import sys
 
 from run_check_data_type import run_check_data_type
 from run_scenario import run_scenario
+from run_fetch_measures import run_fetch_measures
 
 
 def process_message(message):
@@ -14,6 +15,9 @@ def process_message(message):
         response = {"success": True, "result": result}
     elif script_name == "run_check_data_type.py":
         result = run_check_data_type(data)
+        response = {"success": True, "result": result}
+    elif script_name == "run_fetch_measures.py":
+        result = run_fetch_measures(data)
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}

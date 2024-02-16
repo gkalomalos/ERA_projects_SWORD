@@ -25,6 +25,19 @@ export default class APIService {
     }
   }
 
+  static async FetchAdaptationMeasures(body) {
+    try {
+      const scriptName = "run_fetch_measures.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async Shutdown() {
     try {
       const response = await window.electron.send("shutdown");

@@ -233,13 +233,20 @@ class HazardHandler:
             "wildfire": "BF",
             "earthquake": "EQ",
             "flood": "FL",
+            "flash_flood": "FL",
+            "drought": "D",
+            "heatwaves": "H",
         }
 
         # Retrieve the code for the given hazard type
-        code = hazard_codes.get(hazard_type)
+        code = hazard_codes.get(hazard_type, None)
 
         # Raise an exception if the hazard type is not found
         if code is None:
-            raise ValueError(f"Hazard type '{hazard_type}' is not recognized.")
+            # raise ValueError(f"Hazard type '{hazard_type}' is not recognized.")
+            logger.log(
+                "error",
+                f"Hazard type '{hazard_type}' is not recognized.",
+            )
 
         return code

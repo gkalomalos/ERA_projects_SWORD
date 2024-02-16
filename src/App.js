@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 
 import { Grid } from "@mui/material";
 
-import Header from "./components/nav/Header";
+import AdaptationMeasuresInput from "./components/input/AdaptationMeasuresInput";
 import DataInput from "./components/input/DataInput";
+import Header from "./components/nav/Header";
+import LoadModal from "./components/loaders/LoadModal";
 import MainTabs from "./components/main/MainTabs";
 import MainView from "./components/main/MainView";
-import LoadModal from "./components/loaders/LoadModal";
 import ResultsView from "./components/results/ResultsView";
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
   const [selectedHazardFile, setSelectedHazardFile] = useState("");
   const [selectedScenario, setSelectedScenario] = useState("");
   const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedSubTab, setSelectedSubTab] = useState(0);
   const [selectedTimeHorizon, setSelectedTimeHorizon] = useState(2024);
 
   const setMapTitleHandler = (data) => {
@@ -96,6 +98,11 @@ const App = () => {
 
   const setSelectedTabHandler = (tab) => {
     setSelectedTab(tab);
+    setSelectedSubTab(0);
+  };
+
+  const setSelectedSubTabHandler = (subTab) => {
+    setSelectedSubTab(subTab);
   };
 
   const setActiveMapHandler = (map) => {
@@ -131,28 +138,36 @@ const App = () => {
   return (
     <>
       <Header />
-      <MainTabs onChangeTab={setSelectedTabHandler} propSelectedTab={selectedTab} />
+      <MainTabs
+        onChangeTab={setSelectedTabHandler}
+        onChangeSubTab={setSelectedSubTabHandler}
+        propSelectedSubTab={selectedSubTab}
+        propSelectedTab={selectedTab}
+      />
       <Grid container spacing={2} style={{ padding: "16px", height: "calc(100vh - 64px)" }}>
         <Grid item xs={12} md={2}>
-          <DataInput
-            isValidExposureEconomic={isValidExposureEconomic}
-            isValidExposureNonEconomic={isValidExposureNonEconomic}
-            isValidHazard={isValidHazard}
-            onChangeCard={setSelectedCardHandler}
-            onChangeMapTitle={setMapTitleHandler}
-            onScenarioRunning={setIsScenarioRunningHandler}
-            onSelectTab={setSelectedTabHandler}
-            selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
-            selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
-            selectedCountry={selectedCountry}
-            selectedExposureEconomic={selectedExposureEconomic}
-            selectedExposureFile={selectedExposureFile}
-            selectedExposureNonEconomic={selectedExposureNonEconomic}
-            selectedHazard={selectedHazard}
-            selectedHazardFile={selectedHazardFile}
-            selectedScenario={selectedScenario}
-            selectedTimeHorizon={selectedTimeHorizon}
-          />
+          {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && (
+            <DataInput
+              isValidExposureEconomic={isValidExposureEconomic}
+              isValidExposureNonEconomic={isValidExposureNonEconomic}
+              isValidHazard={isValidHazard}
+              onChangeCard={setSelectedCardHandler}
+              onChangeMapTitle={setMapTitleHandler}
+              onScenarioRunning={setIsScenarioRunningHandler}
+              onSelectTab={setSelectedTabHandler}
+              selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
+              selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
+              selectedCountry={selectedCountry}
+              selectedExposureEconomic={selectedExposureEconomic}
+              selectedExposureFile={selectedExposureFile}
+              selectedExposureNonEconomic={selectedExposureNonEconomic}
+              selectedHazard={selectedHazard}
+              selectedHazardFile={selectedHazardFile}
+              selectedScenario={selectedScenario}
+              selectedTimeHorizon={selectedTimeHorizon}
+            />
+          )}
+          {selectedTab === 1 && <AdaptationMeasuresInput selectedHazard={selectedHazard} />}
         </Grid>
         <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
           <MainView
@@ -170,6 +185,7 @@ const App = () => {
             selectedScenario={selectedScenario}
             selectedTimeHorizon={selectedTimeHorizon}
             selectedTab={selectedTab}
+            selectedSubTab={selectedSubTab}
             onChangeActiveMap={setActiveMapHandler}
             onChangeAnnualPopulationGrowth={setSelectedAnnualPopulationGrowthHandler}
             onChangeAnnualGDPGrowth={setSelectedAnnualGDPGrowthHandler}

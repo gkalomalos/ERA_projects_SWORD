@@ -156,5 +156,6 @@
   "general_main_view_settings_dev_subtitle": "This view is currently under development.",
   "general_main_view_chart_dev_title": "Under Construction",
   "general_main_view_chart_dev_subtitle": "This view is currently under development.",
-  "adaptation_view_title": "Adaptation Parameters"
+  "adaptation_view_title": "Adaptation Parameters",
+  "adaptation_input_no_measures": "No adaptation measures available for selected Hazard"
 }
