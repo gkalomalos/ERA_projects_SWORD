@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import AdaptationMap from "../map/AdaptationMap";
 import ChartLayout from "../controls/ChartLayout";
 import MainViewControls from "../controls/MainViewControls";
 import MainViewTitle from "../title/MainViewTitle";
@@ -49,12 +50,22 @@ const MainView = (props) => {
         />
       )}
       {/* Render the main layout with the Economic & Non-Economic section according to each sub tab selected  */}
-      {/* Render MapLayout component */}
-      {props.selectedTab === 1 && (
+      {/* Render Economic & non-Economic - Risk view */}
+      {props.selectedTab === 1 && props.selectedSubTab === 0 && (
         <>
           {viewControl === "display_map" && (
             <MapLayout selectedCountry={props.selectedCountry} activeMap={props.activeMap} />
           )}
+          {viewControl === "display_chart" && <ChartLayout />}
+          {viewControl === "settings" && <SettingsView />}
+          {viewControl === "progress" && <ProgressView />}
+          <MainViewControls onChangeViewControls={setViewControlHandler} />
+        </>
+      )}
+      {/* Render Economic & non-Economic - Adaptation view */}
+      {props.selectedTab === 1 && props.selectedSubTab === 1 && (
+        <>
+          {viewControl === "display_map" && <AdaptationMap />}
           {viewControl === "display_chart" && <ChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}

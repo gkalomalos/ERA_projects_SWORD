@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Typography } from "@mui/material";
 
-const DataInputViewTitle = () => {
+const AdaptationMeasuresViewTitle = () => {
   const { t } = useTranslation();
 
   return (
@@ -22,10 +22,10 @@ const DataInputViewTitle = () => {
           borderRadius: "4px",
         }}
       >
-        {t(`input_view_title`)}
+        {t(`adaptation_view_title`)}
       </Typography>
     </Box>
   );
 };
 
-export default DataInputViewTitle;
+export default AdaptationMeasuresViewTitle;
