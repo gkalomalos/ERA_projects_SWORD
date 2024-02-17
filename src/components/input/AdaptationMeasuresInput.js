@@ -16,7 +16,8 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
     };
     APIService.FetchAdaptationMeasures(body)
       .then((response) => {
-        // Assuming the response.result.data.adaptationMeasures is an array of strings
+        console.log("response", response);
+        console.log("response.result.data.adaptationMeasures", response.result.data.adaptationMeasures);
         setAdaptationMeasures(response.result.data.adaptationMeasures);
       })
       .catch((error) => {
@@ -25,13 +26,16 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
   };
 
   useEffect(() => {
-    onFetchAdaptationMeasuresHandler();
+    if (selectedHazard) {
+      console.log('fetching adaptation measures')
+      onFetchAdaptationMeasuresHandler();
+    }
   }, [selectedHazard]);
 
   return (
     <>
       <AdaptationMeasuresViewTitle />
-      {adaptationMeasures.length > 0 ? (
+      {adaptationMeasures ? (
         <Box sx={{ mt: 2 }}>
           {adaptationMeasures.map((measureName, index) => (
             <Card

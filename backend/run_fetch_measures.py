@@ -36,7 +36,7 @@ def run_fetch_measures(request: dict) -> dict:
     update_progress(100, run_status_message)
 
     response = {
-        "data": {"data": data},
+        "data": data,
         "status": {"code": status_code, "message": run_status_message},
     }
 
