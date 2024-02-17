@@ -16,8 +16,6 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
     };
     APIService.FetchAdaptationMeasures(body)
       .then((response) => {
-        console.log("response", response);
-        console.log("response.result.data.adaptationMeasures", response.result.data.adaptationMeasures);
         setAdaptationMeasures(response.result.data.adaptationMeasures);
       })
       .catch((error) => {
@@ -27,7 +25,6 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
 
   useEffect(() => {
     if (selectedHazard) {
-      console.log('fetching adaptation measures')
       onFetchAdaptationMeasuresHandler();
     }
   }, [selectedHazard]);
@@ -35,7 +32,7 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
   return (
     <>
       <AdaptationMeasuresViewTitle />
-      {adaptationMeasures ? (
+      {adaptationMeasures.length > 0  ? (
         <Box sx={{ mt: 2 }}>
           {adaptationMeasures.map((measureName, index) => (
             <Card
@@ -55,7 +52,7 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
           ))}
         </Box>
       ) : (
-        <Typography sx={{ mt: 2, textAlign: "center" }}>
+        <Typography sx={{ mt: 2, textAlign: "center", fontStyle: "italic" }}>
           {t("adaptation_input_no_measures")} {/* Display a message if no measures are found */}
         </Typography>
       )}
