@@ -42,15 +42,22 @@ const RiskChartLayout = () => {
           overflow: "hidden",
         }}
       >
-        <Box textAlign="center" p={3}>
+        <Box textAlign="center" p={3} style={{ width: "100%", height: "100%" }}>
           {riskChartUrl ? (
             <img
               src={riskChartUrl}
               alt="Risk Chart"
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                objectPosition: "center center",
+              }}
             />
           ) : (
-            <Typography variant="body1">{t("economic_non_economic_risk_display_chart_loading_error")}</Typography>
+            <Typography variant="body1">
+              {t("economic_non_economic_risk_display_chart_loading_error")}
+            </Typography>
           )}
         </Box>
       </Paper>
