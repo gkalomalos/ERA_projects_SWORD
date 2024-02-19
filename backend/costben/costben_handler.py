@@ -143,7 +143,7 @@ class CostBenefitHandler:
                     entity_future,
                     risk_func=risk_aai_agg,
                 )
-                filename = DATA_TEMP_DIR / "waterfall_plot.png"
+                filename = DATA_TEMP_DIR / "risks_waterfall_plot.png"
                 plt.savefig(filename, dpi=300, bbox_inches="tight")
                 plt.close()
             return cost_benefit

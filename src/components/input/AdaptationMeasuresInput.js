@@ -10,7 +10,7 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
   const { t } = useTranslation();
   const [adaptationMeasures, setAdaptationMeasures] = useState([]);
 
-  const onFetchAdaptationMeasuresHandler = () => {
+  const onFetchAdaptationMeasuresHandler = async () => {
     const body = {
       hazardType: selectedHazard,
     };

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
 import AdaptationMap from "../map/AdaptationMap";
-import ChartLayout from "../controls/ChartLayout";
+import AdaptationChartLayout from "../controls/AdaptationChartLayout";
+import RiskChartLayout from "../controls/RiskChartLayout";
 import MainViewControls from "../controls/MainViewControls";
 import MainViewTitle from "../title/MainViewTitle";
 import MapLayout from "../map/MapLayout";
@@ -56,7 +57,7 @@ const MainView = (props) => {
           {viewControl === "display_map" && (
             <MapLayout selectedCountry={props.selectedCountry} activeMap={props.activeMap} />
           )}
-          {viewControl === "display_chart" && <ChartLayout />}
+          {viewControl === "display_chart" && <RiskChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}
           <MainViewControls onChangeViewControls={setViewControlHandler} />
@@ -66,7 +67,7 @@ const MainView = (props) => {
       {props.selectedTab === 1 && props.selectedSubTab === 1 && (
         <>
           {viewControl === "display_map" && <AdaptationMap />}
-          {viewControl === "display_chart" && <ChartLayout />}
+          {viewControl === "display_chart" && <AdaptationChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}
           <MainViewControls onChangeViewControls={setViewControlHandler} />
