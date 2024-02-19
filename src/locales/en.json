@@ -159,5 +159,6 @@
   "adaptation_view_title": "Adaptation Parameters",
   "adaptation_input_no_measures": "No adaptation measures available for selected Hazard",
   "economic_non_economic_risk_display_chart_title": "Impact of ",
-  "economic_non_economic_risk_display_chart_loading_error": "An error has occured while loading this chart. Please run a new scenario and try again."
+  "economic_non_economic_risk_display_chart_loading_error": "An error has occured while loading this chart. Please run a new scenario and try again.",
+  "economic_non_economic_adaptation_display_chart_loading_error": "An error has occured while loading this chart. Please run a new scenario and try again."
 }
