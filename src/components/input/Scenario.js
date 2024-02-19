@@ -55,7 +55,7 @@ const Scenario = (props) => {
     >
       <CardContent>
         <Box>
-          <Typography id="scenario-dropdown" gutterBottom variant="h6" component="div">
+          <Typography id="scenario-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("scenario_title")}
           </Typography>
 

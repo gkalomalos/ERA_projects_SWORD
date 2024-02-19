@@ -42,7 +42,7 @@ const TimeHorizon = (props) => {
     >
       <CardContent>
         <Box>
-          <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div">
+          <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("time_horizon_title")}
           </Typography>
           {props.selectedTimeHorizon && (

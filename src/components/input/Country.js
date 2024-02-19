@@ -55,7 +55,7 @@ const Country = (props) => {
     >
       <CardContent sx={{ p: 2 }}>
         <Box>
-          <Typography id="country-label" gutterBottom variant="h6" component="div">
+          <Typography id="country-label" gutterBottom variant="h6" component="div" m={0}>
             {t("country")}
           </Typography>
           {props.selectedCountry && (

@@ -8,7 +8,7 @@ import APIService from "../../APIService";
 
 const AdaptationMeasuresInput = ({ selectedHazard }) => {
   const { t } = useTranslation();
-  const [adaptationMeasures, setAdaptationMeasures] = useState([]);
+  const [adaptationMeasures, setAdaptationMeasures] = useState(["Sandbags", "Floodwalls"]);
 
   const onFetchAdaptationMeasuresHandler = async () => {
     const body = {
@@ -32,7 +32,7 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
   return (
     <>
       <AdaptationMeasuresViewTitle />
-      {adaptationMeasures.length > 0  ? (
+      {adaptationMeasures.length > 0 ? (
         <Box sx={{ mt: 2 }}>
           {adaptationMeasures.map((measureName, index) => (
             <Card
@@ -41,10 +41,11 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
               sx={{
                 bgcolor: "#EBF3F5",
                 mb: 2,
+                height: "48px",
               }}
             >
-              <CardContent sx={{ p: 2 }}>
-                <Typography gutterBottom variant="h6" component="div">
+              <CardContent sx={{ p: 1 }}>
+                <Typography gutterBottom variant="h6" component="div" sx={{ my: 0 }}>
                   {measureName}
                 </Typography>
               </CardContent>

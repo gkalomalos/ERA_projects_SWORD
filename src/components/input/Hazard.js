@@ -69,7 +69,7 @@ const Hazard = (props) => {
     >
       <CardContent>
         <Box>
-          <Typography id="hazard-dropdown" gutterBottom variant="h6" component="div">
+          <Typography id="hazard-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("hazard_title")}
           </Typography>
           {props.selectedHazard && (

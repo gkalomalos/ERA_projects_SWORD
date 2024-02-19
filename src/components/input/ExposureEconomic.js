@@ -84,7 +84,7 @@ const ExposureEconomic = (props) => {
     >
       <CardContent>
         <Box>
-          <Typography id="exposure-dropdown" gutterBottom variant="h6" component="div">
+          <Typography id="exposure-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("input_exposure_economic_title")}
           </Typography>
           {props.selectedExposureEconomic && (

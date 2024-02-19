@@ -43,7 +43,7 @@ const AnnualGrowth = (props) => {
       <CardContent>
         {/* Annual GDP growth section */}
         <Box>
-          <Typography id="annual-growth-gdp-slider" gutterBottom variant="h6" component="div">
+          <Typography id="annual-growth-gdp-slider" gutterBottom variant="h6" component="div" m={0}>
             {props.selectedAnnualGDPGrowth
               ? t("input_annual_gdp_growth_title")
               : t("input_annual_growth_title")}
