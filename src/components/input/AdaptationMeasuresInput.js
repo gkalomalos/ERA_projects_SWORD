@@ -28,12 +28,11 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
       onFetchAdaptationMeasuresHandler();
     }
   }, [selectedHazard]);
-
   return (
     <>
       <AdaptationMeasuresViewTitle />
       {adaptationMeasures.length > 0 ? (
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2, backgroundColor: "#DDEBEF", padding: 2, borderRadius: "8px" }}>
           {adaptationMeasures.map((measureName, index) => (
             <Card
               key={index}
