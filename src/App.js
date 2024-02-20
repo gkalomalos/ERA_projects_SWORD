@@ -167,7 +167,9 @@ const App = () => {
               selectedTimeHorizon={selectedTimeHorizon}
             />
           )}
-          {selectedTab === 1 && <AdaptationMeasuresInput selectedHazard={selectedHazard} />}
+          {selectedTab === 1 && selectedSubTab === 1 && (
+            <AdaptationMeasuresInput selectedHazard={selectedHazard} />
+          )}
         </Grid>
         <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
           <MainView

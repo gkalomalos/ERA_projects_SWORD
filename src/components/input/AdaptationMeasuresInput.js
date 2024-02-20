@@ -8,7 +8,7 @@ import APIService from "../../APIService";
 
 const AdaptationMeasuresInput = ({ selectedHazard }) => {
   const { t } = useTranslation();
-  const [adaptationMeasures, setAdaptationMeasures] = useState(["Sandbags", "Floodwalls"]);
+  const [adaptationMeasures, setAdaptationMeasures] = useState([]);
 
   const onFetchAdaptationMeasuresHandler = async () => {
     const body = {
