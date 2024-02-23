@@ -99,8 +99,8 @@ class CostBenefitHandler:
         self,
         hazard_present: Hazard,
         entity_present: Entity,
-        hazard_future: Hazard,
-        entity_future: Entity,
+        hazard_future: Hazard = None,
+        entity_future: Entity = None,
         future_year=int,
         save_image: bool = True,
     ) -> CostBenefit:
