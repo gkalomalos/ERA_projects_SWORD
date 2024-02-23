@@ -28,6 +28,7 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
       onFetchAdaptationMeasuresHandler();
     }
   }, [selectedHazard]);
+
   return (
     <>
       <AdaptationMeasuresViewTitle />
@@ -53,7 +54,11 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
         </Box>
       ) : (
         <Typography sx={{ mt: 2, textAlign: "center", fontStyle: "italic" }}>
-          {t("adaptation_input_no_measures")} {/* Display a message if no measures are found */}
+          {
+            selectedHazard
+              ? t("adaptation_input_no_measures") /* No measures are found for selected hazard */
+              : t("adaptation_input_no_hazard") /* No hazard is selected */
+          }
         </Typography>
       )}
     </>
