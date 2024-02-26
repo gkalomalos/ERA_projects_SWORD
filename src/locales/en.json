@@ -1,5 +1,7 @@
 {
   "application_title": "CLIMADERA",
+  "welcome_title": "Weclome to CLIMADERA!",
+  "welcome_subtitle": "We are thrilled to have you on board in this journey to showcase the result of Enhancing Risk Assessments (ERA) for Improved Country Risk Financing Strategies and to explore this CLIMADA tool for conducting climate risk analysis in Egypt and Thailand. /n To start, please select between two different options below that you can run with this tool.",
   "exposure_title": "Exposure",
   "select_exposure_label": "Select exposure",
   "load_exposure_label": "Load exposure",
@@ -145,6 +147,10 @@
   "card_exposure_non_economic_fetch_button": "Fetch",
   "card_exposure_non_economic_upload_file": "Uploaded file",
   "card_exposure_non_economic_fetch_exposure": "Non-Economic Exposure data",
+  "card_option_title": "Options",
+  "card_option_era": "ERA Project Result",
+  "card_option_explore": "Explore",
+  "card_option_remarks": "Remarks: Selecting 'ERA Project Result' will only show you the result based on pre-defined data and information. If you select 'Explore', you can upload your own file or fetch data from CLIMADA API.",
   "results_eco_button_hazard": "Hazard",
   "results_eco_button_exposure": "Exposure",
   "results_eco_button_impact": "Impact",

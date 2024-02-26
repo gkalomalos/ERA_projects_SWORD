@@ -48,8 +48,8 @@ const AdaptationChartLayout = () => {
               src={riskChartUrl}
               alt="Risk Chart"
               style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
+                maxWidth: "80%",
+                maxHeight: "80%",
                 objectFit: "contain",
                 objectPosition: "center center",
               }}
