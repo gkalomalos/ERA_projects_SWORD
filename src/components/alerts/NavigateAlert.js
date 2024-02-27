@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -21,10 +22,99 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
   const { t } = useTranslation();
 
   const options = ["era", "explore"];
+  const [showVerification, setShowVerification] = useState(false);
 
   const handleSelect = (option) => {
-    onChangeOption(option);
+    if (option === "explore") {
+      // Show verification message for "explore" option
+      setShowVerification(true);
+    } else {
+      onChangeOption(option);
+    }
   };
+
+  const handleVerification = () => {
+    // Call onChangeOption with "explore" after verification
+    onChangeOption("explore");
+    setShowVerification(false); // Reset verification state
+  };
+
+  if (showVerification) {
+    // Render verification dialog/message
+    return (
+      <Dialog
+        open={showVerification}
+        TransitionComponent={Transition}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="navigate-verification-modal-title"
+        aria-describedby="navigate-verification-modal-description"
+      >
+        <DialogTitle id="navigate-verification-dialog-title" textAlign="center">
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              mt: 2,
+              bgcolor: "#F35A5A",
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+              padding: "8px",
+              borderRadius: "4px",
+            }}
+          >
+            {t("navigate_verification_title")}
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent>
+          <Box
+            sx={{
+              maxWidth: 800,
+              mb: 2,
+              border: "2px solid #AAAAAA",
+              borderRadius: "16px",
+            }}
+          >
+            <Typography //Use this approach to add new lines without risking inserting html
+              component="div"
+              sx={{
+                margin: "auto",
+                marginBottom: 2,
+                textAlign: "left",
+                padding: "8px",
+                borderRadius: "4px",
+              }}
+            >
+              {t("navigate_verification_subtitle")}
+            </Typography>
+          </Box>
+
+          <Box textAlign="center" marginTop={2}>
+            <Button
+              onClick={handleVerification}
+              variant="contained"
+              sx={{
+                maxWidth: 800,
+                mb: 2,
+                border: "2px solid darkred",
+                borderRadius: "16px",
+                backgroundColor: "white",
+                color: "black",
+                ":hover": {
+                  backgroundColor: "#FFCCCC",
+                },
+                "text-transform": "none",
+              }}
+            >
+              {t("navigate_verification_button")}
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog
@@ -32,10 +122,10 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
       TransitionComponent={Transition}
       maxWidth="sm"
       fullWidth
-      aria-labelledby="settings-modal-title"
-      aria-describedby="settings-modal-description"
+      aria-labelledby="navigate-modal-title"
+      aria-describedby="navigate-modal-description"
     >
-      <DialogTitle id="settings-dialog-title" textAlign="center">
+      <DialogTitle id="navigate-dialog-title" textAlign="center">
         <Typography
           variant="h6"
           component="div"
@@ -63,12 +153,11 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
           }}
         >
           <Typography //Use this approach to add new lines without risking inserting html
-            variant="h6"
             component="div"
             sx={{
               margin: "auto",
               marginBottom: 2,
-              textAlign: "center",
+              textAlign: "left",
               padding: "8px",
               borderRadius: "4px",
             }}

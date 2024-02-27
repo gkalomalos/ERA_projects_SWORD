@@ -1,7 +1,10 @@
 {
   "application_title": "CLIMADERA",
-  "welcome_title": "Weclome to CLIMADERA!",
+  "welcome_title": "Welcome to CLIMADERA!",
   "welcome_subtitle": "We are thrilled to have you on board in this journey to showcase the result of Enhancing Risk Assessments (ERA) for Improved Country Risk Financing Strategies and to explore this CLIMADA tool for conducting climate risk analysis in Egypt and Thailand. /n To start, please select between two different options below that you can run with this tool.",
+  "navigate_verification_title": "WARNING",
+  "navigate_verification_subtitle": "Beware that no guarantee can be provided by GIZ and UNU-EHS that the model calibration and outputs are accurate if different data is used.",
+  "navigate_verification_button": "I understand",
   "exposure_title": "Exposure",
   "select_exposure_label": "Select exposure",
   "load_exposure_label": "Load exposure",
