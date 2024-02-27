@@ -49,6 +49,7 @@ def run_scenario(request: dict) -> dict:
     hazard_type = request.get("hazardType", "")
     scenario = request.get("scenario", "")
     time_horizon = request.get("timeHorizon", "")
+    is_era = request.get("isEra", False)
 
     country_name = sanitize_country_name(country_name)
     hazard_code = hazard_handler.get_hazard_code(hazard_type)

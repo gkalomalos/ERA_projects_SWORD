@@ -35,6 +35,7 @@ const DataInput = (props) => {
       exposureFile: props.selectedExposureFile,
       exposureNonEconomic: props.selectedExposureNonEconomic,
       hazardType: props.selectedHazard,
+      isEra: props.selectedAppOption === "era" ? true : false,
       hazardFile: props.selectedHazardFile,
       scenario: props.selectedScenario,
       timeHorizon: props.selectedTimeHorizon,
