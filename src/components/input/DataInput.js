@@ -70,6 +70,8 @@ const DataInput = (props) => {
       props.selectedCountry &&
       props.selectedHazard &&
       props.selectedScenario &&
+      (props.selectedExposureEconomic || props.selectedExposureNonEconomic) &&
+      props.isValidHazard &&
       (props.isValidExposureEconomic || props.isValidExposureNonEconomic)
     ) {
       setIsRunButtonDisabled(false);
