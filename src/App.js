@@ -191,6 +191,7 @@ const App = () => {
                 mapTitle={mapTitle}
                 selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
                 selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
+                selectedAppOption={selectedAppOption}
                 selectedCard={selectedCard}
                 selectedCountry={selectedCountry}
                 selectedExposureEconomic={selectedExposureEconomic}

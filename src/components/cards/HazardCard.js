@@ -24,6 +24,7 @@ const HazardCard = ({
   onChangeHazardFile,
   onChangeValidHazard,
   onHazardSelect,
+  selectedAppOption,
   selectedCountry,
   selectedHazard,
   selectedHazardFile,
@@ -155,7 +156,7 @@ const HazardCard = ({
         </Box>
 
         {/* Load button section */}
-        {selectedCountry && (
+        {selectedCountry && selectedAppOption === "explore" && (
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
             <Box>
               <label htmlFor="hazard-contained-button-file">
@@ -212,7 +213,7 @@ const HazardCard = ({
         )}
 
         {/* Display uploaded file name section */}
-        {selectedHazardFile && (
+        {selectedHazardFile && selectedAppOption === "explore" && (
           <Box
             sx={{
               display: "flex",

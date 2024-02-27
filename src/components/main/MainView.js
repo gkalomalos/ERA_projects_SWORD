@@ -26,6 +26,7 @@ const MainView = (props) => {
         <ViewCard
           selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
           selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+          selectedAppOption={props.selectedAppOption}
           selectedCard={props.selectedCard}
           selectedCountry={props.selectedCountry}
           selectedExposureEconomic={props.selectedExposureEconomic}

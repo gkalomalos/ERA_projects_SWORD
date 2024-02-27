@@ -23,6 +23,7 @@ const ExposureEconomicCard = ({
   onChangeExposureFile,
   onChangeValidEconomicExposure,
   onExposureEconomicSelect,
+  selectedAppOption,
   selectedCountry,
   selectedExposureEconomic,
   selectedExposureFile,
@@ -152,7 +153,7 @@ const ExposureEconomicCard = ({
         ))}
 
         {/* Load button section */}
-        {selectedCountry && (
+        {selectedCountry && selectedAppOption === "explore" && (
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
             <Box>
               <input
@@ -209,7 +210,7 @@ const ExposureEconomicCard = ({
         )}
 
         {/* Display uploaded file name section */}
-        {selectedExposureFile && (
+        {selectedExposureFile && selectedAppOption === "explore" && (
           <Box
             sx={{
               display: "flex",
