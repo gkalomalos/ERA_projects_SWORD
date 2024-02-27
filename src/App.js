@@ -60,15 +60,27 @@ const App = () => {
   };
 
   const setValidExposureEconomicHandler = (isValid) => {
-    setIsValidExposureEconomic(isValid);
+    if (selectedAppOption === "era") {
+      setIsValidExposureEconomic(true);
+    } else {
+      setIsValidExposureEconomic(isValid);
+    }
   };
 
   const setValidExposureNonEconomicHandler = (isValid) => {
-    setIsValidExposureNonEconomic(isValid);
+    if (selectedAppOption === "era") {
+      setIsValidExposureNonEconomic(true);
+    } else {
+      setIsValidExposureNonEconomic(isValid);
+    }
   };
 
   const setValidHazardHandler = (isValid) => {
-    setIsValidHazard(isValid);
+    if (selectedAppOption === "era") {
+      setIsValidHazard(true);
+    } else {
+      setIsValidHazard(isValid);
+    }
   };
 
   const setSelectedExposureNonEconomicHandler = (exposureNonEconomic) => {
