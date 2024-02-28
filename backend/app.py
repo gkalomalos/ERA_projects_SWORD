@@ -2,8 +2,8 @@ import json
 import sys
 
 from run_check_data_type import run_check_data_type
-from run_scenario import run_scenario
-from run_fetch_measures import run_fetch_measures
+from run_scenario import RunScenario
+from run_fetch_measures import RunFetchScenario
 
 
 def process_message(message):
@@ -11,13 +11,15 @@ def process_message(message):
     data = message.get("data", None)
 
     if script_name == "run_scenario.py":
-        result = run_scenario(data)
+        runner = RunScenario(data)
+        result = runner.run_scenario()
         response = {"success": True, "result": result}
     elif script_name == "run_check_data_type.py":
         result = run_check_data_type(data)
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_measures.py":
-        result = run_fetch_measures(data)
+        runner = RunFetchScenario(data)
+        result = runner.run_fetch_measures(data)
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}
