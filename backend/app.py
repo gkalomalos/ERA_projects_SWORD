@@ -16,11 +16,11 @@ def process_message(message):
         response = {"success": True, "result": result}
     elif script_name == "run_check_data_type.py":
         runner = RunCheckDataType(data)
-        result = runner.run_check_data_type(data)
+        result = runner.run_check_data_type()
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_measures.py":
         runner = RunFetchScenario(data)
-        result = runner.run_fetch_measures(data)
+        result = runner.run_fetch_measures()
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}
