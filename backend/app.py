@@ -1,7 +1,7 @@
 import json
 import sys
 
-from run_check_data_type import run_check_data_type
+from run_check_data_type import RunCheckDataType
 from run_scenario import RunScenario
 from run_fetch_measures import RunFetchScenario
 
@@ -15,7 +15,8 @@ def process_message(message):
         result = runner.run_scenario()
         response = {"success": True, "result": result}
     elif script_name == "run_check_data_type.py":
-        result = run_check_data_type(data)
+        runner = RunCheckDataType(data)
+        result = runner.run_check_data_type(data)
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_measures.py":
         runner = RunFetchScenario(data)
