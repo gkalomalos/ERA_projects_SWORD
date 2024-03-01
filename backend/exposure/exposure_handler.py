@@ -144,22 +144,21 @@ class ExposureHandler:
             entity = Entity.from_excel(entity_filepath)
             entity.check()
 
-            columns = columns = [
-                "Category_ID",
-                "latitude",
-                "longitude",
-                "value",
-                "Value unit",
-                "Deductible",
-                "Cover",
-                "DamageFunID",
-                "Region_ID",
-                "impf_",
-            ]
+            # columns = [
+            #     "category_id",
+            #     "latitude",
+            #     "longitude",
+            #     "value",
+            #     "value unit",
+            #     "deductible",
+            #     "cover",
+            #     "impact_fun_id",
+            #     "region_id",
+            # ]
 
-            exposure = entity.exposures
-            exposure.gdf = exposure.gdf[columns]
-            exposure.check()
+            # exposure = entity.exposures
+            # exposure.gdf = exposure.gdf[columns]
+            # exposure.check()
 
             return entity
         except Exception as exc:

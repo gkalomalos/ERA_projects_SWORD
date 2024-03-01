@@ -25,7 +25,15 @@ class RunScenario:
     def initialize(self):
         # Initialize data folder and subfolders if not exist
         initalize_data_directories()
+
+        # Initialize logger
         self.logger = LoggerConfig(logger_types=["file"])
+
+        # Initialize handler instances
+        self.costben_handler = CostBenefitHandler()
+        self.exposure_handler = ExposureHandler()
+        self.hazard_handler = HazardHandler()
+        self.impact_handler = ImpactHandler()
 
     def clear(self):
         """Clear previously generated exposure/hazard/impact maps abd temp directory"""
@@ -46,12 +54,6 @@ class RunScenario:
         # TODO: Restore. Clear previously generated exposure/hazard/impact maps and temp directory
         # self.clear()
 
-        # Initialize the handler instances
-        costben_handler = CostBenefitHandler()
-        exposure_handler = ExposureHandler()
-        hazard_handler = HazardHandler()
-        impact_handler = ImpactHandler()
-
         adaptation_measures = self.request.get("adaptationMeasures", [])
         annual_population_growth = self.request.get("annualPopulationGrowth", 0)
         annual_gdp_growth = self.request.get("annualGDPGrowth", 0)
@@ -64,15 +66,12 @@ class RunScenario:
         is_era = self.request.get("isEra", False)
 
         country_name = sanitize_country_name(country_name)
-        hazard_code = hazard_handler.get_hazard_code(hazard_type)
+        hazard_code = self.hazard_handler.get_hazard_code(hazard_type)
 
         exposure_type = (
             exposure_economic if exposure_economic else exposure_non_economic
         )  # TODO: Needs redesign
-        annual_growth = (
-            annual_gdp_growth if exposure_economic else annual_population_growth
-        )  # TODO: Needs redesign
-        exposure_filename = self.request.get("exposureFile", "")
+        entity_filename = self.request.get("exposureFile", "")
         hazard_filename = self.request.get("hazardFile", "")
 
         # Clear previously generated exposure/hazard/impact maps abd temp directory
@@ -82,75 +81,75 @@ class RunScenario:
             # Generate exposure objects
             update_progress(20, "Generating Exposure object...")
             exposure_future = None
-            if exposure_filename == "":
+            if entity_filename == "":
                 # Get exposure data from API
-                exposure_present = exposure_handler.get_exposure(country_name)
-                if annual_growth != 0:
+                exposure_present = self.exposure_handler.get_exposure(country_name)
+                if annual_population_growth != 0:
                     future_year = int(time_horizon)
-                    exposure_future = exposure_handler.get_growth_exposure(
-                        exposure_present, annual_growth, future_year
+                    exposure_future = self.exposure_handler.get_growth_exposure(
+                        exposure_present, annual_population_growth, future_year
                     )
             else:
                 # Get custom exposure data from xlsx file
-                entity_present = exposure_handler.get_entity_from_xlsx(exposure_filename)
+                entity_present = self.exposure_handler.get_entity_from_xlsx(entity_filename)
                 exposure_present = entity_present.exposures
-                if annual_growth != 0:
+                if annual_population_growth != 0:
                     future_year = int(time_horizon)
-                    exposure_future = exposure_handler.get_growth_exposure(
-                        exposure_present, annual_growth, future_year
+                    exposure_future = self.exposure_handler.get_growth_exposure(
+                        exposure_present, annual_population_growth, future_year
                     )
 
             # Generate geojson data files
             update_progress(30, "Generating Exposure geojson data files...")
-            exposure_handler.generate_exposure_geojson(exposure_present, country_name)
+            self.exposure_handler.generate_exposure_geojson(exposure_present, country_name)
 
             # Generate hazard objects
             update_progress(40, "Generating Hazard object...")
             hazard_future = None
             if hazard_filename == "":
-                hazard_present = hazard_handler.get_hazard(
+                hazard_present = self.hazard_handler.get_hazard(
                     hazard_type, scenario, time_horizon, country_name
                 )
                 if scenario != "historical":
-                    hazard_future = hazard_handler.get_hazard(
+                    hazard_future = self.hazard_handler.get_hazard(
                         hazard_type, scenario, time_horizon, country_name
                     )
             else:
-                hazard_present = hazard_handler.get_hazard_from_xlsx(hazard_filename)
+                hazard_present = self.hazard_handler.get_hazard_from_xlsx(hazard_filename)
                 if scenario != "historical":
                     # TODO: This needs refactoring. We need to decide on a process on how to
                     #  handle future hazard data. For now, we are using the same hazard data
-                    hazard_future = hazard_handler.get_hazard_from_xlsx(hazard_filename)
+                    hazard_future = self.hazard_handler.get_hazard_from_xlsx(hazard_filename)
 
             # Generate Hazard geojson data files
             update_progress(50, "Generating Hazard geojson data files...")
             if scenario == "historical":
-                hazard_handler.generate_hazard_geojson(hazard_present, country_name)
+                self.hazard_handler.generate_hazard_geojson(hazard_present, country_name)
             else:
-                hazard_handler.generate_hazard_geojson(hazard_future, country_name)
+                self.hazard_handler.generate_hazard_geojson(hazard_future, country_name)
 
             # Calculate impact
             update_progress(60, "Generating Impact object...")
 
             # Calculate impact function. Same impact function set is used for both present and future
-            impact_function_set = impact_handler.calculate_impact_function_set(hazard_present)
+            impact_function_set = self.impact_handler.calculate_impact_function_set(hazard_present)
 
             # Calculate present impact
-            impact_present = impact_handler.calculate_impact(
+            impact_present = self.impact_handler.calculate_impact(
                 exposure_present, hazard_present, impact_function_set
             )
             impact_future = None
             if scenario != "historical":
-                impact_future = impact_handler.calculate_impact(
+                impact_future = self.impact_handler.calculate_impact(
                     exposure_present, hazard_future, impact_function_set
                 )
 
             # Calculate impact geojson data files
             update_progress(70, "Generating Impact geojson data files...")
             if scenario == "historical":
-                impact_handler.generate_impact_geojson(impact_present, country_name)
+                self.impact_handler.generate_impact_geojson(impact_present, country_name)
             else:
-                impact_handler.generate_impact_geojson(impact_future, country_name)
+                self.impact_handler.generate_impact_geojson(impact_future, country_name)
 
             # Calculate adaptation measures
             # measure_set = costben_handler.get_measure_set(hazard_code, adaptation_measures)
