@@ -177,7 +177,7 @@ const HazardCard = ({
                 >
                   {t("card_hazard_load_button")}
                   <input
-                    accept=".xlsx"
+                    accept=".hdf5"
                     hidden
                     id="hazard-contained-button-file"
                     multiple={false}
