@@ -101,8 +101,7 @@ class CostBenefitHandler:
         entity_present: Entity,
         hazard_future: Hazard = None,
         entity_future: Entity = None,
-        future_year=int,
-        save_image: bool = True,
+        future_year: int = None,
     ) -> CostBenefit:
         """
         Calculates the cost-benefit analysis based on current and future hazard and entity data.
@@ -131,21 +130,62 @@ class CostBenefitHandler:
                 ent_future=entity_future,
                 future_year=future_year,
                 risk_func=risk_aai_agg,
-                imp_time_depen=None,
                 save_imp=True,
             )
 
-            if save_image:
-                cost_benefit.plot_waterfall(
-                    hazard_present,
-                    entity_present,
-                    hazard_future,
-                    entity_future,
-                    risk_func=risk_aai_agg,
-                )
-                filename = DATA_TEMP_DIR / "risks_waterfall_plot.png"
-                plt.savefig(filename, dpi=300, bbox_inches="tight")
-                plt.close()
             return cost_benefit
         except Exception as e:
             raise Exception(f"Failed to calculate cost-benefit: {e}")
+
+    def plot_waterfall(
+        self,
+        cost_benefit: CostBenefit,
+        hazard_present: Hazard,
+        entity_present: Entity,
+        hazard_future: Hazard,
+        entity_future: Entity,
+    ) -> plt.Axes:
+        """
+        Plots the waterfall chart for the cost-benefit analysis.
+
+        :param cost_benefit: The cost-benefit analysis object.
+        :type cost_benefit: CostBenefit
+        :return: The waterfall plot axis.
+        :rtype: matplotlib.axes._subplots.AxesSubplot
+        """
+        try:
+            axis = cost_benefit.plot_waterfall(
+                hazard_present,
+                entity_present,
+                hazard_future,
+                entity_future,
+                risk_func=risk_aai_agg,
+            )
+
+            filename = DATA_TEMP_DIR / "risks_waterfall_plot.png"
+            plt.savefig(filename, dpi=300, bbox_inches="tight")
+            plt.close()
+            return axis
+        except Exception as e:
+            logger.log("error", f"Failed to plot waterfall chart. More info: {e}")
+            raise Exception(f"Failed to plot waterfall chart: {e}")
+
+    def plot_cost_benefit(self, cost_benefit: CostBenefit):
+        """
+        Plots the cost-benefit chart for the cost-benefit analysis.
+
+        :param cost_benefit: The cost-benefit analysis object.
+        :type cost_benefit: CostBenefit
+        :return: The cost-benefit plot axis.
+        :rtype: matplotlib.axes._subplots.AxesSubplot
+        """
+        try:
+            axis = cost_benefit.plot_cost_benefit()
+            axis.set_title("Cost-Benefit Analysis")
+            filename = DATA_TEMP_DIR / "cost_benefit_plot.png"
+            plt.savefig(filename, dpi=300, bbox_inches="tight")
+            plt.close()
+            return axis
+        except Exception as e:
+            logger.log("error", f"Failed to plot cost-benefit chart. More info: {e}")
+            raise Exception(f"Failed to plot cost-benefit chart: {e}")
