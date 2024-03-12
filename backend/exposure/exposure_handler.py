@@ -4,13 +4,11 @@ from time import time
 
 import geopandas as gpd
 
-from climada.entity import DiscRates, Entity, Exposures
-from climada.entity.measures import MeasureSet
-from climada.entity.impact_funcs import ImpactFuncSet
+from climada.entity import Exposures
 from climada.util.api_client import Client
 
 
-from constants import DATA_ENTITIES_DIR, DATA_EXPOSURES_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
+from constants import DATA_EXPOSURES_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
 from handlers import get_iso3_country_code
 from logger_config import LoggerConfig
 

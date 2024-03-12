@@ -4,6 +4,7 @@ from time import time
 
 from handlers import (
     clear_temp_dir,
+    get_iso3_country_code,
     initalize_data_directories,
     sanitize_country_name,
     set_map_title,
@@ -11,6 +12,7 @@ from handlers import (
 )
 
 from costben.costben_handler import CostBenefitHandler
+from entity.entity_handler import EntityHandler
 from exposure.exposure_handler import ExposureHandler
 from hazard.hazard_handler import HazardHandler
 from impact.impact_handler import ImpactHandler
@@ -30,6 +32,7 @@ class RunScenario:
 
         # Initialize handler instances
         self.costben_handler = CostBenefitHandler()
+        self.entity_handler = EntityHandler()
         self.exposure_handler = ExposureHandler()
         self.hazard_handler = HazardHandler()
         self.impact_handler = ImpactHandler()
@@ -49,122 +52,137 @@ class RunScenario:
         self.time_horizon = request.get("timeHorizon", "")
 
         self.exposure_type = self.exposure_economic or self.exposure_non_economic
+        self.country_code = get_iso3_country_code(self.country_name)
+        # self.entity_filename = self._get_entity_filename()
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
+        # self.hazard_filename = self._get_hazard_filename()
+        self.ref_year = 2024  # TODO: Adjust this to read from the request
+        self.future_year = 2050  # TODO: Adjust this to read from the request
 
-        # Clear previously generated exposure/hazard/impact maps abd temp directory
+        self.status_code = 2000
+        self.status_message = "Scenario run successfully."
+
+        # Clear previously generated exposure/hazard/impact maps and temp directory
         self.clear()
 
     def clear(self):
-        """Clear previously generated exposure/hazard/impact maps abd temp directory"""
+        """Clear previously generated exposure/hazard/impact maps and temp directory"""
         clear_temp_dir()
 
-    @classmethod
+    def _get_entity_filename(self):
+        """Get the entity filename based on the request parameters."""
+        entity_filename = (
+            f"entity_TODAY_{self.country_code}_{self.hazard_type}_{self.exposure_type}.xlsx"
+        )
+        return entity_filename
+
+    def _get_hazard_filename(self, is_historical: bool = False) -> str:
+        """Get the hazard filename based on the request parameters."""
+        if is_historical:
+            hazard_filename = f"hazard_{self.hazard_type}_{self.country_code}_historical.hdf5"
+        else:
+            hazard_filename = f"hazard_{self.hazard_type}_{self.country_code}_{self.scenario}.hdf5"
+        return hazard_filename
+
     def _run_era_scenario(self):
-        
-        pass
-
-    def run_scenario(self) -> dict:
-        """
-        Run a scenario based on the provided request parameters.
-
-        :param request: A dictionary containing the request parameters.
-        :type request: dict
-        :return: A dictionary containing the response data and status.
-        :rtype: dict
-        """
-        initial_time = time()
-        update_progress(10, "Setting up scenario parameters...")
-
+        """Run the ERA scenario based on the provided request parameters."""
         try:
-            # Generate exposure objects
-            update_progress(20, "Generating Exposure object...")
-            exposure_future = None
-            if self.entity_filename == "":
-                # Get exposure data from API
-                exposure_present = self.exposure_handler.get_exposure(self.country_name)
-                if self.annual_population_growth != 0:
-                    future_year = int(self.time_horizon)
-                    exposure_future = self.exposure_handler.get_growth_exposure(
-                        exposure_present, self.annual_population_growth, future_year
-                    )
-            else:
-                # Get custom exposure data from xlsx file
-                entity_present = self.exposure_handler.get_entity_from_xlsx(self.entity_filename)
-                exposure_present = entity_present.exposures
-                if self.annual_population_growth != 0:
-                    future_year = int(self.time_horizon)
-                    exposure_future = self.exposure_handler.get_growth_exposure(
-                        exposure_present, self.annual_population_growth, future_year
-                    )
+            # Get ERA entity data
+            update_progress(10, "Setting up Entity objects from predefined datasets...")
+            entity_filename = self._get_entity_filename()
+            entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
+            entity_present.exposures.ref_year = self.ref_year
+            entity_future = self.entity_handler.get_future_entity(
+                entity=entity_present, future_year=self.future_year, aag=1.02
+            )  # TODO: aag needs to be redesigned.
 
-            # Generate geojson data files
-            update_progress(30, "Generating Exposure geojson data files...")
-            self.exposure_handler.generate_exposure_geojson(exposure_present, self.country_name)
+            # Set Exposure objects
+            update_progress(20, "Setting up Exposure objects from predefined datasets...")
+            exposure_present = entity_present.exposures
+            exposure_future = entity_future.exposures
 
-            # Generate hazard objects
-            update_progress(40, "Generating Hazard object...")
-            hazard_future = None
-            if self.hazard_filename == "":
-                hazard_present = self.hazard_handler.get_hazard(
-                    self.hazard_type, self.scenario, self.time_horizon, self.country_name
-                )
-                if self.scenario != "historical":
-                    hazard_future = self.hazard_handler.get_hazard(
-                        self.hazard_type, self.scenario, self.time_horizon, self.country_name
-                    )
-            else:
-                hazard_present = self.hazard_handler.get_hazard_from_xlsx(self.hazard_filename)
-                if self.scenario != "historical":
-                    # TODO: This needs refactoring. We need to decide on a process on how to
-                    #  handle future hazard data. For now, we are using the same hazard data
-                    hazard_future = self.hazard_handler.get_hazard_from_xlsx(self.hazard_filename)
-
-            # Generate Hazard geojson data files
-            update_progress(50, "Generating Hazard geojson data files...")
+            # Get ERA hazard data
+            update_progress(30, "Setting up Hazard objects from predefined datasets...")
+            hazard_present_filename = self._get_hazard_filename(is_historical=True)
+            hazard_present = self.hazard_handler.get_hazard_from_mat(hazard_present_filename)
             if self.scenario == "historical":
-                self.hazard_handler.generate_hazard_geojson(hazard_present, self.country_name)
+                hazard_future = None
             else:
-                self.hazard_handler.generate_hazard_geojson(hazard_future, self.country_name)
+                hazard_future_filename = self._get_hazard_filename(is_historical=False)
+                hazard_future = self.hazard_handler.get_hazard_from_mat(hazard_future_filename)
 
-            # Calculate impact
-            update_progress(60, "Generating Impact object...")
+            # Conduct cost-benefit analysis
+            update_progress(40, "Conducting cost-benefit analysis based on predefined datasets...")
+            cost_benefit = self.costben_handler.calculate_cost_benefit(
+                hazard_present, entity_present, hazard_future, entity_future, self.future_year
+            )
 
-            # Calculate impact function. Same impact function set is used for both present and future
-            impact_function_set = self.impact_handler.calculate_impact_function_set(hazard_present)
+            # Plot cost-benefit charts
+            update_progress(50, "Plotting cost-benefit graph...")
+            self.costben_handler.plot_cost_benefit(cost_benefit)
+            update_progress(60, "Plotting waterfall graph with given risk metric...")
+            self.costben_handler.plot_waterfall(
+                cost_benefit, hazard_present, entity_present, hazard_future, entity_future
+            )
 
-            # Calculate present impact
+            # Calculate present and future impact
+            update_progress(70, "Setting up Impact objects from predefined datasets...")
+            impact_function_set = entity_present.impact_funcs
             impact_present = self.impact_handler.calculate_impact(
                 exposure_present, hazard_present, impact_function_set
             )
             impact_future = None
             if self.scenario != "historical":
                 impact_future = self.impact_handler.calculate_impact(
-                    exposure_present, hazard_future, impact_function_set
+                    exposure_future, hazard_future, impact_function_set
                 )
 
+            # Generate geojson data files
+            update_progress(70, "Generating Exposure map data files...")
+            self.exposure_handler.generate_exposure_geojson(exposure_present, self.country_name)
+
+            update_progress(80, "Generating Hazard map data files...")
+            if self.scenario == "historical":
+                self.hazard_handler.generate_hazard_geojson(hazard_present, self.country_name)
+            else:
+                self.hazard_handler.generate_hazard_geojson(hazard_future, self.country_name)
+
             # Calculate impact geojson data files
-            update_progress(70, "Generating Impact geojson data files...")
+            update_progress(90, "Generating Impact map data files...")
             if self.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(impact_present, self.country_name)
             else:
                 self.impact_handler.generate_impact_geojson(impact_future, self.country_name)
 
-            # Calculate adaptation measures
-            # measure_set = costben_handler.get_measure_set(hazard_code, adaptation_measures)
+            update_progress(100, "Scenario run successfully.")
 
-            map_title = set_map_title(
-                self.hazard_type, self.country_name, self.time_horizon, self.scenario
-            )
         except Exception as exception:
-            status = {"code": 3000, "message": str(exception)}
-            response = {"data": {"mapTitle": ""}, "status": status}
-            return response
+            self.status_code = 3000
+            self.status_message = (
+                f"An error occurred while running ERA scenario. More info: {exception}"
+            )
+            self.logger.log(
+                "error", f"An error occurred while running ERA scenario. More info: {exception}"
+            )
 
-        run_status_message = f"Scenario run successfully."
-        update_progress(100, run_status_message)
+    def _run_custom_scenario(self):
+
+        pass
+
+    def run_scenario(self) -> dict:
+        """Run the scenario based on the provided request parameters."""
+        initial_time = time()
+        if self.is_era:
+            self._run_era_scenario()
+        else:
+            self._run_custom_scenario()
+
+        map_title = set_map_title(
+            self.hazard_type, self.country_name, self.time_horizon, self.scenario
+        )
         response = {
             "data": {"mapTitle": map_title},
-            "status": {"code": 2000, "message": run_status_message},
+            "status": {"code": self.status_code, "message": self.status_message},
         }
         self.logger.log("info", f"Finished running scenario in {time() - initial_time}sec.")
         return response

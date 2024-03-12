@@ -126,10 +126,10 @@ class CostBenefitHandler:
             cost_benefit.calc(
                 hazard_present,
                 entity_present,
-                haz_future=hazard_future,
-                ent_future=entity_future,
-                future_year=future_year,
-                risk_func=risk_aai_agg,
+                hazard_future,
+                entity_future,
+                future_year,
+                risk_aai_agg,
                 save_imp=True,
             )
 

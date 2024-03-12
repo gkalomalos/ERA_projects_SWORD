@@ -79,3 +79,26 @@ class EntityHandler:
                 f"An error occurred while trying to create entity from xlsx. More info: {exc}",
             )
             return None
+
+    def get_future_entity(self, entity: Entity, future_year: int, aag: float) -> Entity:
+        """
+        Generate a future entity based on the provided entity and year.
+
+        :param entity: The entity object to be used as a base for the future entity.
+        :type entity: Entity
+        :param year: The year for which the future entity should be generated.
+        :type year: int
+        :param aag: The annual average growth rate for the future entity.
+        :type aag: float
+        :return: A future entity object based on the provided entity and year.
+        :rtype: Entity
+        """
+        try:
+            future_entity = deepcopy(entity)
+            future_entity.exposures.gdf["value"] = future_entity.exposures.gdf["value"] * aag
+            future_entity.exposures.ref_year = future_year
+            return future_entity
+        except Exception as e:
+            logger.log("error", f"Failed to generate future entity: {e}")
+            return None
+        return None

@@ -118,6 +118,11 @@ class HazardHandler:
             logger.log("error", status_message)
             raise ValueError(status_message)
 
+    def get_hazard_from_mat(self, filepath: Path) -> Hazard:
+        # TODO: Continue implementation
+        hazard = Hazard().from_hdf5(DATA_HAZARDS_DIR / filepath)
+        return hazard
+
     # TODO: Extract this to settings file
     def get_hazard_intensity_thres(self, hazard: Hazard) -> float:
         hazard_type = hazard.haz_type
