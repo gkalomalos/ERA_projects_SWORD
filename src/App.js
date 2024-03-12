@@ -183,6 +183,7 @@ const App = () => {
                   onSelectTab={setSelectedTabHandler}
                   selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
                   selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
+                  selectedAppOption={selectedAppOption}
                   selectedCountry={selectedCountry}
                   selectedExposureEconomic={selectedExposureEconomic}
                   selectedExposureFile={selectedExposureFile}
