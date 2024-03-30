@@ -201,6 +201,10 @@ def beautify_hazard_type(hazard_type: str) -> str:
         _hazard_type = "Storm Europe"
     if hazard_type == "river_flood":
         _hazard_type = "River flood"
+    if hazard_type == "drought":
+        _hazard_type = "Drought"
+    if hazard_type == "flood":
+        _hazard_type = "Flood"
 
     return _hazard_type
 

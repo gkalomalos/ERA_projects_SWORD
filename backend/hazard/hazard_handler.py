@@ -120,15 +120,28 @@ class HazardHandler:
 
     def get_hazard_from_mat(self, filepath: Path) -> Hazard:
         # TODO: Continue implementation
-        hazard = Hazard().from_hdf5(DATA_HAZARDS_DIR / filepath)
-        return hazard
+        try:
+            hazard = Hazard().from_mat(DATA_HAZARDS_DIR / filepath)
+            hazard_type = hazard.haz_type
+            intensity_thres = self.get_hazard_intensity_thres(hazard_type)
+            hazard.intensity_thres = intensity_thres
+            return hazard
+        except Exception as exception:
+            logger.log(
+                "error",
+                f"An unexpected error occurred while trying to create hazard object from mat file. More info: {exception}",
+            )
+            return None
 
     # TODO: Extract this to settings file
-    def get_hazard_intensity_thres(self, hazard: Hazard) -> float:
-        hazard_type = hazard.haz_type
-        intensity_thres = hazard.intensity_thres
+    def get_hazard_intensity_thres(self, hazard_type: str) -> float:
+        intensity_thres = -100
         if hazard_type == "RF":
             intensity_thres = 1
+        elif hazard_type == "FL":
+            intensity_thres = 1
+        if hazard_type == "D":
+            intensity_thres = -4
         return intensity_thres
 
     def generate_hazard_geojson(

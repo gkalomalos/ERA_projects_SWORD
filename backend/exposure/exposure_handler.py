@@ -53,7 +53,15 @@ class ExposureHandler:
 
     def generate_exposure_geojson(self, exposure: Exposures, country_name: str):
         try:
-            exposure_gdf = exposure.gdf
+            exp_gdf = exposure.gdf
+            # Cast DataFrame to GeoDataFrame to avoid issues with gpd.sjoin later
+            exposure_gdf = gpd.GeoDataFrame(
+                exp_gdf,
+                geometry=gpd.points_from_xy(
+                    exp_gdf["longitude"], exp_gdf["latitude"], crs="EPSG:4326"
+                ),
+            )
+
             country_iso3 = get_iso3_country_code(country_name)
 
             GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"

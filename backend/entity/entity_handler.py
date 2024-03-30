@@ -61,11 +61,10 @@ class EntityHandler:
                 "latitude",
                 "longitude",
                 "value",
-                "value unit",
+                "value_unit",
                 "deductible",
                 "cover",
                 "impf_",
-                "region_id",
             ]
 
             exposure = entity.exposures

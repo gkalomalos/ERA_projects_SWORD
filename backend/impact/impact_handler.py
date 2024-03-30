@@ -91,8 +91,8 @@ class ImpactHandler:
     ) -> Impact:
         try:
             # Assign a default impact function ID to the exposure data
-            impf_id = self.get_impf_id(hazard.haz_type)
-            exposure.gdf[f"impf_{hazard.haz_type}"] = impf_id
+            # impf_id = self.get_impf_id(hazard.haz_type)
+            # exposure.gdf[f"impf_{hazard.haz_type}"] = impf_id
 
             # Prepare the impact calculator with the given parameters
             impact_calc = ImpactCalc(
@@ -101,7 +101,7 @@ class ImpactHandler:
                 hazard=hazard,
             )
             # Calculate the impact
-            impact = impact_calc.impact()
+            impact = impact_calc.impact(save_mat=True, assign_centroids=True)
             return impact
         except Exception as exception:
             status_message = f"An error occurred during impact calculation: More info: {exception}"
@@ -145,3 +145,51 @@ class ImpactHandler:
                 json.dump(impact_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
+
+    def get_impact_function_set(self, id: int) -> ImpactFuncSet:
+        """Get the impact function based on the given ID."""
+        if id == 101:
+            pass
+        elif id == 102:
+            pass
+        elif id == 103:
+            pass
+        elif id == 104:
+            pass
+        elif id == 105:
+            pass
+        elif id == 201:
+            pass
+        elif id == 202:
+            pass
+        elif id == 203:
+            impf = ImpactFunc(
+                haz_type="D",
+                id=203,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.7, 0.25, 0.18, 0.12, 0.0613, 0.0381, 0.0148, 0, 0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Markets",
+            )
+        elif id == 301:
+            pass
+        elif id == 401:
+            pass
+        elif id == 402:
+            pass
+
+        impfset = ImpactFuncSet([impf])
+        return impfset
+
+    def get_impact_fun_id(self, hazard_type: str, exposure_type: str) -> int:
+        """
+        Fetches the impact function ID based on the hazard type and exposure type.
+        """
+        # Static data mapping
+        data = {
+            ("drought", "wet_markets"): 203,
+        }
+        key = (hazard_type.lower(), exposure_type.lower())
+        # Attempt to fetch the ID from the dictionary
+        return data.get(key, None)
