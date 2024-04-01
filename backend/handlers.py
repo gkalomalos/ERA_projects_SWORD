@@ -170,12 +170,11 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
     hazard_beautified = beautify_hazard_type(hazard_type)
     country_beautified = country.capitalize()
     scenario_beautified = beautify_scenario(scenario)
-    time_horizon_beautified = beautify_time_horizon(time_horizon)
 
     if scenario == "historical":
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon_beautified} {scenario_beautified} scenario."
+        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} {scenario_beautified} scenario."
     else:
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon_beautified} (scenario {scenario_beautified})."
+        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} (scenario {scenario_beautified})."
     return map_title
 
 
@@ -237,44 +236,6 @@ def beautify_scenario(scenario: str) -> str:
         _scenario = "historical"
 
     return _scenario
-
-
-def beautify_time_horizon(time_horizon: str) -> str:
-    """
-    Get a beautified version of the time horizon to use in UI and reports.
-
-    Parameters
-    ----------
-    time_horizon: str, required
-        Time horizon to search datasets.
-        Example: 1980-2000, 2030-2050 etc.
-
-    Returns
-    -------
-    time_horizon_beautified: str
-        The beautified string version of the time horizon.
-    """
-    time_horizon_beautified = ""
-    if time_horizon == "1940_2014":
-        time_horizon_beautified = "2014"
-    if time_horizon == "1980_2000":
-        time_horizon_beautified = "2000"
-    if time_horizon == "2010_2030":
-        time_horizon_beautified = "2020"
-    if time_horizon == "2030_2050":
-        time_horizon_beautified = "2040"
-    if time_horizon == "2050_2070":
-        time_horizon_beautified = "2060"
-    if time_horizon == "2070_2090":
-        time_horizon_beautified = "2080"
-    if time_horizon == "2040":
-        time_horizon_beautified = "2040"
-    if time_horizon == "2060":
-        time_horizon_beautified = "2060"
-    if time_horizon == "2080":
-        time_horizon_beautified = "2080"
-
-    return time_horizon_beautified
 
 
 def clear_temp_dir() -> None:
