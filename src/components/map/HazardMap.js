@@ -8,8 +8,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
-const returnPeriods = [10, 50, 100, 250];
-
+const returnPeriods = [10, 20, 25, 50];
 const HazardMap = ({ selectedCountry }) => {
   const { t } = useTranslation();
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });

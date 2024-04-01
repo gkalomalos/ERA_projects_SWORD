@@ -93,11 +93,13 @@ class EntityHandler:
         :rtype: Entity
         """
         try:
-            future_entity = deepcopy(entity)
-            future_entity.exposures.gdf["value"] = future_entity.exposures.gdf["value"] * aag
-            future_entity.exposures.ref_year = future_year
-            return future_entity
+            present_year = entity.exposures.ref_year
+            entity_future = deepcopy(entity)
+            entity_future.exposures.ref_year = future_year
+            number_of_years = future_year - present_year + 1
+            growth = aag**number_of_years
+            entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
+            return entity_future
         except Exception as e:
             logger.log("error", f"Failed to generate future entity: {e}")
             return None
-        return None

@@ -148,7 +148,7 @@ class HazardHandler:
         self,
         hazard: Hazard,
         country_name: str,
-        return_periods: tuple = (250, 100, 50, 10),
+        return_periods: tuple = (50, 25, 20, 10),
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)

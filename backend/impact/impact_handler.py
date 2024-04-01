@@ -109,7 +109,7 @@ class ImpactHandler:
             return None
 
     def generate_impact_geojson(
-        self, impact: Impact, country_name: str, return_periods: tuple = (250, 100, 50, 10)
+        self, impact: Impact, country_name: str, return_periods: tuple = (50, 25, 20, 10)
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)

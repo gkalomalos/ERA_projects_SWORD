@@ -52,10 +52,12 @@ class RunScenario:
         self.scenario = request.get("scenario", "")
         self.future_year = request.get("timeHorizon", "")
 
+
         self.exposure_type = self.exposure_economic or self.exposure_non_economic
         self.country_code = get_iso3_country_code(self.country_name)
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
         self.ref_year = 2024  # TODO: Adjust this to read from the request in case of non-ERA scenario
+        self.aag = 1 + self.annual_gdp_growth/100
         self.status_code = 2000
         self.status_message = "Scenario run successfully."
 
@@ -96,7 +98,7 @@ class RunScenario:
             entity_future = None
             if self.scenario != "historical":
                 entity_future = self.entity_handler.get_future_entity(
-                    entity=entity_present, future_year=self.future_year, aag=self.annual_gdp_growth
+                    entity=entity_present, future_year=self.future_year, aag=self.aag
                 )
 
             # Set Exposure objects
