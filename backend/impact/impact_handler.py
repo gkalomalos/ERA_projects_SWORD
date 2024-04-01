@@ -148,6 +148,7 @@ class ImpactHandler:
 
     def get_impact_function_set(self, id: int) -> ImpactFuncSet:
         """Get the impact function based on the given ID."""
+        impf = ImpactFunc()
         if id == 101:
             pass
         elif id == 102:
@@ -157,9 +158,25 @@ class ImpactHandler:
         elif id == 104:
             pass
         elif id == 105:
-            pass
+            impf = ImpactFunc(
+                haz_type="D",
+                id=105,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([1.0, 0.5871, 0.3362, 0.1925, 0.1102, 0.0631, 0.0361, 0.0207, 0.0119]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Unmet water demand",
+            )
         elif id == 201:
-            pass
+            impf = ImpactFunc(
+                haz_type="D",
+                id=201,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.4667, 0.1867, 0.0706, 0.0332, 0.0216, 0.0130, 0.0107, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Tree crops",
+            )
         elif id == 202:
             pass
         elif id == 203:
@@ -188,6 +205,8 @@ class ImpactHandler:
         """
         # Static data mapping
         data = {
+            ("drought", "water_users"): 105,
+            ("drought", "tree_crops"): 201,
             ("drought", "wet_markets"): 203,
         }
         key = (hazard_type.lower(), exposure_type.lower())
