@@ -178,7 +178,15 @@ class ImpactHandler:
                 name="Tree crops",
             )
         elif id == 202:
-            pass
+            impf = ImpactFunc(
+                haz_type="D",
+                id=202,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.60, 0.20, 0.15, 0.10, 0.0713, 0.0381, 0.0148, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Grass crops",
+            )
         elif id == 203:
             impf = ImpactFunc(
                 haz_type="D",
@@ -207,6 +215,7 @@ class ImpactHandler:
         data = {
             ("drought", "water_users"): 105,
             ("drought", "tree_crops"): 201,
+            ("drought", "grass_crops"): 202,
             ("drought", "wet_markets"): 203,
         }
         key = (hazard_type.lower(), exposure_type.lower())

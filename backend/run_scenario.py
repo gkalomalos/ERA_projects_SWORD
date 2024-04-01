@@ -56,8 +56,6 @@ class RunScenario:
         self.country_code = get_iso3_country_code(self.country_name)
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
         self.ref_year = 2024  # TODO: Adjust this to read from the request in case of non-ERA scenario
-        # self.aag = 1.02  # TODO: Adjust this to read from the request
-
         self.status_code = 2000
         self.status_message = "Scenario run successfully."
 
