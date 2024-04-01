@@ -10,13 +10,12 @@ const AdaptationChartLayout = () => {
   const fetchRiskChart = async () => {
     try {
       const tempPath = await window.electron.fetchTempDir();
-      const response = await fetch(`${tempPath}/adaptation_plot.png`);
+      const response = await fetch(`${tempPath}/cost_benefit_plot.png`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      // Assuming the image is accessible via URL directly after fetching
-      setRiskChartUrl(`${tempPath}/adaptation_plot.png`);
+      setRiskChartUrl(`${tempPath}/cost_benefit_plot.png`);
     } catch (error) {
       console.error("Error fetching risk chart data:", error);
       setRiskChartUrl(null);

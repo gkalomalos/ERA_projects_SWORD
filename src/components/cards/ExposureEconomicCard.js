@@ -15,8 +15,8 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const exposureEconomicDict = {
-  thailand: ["tree_crops", "grass_crops", "wet_markets", "litpop"],
-  egypt: ["crops", "livestock", "power_plants", "hotels", "litpop"],
+  thailand: ["tree_crops", "grass_crops", "wet_markets"],
+  egypt: ["crops", "livestock", "power_plants", "hotels"],
 };
 
 const ExposureEconomicCard = ({

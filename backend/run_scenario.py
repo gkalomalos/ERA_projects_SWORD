@@ -50,16 +50,13 @@ class RunScenario:
         self.hazard_type = request.get("hazardType", "")
         self.is_era = request.get("isEra", False)
         self.scenario = request.get("scenario", "")
-        self.time_horizon = request.get("timeHorizon", "")
+        self.future_year = request.get("timeHorizon", "")
 
         self.exposure_type = self.exposure_economic or self.exposure_non_economic
         self.country_code = get_iso3_country_code(self.country_name)
-        # self.entity_filename = self._get_entity_filename()
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
-        # self.hazard_filename = self._get_hazard_filename()
-        self.ref_year = 2024  # TODO: Adjust this to read from the request
-        self.future_year = 2050  # TODO: Adjust this to read from the request
-        self.aag = 1.02  # TODO: Adjust this to read from the request
+        self.ref_year = 2024  # TODO: Adjust this to read from the request in case of non-ERA scenario
+        # self.aag = 1.02  # TODO: Adjust this to read from the request
 
         self.status_code = 2000
         self.status_message = "Scenario run successfully."
@@ -101,7 +98,7 @@ class RunScenario:
             entity_future = None
             if self.scenario != "historical":
                 entity_future = self.entity_handler.get_future_entity(
-                    entity=entity_present, future_year=self.future_year, aag=self.aag
+                    entity=entity_present, future_year=self.future_year, aag=self.annual_gdp_growth
                 )
 
             # Set Exposure objects
@@ -200,7 +197,7 @@ class RunScenario:
             self._run_custom_scenario()
 
         map_title = set_map_title(
-            self.hazard_type, self.country_name, self.time_horizon, self.scenario
+            self.hazard_type, self.country_name, self.future_year, self.scenario
         )
         response = {
             "data": {"mapTitle": map_title},
