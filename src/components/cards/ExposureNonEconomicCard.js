@@ -16,7 +16,7 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const exposureNonEconomicDict = {
-  thailand: ["farmers", "buddhist_monks", "water_users", "roads", "students"],
+  thailand: ["tree_crops_farmers", "grass_crops_farmers", "buddhist_monks", "water_users", "roads", "students"],
   egypt: ["hospitalised_people", "students", "diarrhoea_patients", "roads"],
 };
 
