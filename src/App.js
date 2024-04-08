@@ -148,10 +148,14 @@ const App = () => {
     const progressListener = (event, data) => {
       setModalMessage(data.message);
     };
-    window.electron.on("progress", progressListener);
-    return () => {
-      window.electron.remove("progress", progressListener);
-    };
+    try {
+      window.electron.on("progress", progressListener);
+      return () => {
+        window.electron.remove("progress", progressListener);
+      };
+    } catch (e) {
+      console.log("Not running in electron");
+    }
   }, []);
 
   return (
