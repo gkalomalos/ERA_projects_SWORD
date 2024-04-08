@@ -148,13 +148,11 @@ class HazardHandler:
         self,
         hazard: Hazard,
         country_name: str,
-        return_periods: tuple = (50, 25, 20, 10),
+        return_periods: tuple = (25, 20, 15, 10),
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)
             GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
-            intensity_thres = self.get_hazard_intensity_thres(hazard)
-            hazard.intensity_thres = intensity_thres
 
             admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
             coords = np.array(hazard.centroids.coord)

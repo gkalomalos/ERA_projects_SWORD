@@ -3,6 +3,9 @@ import json
 import sys
 from time import time
 
+from climada.entity import DiscRates
+import numpy as np
+
 from handlers import (
     clear_temp_dir,
     get_iso3_country_code,
@@ -11,7 +14,6 @@ from handlers import (
     set_map_title,
     update_progress,
 )
-
 from costben.costben_handler import CostBenefitHandler
 from entity.entity_handler import EntityHandler
 from exposure.exposure_handler import ExposureHandler
@@ -50,14 +52,13 @@ class RunScenario:
         self.hazard_type = request.get("hazardType", "")
         self.is_era = request.get("isEra", False)
         self.scenario = request.get("scenario", "")
-        self.future_year = request.get("timeHorizon", "")
-
+        self.time_horizon = request.get("timeHorizon", 2024)
 
         self.exposure_type = self.exposure_economic or self.exposure_non_economic
         self.country_code = get_iso3_country_code(self.country_name)
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
-        self.ref_year = 2024  # TODO: Adjust this to read from the request in case of non-ERA scenario
-        self.aag = 1 + self.annual_gdp_growth/100
+        self.ref_year = 2024
+        self.future_year = 2050
         self.status_code = 2000
         self.status_message = "Scenario run successfully."
 
@@ -83,6 +84,67 @@ class RunScenario:
             hazard_filename = f"hazard_{self.hazard_type}_{self.country_code}_{self.scenario}.mat"
         return hazard_filename
 
+    def _get_era_discount_rate(self) -> DiscRates:
+        """Get the ERA discount rate based on the request parameters."""
+        try:
+            if self.country_name == "Egypt":
+                average_disc_rate = 0.0689
+            elif self.country_name == "Thailand":
+                average_disc_rate = 0.0090
+            else:
+                average_disc_rate = 0.0
+
+            year_range = np.arange(self.ref_year, self.future_year + 1)
+            n_years = self.future_year - self.ref_year + 1
+            annual_discount = np.ones(n_years) * average_disc_rate
+            discount_rates = DiscRates(year_range, annual_discount)
+            discount_rates.check()
+            return discount_rates
+
+        except Exception as exception:
+            self.status_code = 3000
+            self.status_message = (
+                f"An error occurred while getting ERA discount rate. More info: {exception}"
+            )
+            self.logger.log(
+                "error",
+                f"An error occurred while getting ERA discount rate. More info: {exception}",
+            )
+            return None
+
+    def _get_era_average_annual_growth(self) -> float:
+        if self.country_name == "Egypt" and self.exposure_type in [
+            "tree_crops",
+            "grass_crops",
+            "wet_markets",
+        ]:
+            growth = 1.04
+        elif self.country_name == "Egypt" and self.exposure_type in [
+            "grass_crops_farmers",
+            "tree_crops_farmers",
+            "buddhist_monks",
+            "water_users",
+            "roads",
+        ]:
+            growth = 1.0129
+        elif self.country_name == "Thailand" and self.exposure_type in [
+            "tree_crops",
+            "grass_crops",
+            "wet_markets",
+        ]:
+            growth = 1.0294
+        elif self.country_name == "Thailand" and self.exposure_type in [
+            "grass_crops_farmers",
+            "tree_crops_farmers",
+            "buddhist_monks",
+            "water_users",
+            "roads",
+        ]:
+            growth = 0.9978
+        else:
+            growth = 1.0
+        return growth
+
     def _run_era_scenario(self):
         """Run the ERA scenario based on the provided request parameters."""
         self.logger.log(
@@ -94,12 +156,19 @@ class RunScenario:
             update_progress(10, "Setting up Entity objects from predefined datasets...")
             entity_filename = self._get_entity_filename()
             entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
+
+            # Set static present year for ERA scenario to 2024
             entity_present.exposures.ref_year = self.ref_year
+
+            # Get static average annual economic/population growth
+            aag = self._get_era_average_annual_growth()
+
             entity_future = None
             if self.scenario != "historical":
                 entity_future = self.entity_handler.get_future_entity(
-                    entity=entity_present, future_year=self.future_year, aag=self.aag
+                    entity_present, self.future_year, aag
                 )
+                entity_future.disc_rates = self._get_era_discount_rate()
 
             # Set Exposure objects
             update_progress(20, "Setting up Exposure objects from predefined datasets...")
@@ -134,17 +203,13 @@ class RunScenario:
 
             # Calculate present and future impact
             update_progress(60, "Setting up Impact objects from predefined datasets...")
-            impact_function_id = self.impact_handler.get_impact_fun_id(
-                self.hazard_type, self.exposure_type
-            )
-            impact_function_set = self.impact_handler.get_impact_function_set(impact_function_id)
             impact_present = self.impact_handler.calculate_impact(
-                exposure_present, hazard_present, impact_function_set
+                exposure_present, hazard_present, entity_present.impact_funcs
             )
             impact_future = None
             if self.scenario != "historical":
                 impact_future = self.impact_handler.calculate_impact(
-                    exposure_future, hazard_future, impact_function_set
+                    exposure_future, hazard_future, entity_future.impact_funcs
                 )
 
             # Generate geojson data files

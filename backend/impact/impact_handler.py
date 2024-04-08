@@ -20,67 +20,169 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class ImpactHandler:
-    def calculate_impact_function_set(self, hazard: Hazard) -> ImpactFuncSet:
-        impact_function = ImpactFunc()
-        impact_function.haz_type = hazard.haz_type
-        impact_function.intensity_unit = hazard.units
-        impact_function.name = ("Flood Africa JRC Residential",)  # TODO: Needs change
+    def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
+        """Get the impact function based on the given ID."""
+        impf = ImpactFunc()
+        # Flood impact functions
+        if exposure_type == "buddhist_monks" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="FL",
+                id=101,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, ]),
+                paa=np.ones(12),
+                intensity_unit="People",
+                name="Buddhist monks",
+            )
+        elif exposure_type == "students" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="FL",
+                id=102,
+                intensity=np.array([0.0, 0.3, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, ]),
+                paa=np.ones(12),
+                intensity_unit="People",
+                name="Students",
+            )
+        elif exposure_type == "tree_crops_farmers" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="FL",
+                id=103,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, -0.0061, -0.003, 0.0082, 0.0262, 0.0495, 0.0765, 0.1054, 0.1346, 0.2246, 0.2318, 0.2318]),
+                paa=np.ones(12),
+                intensity_unit="People",
+                name="Tree crops farmers",
+            )
+        elif exposure_type == "grass_crops_farmers" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="FL",
+                id=104,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                paa=np.ones(12),
+                intensity_unit="People",
+                name="Grass crops farmers",
+            )
+        elif exposure_type == "diarrhoea_patients" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="FL",
+                id=105,
+                intensity=np.array([0.01, 0.08, 0.44, 2]),
+                mdd=np.array([0.0001, 0.0002, 0.0004, 0.0009]),
+                paa=np.ones(4),
+                intensity_unit="People",
+                name="Diarrhoea patients",
+            )
+        elif exposure_type == "tree_crops" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=201,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, -0.0061, -0.003, 0.0082, 0.0262, 0.0495, 0.0765, 0.1054, 0.1346, 0.2246, 0.2318, 0.2318]),
+                paa=np.ones(12),
+                intensity_unit="SPI",
+                name="Tree crops",
+            )
+        elif exposure_type == "grass_crops" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=202,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                paa=np.ones(12),
+                intensity_unit="SPI",
+                name="Grass crops",
+            )
+        elif exposure_type == "wet_markets" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=203,
+                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
+                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                paa=np.ones(12),
+                intensity_unit="SPI",
+                name="Markets",
+            )
+        elif exposure_type == "roads" and hazard_type == "flood":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=301,
+                intensity=np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]),
+                mdd=np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]),
+                paa=np.ones(7),
+                intensity_unit="SPI",
+                name="Mobility",
+            )
 
-        if hazard.haz_type == "TC":
-            impact_function.id = 1
-            impact_function_set = ImpfSetTropCyclone.from_calibrated_regional_ImpfSet()
-        elif hazard.haz_type == "RF":
-            impact_function.id = 3
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
+        # Drought impact functions
+        elif exposure_type == "tree_crops_farmers" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=103,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.6667, 0.6667, 0.3906, 0.2232, 0.1216, 0.0600, 0.0227, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Tree crop farmers",
             )
-            impact_function.mdd = np.array(
-                [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        elif exposure_type == "grass_crops_farmers" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=104,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([1.0, 1.0, 1.0, 0.7365, 0.4013, 0.1981, 0.0748, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Tree crop farmers",
             )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-        elif hazard.haz_type == "BF":  # Wildfire
-            impact_function.id = 4
-            # TODO: Needs to be calidated
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
+        elif exposure_type == "water_users" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=105,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([1.0, 0.5871, 0.3362, 0.1925, 0.1102, 0.0631, 0.0361, 0.0207, 0.0119]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Unmet water demand",
             )
-            impact_function.mdd = np.array(
-                [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        elif exposure_type == "tree_crops" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=201,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.4667, 0.1867, 0.0706, 0.0332, 0.0216, 0.0130, 0.0107, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Tree crops",
             )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-        elif hazard.haz_type == "FL":  # Flood
-            impact_function.id = 5
-            # TODO: Needs to be calidated
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
+        elif exposure_type == "grass_crops" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=202,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.60, 0.20, 0.15, 0.10, 0.0713, 0.0381, 0.0148, 0.0, 0.0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Grass crops",
             )
-            impact_function.mdd = np.array(
-                [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
+        elif exposure_type == "wet_markets" and hazard_type == "drought":
+            impf = ImpactFunc(
+                haz_type="D",
+                id=203,
+                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
+                mdd=np.array([0.7, 0.25, 0.18, 0.12, 0.0613, 0.0381, 0.0148, 0, 0]),
+                paa=np.ones(9),
+                intensity_unit="SPI",
+                name="Markets",
             )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-        elif hazard.haz_type == "EQ":  # Earthquake
-            impact_function.id = 6
-            # TODO: Needs to be calidated
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
-            )
-            impact_function.mdd = np.array(
-                [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
-            )
-            impact_function.paa = np.ones(len(impact_function.intensity))
-        else:  # TODO: Test if we need a default one or filter others out
-            impact_function.id = 6
-            # TODO: Needs to be calidated
-            impact_function.intensity = np.array(
-                [0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0]
-            )
-            impact_function.mdd = np.array(
-                [0.000, 0.3266, 0.4941, 0.6166, 0.7207, 0.8695, 0.9315, 0.9836, 1.0000, 1.0000]
-            )
-            impact_function.paa = np.ones(len(impact_function.intensity))
+        elif id == 401:
+            pass
+        elif id == 402:
+            pass
 
-        impact_function_set = ImpactFuncSet([impact_function])
-        return impact_function_set
+        impfset = ImpactFuncSet([impf])
+        return impfset
 
     def get_impf_id(self, hazard_type: str) -> int:
         impf_ids = {"TC": 1, "RF": 3, "BF": 4, "FL": 5, "EQ": 6, "DEFAULT": 9}
@@ -109,7 +211,7 @@ class ImpactHandler:
             return None
 
     def generate_impact_geojson(
-        self, impact: Impact, country_name: str, return_periods: tuple = (50, 25, 20, 10)
+        self, impact: Impact, country_name: str, return_periods: tuple = (25, 20, 15, 10)
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)
@@ -146,78 +248,3 @@ class ImpactHandler:
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
 
-    def get_impact_function_set(self, id: int) -> ImpactFuncSet:
-        """Get the impact function based on the given ID."""
-        impf = ImpactFunc()
-        if id == 101:
-            pass
-        elif id == 102:
-            pass
-        elif id == 103:
-            pass
-        elif id == 104:
-            pass
-        elif id == 105:
-            impf = ImpactFunc(
-                haz_type="D",
-                id=105,
-                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
-                mdd=np.array([1.0, 0.5871, 0.3362, 0.1925, 0.1102, 0.0631, 0.0361, 0.0207, 0.0119]),
-                paa=np.ones(9),
-                intensity_unit="SPI",
-                name="Unmet water demand",
-            )
-        elif id == 201:
-            impf = ImpactFunc(
-                haz_type="D",
-                id=201,
-                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
-                mdd=np.array([0.4667, 0.1867, 0.0706, 0.0332, 0.0216, 0.0130, 0.0107, 0.0, 0.0]),
-                paa=np.ones(9),
-                intensity_unit="SPI",
-                name="Tree crops",
-            )
-        elif id == 202:
-            impf = ImpactFunc(
-                haz_type="D",
-                id=202,
-                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
-                mdd=np.array([0.60, 0.20, 0.15, 0.10, 0.0713, 0.0381, 0.0148, 0.0, 0.0]),
-                paa=np.ones(9),
-                intensity_unit="SPI",
-                name="Grass crops",
-            )
-        elif id == 203:
-            impf = ImpactFunc(
-                haz_type="D",
-                id=203,
-                intensity=np.array([-3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5]),
-                mdd=np.array([0.7, 0.25, 0.18, 0.12, 0.0613, 0.0381, 0.0148, 0, 0]),
-                paa=np.ones(9),
-                intensity_unit="SPI",
-                name="Markets",
-            )
-        elif id == 301:
-            pass
-        elif id == 401:
-            pass
-        elif id == 402:
-            pass
-
-        impfset = ImpactFuncSet([impf])
-        return impfset
-
-    def get_impact_fun_id(self, hazard_type: str, exposure_type: str) -> int:
-        """
-        Fetches the impact function ID based on the hazard type and exposure type.
-        """
-        # Static data mapping
-        data = {
-            ("drought", "water_users"): 105,
-            ("drought", "tree_crops"): 201,
-            ("drought", "grass_crops"): 202,
-            ("drought", "wet_markets"): 203,
-        }
-        key = (hazard_type.lower(), exposure_type.lower())
-        # Attempt to fetch the ID from the dictionary
-        return data.get(key, None)

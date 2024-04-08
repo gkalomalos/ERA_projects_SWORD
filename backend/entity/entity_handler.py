@@ -99,6 +99,8 @@ class EntityHandler:
             number_of_years = future_year - present_year + 1
             growth = aag**number_of_years
             entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
+            entity_future.check()
+
             return entity_future
         except Exception as e:
             logger.log("error", f"Failed to generate future entity: {e}")
