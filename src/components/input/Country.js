@@ -23,11 +23,11 @@ const Country = (props) => {
 
   const handleBgColor = () => {
     if (props.selectedCountry) {
-      setBgcolor("#EBF3F5") // Change to #E5F5EB
+      setBgcolor("#E5F5EB"); // green
     } else {
-      setBgcolor("#EBF3F5") // Change to FFCCCC
+      setBgcolor("#EBF3F5"); // default light blue
     }
-  }
+  };
 
   useEffect(() => {
     handleBgColor();
