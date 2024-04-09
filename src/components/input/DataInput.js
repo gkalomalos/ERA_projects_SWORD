@@ -119,12 +119,16 @@ const DataInput = (props) => {
             <TimeHorizon
               onCardClick={onCardClickHandler}
               onSelectTab={props.onSelectTab}
+              selectedAppOption={props.selectedAppOption}
+              selectedCountry={props.selectedCountry}
               selectedTimeHorizon={props.selectedTimeHorizon}
             />
           </Grid>
           <Grid item xs={12}>
             <AnnualGrowth
               onCardClick={onCardClickHandler}
+              selectedAppOption={props.selectedAppOption}
+              selectedCountry={props.selectedCountry}
               onSelectTab={props.onSelectTab}
               selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
               selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}

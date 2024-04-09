@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
@@ -9,6 +9,7 @@ const ExposureEconomic = (props) => {
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
 
   const handleMouseDown = () => {
+    // Deactivate input card click in case non-economic exposure is selected
     if (props.selectedExposureNonEconomic) {
       return;
     }
@@ -16,6 +17,7 @@ const ExposureEconomic = (props) => {
   };
 
   const handleMouseUp = () => {
+    // Deactivate input card click in case non-economic exposure is selected    
     if (props.selectedExposureNonEconomic) {
       return;
     }
