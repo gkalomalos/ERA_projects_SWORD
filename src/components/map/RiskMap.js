@@ -8,6 +8,8 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
+import Legend from "./Legend";
+
 const returnPeriods = [10, 15, 20, 25];
 
 const RiskMap = ({ selectedCountry }) => {
@@ -135,7 +137,10 @@ const RiskMap = ({ selectedCountry }) => {
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+        <>
+          <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+          <Legend colorScale={mapInfo.colorScale} position="bottomleft" />
+        </>
       )}
     </MapContainer>
   );
