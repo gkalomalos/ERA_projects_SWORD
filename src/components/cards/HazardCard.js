@@ -16,14 +16,15 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const hazardDict = {
-  thailand: ["flood", "drought", "heatwaves", "river_flood"],
-  egypt: ["flash_flood", "heatwaves", "river_flood"],
+  thailand: ["flood", "drought", "heatwaves"],
+  egypt: ["flash_flood", "heatwaves"],
 };
 
 const HazardCard = ({
   onChangeHazardFile,
   onChangeValidHazard,
   onHazardSelect,
+  selectedAppOption,
   selectedCountry,
   selectedHazard,
   selectedHazardFile,
@@ -155,7 +156,7 @@ const HazardCard = ({
         </Box>
 
         {/* Load button section */}
-        {selectedCountry && (
+        {selectedCountry && selectedAppOption === "explore" && (
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
             <Box>
               <label htmlFor="hazard-contained-button-file">
@@ -176,7 +177,7 @@ const HazardCard = ({
                 >
                   {t("card_hazard_load_button")}
                   <input
-                    accept=".xlsx"
+                    accept=".hdf5"
                     hidden
                     id="hazard-contained-button-file"
                     multiple={false}
@@ -212,7 +213,7 @@ const HazardCard = ({
         )}
 
         {/* Display uploaded file name section */}
-        {selectedHazardFile && (
+        {selectedHazardFile && selectedAppOption === "explore" && (
           <Box
             sx={{
               display: "flex",

@@ -8,12 +8,18 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
-const returnPeriods = [10, 50, 100, 250];
+import Legend from "./Legend";
+
+const returnPeriods = [10, 15, 20, 25];
 
 const RiskMap = ({ selectedCountry }) => {
   const { t } = useTranslation();
-  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeRPLayer, setActiveRPLayer] = useState(10);
+  const [legendTitle, setLegendTitle] = useState("");
+  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
+  const [maxValue, setMaxValue] = useState(null);
+  const [minValue, setMinValue] = useState(null);
+
   const mapRef = useRef();
 
   const fetchGeoJson = async () => {
@@ -25,9 +31,12 @@ const RiskMap = ({ selectedCountry }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      setLegendTitle(data._metadata.title);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
+      setMinValue(minValue);
       const maxValue = Math.max(...values);
+      setMaxValue(maxValue);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
       setMapInfo({ geoJson: data, colorScale: scale });
@@ -116,7 +125,7 @@ const RiskMap = ({ selectedCountry }) => {
       key={selectedCountry}
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
-      style={{ height: "100%", width: "100%" }}
+      style={{ position: "relative", height: "100%", width: "100%" }}
       whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -135,7 +144,15 @@ const RiskMap = ({ selectedCountry }) => {
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+        <>
+          <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+          <Legend
+            colorScale={mapInfo.colorScale}
+            minValue={minValue}
+            maxValue={maxValue}
+            title={legendTitle}
+          />
+        </>
       )}
     </MapContainer>
   );

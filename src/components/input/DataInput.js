@@ -5,8 +5,8 @@ import { Box, Button, Grid } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
-import APIService from "../../APIService";
 import AnnualGrowth from "./AnnualGrowth";
+import APIService from "../../APIService";
 import Country from "./Country";
 import DataInputViewTitle from "../title/DataInputViewTitle";
 import ExposureEconomic from "./ExposureEconomic";
@@ -35,6 +35,7 @@ const DataInput = (props) => {
       exposureFile: props.selectedExposureFile,
       exposureNonEconomic: props.selectedExposureNonEconomic,
       hazardType: props.selectedHazard,
+      isEra: props.selectedAppOption === "era" ? true : false,
       hazardFile: props.selectedHazardFile,
       scenario: props.selectedScenario,
       timeHorizon: props.selectedTimeHorizon,
@@ -70,6 +71,8 @@ const DataInput = (props) => {
       props.selectedCountry &&
       props.selectedHazard &&
       props.selectedScenario &&
+      (props.selectedExposureEconomic || props.selectedExposureNonEconomic) &&
+      props.isValidHazard &&
       (props.isValidExposureEconomic || props.isValidExposureNonEconomic)
     ) {
       setIsRunButtonDisabled(false);
@@ -116,12 +119,16 @@ const DataInput = (props) => {
             <TimeHorizon
               onCardClick={onCardClickHandler}
               onSelectTab={props.onSelectTab}
+              selectedAppOption={props.selectedAppOption}
+              selectedCountry={props.selectedCountry}
               selectedTimeHorizon={props.selectedTimeHorizon}
             />
           </Grid>
           <Grid item xs={12}>
             <AnnualGrowth
               onCardClick={onCardClickHandler}
+              selectedAppOption={props.selectedAppOption}
+              selectedCountry={props.selectedCountry}
               onSelectTab={props.onSelectTab}
               selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
               selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
@@ -159,8 +166,8 @@ const DataInput = (props) => {
                 startIcon={<PlayCircleIcon />}
                 sx={{
                   minWidth: "120px",
-                  bgcolor: "#FFCCCC",
-                  "&:hover": { bgcolor: "#F79191" },
+                  bgcolor: "#F79191",
+                  "&:hover": { bgcolor: "#FFCCCC" },
                 }}
                 variant="contained"
               >

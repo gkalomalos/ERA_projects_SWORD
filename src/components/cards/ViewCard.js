@@ -22,6 +22,7 @@ const ViewCard = (props) => {
           onChangeValidHazard={props.onChangeValidHazard}
           onChangeHazardFile={props.onChangeHazardFile}
           onHazardSelect={props.onChangeHazard}
+          selectedAppOption={props.selectedAppOption}
           selectedCountry={props.selectedCountry}
           selectedHazard={props.selectedHazard}
           selectedHazardFile={props.selectedHazardFile}
@@ -52,6 +53,7 @@ const ViewCard = (props) => {
           onChangeExposureFile={props.onChangeExposureFile}
           onChangeValidEconomicExposure={props.onChangeValidEconomicExposure}
           onExposureEconomicSelect={props.onChangeExposureEconomic}
+          selectedAppOption={props.selectedAppOption}
           selectedCountry={props.selectedCountry}
           selectedExposureFile={props.selectedExposureFile}
           selectedExposureEconomic={props.selectedExposureEconomic}
@@ -62,6 +64,7 @@ const ViewCard = (props) => {
           onChangeExposureFile={props.onChangeExposureFile}
           onChangeValidNonEconomicExposure={props.onChangeValidNonEconomicExposure}
           onExposureNonEconomicSelect={props.onChangeExposureNonEconomic}
+          selectedAppOption={props.selectedAppOption}
           selectedCountry={props.selectedCountry}
           selectedExposureFile={props.selectedExposureFile}
           selectedExposureNonEconomic={props.selectedExposureNonEconomic}

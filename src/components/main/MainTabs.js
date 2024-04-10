@@ -7,7 +7,7 @@ import MacroIcon from "@mui/icons-material/Assessment";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import TuneIcon from "@mui/icons-material/Tune";
 
-const MainTabs = ({ onChangeTab, propSelectedTab }) => {
+const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSubTab }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedSubTab, setSelectedSubTab] = useState(0);
 
@@ -19,6 +19,7 @@ const MainTabs = ({ onChangeTab, propSelectedTab }) => {
 
   const handleSubTabChange = (event, newValue) => {
     setSelectedSubTab(newValue);
+    onChangeSubTab(newValue);
   };
 
   const subTabsMap = {

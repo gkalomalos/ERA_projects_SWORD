@@ -1,0 +1,68 @@
+import React, { useEffect, useState } from "react";
+
+import { useTranslation } from "react-i18next";
+import { Box, Card, CardContent, Typography } from "@mui/material";
+
+import AdaptationMeasuresViewTitle from "../title/AdaptationMeasuresViewTitle";
+import APIService from "../../APIService";
+
+const AdaptationMeasuresInput = ({ selectedHazard }) => {
+  const { t } = useTranslation();
+  const [adaptationMeasures, setAdaptationMeasures] = useState([]);
+
+  const onFetchAdaptationMeasuresHandler = async () => {
+    const body = {
+      hazardType: selectedHazard,
+    };
+    APIService.FetchAdaptationMeasures(body)
+      .then((response) => {
+        setAdaptationMeasures(response.result.data.adaptationMeasures);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    if (selectedHazard) {
+      onFetchAdaptationMeasuresHandler();
+    }
+  }, [selectedHazard]);
+
+  return (
+    <>
+      <AdaptationMeasuresViewTitle />
+      {adaptationMeasures.length > 0 ? (
+        <Box sx={{ mt: 2, backgroundColor: "#DDEBEF", padding: 2, borderRadius: "8px" }}>
+          {adaptationMeasures.map((measureName, index) => (
+            <Card
+              key={index}
+              variant="outlined"
+              sx={{
+                bgcolor: "#EBF3F5",
+                mb: 2,
+                height: "48px",
+              }}
+            >
+              <CardContent sx={{ p: 1 }}>
+                <Typography gutterBottom variant="h6" component="div" sx={{ my: 0 }}>
+                  {measureName}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      ) : (
+        <Typography sx={{ mt: 2, textAlign: "center", fontStyle: "italic" }}>
+          {
+            selectedHazard
+              ? t("adaptation_input_no_measures") /* No measures are found for selected hazard */
+              : t("adaptation_input_no_hazard") /* No hazard is selected */
+          }
+        </Typography>
+      )}
+    </>
+  );
+};
+
+export default AdaptationMeasuresInput;

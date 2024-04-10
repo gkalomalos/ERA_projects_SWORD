@@ -23,11 +23,11 @@ const Country = (props) => {
 
   const handleBgColor = () => {
     if (props.selectedCountry) {
-      setBgcolor("#EBF3F5") // Change to #E5F5EB
+      setBgcolor("#E5F5EB"); // green
     } else {
-      setBgcolor("#EBF3F5") // Change to FFCCCC
+      setBgcolor("#EBF3F5"); // default light blue
     }
-  }
+  };
 
   useEffect(() => {
     handleBgColor();
@@ -55,7 +55,7 @@ const Country = (props) => {
     >
       <CardContent sx={{ p: 2 }}>
         <Box>
-          <Typography id="country-label" gutterBottom variant="h6" component="div">
+          <Typography id="country-label" gutterBottom variant="h6" component="div" m={0}>
             {t("country")}
           </Typography>
           {props.selectedCountry && (

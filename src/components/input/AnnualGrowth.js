@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
@@ -6,19 +6,70 @@ import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 const AnnualGrowth = (props) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
+  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+  const [gdpGrowth, setGdpGrowth] = useState(props.selectedAnnualGDPGrowth);
+  const [populationGrowth, setPopulationGrowth] = useState(props.selectedAnnualPopulationGrowth);
 
   const handleMouseDown = () => {
+    // Deactivate input card click in case of ERA project scenario.
+    // Time horizon is set to 2050
+    if (props.selectedAppOption === "era") {
+      return;
+    }
     setClicked(true); // Trigger animation
   };
 
   const handleMouseUp = () => {
+    // Deactivate input card click in case of ERA project scenario.
+    // Time horizon is set to 2050
+    if (props.selectedAppOption === "era") {
+      return;
+    }
     setClicked(false); // Reset animation
   };
 
   const handleCardClick = () => {
+    // Deactivate input card click in case of ERA project scenario.
+    // Time horizon is set to 2050
+    if (props.selectedAppOption === "era") {
+      return;
+    }
     props.onCardClick("annualGrowth");
     props.onSelectTab(0);
   };
+
+  const handleBgColor = () => {
+    if (props.selectedAppOption === "era" && props.selectedCountry) {
+      setBgColor("#E5F5EB"); //green
+      // } else if (props.selectedAppOption === "era") {
+      //   setBgColor("#FFCCCC"); //red
+      // } else if (props.selectedAppOption === "era") {
+      //   setBgColor("#E6E6E6"); //grey
+    } else {
+      setBgColor("#EBF3F5"); //default light blue
+    }
+  };
+
+  useEffect(() => {
+    handleBgColor();
+    if (props.selectedAppOption === "era") {
+      if (props.selectedCountry === "thailand") {
+        setGdpGrowth(2.94);
+        setPopulationGrowth(-0.22);
+      } else if (props.selectedCountry === "egypt") {
+        setGdpGrowth(4);
+        setPopulationGrowth(1.29);
+      } else {
+        // Reset to defaults or handle other countries as needed
+        setGdpGrowth(props.selectedAnnualGDPGrowth);
+        setPopulationGrowth(props.selectedAnnualPopulationGrowth);
+      }
+    } else {
+      // If not "era", use the provided props values
+      setGdpGrowth(props.selectedAnnualGDPGrowth);
+      setPopulationGrowth(props.selectedAnnualPopulationGrowth);
+    }
+  }, [props.selectedAppOption, props.selectedCountry]);
 
   return (
     <Card
@@ -29,7 +80,7 @@ const AnnualGrowth = (props) => {
       onClick={handleCardClick}
       sx={{
         cursor: "pointer",
-        bgcolor: "#EBF3F5",
+        bgcolor: bgColor,
         transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
         "&:hover": {
           bgcolor: "#DAE7EA",
@@ -43,7 +94,7 @@ const AnnualGrowth = (props) => {
       <CardContent>
         {/* Annual GDP growth section */}
         <Box>
-          <Typography id="annual-growth-gdp-slider" gutterBottom variant="h6" component="div">
+          <Typography id="annual-growth-gdp-slider" gutterBottom variant="h6" component="div" m={0}>
             {props.selectedAnnualGDPGrowth
               ? t("input_annual_gdp_growth_title")
               : t("input_annual_growth_title")}
@@ -52,7 +103,7 @@ const AnnualGrowth = (props) => {
             id="annual-growth-gdp-textfield"
             fullWidth
             variant="outlined"
-            value={`${props.selectedAnnualGDPGrowth}%`}
+            value={`${gdpGrowth}%`}
             disabled
             InputProps={{
               readOnly: true,
@@ -73,13 +124,13 @@ const AnnualGrowth = (props) => {
             variant="h6"
             component="div"
           >
-            {props.selectedAnnualPopulationGrowth ? t("input_annual_population_growth_title") : ""}
+            {t("input_annual_population_growth_title")}
           </Typography>
           <TextField
             id="annual-growth-population-textfield"
             fullWidth
             variant="outlined"
-            value={`${props.selectedAnnualPopulationGrowth}%`}
+            value={`${populationGrowth}%`}
             disabled
             InputProps={{
               readOnly: true,

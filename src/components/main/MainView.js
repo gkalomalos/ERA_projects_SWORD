@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-import ChartLayout from "../controls/ChartLayout";
+import AdaptationMap from "../map/AdaptationMap";
+import AdaptationChartLayout from "../controls/AdaptationChartLayout";
+import RiskChartLayout from "../controls/RiskChartLayout";
 import MainViewControls from "../controls/MainViewControls";
 import MainViewTitle from "../title/MainViewTitle";
 import MapLayout from "../map/MapLayout";
@@ -24,6 +26,7 @@ const MainView = (props) => {
         <ViewCard
           selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
           selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+          selectedAppOption={props.selectedAppOption}
           selectedCard={props.selectedCard}
           selectedCountry={props.selectedCountry}
           selectedExposureEconomic={props.selectedExposureEconomic}
@@ -49,13 +52,23 @@ const MainView = (props) => {
         />
       )}
       {/* Render the main layout with the Economic & Non-Economic section according to each sub tab selected  */}
-      {/* Render MapLayout component */}
-      {props.selectedTab === 1 && (
+      {/* Render Economic & non-Economic - Risk view */}
+      {props.selectedTab === 1 && props.selectedSubTab === 0 && (
         <>
           {viewControl === "display_map" && (
             <MapLayout selectedCountry={props.selectedCountry} activeMap={props.activeMap} />
           )}
-          {viewControl === "display_chart" && <ChartLayout />}
+          {viewControl === "display_chart" && <RiskChartLayout />}
+          {viewControl === "settings" && <SettingsView />}
+          {viewControl === "progress" && <ProgressView />}
+          <MainViewControls onChangeViewControls={setViewControlHandler} />
+        </>
+      )}
+      {/* Render Economic & non-Economic - Adaptation view */}
+      {props.selectedTab === 1 && props.selectedSubTab === 1 && (
+        <>
+          {viewControl === "display_map" && <AdaptationMap />}
+          {viewControl === "display_chart" && <AdaptationChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}
           <MainViewControls onChangeViewControls={setViewControlHandler} />

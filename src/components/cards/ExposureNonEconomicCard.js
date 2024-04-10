@@ -16,7 +16,7 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const exposureNonEconomicDict = {
-  thailand: ["farmers", "buddhist_monks", "water_users", "roads", "students"],
+  thailand: ["tree_crops_farmers", "grass_crops_farmers", "buddhist_monks", "water_users", "roads", "students"],
   egypt: ["hospitalised_people", "students", "diarrhoea_patients", "roads"],
 };
 
@@ -24,6 +24,7 @@ const ExposureNonEconomicCard = ({
   onChangeExposureFile,
   onChangeValidNonEconomicExposure,
   onExposureNonEconomicSelect,
+  selectedAppOption,
   selectedCountry,
   selectedExposureNonEconomic,
   selectedExposureFile,
@@ -153,7 +154,7 @@ const ExposureNonEconomicCard = ({
         ))}
 
         {/* Load button section */}
-        {selectedCountry && (
+        {selectedCountry && selectedAppOption === "explore" && (
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
             <Box>
               <input
@@ -210,7 +211,7 @@ const ExposureNonEconomicCard = ({
         )}
 
         {/* Display uploaded file name section */}
-        {selectedExposureFile && (
+        {selectedExposureFile && selectedAppOption === "explore" && (
           <Box
             sx={{
               display: "flex",

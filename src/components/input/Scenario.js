@@ -23,9 +23,9 @@ const Scenario = (props) => {
 
   const handleBgColor = () => {
     if (props.selectedScenario) {
-      setBgcolor("#EBF3F5"); //change to #E5F5EB
+      setBgcolor("#E5F5EB"); // green
     } else {
-      setBgcolor("#EBF3F5") // Change to FFCCCC
+      setBgcolor("#EBF3F5"); // default light blue
     }
   };
 
@@ -55,7 +55,7 @@ const Scenario = (props) => {
     >
       <CardContent>
         <Box>
-          <Typography id="scenario-dropdown" gutterBottom variant="h6" component="div">
+          <Typography id="scenario-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("scenario_title")}
           </Typography>
 

@@ -2,8 +2,8 @@ import React from "react";
 
 import PageUnderConstructionView from "../misc/PageUnderConstructionView";
 
-const ChartLayout = () => {
+const AdaptationMap = () => {
   return <PageUnderConstructionView />;
 };
 
-export default ChartLayout;
+export default AdaptationMap;

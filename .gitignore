@@ -22,3 +22,7 @@ climada_env
 # python
 *.pyc
 __pycache_
+
+# database
+*.sqlite3
+*.db
