@@ -93,6 +93,11 @@ class HazardHandler:
 
         return hazard_properties
 
+    def get_hazard_unit(self, hazard_type):
+        unit = "No unit"
+        if hazard_type == "drought":
+            pass
+
     def get_hazard(
         self, hazard_type: str, scenario: str, time_horizon: str, country: str
     ) -> Hazard:
@@ -101,7 +106,6 @@ class HazardHandler:
         hazard_properties = self.get_hazard_dataset_properties(
             hazard_type, scenario, time_horizon, country
         )
-        hazard_code = self.get_hazard_code(hazard_type)
         try:
             hazard = self.client.get_hazard(
                 hazard_type=hazard_type,
@@ -123,8 +127,12 @@ class HazardHandler:
         try:
             hazard = Hazard().from_mat(DATA_HAZARDS_DIR / filepath)
             hazard_type = hazard.haz_type
+            # Set intensity threshold according to hazard type
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
+            # Set hazard intensity unit in case it's not available in the matlab file
+            # hazard.units
+
             return hazard
         except Exception as exception:
             logger.log(
@@ -176,7 +184,7 @@ class HazardHandler:
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             hazard_geojson = joined_gdf.__geo_interface__
-            hazard_geojson["_metadata"] = {"unit": hazard.units, "title": f"Risk ({hazard.units})"}
+            hazard_geojson["_metadata"] = {"unit": hazard.units, "title": f"Hazard ({hazard.units})"}
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / f"hazards_geodata.json"

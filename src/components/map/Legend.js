@@ -9,14 +9,26 @@ const Legend = ({ colorScale, minValue, maxValue, title }) => {
     ${colorScale((minValue + maxValue) / 2)} 50%, 
     ${colorScale(maxValue)} 100%)`;
 
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num);
+  };
+
   return (
     <div className="legend-container">
       <div className="legend-title">{title}</div>
-      <div className="color-gradient" style={{ backgroundImage: gradientCSS }}></div>
+      <div className="color-gradient" style={{ backgroundImage: gradientCSS }}>
+        <div className="gradient-line"></div>
+      </div>
       <div className="legend-values">
-        <span>{Math.round(minValue)}</span>
-        <span>{(Math.round(minValue) + Math.round(maxValue)) / 2}</span>
-        <span>{Math.round(maxValue)}</span>
+        {minValue === maxValue ? (
+          <span>{formatNumber(minValue)}</span>
+        ) : (
+          <>
+            <span>{formatNumber(minValue)}</span>
+            <span>{formatNumber((minValue + maxValue) / 2)}</span>
+            <span>{formatNumber(maxValue)}</span>
+          </>
+        )}
       </div>
     </div>
   );

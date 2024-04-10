@@ -96,7 +96,7 @@ class ExposureHandler:
                         all_layers_geojson["features"].append(feature)
                     all_layers_geojson["_metadata"] = {
                         "unit": exposure.value_unit,
-                        "title": f"Risk ({exposure.value_unit})",
+                        "title": f"Exposure ({exposure.value_unit})",
                     }
 
                 except FileNotFoundError:
