@@ -28,7 +28,8 @@
   left: 50%;
   height: 100%; /* Match the height of the color gradient */
   width: 2px; /* Width of the line */
-  background-color: grey; /* Color of the line */
+  background-color: darkgray; /* Color of the line */
+  opacity: 0.7;
   transform: translateX(-50%); /* Center the line */
 }
 
