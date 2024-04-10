@@ -122,7 +122,7 @@ const RiskMap = ({ selectedCountry }) => {
       key={selectedCountry}
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
-      style={{ height: "100%", width: "100%" }}
+      style={{ position: "relative", height: "100%", width: "100%" }}
       whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -143,7 +143,7 @@ const RiskMap = ({ selectedCountry }) => {
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
-          <Legend colorScale={mapInfo.colorScale} />
+          <Legend colorScale={mapInfo.colorScale} minValue={minValue} maxValue={maxValue} />
         </>
       )}
     </MapContainer>

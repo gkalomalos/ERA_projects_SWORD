@@ -1,19 +1,19 @@
 import React from "react";
 import "./Legend.css"; // Make sure to include the CSS file for styling
 
-const Legend = ({ colorScale }) => {
-  // Generate gradient stops based on the colorScale prop
+const Legend = ({ colorScale, minValue, maxValue }) => {
+  // Generate the CSS for the gradient
   const gradientCSS = `linear-gradient(to right, 
-    ${colorScale(0)} 0%, 
-    ${colorScale(0.5)} 50%, 
-    ${colorScale(1)} 100%)`;
+    ${colorScale(minValue)} 0%, 
+    ${colorScale((minValue + maxValue) / 2)} 50%, 
+    ${colorScale(maxValue)} 100%)`;
 
   return (
     <div className="legend-container">
       <div className="color-gradient" style={{ backgroundImage: gradientCSS }}></div>
       <div className="legend-values">
-        <span>Low</span>
-        <span>High</span>
+        <span>{Math.round(minValue)}</span>
+        <span>{Math.round(maxValue)}</span>
       </div>
     </div>
   );
