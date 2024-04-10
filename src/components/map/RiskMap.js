@@ -148,8 +148,8 @@ const RiskMap = ({ selectedCountry }) => {
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
           <Legend
             colorScale={mapInfo.colorScale}
-            minValue={minValue}
             maxValue={maxValue}
+            minValue={minValue}
             title={legendTitle}
           />
         </>

@@ -7,12 +7,18 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
+import Legend from "./Legend";
+
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = ({ selectedCountry }) => {
   const { t } = useTranslation();
-  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
+  const [legendTitle, setLegendTitle] = useState("");
+  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
+  const [maxValue, setMaxValue] = useState(null);
+  const [minValue, setMinValue] = useState(null);
+
   const mapRef = useRef();
 
   const fetchGeoJson = async (layer) => {
@@ -24,13 +30,16 @@ const ExposureMap = ({ selectedCountry }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      setLegendTitle(data._metadata.title);
       const filteredFeatures = data.features.filter(
         (feature) => feature.properties.layer === layer
       );
       const filteredData = { ...data, features: filteredFeatures };
       const values = filteredFeatures.map((f) => f.properties.value);
       const minValue = Math.min(...values);
+      setMinValue(minValue);
       const maxValue = Math.max(...values);
+      setMaxValue(maxValue);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
       setMapInfo({ geoJson: filteredData, colorScale: scale });
@@ -156,12 +165,20 @@ const ExposureMap = ({ selectedCountry }) => {
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <GeoJSON
-          key={`${selectedCountry}-${activeAdminLayer}`}
-          data={mapInfo.geoJson}
-          style={style}
-          onEachFeature={onEachFeature}
-        />
+        <>
+          <GeoJSON
+            key={`${selectedCountry}-${activeAdminLayer}`}
+            data={mapInfo.geoJson}
+            style={style}
+            onEachFeature={onEachFeature}
+          />
+          <Legend
+            colorScale={mapInfo.colorScale}
+            maxValue={maxValue}
+            minValue={minValue}
+            title={legendTitle}
+          />
+        </>
       )}
     </MapContainer>
   );

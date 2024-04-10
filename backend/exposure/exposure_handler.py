@@ -94,6 +94,10 @@ class ExposureHandler:
                     for feature in layer_features:
                         feature["properties"]["layer"] = layer
                         all_layers_geojson["features"].append(feature)
+                    all_layers_geojson["_metadata"] = {
+                        "unit": exposure.value_unit,
+                        "title": f"Risk ({exposure.value_unit})",
+                    }
 
                 except FileNotFoundError:
                     logger.log("error", f"File not found: {GADM41_filename}")
