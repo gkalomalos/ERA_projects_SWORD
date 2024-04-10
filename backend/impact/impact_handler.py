@@ -240,6 +240,10 @@ class ImpactHandler:
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
+            impact_geojson["_metadata"] = {
+                "unit": impact.unit,
+                "title": f"Risk ({impact.unit})"
+            }
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / f"risks_geodata.json"

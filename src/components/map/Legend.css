@@ -5,7 +5,7 @@
   left: 25px;
   width: 250px;
   z-index: 1000;
-  font-size: 14px;
+  font-size: 12px;
   background-color: #ffffff;
   opacity: 0.7;
   border-radius: 8px;
@@ -26,4 +26,10 @@
   display: flex;
   justify-content: space-between;
   pointer-events: all; /* Enable pointer events for the legend values */
+}
+
+.legend-title {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px; /* Add some spacing between the title and the color gradient */
 }

@@ -14,11 +14,13 @@ const returnPeriods = [10, 15, 20, 25];
 
 const RiskMap = ({ selectedCountry }) => {
   const { t } = useTranslation();
-  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeRPLayer, setActiveRPLayer] = useState(10);
-  const mapRef = useRef();
-  const [minValue, setMinValue] = useState(null);
+  const [legendTitle, setLegendTitle] = useState("");
+  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
+  const [minValue, setMinValue] = useState(null);
+
+  const mapRef = useRef();
 
   const fetchGeoJson = async () => {
     try {
@@ -29,6 +31,7 @@ const RiskMap = ({ selectedCountry }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      setLegendTitle(data._metadata.title);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
       setMinValue(minValue);
@@ -143,7 +146,12 @@ const RiskMap = ({ selectedCountry }) => {
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
-          <Legend colorScale={mapInfo.colorScale} minValue={minValue} maxValue={maxValue} />
+          <Legend
+            colorScale={mapInfo.colorScale}
+            minValue={minValue}
+            maxValue={maxValue}
+            title={legendTitle}
+          />
         </>
       )}
     </MapContainer>

@@ -1,7 +1,8 @@
 import React from "react";
-import "./Legend.css"; // Make sure to include the CSS file for styling
 
-const Legend = ({ colorScale, minValue, maxValue }) => {
+import "./Legend.css";
+
+const Legend = ({ colorScale, minValue, maxValue, title }) => {
   // Generate the CSS for the gradient
   const gradientCSS = `linear-gradient(to right, 
     ${colorScale(minValue)} 0%, 
@@ -10,9 +11,11 @@ const Legend = ({ colorScale, minValue, maxValue }) => {
 
   return (
     <div className="legend-container">
+      <div className="legend-title">{title}</div>
       <div className="color-gradient" style={{ backgroundImage: gradientCSS }}></div>
       <div className="legend-values">
         <span>{Math.round(minValue)}</span>
+        <span>{(Math.round(minValue) + Math.round(maxValue)) / 2}</span>
         <span>{Math.round(maxValue)}</span>
       </div>
     </div>
