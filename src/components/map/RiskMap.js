@@ -17,6 +17,8 @@ const RiskMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const mapRef = useRef();
+  const [minValue, setMinValue] = useState(null);
+  const [maxValue, setMaxValue] = useState(null);
 
   const fetchGeoJson = async () => {
     try {
@@ -29,7 +31,9 @@ const RiskMap = ({ selectedCountry }) => {
       const data = await response.json();
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
+      setMinValue(minValue);
       const maxValue = Math.max(...values);
+      setMaxValue(maxValue);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
       setMapInfo({ geoJson: data, colorScale: scale });
@@ -139,7 +143,7 @@ const RiskMap = ({ selectedCountry }) => {
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
-          <Legend colorScale={mapInfo.colorScale} position="bottomleft" />
+          <Legend colorScale={mapInfo.colorScale} />
         </>
       )}
     </MapContainer>
