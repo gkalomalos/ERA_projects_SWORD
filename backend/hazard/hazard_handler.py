@@ -177,6 +177,9 @@ class HazardHandler:
                 f"An error occured while trying to get country admin level information. More info: {exception}",
             )
 
+    def filter_country_coords(self, gdf: gpd.GeoDataFrame, country_code: str) -> gpd.GeoDataFrame:
+        pass
+
     def generate_hazard_geojson(
         self,
         hazard: Hazard,
@@ -210,6 +213,9 @@ class HazardHandler:
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
+            # Remove points outside of the country
+            # TODO: Test if this needs to be refined
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)   
             # Convert to GeoJSON for this layer and add to all_layers_geojson

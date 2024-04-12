@@ -383,6 +383,8 @@ class ImpactHandler:
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
+            # TODO: Test if this needs to be refined
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]            
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
             impact_geojson["_metadata"] = {"unit": impact.unit, "title": f"Risk ({impact.unit})"}
