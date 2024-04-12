@@ -4,6 +4,10 @@ climada_unu.db
 src/temp
 gadm41_EGY.gpkg
 gadm41_THA.gpkg
+gadm0_THA.geojson
+gadm1_THA.geojson
+gadm2_THA.geojson
+
 
 # frontend
 node_modules
