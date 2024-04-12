@@ -18,6 +18,7 @@ const ExposureMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
+  const [unit, setUnit] = useState("")
 
   const mapRef = useRef();
 
@@ -31,6 +32,7 @@ const ExposureMap = ({ selectedCountry }) => {
       }
       const data = await response.json();
       setLegendTitle(data._metadata.title);
+      setUnit(data._metadata.unit)
       const filteredFeatures = data.features.filter(
         (feature) => feature.properties.layer === layer
       );
@@ -91,41 +93,14 @@ const ExposureMap = ({ selectedCountry }) => {
 
   const onEachFeature = (feature, layer) => {
     if (feature.properties) {
-      const country = feature.properties["COUNTRY"];
+      const country = feature.properties["country"];
       const value = feature.properties.value;
-      if (activeAdminLayer === 0) {
-        layer.bindPopup(
-          `${t("map_exposure_popup_country")}: ${country}<br>${t(
-            "map_exposure_popup_value"
-          )}: ${value}`
-        );
-      }
-      if (activeAdminLayer === 1) {
-        const name1 = feature.properties["NAME_1"];
-        layer.bindPopup(
-          `${t("map_exposure_popup_country")}: ${country}<br>${t(
-            "map_exposure_popup_admin1"
-          )}: ${name1}<br>${t("map_exposure_popup_value")}: ${value}`
-        );
-      }
-      if (activeAdminLayer === 2) {
-        const name1 = feature.properties["NAME_1"];
-        const name2 = feature.properties["NAME_2"];
-        layer.bindPopup(
-          `${t("map_exposure_popup_country")}: ${country}<br>${t(
-            "map_exposure_popup_admin1"
-          )}: ${name1}<br>${t("map_exposure_popup_admin2")}: ${name2}<br>${t(
-            "map_exposure_popup_value"
-          )}: ${value}`
-        );
-        layer.bindPopup(
-          `${t("map_exposure_popup_country")}: ${country}<br>${t(
-            "map_exposure_popup_admin1"
-          )}: ${name1}<br>${t("map_exposure_popup_admin2")}: ${name2}<br>${t(
-            "map_exposure_popup_value"
-          )}: ${value}`
-        );
-      }
+      const name = feature.properties.name;
+      layer.bindPopup(
+        `${t("map_exposure_popup_country")}: ${country}<br>${t(
+          "map_exposure_button_admin"
+        )}: ${name}<br>${t("map_exposure_popup_value")}: ${value} ${unit}`
+      );
     }
   };
 

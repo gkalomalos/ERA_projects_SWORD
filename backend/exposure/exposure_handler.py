@@ -51,6 +51,30 @@ class ExposureHandler:
             )
             return None
 
+    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
+        """
+        Return country GeoDataFrame per admin level
+        """
+        try:
+            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
+            admin_gdf = gpd.read_file(file_path)
+            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
+            admin_gdf = admin_gdf.rename(
+                columns={
+                    "shapeID": "id",
+                    "shapeName": f"name",
+                    "shapeGroup": "country",
+                }
+            )
+            return admin_gdf
+        except FileNotFoundError:
+            logger.log("error", f"File not found: {file_path}")
+        except Exception as exception:
+            logger.log(
+                "error",
+                f"An error occured while trying to get country admin level information. More info: {exception}",
+            )
+
     def generate_exposure_geojson(self, exposure: Exposures, country_name: str):
         try:
             exp_gdf = exposure.gdf
@@ -61,36 +85,20 @@ class ExposureHandler:
                     exp_gdf["longitude"], exp_gdf["latitude"], crs="EPSG:4326"
                 ),
             )
-
             country_iso3 = get_iso3_country_code(country_name)
-
-            GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
             layers = [0, 1, 2]
-
             all_layers_geojson = {"type": "FeatureCollection", "features": []}
 
             for layer in layers:
                 try:
-                    admin_gdf = gpd.read_file(filename=GADM41_filename, layer=layer)
+                    admin_gdf = self.get_admin_data(country_iso3, layer)
                     joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
-                    aggregated_values = (
-                        joined_gdf.groupby(f"GID_{layer}")["value"].sum().reset_index()
-                    )
-                    admin_gdf = admin_gdf.merge(aggregated_values, on=f"GID_{layer}", how="left")
-                    admin_gdf["value"] = admin_gdf["value"].fillna(0)
-                    if layer == 0:
-                        admin_gdf_filtered = admin_gdf[["COUNTRY", "geometry", "value"]]
-                    elif layer == 1:
-                        admin_gdf_filtered = admin_gdf[["COUNTRY", f"NAME_1", "geometry", "value"]]
-                    elif layer == 2:
-                        admin_gdf_filtered = admin_gdf[
-                            ["COUNTRY", f"NAME_1", "NAME_2", "geometry", "value"]
-                        ]
-                    else:
-                        admin_gdf_filtered = admin_gdf[["COUNTRY", "geometry", "value"]]
+                    aggregated_values = joined_gdf.groupby(f"id")["value"].sum().reset_index()
+                    admin_gdf = admin_gdf.merge(aggregated_values, on=f"id", how="left")
+                    admin_gdf["value"] = admin_gdf["value"].round(2).fillna(0)
 
                     # Convert each layer to a GeoJSON Feature and add it to the collection
-                    layer_features = admin_gdf_filtered.__geo_interface__["features"]
+                    layer_features = admin_gdf.__geo_interface__["features"]
                     for feature in layer_features:
                         feature["properties"]["layer"] = layer
                         all_layers_geojson["features"].append(feature)
@@ -98,9 +106,6 @@ class ExposureHandler:
                         "unit": exposure.value_unit,
                         "title": f"Exposure ({exposure.value_unit})",
                     }
-
-                except FileNotFoundError:
-                    logger.log("error", f"File not found: {GADM41_filename}")
                 except Exception as e:
                     logger.log("error", f"An error occurred while processing layer {layer}: {e}")
 

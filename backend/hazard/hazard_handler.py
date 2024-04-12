@@ -5,6 +5,7 @@ from time import time
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from shapely.geometry import Point
 
 from climada.hazard import Hazard
 from climada.util.api_client import Client
@@ -152,6 +153,30 @@ class HazardHandler:
             intensity_thres = -4
         return intensity_thres
 
+    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
+        """
+        Return country GeoDataFrame per admin level
+        """
+        try:
+            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
+            admin_gdf = gpd.read_file(file_path)
+            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
+            admin_gdf = admin_gdf.rename(
+                columns={
+                    "shapeID": "id",
+                    "shapeName": f"name",
+                    "shapeGroup": "country",
+                }
+            )
+            return admin_gdf
+        except FileNotFoundError:
+            logger.log("error", f"File not found: {file_path}")
+        except Exception as exception:
+            logger.log(
+                "error",
+                f"An error occured while trying to get country admin level information. More info: {exception}",
+            )
+
     def generate_hazard_geojson(
         self,
         hazard: Hazard,
@@ -160,31 +185,38 @@ class HazardHandler:
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)
-            GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
-
-            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
+            admin_gdf = self.get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
             data = np.column_stack((coords, local_exceedance_inten))
-            columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
-            hazard_gdf = gpd.GeoDataFrame(
-                pd.DataFrame(data, columns=columns),
-                geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
-            )
-            hazard_gdf.set_crs("EPSG:4326", inplace=True)
+            columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+            
+            hazard_df = pd.DataFrame(data, columns=columns)
+            geometry = [Point(xy) for xy in zip(hazard_df['longitude'], hazard_df['latitude'])]
+            hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
+            
+            # hazard_gdf = gpd.GeoDataFrame(
+            #     pd.DataFrame(data, columns=columns),
+            #     geometry=gpd.points_from_xy(data[:, 1], data[:, 0], crs="EPSG:4326"),
+            # )
+
+            # hazard_gdf.set_crs("EPSG:4326", inplace=True)
             # Filter hazard_gdf to exclude rows where all return period values are zero
             hazard_gdf = hazard_gdf[
                 (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
             ]
-            hazard_gdf = hazard_gdf.drop(columns=["latitude", "longitude"])
-            hazard_gdf = hazard_gdf.reset_index(drop=True)
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
+            joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
+            joined_gdf = joined_gdf.reset_index(drop=True)   
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             hazard_geojson = joined_gdf.__geo_interface__
-            hazard_geojson["_metadata"] = {"unit": hazard.units, "title": f"Hazard ({hazard.units})"}
+            hazard_geojson["_metadata"] = {
+                "unit": hazard.units,
+                "title": f"Hazard ({hazard.units})",
+            }
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / f"hazards_geodata.json"
