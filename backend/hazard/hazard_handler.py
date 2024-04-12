@@ -196,6 +196,7 @@ class HazardHandler:
             geometry = [Point(xy) for xy in zip(hazard_df['longitude'], hazard_df['latitude'])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
             
+            # TODO: Test efficiency and remove redundant code. Timings look similar
             # hazard_gdf = gpd.GeoDataFrame(
             #     pd.DataFrame(data, columns=columns),
             #     geometry=gpd.points_from_xy(data[:, 1], data[:, 0], crs="EPSG:4326"),
