@@ -177,8 +177,11 @@ class HazardHandler:
                 f"An error occured while trying to get country admin level information. More info: {exception}",
             )
 
-    def filter_country_coords(self, gdf: gpd.GeoDataFrame, country_code: str) -> gpd.GeoDataFrame:
-        pass
+    def get_circle_radius(self, hazard_type: str) -> int:
+        radius = 2000
+        if hazard_type == "D":
+            radius = 11000
+        return radius
 
     def generate_hazard_geojson(
         self,
@@ -194,11 +197,11 @@ class HazardHandler:
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
             data = np.column_stack((coords, local_exceedance_inten))
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
-            
+
             hazard_df = pd.DataFrame(data, columns=columns)
-            geometry = [Point(xy) for xy in zip(hazard_df['longitude'], hazard_df['latitude'])]
+            geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
-            
+
             # TODO: Test efficiency and remove redundant code. Timings look similar
             # hazard_gdf = gpd.GeoDataFrame(
             #     pd.DataFrame(data, columns=columns),
@@ -217,12 +220,16 @@ class HazardHandler:
             # TODO: Test if this needs to be refined
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
-            joined_gdf = joined_gdf.reset_index(drop=True)   
+            joined_gdf = joined_gdf.reset_index(drop=True)
+
+            radius = self.get_circle_radius(hazard.haz_type)
+
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
                 "unit": hazard.units,
                 "title": f"Hazard ({hazard.units})",
+                "radius": radius,
             }
 
             # Save the combined GeoJSON file

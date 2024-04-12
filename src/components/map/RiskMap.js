@@ -19,6 +19,7 @@ const RiskMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
+  const [radius, setRadius] = useState(0);
 
   const mapRef = useRef();
 
@@ -32,6 +33,7 @@ const RiskMap = ({ selectedCountry }) => {
       }
       const data = await response.json();
       setLegendTitle(data._metadata.title);
+      setRadius(data._metadata.radius);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
       setMinValue(minValue);
@@ -62,7 +64,7 @@ const RiskMap = ({ selectedCountry }) => {
           color: colorScale(value),
           fillColor: colorScale(value),
           fillOpacity: 0.3,
-          radius: 2000,
+          radius: radius,
         })
           .bindPopup(
             `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t("value")}: ${value}`

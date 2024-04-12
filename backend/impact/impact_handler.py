@@ -351,6 +351,12 @@ class ImpactHandler:
                 f"An error occured while trying to get country admin level information. More info: {exception}",
             )
 
+    def get_circle_radius(self, hazard_type: str) -> int:
+        radius = 2000
+        if hazard_type == "D":
+            radius = 11000
+        return radius
+
     def generate_impact_geojson(
         self, impact: Impact, country_name: str, return_periods: tuple = (25, 20, 15, 10)
     ):
@@ -384,10 +390,16 @@ class ImpactHandler:
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
             # TODO: Test if this needs to be refined
-            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]            
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+
+            radius = self.get_circle_radius(impact.haz_type)
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
-            impact_geojson["_metadata"] = {"unit": impact.unit, "title": f"Risk ({impact.unit})"}
+            impact_geojson["_metadata"] = {
+                "unit": impact.unit,
+                "title": f"Risk ({impact.unit})",
+                "radius": radius,
+            }
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / f"risks_geodata.json"
