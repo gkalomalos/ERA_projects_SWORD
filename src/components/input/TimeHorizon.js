@@ -82,7 +82,7 @@ const TimeHorizon = (props) => {
               id="timeHorizon"
               fullWidth
               variant="outlined"
-              value={props.selectedTimeHorizon}
+              value={`${props.selectedTimeHorizon[0]} - ${props.selectedTimeHorizon[1]}`}
               disabled
               InputProps={{
                 readOnly: true,

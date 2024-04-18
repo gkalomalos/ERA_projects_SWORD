@@ -1,22 +1,16 @@
 import React from "react";
-
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Slider, Typography } from "@mui/material";
 
-const marks = [
-  { value: 2024, label: "2024" },
-  { value: 2075, label: "2075" },
-];
-
-const valuetext = (value) => {
-  return `${value}`;
-};
-
 const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
   const { t } = useTranslation();
+  
+  // Initial range state
+  const [value, setValue] = React.useState([2024, 2075]);
 
-  const handleCardSelect = (event, value) => {
-    onTimeHorizonSelect(value);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    onTimeHorizonSelect(newValue);
   };
 
   return (
@@ -69,19 +63,20 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
             {t("card_timehorizon_subtitle")}
           </Typography>
           <Slider
-            aria-label="Year selector"
-            defaultValue={2024}
-            getAriaValueText={valuetext}
-            onChange={handleCardSelect}
-            step={1}
-            marks={marks}
+            aria-label="Time horizon selector"
+            defaultValue={[2024, 2075]}
+            value={value}
+            onChange={handleChange}
+            valueLabelDisplay="on"
             min={2024}
             max={2075}
-            valueLabelDisplay="on" // Changed to "on" to always show the value label
-            value={selectedTimeHorizon ? parseInt(selectedTimeHorizon) : 2024}
+            marks={[
+              { value: 2024, label: '2024' },
+              { value: 2075, label: '2075' }
+            ]}
             sx={{
               color: "#F79191", // Slider track and thumb color
-              marginTop: "48px ",
+              marginTop: "48px",
               width: "90%", // Adjust width to be less than container to center properly
               "& .MuiSlider-thumb": {
                 height: 24,
