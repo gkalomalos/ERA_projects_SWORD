@@ -3,11 +3,11 @@ import json
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+from shapely.geometry import Point
 
 from climada.engine import Impact, ImpactCalc
 from climada.entity import Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet
-from climada.entity.impact_funcs.trop_cyclone import ImpfSetTropCyclone
 from climada.hazard import Hazard
 from constants import (
     DATA_TEMP_DIR,
@@ -28,8 +28,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="FL",
                 id=101,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, ]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Buddhist monks",
@@ -39,7 +56,22 @@ class ImpactHandler:
                 haz_type="FL",
                 id=102,
                 intensity=np.array([0.0, 0.3, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, ]),
+                mdd=np.array(
+                    [
+                        0.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Students",
@@ -48,8 +80,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="FL",
                 id=103,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, -0.0061, -0.003, 0.0082, 0.0262, 0.0495, 0.0765, 0.1054, 0.1346, 0.2246, 0.2318, 0.2318]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        -0.0061,
+                        -0.003,
+                        0.0082,
+                        0.0262,
+                        0.0495,
+                        0.0765,
+                        0.1054,
+                        0.1346,
+                        0.2246,
+                        0.2318,
+                        0.2318,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Tree crops farmers",
@@ -58,8 +107,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="FL",
                 id=104,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        0.0,
+                        0.0067,
+                        0.0454,
+                        0.0975,
+                        0.1537,
+                        0.2074,
+                        0.2543,
+                        0.2922,
+                        0.3203,
+                        0.3300,
+                        0.3300,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Grass crops farmers",
@@ -78,8 +144,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="D",
                 id=201,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, -0.0061, -0.003, 0.0082, 0.0262, 0.0495, 0.0765, 0.1054, 0.1346, 0.2246, 0.2318, 0.2318]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        -0.0061,
+                        -0.003,
+                        0.0082,
+                        0.0262,
+                        0.0495,
+                        0.0765,
+                        0.1054,
+                        0.1346,
+                        0.2246,
+                        0.2318,
+                        0.2318,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="SPI",
                 name="Tree crops",
@@ -88,8 +171,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="D",
                 id=202,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        0.0,
+                        0.0067,
+                        0.0454,
+                        0.0975,
+                        0.1537,
+                        0.2074,
+                        0.2543,
+                        0.2922,
+                        0.3203,
+                        0.3300,
+                        0.3300,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="SPI",
                 name="Grass crops",
@@ -98,8 +198,25 @@ class ImpactHandler:
             impf = ImpactFunc(
                 haz_type="D",
                 id=203,
-                intensity=np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array([0.0, 0.0, 0.0067, 0.0454, 0.0975, 0.1537, 0.2074, 0.2543, 0.2922, 0.3203, 0.3300, 0.3300]),
+                intensity=np.array(
+                    [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
+                ),
+                mdd=np.array(
+                    [
+                        0.0,
+                        0.0,
+                        0.0067,
+                        0.0454,
+                        0.0975,
+                        0.1537,
+                        0.2074,
+                        0.2543,
+                        0.2922,
+                        0.3203,
+                        0.3300,
+                        0.3300,
+                    ]
+                ),
                 paa=np.ones(12),
                 intensity_unit="SPI",
                 name="Markets",
@@ -210,24 +327,58 @@ class ImpactHandler:
             logger.log("error", status_message)
             return None
 
+    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
+        """
+        Return country GeoDataFrame per admin level
+        """
+        try:
+            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
+            admin_gdf = gpd.read_file(file_path)
+            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
+            admin_gdf = admin_gdf.rename(
+                columns={
+                    "shapeID": "id",
+                    "shapeName": f"name",
+                    "shapeGroup": "country",
+                }
+            )
+            return admin_gdf
+        except FileNotFoundError:
+            logger.log("error", f"File not found: {file_path}")
+        except Exception as exception:
+            logger.log(
+                "error",
+                f"An error occured while trying to get country admin level information. More info: {exception}",
+            )
+
+    def get_circle_radius(self, hazard_type: str) -> int:
+        radius = 2000
+        if hazard_type == "D":
+            radius = 11000
+        return radius
+
     def generate_impact_geojson(
         self, impact: Impact, country_name: str, return_periods: tuple = (25, 20, 15, 10)
     ):
         try:
             country_iso3 = get_iso3_country_code(country_name)
-            GADM41_filename = REQUIREMENTS_DIR / f"gadm41_{country_iso3}.gpkg"
-
-            admin_gdf = gpd.read_file(filename=GADM41_filename, layer=2)
+            admin_gdf = self.get_admin_data(country_iso3, 2)
             coords = np.array(impact.coord_exp)
             local_exceedance_imp = impact.local_exceedance_imp(return_periods)
             local_exceedance_imp = pd.DataFrame(local_exceedance_imp).T
             data = np.column_stack((coords, local_exceedance_imp))
-            columns = ["longitude", "latitude"] + [f"rp{rp}" for rp in return_periods]
-            impact_gdf = gpd.GeoDataFrame(
-                pd.DataFrame(data, columns=columns),
-                geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
-            )
-            impact_gdf.set_crs("EPSG:4326", inplace=True)
+            columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+
+            impact_df = pd.DataFrame(data, columns=columns)
+            geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
+            impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
+
+            # TODO: Test efficiency and remove redundant code. Timings look similar
+            # impact_gdf = gpd.GeoDataFrame(
+            #     pd.DataFrame(data, columns=columns),
+            #     geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
+            # )
+            # impact_gdf.set_crs("EPSG:4326", inplace=True)
 
             # Filter hazard_gdf to exclude rows where all return period values are zero
             impact_gdf = impact_gdf[
@@ -238,11 +389,16 @@ class ImpactHandler:
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
+            # TODO: Test if this needs to be refined
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+
+            radius = self.get_circle_radius(impact.haz_type)
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
             impact_geojson["_metadata"] = {
                 "unit": impact.unit,
-                "title": f"Risk ({impact.unit})"
+                "title": f"Risk ({impact.unit})",
+                "radius": radius,
             }
 
             # Save the combined GeoJSON file
@@ -251,4 +407,3 @@ class ImpactHandler:
                 json.dump(impact_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
-
