@@ -6,7 +6,7 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
   const { t } = useTranslation();
   
   // Initial range state
-  const [value, setValue] = React.useState([2024, 2075]);
+  const [value, setValue] = React.useState([2024, 2050]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -64,7 +64,7 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
           </Typography>
           <Slider
             aria-label="Time horizon selector"
-            defaultValue={[2024, 2075]}
+            defaultValue={[2024, 2050]}
             value={value}
             onChange={handleChange}
             valueLabelDisplay="on"
@@ -72,7 +72,8 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
             max={2075}
             marks={[
               { value: 2024, label: '2024' },
-              { value: 2075, label: '2075' }
+              { value: 2050, label: '2050' },
+              { value: 2075, label: '2075' },
             ]}
             sx={{
               color: "#F79191", // Slider track and thumb color

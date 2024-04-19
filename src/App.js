@@ -33,7 +33,7 @@ const App = () => {
   const [selectedScenario, setSelectedScenario] = useState("");
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedSubTab, setSelectedSubTab] = useState(0);
-  const [selectedTimeHorizon, setSelectedTimeHorizon] = useState(2024);
+  const [selectedTimeHorizon, setSelectedTimeHorizon] = useState([2024, 2050]);
 
   const setMapTitleHandler = (data) => {
     setMapTitle(data);
@@ -138,7 +138,7 @@ const App = () => {
     setSelectedHazard("");
     setSelectedHazardFile("");
     setSelectedScenario("");
-    setSelectedTimeHorizon(2024);
+    setSelectedTimeHorizon([2024, 2050]);
     setValidExposureEconomicHandler(false);
     setValidExposureNonEconomicHandler(false);
     setValidHazardHandler(false);
