@@ -157,7 +157,7 @@ const ExposureEconomicCard = ({
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
             <Box>
               <input
-                accept=".xlsx"
+                accept=".xlsx,.hdf5"
                 hidden
                 id="exposure-economic-contained-button-file"
                 multiple={false}

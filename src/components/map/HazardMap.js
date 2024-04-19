@@ -8,11 +8,18 @@ import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
 import "leaflet/dist/leaflet.css";
 
+import Legend from "./Legend";
+
 const returnPeriods = [10, 15, 20, 25];
 const HazardMap = ({ selectedCountry }) => {
   const { t } = useTranslation();
-  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [activeRPLayer, setActiveRPLayer] = useState(10);
+  const [legendTitle, setLegendTitle] = useState("");
+  const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
+  const [maxValue, setMaxValue] = useState(null);
+  const [minValue, setMinValue] = useState(null);
+  const [radius, setRadius] = useState(0);
+
   const mapRef = useRef();
 
   const fetchGeoJson = async () => {
@@ -24,9 +31,13 @@ const HazardMap = ({ selectedCountry }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      setLegendTitle(data._metadata.title);
+      setRadius(data._metadata.radius);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
+      setMinValue(minValue);
       const maxValue = Math.max(...values);
+      setMaxValue(maxValue);
       const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 
       setMapInfo({ geoJson: data, colorScale: scale });
@@ -45,20 +56,17 @@ const HazardMap = ({ selectedCountry }) => {
       data.features.forEach((feature) => {
         const { coordinates } = feature.geometry;
         const value = feature.properties[`rp${activeRPLayer}`];
-        const country = feature.properties["COUNTRY"];
-        const name1 = feature.properties["NAME_1"];
-        const name2 = feature.properties["NAME_2"];
+        const country = feature.properties["country"];
+        const name = feature.properties["name"];
 
-        L.circle([coordinates[0], coordinates[1]], {
+        L.circle([coordinates[1], coordinates[0]], {
           color: colorScale(value),
           fillColor: colorScale(value),
           fillOpacity: 0.3,
-          radius: 2000,
+          radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t(
-              "admin_2"
-            )}: ${name2}<br>${t("value")}: ${value}`
+            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t("value")}: ${value}`
           )
           .addTo(layerGroup);
       });
@@ -128,12 +136,21 @@ const HazardMap = ({ selectedCountry }) => {
             onClick={() => handleRPLayerChange(rp)}
             variant="contained"
           >
-            {t("return_period")}{rp}
+            {t("return_period")}
+            {rp}
           </Button>
         ))}
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
-        <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+        <>
+          <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+          <Legend
+            colorScale={mapInfo.colorScale}
+            maxValue={maxValue}
+            minValue={minValue}
+            title={legendTitle}
+          />
+        </>
       )}
     </MapContainer>
   );

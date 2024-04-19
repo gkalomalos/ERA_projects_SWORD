@@ -174,7 +174,16 @@ const App = () => {
             propSelectedSubTab={selectedSubTab}
             propSelectedTab={selectedTab}
           />
-          <Grid container spacing={2} style={{ padding: "16px", height: "calc(100vh - 64px)" }}>
+          <Grid
+            container
+            spacing={2}
+            style={{
+              padding: "16px",
+              paddingTop: "174px",
+              height: "calc(100vh - 64px)",
+              overflow: "auto",
+            }}
+          >
             <Grid item xs={12} md={2}>
               {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && (
                 <DataInput

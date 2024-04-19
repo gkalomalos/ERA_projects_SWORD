@@ -36,7 +36,16 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
     }
 
     return (
-      <Paper square sx={{ bgcolor: "#8AC8D0" }}>
+      <Paper
+        square
+        sx={{
+          position: "fixed",
+          top: "128px",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          width: "100%",
+          bgcolor: "#8AC8D0",
+        }}
+      >
         <Tabs
           value={selectedSubTab}
           onChange={handleSubTabChange}
@@ -74,7 +83,10 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
 
   return (
     <Box sx={{ flexGrow: 1, bgcolor: "#70ADB5" }}>
-      <AppBar position="static" sx={{ bgcolor: "#70ADB5" }}>
+      <AppBar
+        position="fixed"
+        sx={{ bgcolor: "#70ADB5", top: "80px", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <Tabs
           value={selectedTab}
           onChange={handleTabChange}

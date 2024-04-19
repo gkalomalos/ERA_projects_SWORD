@@ -19,6 +19,7 @@ const RiskMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
+  const [radius, setRadius] = useState(0);
 
   const mapRef = useRef();
 
@@ -32,6 +33,7 @@ const RiskMap = ({ selectedCountry }) => {
       }
       const data = await response.json();
       setLegendTitle(data._metadata.title);
+      setRadius(data._metadata.radius);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
       setMinValue(minValue);
@@ -55,20 +57,17 @@ const RiskMap = ({ selectedCountry }) => {
       data.features.forEach((feature) => {
         const { coordinates } = feature.geometry;
         const value = feature.properties[`rp${activeRPLayer}`];
-        const country = feature.properties["COUNTRY"];
-        const name1 = feature.properties["NAME_1"];
-        const name2 = feature.properties["NAME_2"];
+        const country = feature.properties["country"];
+        const name = feature.properties["name"];
 
-        L.circle([coordinates[0], coordinates[1]], {
+        L.circle([coordinates[1], coordinates[0]], {
           color: colorScale(value),
           fillColor: colorScale(value),
           fillOpacity: 0.3,
-          radius: 2000,
+          radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin_1")}: ${name1}<br>${t(
-              "admin_2"
-            )}: ${name2}<br>${t("value")}: ${value}`
+            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t("value")}: ${value}`
           )
           .addTo(layerGroup);
       });
@@ -148,8 +147,8 @@ const RiskMap = ({ selectedCountry }) => {
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
           <Legend
             colorScale={mapInfo.colorScale}
-            minValue={minValue}
             maxValue={maxValue}
+            minValue={minValue}
             title={legendTitle}
           />
         </>
