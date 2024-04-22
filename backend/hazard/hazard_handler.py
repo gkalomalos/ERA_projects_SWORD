@@ -101,7 +101,7 @@ class HazardHandler:
 
     def get_hazard(
         self,
-        hazard_type: str,
+        hazard_code: str,
         source: str = None,
         scenario: str = None,
         time_horizon: str = None,
@@ -116,7 +116,7 @@ class HazardHandler:
             logger.log("error", status_message)
             raise ValueError(status_message)
         if not source:
-            if hazard_type == "drought":
+            if hazard_code == "D":
                 source = "mat"
             if hazard_type == "flood":
                 source = "raster"
@@ -363,7 +363,7 @@ class HazardHandler:
             "flood": "FL",
             "flash_flood": "FL",
             "drought": "D",
-            "heatwaves": "H",
+            "heatwaves": "HW",
         }
 
         # Retrieve the code for the given hazard type
@@ -378,3 +378,40 @@ class HazardHandler:
             )
 
         return code
+
+    def get_hazard_type(self, hazard_code: str) -> str:
+        """
+        Retrieve the hazard type corresponding to a given hazard code.
+
+        This function maps a hazard code to its corresponding hazard type. If the hazard code is not recognized, it raises a ValueError.
+
+        :param hazard_code: The hazard code as a string.
+        :type hazard_code: str
+        :return: The hazard type corresponding to the provided hazard code.
+        :rtype: str
+        :raises ValueError: If the hazard code is not recognized.
+        """
+        # Reverse mapping of hazard codes to hazard types
+        hazard_types = {
+            "TC": "tropical_cyclone",
+            "RF": "river_flood",
+            "WS": "storm_europe",
+            "BF": "wildfire",
+            "EQ": "earthquake",
+            "FL": "flood",
+            "D": "drought",
+            "HW": "heatwaves",
+        }
+
+        # Retrieve the hazard type for the given hazard code
+        hazard_type = hazard_types.get(hazard_code, None)
+
+        # Raise an exception if the hazard code is not found
+        if hazard_type is None:
+            # raise ValueError(f"Hazard code '{hazard_code}' is not recognized.")
+            logger.log(
+                "error",
+                f"Hazard code '{hazard_code}' is not recognized.",
+            )
+
+        return hazard_type
