@@ -100,10 +100,40 @@ class HazardHandler:
             pass
 
     def get_hazard(
-        self, hazard_type: str, scenario: str, time_horizon: str, country: str
+        self,
+        hazard_type: str,
+        source: str = None,
+        scenario: str = None,
+        time_horizon: str = None,
+        country: str = None,
+        filepath: Path = None,
     ) -> Hazard:
-        start_time = time()
+        """
+        Get hazard
+        """
+        if source and source not in ["mat", "hdf5", "climada_api", "raster"]:
+            status_message = f"Error while trying to create hazard object. Source must be chosen from ['mat', 'hdf5', 'climada_api', 'raster']"
+            logger.log("error", status_message)
+            raise ValueError(status_message)
+        if not source:
+            if hazard_type == "drought":
+                source = "mat"
+            if hazard_type == "flood":
+                source = "raster"
+        if source == "climada_api":
+            hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
+        if source == "raster":
+            hazard = self._get_hazard_from_raster(filepath, hazard_type)
+        if source == "mat":
+            hazard = self._get_hazard_from_mat(filepath)
+        if source == "hdf5":
+            hazard = self._get_hazard_from_hdf5(filepath)
 
+        return hazard
+
+    def _get_hazard_from_client(
+        self, hazard_type: str, scenario: str, time_horizon: str, country: str
+    ):
         hazard_properties = self.get_hazard_dataset_properties(
             hazard_type, scenario, time_horizon, country
         )
@@ -114,7 +144,7 @@ class HazardHandler:
                 dump_dir=DATA_HAZARDS_DIR,
             )
             hazard.intensity_thres = self.get_hazard_intensity_thres(hazard)
-            status_message = f"Finished fetching hazards from client in {time() - start_time}sec."
+            status_message = f"Finished fetching hazards from client"
             logger.log("info", status_message)
             return hazard
 
@@ -123,7 +153,32 @@ class HazardHandler:
             logger.log("error", status_message)
             raise ValueError(status_message)
 
-    def get_hazard_from_mat(self, filepath: Path) -> Hazard:
+    def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
+        try:
+            hazard_code = self.get_hazard_code(hazard_type)
+            hazard = Hazard.from_raster(
+                DATA_HAZARDS_DIR / filepath,
+                attrs={
+                    "frequency": np.array([0.5, 0.2, 0.1, 0.04]),
+                    "event_id": np.array([1, 2, 3, 4]),
+                    "units": "m",
+                },
+                haz_type=hazard_code,
+                band=[1, 2, 3, 4],
+            )
+            intensity_thres = self.get_hazard_intensity_thres(hazard_type)
+            hazard.intensity_thres = intensity_thres
+            hazard.check()
+
+            return hazard
+        except Exception as exception:
+            logger.log(
+                "error",
+                f"An unexpected error occurred while trying to create hazard object from mat file. More info: {exception}",
+            )
+            return None
+
+    def _get_hazard_from_mat(self, filepath: Path) -> Hazard:
         # TODO: Continue implementation
         try:
             hazard = Hazard().from_mat(DATA_HAZARDS_DIR / filepath)
@@ -181,6 +236,8 @@ class HazardHandler:
         radius = 2000
         if hazard_type == "D":
             radius = 11000
+        if hazard_type == "FL":
+            radius = 2000
         return radius
 
     def generate_hazard_geojson(
@@ -239,7 +296,7 @@ class HazardHandler:
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
 
-    def get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
+    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
         """
         Read the selected .hdf5 input file and build the necessary hazard data to
         create a Hazard object.
