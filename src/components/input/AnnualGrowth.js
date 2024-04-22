@@ -69,7 +69,12 @@ const AnnualGrowth = (props) => {
       setGdpGrowth(props.selectedAnnualGDPGrowth);
       setPopulationGrowth(props.selectedAnnualPopulationGrowth);
     }
-  }, [props.selectedAppOption, props.selectedCountry]);
+  }, [
+    props.selectedAppOption,
+    props.selectedCountry,
+    props.selectedAnnualPopulationGrowth,
+    props.selectedAnnualGDPGrowth,
+  ]);
 
   return (
     <Card
