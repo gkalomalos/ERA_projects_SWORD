@@ -202,6 +202,7 @@ const ExposureEconomicCard = ({
                 }}
                 variant="contained"
                 onClick={handleFetchButtonClick}
+                disabled={true}
               >
                 {t("card_exposure_economic_fetch_button")}
               </Button>

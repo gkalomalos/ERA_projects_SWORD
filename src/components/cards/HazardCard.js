@@ -205,6 +205,7 @@ const HazardCard = ({
                 }}
                 variant="contained"
                 onClick={handleFetchButtonClick}
+                disabled={true}
               >
                 {t("card_hazard_fetch_button")}
               </Button>
