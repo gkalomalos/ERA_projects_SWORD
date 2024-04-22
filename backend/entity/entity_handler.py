@@ -55,20 +55,8 @@ class EntityHandler:
             entity_filepath = DATA_ENTITIES_DIR / filepath
             entity = Entity.from_excel(entity_filepath)
             entity.check()
-
-            columns = [
-                "category_id",
-                "latitude",
-                "longitude",
-                "value",
-                "value_unit",
-                "deductible",
-                "cover",
-                "impf_",
-            ]
-
             exposure = entity.exposures
-            exposure.gdf = exposure.gdf[columns]
+            exposure.gdf = exposure.gdf.loc[:, ~exposure.gdf.columns.str.contains("^Unnamed")]
             exposure.check()
 
             return entity
@@ -96,7 +84,7 @@ class EntityHandler:
             present_year = entity.exposures.ref_year
             entity_future = deepcopy(entity)
             entity_future.exposures.ref_year = future_year
-            number_of_years = future_year - present_year + 1
+            number_of_years = future_year - present_year  # + 1 TODO: Check if this is needed or not
             growth = aag**number_of_years
             entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
             entity_future.check()

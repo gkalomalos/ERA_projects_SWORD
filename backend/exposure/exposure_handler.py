@@ -19,7 +19,7 @@ class ExposureHandler:
     def __init__(self):
         self.client = Client()
 
-    def get_exposure(self, country: str) -> Exposures:
+    def get_exposure_from_api(self, country: str) -> Exposures:
         start_time = time()
         try:
             exposure = self.client.get_litpop(

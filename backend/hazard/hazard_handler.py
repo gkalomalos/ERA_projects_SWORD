@@ -101,7 +101,7 @@ class HazardHandler:
 
     def get_hazard(
         self,
-        hazard_code: str,
+        hazard_type: str,
         source: str = None,
         scenario: str = None,
         time_horizon: str = None,
@@ -116,7 +116,7 @@ class HazardHandler:
             logger.log("error", status_message)
             raise ValueError(status_message)
         if not source:
-            if hazard_code == "D":
+            if hazard_type == "drought":
                 source = "mat"
             if hazard_type == "flood":
                 source = "raster"

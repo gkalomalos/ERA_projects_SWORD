@@ -181,10 +181,10 @@ class RunScenario:
             entity_filename = self._get_entity_filename()
             entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
 
-            # Set static present year for ERA scenario to 2024
+            # Set static present year to 2024
             entity_present.exposures.ref_year = self.ref_year
 
-            # Get static average annual economic/population growth
+            # Get custom average annual economic/population growth
             aag = self._get_average_annual_growth()
 
             entity_future = None
@@ -192,14 +192,10 @@ class RunScenario:
                 entity_future = self.entity_handler.get_future_entity(
                     entity_present, self.future_year, aag
                 )
-                # entity_future.disc_rates = self._get_era_discount_rate()
 
             # Set Exposure objects
             update_progress(20, "Setting up Exposure objects from predefined datasets...")
             exposure_present = entity_present.exposures
-            exposure_present.gdf = exposure_present.gdf.loc[
-                :, ~exposure_present.gdf.columns.str.contains("^Unnamed")
-            ]
             exposure_future = None
             if self.scenario != "historical":
                 exposure_future = entity_future.exposures
@@ -283,26 +279,25 @@ class RunScenario:
     def _run_custom_scenario(self):
         """Run custom scenario based on the provided request parameters."""
         try:
-            # Get ERA entity data
-            update_progress(10, "Setting up Entity objects from predefined datasets...")
+            # Get custom entity data
+            update_progress(10, "Setting up Entity objects from custom datasets...")
+            # Case 1: User provides a custom excel entity dataset
             if self.entity_filename:
                 entity_present = self.entity_handler.get_entity_from_xlsx(self.entity_filename)
                 exposure_present = entity_present.exposures
-                # Clean up gdf from reduntant columns
-                exposure_present.gdf = exposure_present.gdf.loc[
-                    :, ~exposure_present.gdf.columns.str.contains("^Unnamed")
-                ]
+            # Case 2: User fetches exposure datasets from the CLIMADA API
             else:
-                exposure_present = self.exposure_handler.get_exposure(self.country_name)
+                exposure_present = self.exposure_handler.get_exposure_from_api(self.country_name)
 
-            # Set static present year for ERA scenario to 2024
+            # Set present year for custom scenario from user time horizon selection
             exposure_present.ref_year = self.ref_year
 
-            # Get static average annual economic/population growth
+            # Get custom average annual economic/population growth from user annual growth selection
             aag = self._get_average_annual_growth()
 
             entity_future = None
             if self.scenario != "historical":
+                # Get future Entity object based on the future year from user time horizon selection
                 entity_future = self.entity_handler.get_future_entity(
                     entity_present, self.future_year, aag
                 )
@@ -310,25 +305,49 @@ class RunScenario:
                     entity_future.disc_rates = entity_present.disc_rates
 
             # Set Exposure objects
-            update_progress(20, "Setting up Exposure objects from predefined datasets...")
+            update_progress(20, "Setting up Exposure objects from custom datasets...")
             exposure_present = entity_present.exposures
             exposure_future = None
             if self.scenario != "historical":
                 exposure_future = entity_future.exposures
 
             # Get ERA hazard data
-            update_progress(30, "Setting up Hazard objects from predefined datasets...")
-            hazard_present_filename = self._get_hazard_filename(is_historical=True)
+            update_progress(30, "Setting up Hazard objects from custom datasets...")
 
-            hazard_present = self.hazard_handler.get_hazard_from_mat(hazard_present_filename)
+            # Case 1: User loads hazard dataset
+            if self.hazard_filename:
+                hazard_present = self.hazard_handler.get_hazard(
+                    hazard_type=self.hazard_type, filepath=self.hazard_filename
+                )
+            # Case 2: User fetches hazard datasets from the CLIMADA API
+            else:
+                hazard_present = self.hazard_handler.get_hazard(
+                    hazard_type=self.hazard_type,
+                    source="climada_api",
+                    scenario=self.scenario,
+                    time_horizon=self.time_horizon,  # TODO: This won't work with CLIMADA's predefind ref years
+                    country=self.country_name,
+                )
 
             hazard_future = None
             if self.scenario != "historical":
-                hazard_future_filename = self._get_hazard_filename(is_historical=False)
-                hazard_future = self.hazard_handler.get_hazard_from_mat(hazard_future_filename)
+                # Case 1: User loads hazard dataset
+                if self.hazard_filename:
+                    hazard_future = self.hazard_handler.get_hazard(
+                        hazard_type=self.hazard_type, filepath=self.hazard_filename
+                    )
+                # Case 2: User fetches hazard datasets from the CLIMADA API
+                else:
+                    hazard_future = self.hazard_handler.get_hazard(
+                        hazard_type=self.hazard_type,
+                        source="climada_api",
+                        scenario=self.scenario,
+                        time_horizon=self.time_horizon,  # TODO: This won't work with CLIMADA's predefind ref years
+                        country=self.country_name,
+                    )
 
             # Conduct cost-benefit analysis
-            update_progress(40, "Conducting cost-benefit analysis based on predefined datasets...")
+            update_progress(40, "Conducting cost-benefit analysis based on custom datasets...")
             cost_benefit = self.costben_handler.calculate_cost_benefit(
                 hazard_present, entity_present, hazard_future, entity_future, self.future_year
             )
@@ -343,7 +362,7 @@ class RunScenario:
                 )
 
             # Calculate present and future impact
-            update_progress(60, "Setting up Impact objects from predefined datasets...")
+            update_progress(60, "Setting up Impact objects from custom datasets...")
             impact_present = self.impact_handler.calculate_impact(
                 exposure_present, hazard_present, entity_present.impact_funcs
             )
@@ -384,10 +403,10 @@ class RunScenario:
         except Exception as exception:
             self.status_code = 3000
             self.status_message = (
-                f"An error occurred while running ERA scenario. More info: {exception}"
+                f"An error occurred while running custom scenario. More info: {exception}"
             )
             self.logger.log(
-                "error", f"An error occurred while running ERA scenario. More info: {exception}"
+                "error", f"An error occurred while running custom scenario. More info: {exception}"
             )
 
     def run_scenario(self) -> dict:
