@@ -1,3 +1,22 @@
+"""
+Module to handle running scenarios based on provided parameters.
+
+This module provides functionality to run scenarios based on parameters such as hazard type,
+exposure type, country name, climate scenario type, and future year.
+It contains classes and methods to orchestrate the execution of ERA and custom scenarios,
+conduct cost-benefit analysis, calculate impacts, generate map data files, and prepare responses.
+
+Classes:
+- `RunScenario`: Orchestrates the execution of scenarios based on provided parameters.
+
+Methods:
+- `run_scenario`: Entry point to run a scenario based on provided request parameters.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 from copy import deepcopy
 import json
 import sys
@@ -28,7 +47,7 @@ class RunScenario:
         initalize_data_directories()
 
         # Clear previously generated exposure/hazard/impact maps and temp directory
-        self.clear()
+        self._clear()
 
         # Initialize logger
         self.logger = LoggerConfig(logger_types=["file"])
@@ -62,21 +81,33 @@ class RunScenario:
         self.status_message = "Scenario run successfully."
 
         # Clear previously generated exposure/hazard/impact maps and temp directory
-        self.clear()
+        self._clear()
 
-    def clear(self):
+    def _clear(self):
         """Clear previously generated exposure/hazard/impact maps and temp directory"""
         clear_temp_dir()
 
-    def _get_entity_filename(self):
-        """Get the entity filename based on the request parameters."""
+    def _get_entity_filename(self) -> str:
+        """
+        Get the entity filename based on the request parameters.
+
+        :return: The entity filename.
+        :rtype: str
+        """
         entity_filename = (
             f"entity_TODAY_{self.country_code}_{self.hazard_type}_{self.exposure_type}.xlsx"
         )
         return entity_filename
 
     def _get_hazard_filename(self, is_historical: bool = False) -> str:
-        """Get the hazard filename based on the request parameters."""
+        """
+        Get the hazard filename based on the request parameters.
+
+        :param is_historical: A flag indicating whether the historical hazard filename should be retrieved.
+        :type is_historical: bool
+        :return: The hazard filename.
+        :rtype: str
+        """
         if is_historical:
             if self.hazard_code == "D":
                 hazard_filename = f"hazard_{self.hazard_type}_{self.country_code}_historical.mat"
@@ -100,7 +131,18 @@ class RunScenario:
         return hazard_filename
 
     def _get_era_discount_rate(self) -> DiscRates:
-        """Get the ERA discount rate based on the request parameters."""
+        """
+        Get the ERA project discount rate based on the request parameters.
+
+        Calculates the ERA project discount rate based on the country name and reference year.
+        Era project discount is statically calculated:
+        - For Egypt, the average discount rate is 6.89%.
+        - For Thailand, the average discount rate is 0.90%.
+        - For other countries, the average discount rate is 0.0.
+
+        :return: The ERA discount rates.
+        :rtype: DiscRates
+        """
         try:
             if self.country_name == "Egypt":
                 average_disc_rate = 0.0689
@@ -128,6 +170,26 @@ class RunScenario:
             return None
 
     def _get_average_annual_growth(self) -> float:
+        """
+        Get the average annual growth rate based on the request parameters.
+
+        Calculates the average annual growth rate based on the country name, exposure type,
+        and whether it's an ERA project calculation.
+        - If it's an ERA calculation:
+            - For economic exposure assets in Egypt:
+                - average annual growth: 4.00%
+            - For non-economic exposure assets in Egupt:
+                - average annual growth: 1.29%
+            - For economic exposure assets in Thailand:
+                - average annual growth: 2.94%
+            - For non-economic exposure assets in Thailand:
+                - average annual growth: -0.22%
+
+        - If it's not an ERA calculation, the method returns the provided annual growth rate.
+
+        :return: The average annual growth rate.
+        :rtype: float
+        """
         try:
             growth_rates = {
                 "Egypt": {
@@ -151,7 +213,6 @@ class RunScenario:
                     "roads": 0.9978,
                 },
             }
-            #
             if self.is_era:
                 default_growth_rate = 1.0
                 country_growth_rates = growth_rates.get(self.country_name, {})
@@ -167,7 +228,17 @@ class RunScenario:
             return default_growth_rate  # Default growth rate
 
     def _run_era_scenario(self):
-        """Run the ERA scenario based on the provided request parameters."""
+        """
+        Run the ERA scenario based on the provided request parameters.
+
+        This method orchestrates the execution of the ERA scenario based on the provided
+        parameters. It involves setting up Entity, Exposure, and Hazard objects,
+        conducting cost-benefit analysis, plotting cost-benefit charts and waterfall graphs,
+        calculating present and future impacts, and generating geojson data files for
+        exposure, hazard, and impact maps.
+
+        :raises Exception: If an error occurs while running the ERA scenario.
+        """
         try:
             # Get ERA entity data
             update_progress(10, "Setting up Entity objects from custom entity file...")
@@ -270,7 +341,16 @@ class RunScenario:
             )
 
     def _run_custom_scenario(self):
-        """Run custom scenario based on the provided request parameters."""
+        """
+        Run a custom scenario based on the provided request parameters.
+
+        This method orchestrates the execution of a custom scenario based on the provided parameters.
+        It involves setting up Entity, Exposure, and Hazard objects, conducting cost-benefit analysis,
+        plotting cost-benefit charts and waterfall graphs, calculating present and future impacts,
+        and generating geojson data files for exposure, hazard, and impact maps.
+
+        :raises Exception: If an error occurs while running the custom scenario.
+        """
         try:
             # Get custom entity data
             update_progress(10, "Setting up Entity objects from custom datasets...")
@@ -403,7 +483,16 @@ class RunScenario:
             )
 
     def run_scenario(self) -> dict:
-        """Run the scenario based on the provided request parameters."""
+        """
+        Run the scenario based on the provided request parameters.
+
+        This method orchestrates the execution of a scenario based on the provided parameters.
+        It determines whether to run an ERA scenario or a custom scenario and delegates the execution accordingly.
+        After running the scenario, it sets the map title and prepares the response data.
+
+        :return: A dictionary containing the scenario data and status information.
+        :rtype: dict
+        """
         initial_time = time()
         self.logger.log(
             "info",
