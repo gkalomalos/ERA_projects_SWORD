@@ -145,6 +145,10 @@ const App = () => {
   }, [selectedCountry]);
 
   useEffect(() => {
+    setSelectedScenario("");
+  }, [selectedHazard]);
+
+  useEffect(() => {
     const progressListener = (event, data) => {
       setModalMessage(data.message);
     };

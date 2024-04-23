@@ -31,6 +31,7 @@ const ViewCard = (props) => {
       {props.selectedCard === "scenario" && (
         <ScenarioCard
           onScenarioSelect={props.onChangeScenario}
+          selectedHazard={props.selectedHazard}
           selectedScenario={props.selectedScenario}
         />
       )}
