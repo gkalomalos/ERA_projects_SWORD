@@ -125,16 +125,6 @@ const DataInput = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <AnnualGrowth
-              onCardClick={onCardClickHandler}
-              selectedAppOption={props.selectedAppOption}
-              selectedCountry={props.selectedCountry}
-              onSelectTab={props.onSelectTab}
-              selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
-              selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
-            />
-          </Grid>
-          <Grid item xs={12}>
             <ExposureEconomic
               isValidExposureEconomic={props.isValidExposureEconomic}
               onCardClick={onCardClickHandler}
@@ -150,6 +140,16 @@ const DataInput = (props) => {
               onSelectTab={props.onSelectTab}
               selectedExposureEconomic={props.selectedExposureEconomic}
               selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <AnnualGrowth
+              onCardClick={onCardClickHandler}
+              selectedAppOption={props.selectedAppOption}
+              selectedCountry={props.selectedCountry}
+              onSelectTab={props.onSelectTab}
+              selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
+              selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
             />
           </Grid>
         </Grid>
