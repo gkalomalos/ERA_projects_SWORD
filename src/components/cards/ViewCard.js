@@ -43,10 +43,10 @@ const ViewCard = (props) => {
       )}
       {props.selectedCard === "annualGrowth" && (
         <AnnualGrowthCard
-          onGDPSelect={props.onChangeAnnualGDPGrowth}
-          onPopulationSelect={props.onChangeAnnualPopulationGrowth}
-          selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
-          selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+          onGrowthSelect={props.onChangeAnnualGrowth}
+          selectedAnnualGrowth={props.selectedAnnualGrowth}
+          selectedExposureEconomic={props.selectedExposureEconomic}
+          selectedExposureNonEconomic={props.selectedExposureNonEconomic}
         />
       )}
       {props.selectedCard === "exposureEconomic" && (

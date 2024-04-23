@@ -42,8 +42,7 @@ class RunScenario:
 
         self.request = request
         self.adaptation_measures = request.get("adaptationMeasures", [])
-        self.annual_population_growth = request.get("annualPopulationGrowth", 0)
-        self.annual_gdp_growth = request.get("annualGDPGrowth", 0)
+        self.annual_growth = request.get("annualGrowth", 0)
         self.country_name = sanitize_country_name(request.get("countryName", ""))
         self.entity_filename = request.get("exposureFile", "")
         self.exposure_economic = request.get("exposureEconomic", "")
@@ -129,49 +128,43 @@ class RunScenario:
             return None
 
     def _get_average_annual_growth(self) -> float:
-        if self.country_name == "Egypt" and self.exposure_type in [
-            "tree_crops",
-            "grass_crops",
-            "wet_markets",
-        ]:
+        try:
+            growth_rates = {
+                "Egypt": {
+                    "tree_crops": 1.04,
+                    "grass_crops": 1.04,
+                    "wet_markets": 1.04,
+                    "grass_crops_farmers": 1.0129,
+                    "tree_crops_farmers": 1.0129,
+                    "buddhist_monks": 1.0129,
+                    "water_users": 1.0129,
+                    "roads": 1.0129,
+                },
+                "Thailand": {
+                    "tree_crops": 1.0294,
+                    "grass_crops": 1.0294,
+                    "wet_markets": 1.0294,
+                    "grass_crops_farmers": 0.9978,
+                    "tree_crops_farmers": 0.9978,
+                    "buddhist_monks": 0.9978,
+                    "water_users": 0.9978,
+                    "roads": 0.9978,
+                },
+            }
+            #
             if self.is_era:
-                growth = 1.04
+                default_growth_rate = 1.0
+                country_growth_rates = growth_rates.get(self.country_name, {})
+                growth = country_growth_rates.get(self.exposure_type, default_growth_rate)
             else:
-                growth = self.annual_gdp_growth
-        elif self.country_name == "Egypt" and self.exposure_type in [
-            "grass_crops_farmers",
-            "tree_crops_farmers",
-            "buddhist_monks",
-            "water_users",
-            "roads",
-        ]:
-            if self.is_era:
-                growth = 1.0129
-            else:
-                growth = self.annual_population_growth
-        elif self.country_name == "Thailand" and self.exposure_type in [
-            "tree_crops",
-            "grass_crops",
-            "wet_markets",
-        ]:
-            if self.is_era:
-                growth = 1.0294
-            else:
-                growth = self.annual_gdp_growth
-        elif self.country_name == "Thailand" and self.exposure_type in [
-            "grass_crops_farmers",
-            "tree_crops_farmers",
-            "buddhist_monks",
-            "water_users",
-            "roads",
-        ]:
-            if self.is_era:
-                growth = 0.9978
-            else:
-                growth = self.annual_population_growth
-        else:
-            growth = 1.0
-        return growth
+                growth = self.annual_growth
+
+            return growth
+        except Exception as e:
+            self.logger.log(
+                "error", f"An error occurred while setting average annual growth: More info: {e}"
+            )
+            return default_growth_rate  # Default growth rate
 
     def _run_era_scenario(self):
         """Run the ERA scenario based on the provided request parameters."""

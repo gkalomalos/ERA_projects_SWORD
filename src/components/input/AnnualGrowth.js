@@ -3,17 +3,24 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const AnnualGrowth = (props) => {
+const AnnualGrowth = ({
+  selectedAppOption,
+  selectedCountry,
+  selectedAnnualGrowth,
+  selectedExposureEconomic,
+  selectedExposureNonEconomic,
+  onCardClick,
+  onSelectTab,
+}) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
-  const [gdpGrowth, setGdpGrowth] = useState(props.selectedAnnualGDPGrowth);
-  const [populationGrowth, setPopulationGrowth] = useState(props.selectedAnnualPopulationGrowth);
+  const [growth, setGrowth] = useState(selectedAnnualGrowth);
 
   const handleMouseDown = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
     setClicked(true); // Trigger animation
@@ -22,7 +29,7 @@ const AnnualGrowth = (props) => {
   const handleMouseUp = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
     setClicked(false); // Reset animation
@@ -31,15 +38,15 @@ const AnnualGrowth = (props) => {
   const handleCardClick = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
-    props.onCardClick("annualGrowth");
-    props.onSelectTab(0);
+    onCardClick("annualGrowth");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedAppOption === "era" && props.selectedCountry) {
+    if (selectedAppOption === "era" && selectedCountry) {
       setBgColor("#E5F5EB"); //green
       // } else if (props.selectedAppOption === "era") {
       //   setBgColor("#FFCCCC"); //red
@@ -52,28 +59,41 @@ const AnnualGrowth = (props) => {
 
   useEffect(() => {
     handleBgColor();
-    if (props.selectedAppOption === "era") {
-      if (props.selectedCountry === "thailand") {
-        setGdpGrowth(2.94);
-        setPopulationGrowth(-0.22);
-      } else if (props.selectedCountry === "egypt") {
-        setGdpGrowth(4);
-        setPopulationGrowth(1.29);
+    if (selectedAppOption === "era") {
+      if (selectedCountry === "thailand") {
+        if (selectedExposureEconomic) {
+          // Set static population growth of Thailand to -0.22% if
+          // economic Exposure type is selected
+          setGrowth(-0.22);
+        } else {
+          // Set static GDP growth of Thailand to +2.94% if
+          // non-economic Exposure type is selected
+          setGrowth(2.94);
+        }
+      } else if (selectedCountry === "egypt") {
+        if (selectedExposureEconomic) {
+          // Set static population growth of Egypt to +4.00%% if
+          // economic Exposure type is selected
+          setGrowth(4);
+        } else {
+          // Set static GDP growth of Egypt to +1.29% if
+          // non-economic Exposure type is selected
+          setGrowth(1.29);
+        }
       } else {
         // Reset to defaults or handle other countries as needed
-        setGdpGrowth(props.selectedAnnualGDPGrowth);
-        setPopulationGrowth(props.selectedAnnualPopulationGrowth);
+        setGrowth(selectedAnnualGrowth);
       }
     } else {
       // If not "era", use the provided props values
-      setGdpGrowth(props.selectedAnnualGDPGrowth);
-      setPopulationGrowth(props.selectedAnnualPopulationGrowth);
+      setGrowth(selectedAnnualGrowth);
     }
   }, [
-    props.selectedAppOption,
-    props.selectedCountry,
-    props.selectedAnnualPopulationGrowth,
-    props.selectedAnnualGDPGrowth,
+    selectedAppOption,
+    selectedCountry,
+    selectedAnnualGrowth,
+    selectedExposureEconomic,
+    selectedExposureNonEconomic,
   ]);
 
   return (
@@ -97,58 +117,75 @@ const AnnualGrowth = (props) => {
       }}
     >
       <CardContent>
-        {/* Annual GDP growth section */}
-        <Box>
-          <Typography id="annual-growth-gdp-slider" gutterBottom variant="h6" component="div" m={0}>
-            {props.selectedAnnualGDPGrowth
-              ? t("input_annual_gdp_growth_title")
-              : t("input_annual_growth_title")}
-          </Typography>
-          <TextField
-            id="annual-growth-gdp-textfield"
-            fullWidth
-            variant="outlined"
-            value={`${gdpGrowth}%`}
-            disabled
-            InputProps={{
-              readOnly: true,
-            }}
-            sx={{
-              ".MuiInputBase-input.Mui-disabled": {
-                WebkitTextFillColor: "#A6A6A6", // Text color for disabled content
-                bgcolor: "#E6E6E6", // Background for disabled TextField
-                padding: 1,
-              },
-            }}
-          />
+        {/* Default section if no exposure is selected*/}
+        {!selectedExposureEconomic && !selectedExposureNonEconomic && (
+          <Box>
+            <Typography id="annual-growth-slider" gutterBottom variant="h6" component="div" m={0}>
+              {t("input_annual_growth_title")}
+            </Typography>
+          </Box>
+        )}
 
-          {/* Annual Population growth section */}
-          <Typography
-            id="annual-growth-population-slider"
-            gutterBottom
-            variant="h6"
-            component="div"
-          >
-            {t("input_annual_population_growth_title")}
-          </Typography>
-          <TextField
-            id="annual-growth-population-textfield"
-            fullWidth
-            variant="outlined"
-            value={`${populationGrowth}%`}
-            disabled
-            InputProps={{
-              readOnly: true,
-            }}
-            sx={{
-              ".MuiInputBase-input.Mui-disabled": {
-                WebkitTextFillColor: "#A6A6A6", // Text color for disabled content
-                bgcolor: "#E6E6E6", // Background for disabled TextField
-                padding: 1,
-              },
-            }}
-          />
-        </Box>
+        {/* Annual GDP growth section */}
+        {selectedExposureEconomic && (
+          <Box>
+            <Typography
+              id="annual-growth-gdp-slider"
+              gutterBottom
+              variant="h6"
+              component="div"
+              m={0}
+            >
+              {selectedExposureEconomic
+                ? t("input_annual_gdp_growth_title")
+                : t("input_annual_population_growth_title")}
+            </Typography>
+            <TextField
+              id="annual-growth-gdp-textfield"
+              fullWidth
+              variant="outlined"
+              value={`${growth}%`}
+              disabled
+              aria-readonly={true}
+              sx={{
+                ".MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#A6A6A6", // Text color for disabled content
+                  bgcolor: "#E6E6E6", // Background for disabled TextField
+                  padding: 1,
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        {/* Annual Population growth section */}
+        {selectedExposureNonEconomic && (
+          <Box>
+            <Typography
+              id="annual-growth-population-slider"
+              gutterBottom
+              variant="h6"
+              component="div"
+            >
+              {t("input_annual_population_growth_title")}
+            </Typography>
+            <TextField
+              id="annual-growth-population-textfield"
+              fullWidth
+              variant="outlined"
+              value={`${growth}%`}
+              disabled
+              aria-readonly={true}
+              sx={{
+                ".MuiInputBase-input.Mui-disabled": {
+                  WebkitTextFillColor: "#A6A6A6", // Text color for disabled content
+                  bgcolor: "#E6E6E6", // Background for disabled TextField
+                  padding: 1,
+                },
+              }}
+            />
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

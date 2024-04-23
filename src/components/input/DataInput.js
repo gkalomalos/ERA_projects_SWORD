@@ -28,8 +28,7 @@ const DataInput = (props) => {
 
   const onRunHandler = () => {
     const body = {
-      annualPopulationGrowth: props.selectedAnnualPopulationGrowth,
-      annualGDPGrowth: props.selectedAnnualGDPGrowth,
+      annualGrowth: props.selectedAnnualGrowth,
       countryName: props.selectedCountry,
       exposureEconomic: props.selectedExposureEconomic,
       exposureFile: props.selectedExposureFile,
@@ -145,11 +144,12 @@ const DataInput = (props) => {
           <Grid item xs={12}>
             <AnnualGrowth
               onCardClick={onCardClickHandler}
+              onSelectTab={props.onSelectTab}
+              selectedAnnualGrowth={props.selectedAnnualGrowth}
               selectedAppOption={props.selectedAppOption}
               selectedCountry={props.selectedCountry}
-              onSelectTab={props.onSelectTab}
-              selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
-              selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+              selectedExposureEconomic={props.selectedExposureEconomic}
+              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
             />
           </Grid>
         </Grid>

@@ -20,8 +20,7 @@ const App = () => {
   const [isValidHazard, setIsValidHazard] = useState(false);
   const [mapTitle, setMapTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
-  const [selectedAnnualGDPGrowth, setSelectedAnnualGDPGrowth] = useState(0);
-  const [selectedAnnualPopulationGrowth, setSelectedAnnualPopulationGrowth] = useState(0);
+  const [selectedAnnualGrowth, setSelectedAnnualGrowth] = useState(0);
   const [selectedAppOption, setSelectedAppOption] = useState("");
   const [selectedCard, setSelectedCard] = useState("country");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -103,12 +102,8 @@ const App = () => {
     setSelectedTimeHorizon(timeHorizon);
   };
 
-  const setSelectedAnnualPopulationGrowthHandler = (annualPopulationGrowth) => {
-    setSelectedAnnualPopulationGrowth(annualPopulationGrowth);
-  };
-
-  const setSelectedAnnualGDPGrowthHandler = (annualGDPGrowth) => {
-    setSelectedAnnualGDPGrowth(annualGDPGrowth);
+  const setSelectedAnnualGrowthHandler = (annualGrowth) => {
+    setSelectedAnnualGrowth(annualGrowth);
   };
 
   const setSelectedCardHandler = (card) => {
@@ -130,8 +125,7 @@ const App = () => {
 
   // Reset states when selectedCountry changes
   useEffect(() => {
-    setSelectedAnnualPopulationGrowth(0);
-    setSelectedAnnualGDPGrowth(0);
+    setSelectedAnnualGrowth(0);
     setSelectedExposureEconomic("");
     setSelectedExposureFile("");
     setSelectedExposureNonEconomic("");
@@ -144,9 +138,17 @@ const App = () => {
     setValidHazardHandler(false);
   }, [selectedCountry]);
 
+  // Reset selected scenario when selected hazard changes. Different hazards
+  // support different types of climate scenarios.
   useEffect(() => {
     setSelectedScenario("");
   }, [selectedHazard]);
+
+  // Reset selected annual growth when exposure selection changes. Economic exposures
+  // support GPD projections and non-economic exposures support population projectsion.
+  useEffect(() => {
+    setSelectedAnnualGrowth(0)
+  }, [selectedExposureEconomic, selectedExposureNonEconomic]);
 
   useEffect(() => {
     const progressListener = (event, data) => {
@@ -198,8 +200,7 @@ const App = () => {
                   onChangeMapTitle={setMapTitleHandler}
                   onScenarioRunning={setIsScenarioRunningHandler}
                   onSelectTab={setSelectedTabHandler}
-                  selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
-                  selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
+                  selectedAnnualGrowth={selectedAnnualGrowth}
                   selectedAppOption={selectedAppOption}
                   selectedCountry={selectedCountry}
                   selectedExposureEconomic={selectedExposureEconomic}
@@ -219,8 +220,7 @@ const App = () => {
               <MainView
                 activeMap={activeMap}
                 mapTitle={mapTitle}
-                selectedAnnualGDPGrowth={selectedAnnualGDPGrowth}
-                selectedAnnualPopulationGrowth={selectedAnnualPopulationGrowth}
+                selectedAnnualGrowth={selectedAnnualGrowth}
                 selectedAppOption={selectedAppOption}
                 selectedCard={selectedCard}
                 selectedCountry={selectedCountry}
@@ -234,8 +234,7 @@ const App = () => {
                 selectedTab={selectedTab}
                 selectedSubTab={selectedSubTab}
                 onChangeActiveMap={setActiveMapHandler}
-                onChangeAnnualPopulationGrowth={setSelectedAnnualPopulationGrowthHandler}
-                onChangeAnnualGDPGrowth={setSelectedAnnualGDPGrowthHandler}
+                onChangeAnnualGrowth={setSelectedAnnualGrowthHandler}
                 onChangeCountry={setSelectedCountryHandler}
                 onChangeExposureEconomic={setSelectedExposureEconomicHandler}
                 onChangeExposureFile={setSelectedExposureFileHandler}
