@@ -30,3 +30,6 @@ __pycache_
 # database
 *.sqlite3
 *.db
+
+# documentation
+docs/_build
