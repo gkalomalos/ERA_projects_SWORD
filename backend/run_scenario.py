@@ -17,7 +17,6 @@ Email: georgios.kalomalos@sword-group.com
 Date: 23/4/2024
 """
 
-from copy import deepcopy
 import json
 import sys
 from time import time
@@ -59,6 +58,7 @@ class RunScenario:
         self.hazard_handler = HazardHandler()
         self.impact_handler = ImpactHandler()
 
+        # Get request parameters from the UI
         self.request = request
         self.adaptation_measures = request.get("adaptationMeasures", [])
         self.annual_growth = request.get("annualGrowth", 0)
@@ -72,24 +72,29 @@ class RunScenario:
         self.scenario = request.get("scenario", "")
         self.time_horizon = request.get("timeHorizon", [2024, 2050])
 
+        # Cleanse and beautify request parameters
         self.exposure_type = self.exposure_economic or self.exposure_non_economic
         self.country_code = get_iso3_country_code(self.country_name)
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
         self.ref_year = self.time_horizon[0]  # Set to 2024 if Era project or not selected
         self.future_year = self.time_horizon[1]  # Set to 2050 if Era project or not selected
+
+        # Set default successfult status code and message
         self.status_code = 2000
         self.status_message = "Scenario run successfully."
 
-        # Clear previously generated exposure/hazard/impact maps and temp directory
+        # Clear previously generated maps and geojson datasets from temp directory
         self._clear()
 
     def _clear(self):
-        """Clear previously generated exposure/hazard/impact maps and temp directory"""
+        """Clear previously generated maps and geojson datasets from temp directory"""
         clear_temp_dir()
 
     def _get_entity_filename(self) -> str:
         """
         Get the entity filename based on the request parameters.
+        This helper method sets the entity filename in a specific format to be searched
+        in the data/entities directory
 
         :return: The entity filename.
         :rtype: str
@@ -102,6 +107,8 @@ class RunScenario:
     def _get_hazard_filename(self, is_historical: bool = False) -> str:
         """
         Get the hazard filename based on the request parameters.
+        This helper method sets the hazard filename in a specific format to be searched
+        in the data/hazards directory
 
         :param is_historical: A flag indicating whether the historical hazard filename should be retrieved.
         :type is_historical: bool

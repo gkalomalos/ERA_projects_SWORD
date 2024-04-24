@@ -1,3 +1,27 @@
+"""
+Module for handling cost-benefit analysis operations.
+
+This module contains the `CostBenefitHandler` class, which manages cost-benefit analysis 
+operations such as retrieving measures from Excel files, loading discount rates, calculating 
+cost-benefit, and plotting results.
+
+Classes:
+- `CostBenefitHandler`: Class for handling cost-benefit analysis operations.
+
+Methods:
+- `get_measure_set_from_excel`: Retrieve a MeasureSet object related to a specified hazard 
+   code from an Excel file.
+- `get_discount_rates_from_excel`: Load discount rates from an Excel file.
+- `calculate_cost_benefit`: Calculate cost-benefit analysis based on current and future hazard 
+   and entity data.
+- `plot_waterfall`: Plot a waterfall chart for the cost-benefit analysis.
+- `plot_cost_benefit`: Plot the cost-benefit chart for the cost-benefit analysis.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 from climada.engine import CostBenefit
 from climada.engine.cost_benefit import risk_aai_agg
 from climada.entity import DiscRates, Entity

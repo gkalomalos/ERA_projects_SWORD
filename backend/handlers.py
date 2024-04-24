@@ -1,3 +1,29 @@
+"""
+Module to handle various utility functions and data processing tasks in the backend application.
+
+This module provides a collection of functions to perform tasks such as checking CLIMADA API 
+datasets, sanitizing country names, interpolating data, generating map titles, beautifying 
+hazard types and scenarios, clearing temporary directories, initializing data directories, 
+and updating progress for the frontend.
+
+Functions:
+check_data_type: Checks if CLIMADA API offers a specific data type for a given country.
+sanitize_country_name: Sanitizes the input country name.
+get_iso3_country_code: Retrieves the ISO3 country code for a given country name.
+get_interp1d_value: Interpolates values for different return periods.
+get_nearest_value: Retrieves the nearest value in an array of numbers.
+set_map_title: Generates a map title for a specified scenario.
+beautify_hazard_type: Beautifies the hazard type string for UI and reports.
+beautify_scenario: Beautifies the scenario string for UI and reports.
+clear_temp_dir: Clears the temporary directory.
+initialize_data_directories: Initializes the data directories for the application.
+update_progress: Updates the progress and message for the frontend.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import json
 from os import makedirs, path
 import sys

@@ -1,3 +1,24 @@
+"""
+Module for handling entity data and operations.
+
+This module contains the `EntityHandler` class, which manages entity-related operations such as
+creating entity objects, retrieving entity data from files, and generating future entity 
+projections.
+
+Classes:
+- `EntityHandler`: Class for handling entity data and operations.
+
+Methods:
+- `get_entity`: Initialize and return an Entity object based on provided data.
+- `get_entity_from_xlsx`: Retrieve entity data from an Excel file and create an Entity object.
+- `get_future_entity`: Generate a future Entity object based on the provided entity and 
+   parameters.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 from copy import deepcopy
 
 from climada.entity import DiscRates, Entity, Exposures

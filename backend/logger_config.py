@@ -1,3 +1,25 @@
+
+"""
+Module to configure and manage logging in the backend application.
+
+This module provides functionality to configure logging settings based on a JSON configuration 
+file. It contains a class to load configuration, set up file and console logging, and log 
+messages at different levels.
+
+Classes:
+LoggerConfig: Configures and manages logging in the backend application.
+
+Methods:
+load_config: Loads logging configuration from a JSON file.
+setup_file_logging: Sets up file logging based on the loaded configuration.
+setup_console_logging: Sets up console logging based on the loaded configuration.
+log: Logs messages at different levels using configured loggers.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import logging
 import json
 

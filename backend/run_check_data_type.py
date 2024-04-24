@@ -1,3 +1,22 @@
+"""
+Module to handle checking data types availability in the CLIMADA API.
+
+This module provides functionality to check the availability of specific data types for a given 
+country in the CLIMADA API. It contains a class and methods to check data types, sanitize 
+country names, update progress, and prepare response data.
+
+Classes:
+RunCheckDataType: Handles the checking of data types availability in the CLIMADA API.
+
+Methods:
+run_check_data_type: Entry point to check data types availability based on provided request 
+parameters.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import json
 import sys
 from time import time

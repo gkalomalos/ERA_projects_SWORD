@@ -1,3 +1,28 @@
+"""
+Module to handle the impact calculation based on exposure and hazard data.
+
+This module provides functionality to calculate the impact of hazards on different exposure types
+using impact functions. It includes methods to retrieve the appropriate impact function set
+based on the given exposure and hazard types, calculate the impact of hazards on exposures,
+generate impact GeoJSON files, and handle administrative data.
+
+Classes:
+- `ImpactHandler`: Provides methods to handle impact calculation and data retrieval.
+
+Methods:
+- `get_impact_function_set`: Retrieves the impact function set based on the given exposure and 
+   hazard types.
+- `get_impf_id`: Retrieves the impact function ID based on the hazard type.
+- `calculate_impact`: Calculates the impact of hazards on exposures.
+- `get_admin_data`: Retrieves administrative data for a specific country and administrative level.
+- `get_circle_radius`: Retrieves the radius for impact visualization based on the hazard type.
+- `generate_impact_geojson`: Generates impact GeoJSON files for visualization.
+
+Author: Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import json
 
 import geopandas as gpd

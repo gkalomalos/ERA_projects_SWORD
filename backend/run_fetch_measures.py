@@ -1,3 +1,21 @@
+"""
+Module to handle fetching adaptation measures based on provided hazard type.
+
+This module provides functionality to fetch adaptation measures based on a specified hazard type.
+It contains a class and methods to fetch adaptation measures from an Excel file, beautify hazard 
+types, and prepare response data.
+
+Classes:
+RunFetchScenario: Handles the fetching of adaptation measures based on provided parameters.
+
+Methods:
+run_fetch_measures: Entry point to fetch adaptation measures based on provided request parameters.
+
+Author: [SWORD] Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import json
 import sys
 from time import time
