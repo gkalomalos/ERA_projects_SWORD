@@ -62,6 +62,24 @@ class HazardHandler:
 
     # TODO: Needs to be refactored
     def get_hazard_time_horizon(self, hazard_type: str, scenario: str, time_horizon: str) -> str:
+        """
+        Get the time horizon for a specific hazard type and scenario.
+
+        This method retrieves the time horizon for a specified hazard type and scenario.
+        It uses predefined mappings for historical data and future projections. If the scenario
+        is historical, it returns the corresponding time horizon from the historical dataset.
+        For future scenarios, it maps the time horizon based on the hazard type and provided
+        time horizon. If no match is found, it returns an empty string.
+
+        :param hazard_type: The type of hazard for which to retrieve the time horizon.
+        :type hazard_type: str
+        :param scenario: The scenario type, either "historical" or "future".
+        :type scenario: str
+        :param time_horizon: The time horizon for future scenarios.
+        :type time_horizon: str
+        :return: The time horizon corresponding to the specified hazard type and scenario.
+        :rtype: str
+        """
         try:
             historical_time_horizons = {
                 "storm_europe": "1940_2014",
@@ -98,6 +116,26 @@ class HazardHandler:
     def get_hazard_dataset_properties(
         self, hazard_type: str, scenario: str, time_horizon: str, country: str
     ) -> dict:
+        """
+        Get the properties of a hazard dataset based on its type, scenario, time horizon,
+        and country, to be used as search parameters in the CLIMADA API Client
+
+        This method retrieves the properties of a hazard dataset based on its type, scenario,
+        time horizon, and country. It determines the appropriate properties based on the provided
+        parameters and returns them as a dictionary, to be used as search parameters in the
+        CLIMADA API Client.
+
+        :param hazard_type: The type of hazard for which to retrieve the dataset properties.
+        :type hazard_type: str
+        :param scenario: The scenario type, either "historical" or "future".
+        :type scenario: str
+        :param time_horizon: The time horizon for future scenarios.
+        :type time_horizon: str
+        :param country: The name of the country for which to retrieve the dataset properties.
+        :type country: str
+        :return: A dictionary containing the properties of the hazard dataset.
+        :rtype: dict
+        """
         hazard_properties = {}
         time_horizon = self.get_hazard_time_horizon(hazard_type, scenario, time_horizon)
         if hazard_type == "river_flood":
@@ -130,11 +168,6 @@ class HazardHandler:
 
         return hazard_properties
 
-    def get_hazard_unit(self, hazard_type):
-        unit = "No unit"
-        if hazard_type == "drought":
-            pass
-
     def get_hazard(
         self,
         hazard_type: str,
@@ -145,10 +178,35 @@ class HazardHandler:
         filepath: Path = None,
     ) -> Hazard:
         """
-        Get hazard
+        Retrieve a Hazard object.
+
+        This method retrieves a Hazard object based on the specified parameters, including the
+        hazard type, source, scenario, time horizon, country, and filepath. It returns a Hazard
+        object representing the retrieved dataset. Hazard objects can be obtained from external
+        .mat, .hdf5 or raster files, or from the CLIMADA API Client.
+
+        :param hazard_type: The type of hazard dataset to retrieve.
+        :type hazard_type: str
+        :param source: The source of the hazard dataset
+            (e.g., "mat", "hdf5", "climada_api", "raster").
+        :type source: str, optional
+        :param scenario: The scenario type for future projections.
+        :type scenario: str, optional
+        :param time_horizon: The time horizon for future scenarios.
+        :type time_horizon: str, optional
+        :param country: The name of the country associated with the hazard dataset.
+        :type country: str, optional
+        :param filepath: The filepath to the hazard dataset file.
+        :type filepath: Path, optional
+        :return: A Hazard object representing the retrieved hazard dataset.
+        :rtype: Hazard
+        :raises ValueError: If the specified source is invalid.
         """
         if source and source not in ["mat", "hdf5", "climada_api", "raster"]:
-            status_message = f"Error while trying to create hazard object. Source must be chosen from ['mat', 'hdf5', 'climada_api', 'raster']"
+            status_message = (
+                "Error while trying to create hazard object. "
+                "Source must be chosen from ['mat', 'hdf5', 'climada_api', 'raster']"
+            )
             logger.log("error", status_message)
             raise ValueError(status_message)
         if not source:
@@ -170,6 +228,25 @@ class HazardHandler:
     def _get_hazard_from_client(
         self, hazard_type: str, scenario: str, time_horizon: str, country: str
     ):
+        """
+        Retrieve a hazard dataset from the Climada API.
+
+        This method retrieves a hazard dataset from the Climada API based on the specified hazard
+        type, scenario, time horizon, and country. It returns a Hazard object representing the
+        retrieved dataset.
+
+        :param hazard_type: The type of hazard dataset to retrieve.
+        :type hazard_type: str
+        :param scenario: The scenario type for future projections.
+        :type scenario: str
+        :param time_horizon: The time horizon for future scenarios.
+        :type time_horizon: str
+        :param country: The name of the country associated with the hazard dataset.
+        :type country: str
+        :return: A Hazard object representing the retrieved hazard dataset.
+        :rtype: Hazard
+        :raises ValueError: If an error occurs while retrieving the hazard dataset.
+        """
         hazard_properties = self.get_hazard_dataset_properties(
             hazard_type, scenario, time_horizon, country
         )
@@ -210,11 +287,24 @@ class HazardHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An unexpected error occurred while trying to create hazard object from mat file. More info: {exception}",
+                "An unexpected error occurred while trying to create hazard object from mat file."
+                f"More info: {exception}",
             )
             return None
 
     def _get_hazard_from_mat(self, filepath: Path) -> Hazard:
+        """
+        Retrieve a hazard dataset from a MATLAB file.
+
+        This method retrieves a hazard dataset from a MATLAB file located at the specified
+        filepath. It returns a Hazard object representing the retrieved dataset.
+
+        :param filepath: The filepath to the MATLAB file containing the hazard dataset.
+        :type filepath: Path
+        :return: A Hazard object representing the retrieved hazard dataset.
+        :rtype: Hazard
+        :raises ValueError: If an error occurs while retrieving the hazard dataset.
+        """
         # TODO: Continue implementation
         try:
             hazard = Hazard().from_mat(DATA_HAZARDS_DIR / filepath)
@@ -229,24 +319,47 @@ class HazardHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An unexpected error occurred while trying to create hazard object from mat file. More info: {exception}",
+                "An unexpected error occurred while trying to create hazard object from mat file."
+                f"More info: {exception}",
             )
             return None
 
     # TODO: Extract this to settings file
     def get_hazard_intensity_thres(self, hazard_type: str) -> float:
+        """
+        Get the intensity threshold for a given hazard type.
+
+        This method returns the intensity threshold corresponding to the specified hazard type.
+
+        :param hazard_type: The type of hazard for which to retrieve the intensity threshold.
+        :type hazard_type: str
+        :return: The intensity threshold for the specified hazard type.
+        :rtype: float
+        """
         intensity_thres = -100
         if hazard_type == "RF":
             intensity_thres = 1
         elif hazard_type == "FL":
             intensity_thres = 1
         if hazard_type == "D":
-            intensity_thres = -4
+            intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
 
     def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
         """
-        Return country GeoDataFrame per admin level
+        Return country GeoDataFrame per admin level.
+
+        This method retrieves the GeoDataFrame corresponding to the specified country
+        and administrative level.
+
+        :param country_code: The code representing the country for which to retrieve
+            administrative data.
+        :type country_code: str
+        :param admin_level: The administrative level for which to retrieve the GeoDataFrame.
+        :type admin_level: int
+        :return: A GeoDataFrame containing the administrative data for the specified country
+            and level.
+        :rtype: gpd.GeoDataFrame
         """
         try:
             file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
@@ -265,10 +378,21 @@ class HazardHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An error occured while trying to get country admin level information. More info: {exception}",
+                "An error occurred while trying to get country admin level information. "
+                f"More info: {exception}",
             )
 
     def get_circle_radius(self, hazard_type: str) -> int:
+        """
+        Return the radius of a circle based on the hazard type.
+
+        This method returns the radius of a circle based on the specified hazard type.
+
+        :param hazard_type: The type of hazard.
+        :type hazard_type: str
+        :return: The radius of the circle.
+        :rtype: int
+        """
         radius = 2000
         if hazard_type == "D":
             radius = 11000
@@ -282,6 +406,19 @@ class HazardHandler:
         country_name: str,
         return_periods: tuple = (25, 20, 15, 10),
     ):
+        """
+        Generate GeoJSON data for hazard points.
+
+        This method generates GeoJSON data for hazard points based on the specified hazard,
+        country name, and return periods.
+
+        :param hazard: The hazard object.
+        :type hazard: Hazard
+        :param country_name: The name of the country.
+        :type country_name: str
+        :param return_periods: Tuple of return periods, defaults to (25, 20, 15, 10).
+        :type return_periods: tuple, optional
+        """
         try:
             country_iso3 = get_iso3_country_code(country_name)
             admin_gdf = self.get_admin_data(country_iso3, 2)
@@ -365,7 +502,17 @@ class HazardHandler:
             logger.log("error", f"An unexpected error occurred. More info: {e}")
             return None
 
-    def get_hazard_from_xlsx(self, filepath: Path) -> Hazard:
+    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
+        """
+        Read the selected .hdf5 input file and build the necessary hazard data to
+        create a Hazard object.
+
+        :param filepath: File path of the .hdf5 input file. The file must be placed in
+        the data/hazards folder.
+        :type filepath: Path
+        :return: The combined hazard object if the file exists. None if the file does not exist.
+        :rtype: climada.hazard.Hazard
+        """
         try:
             hazard_filepath = DATA_HAZARDS_DIR / filepath
             hazard = Hazard().from_excel(hazard_filepath)
@@ -373,7 +520,8 @@ class HazardHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An unexpected error occurred while trying to create hazard object from xlsx file. More info: {exception}",
+                "An unexpected error occurred while trying to create hazard object from xlsx file."
+                f"More info: {exception}",
             )
             return None
 
@@ -381,7 +529,8 @@ class HazardHandler:
         """
         Retrieve the code corresponding to a given hazard type.
 
-        This function maps a hazard type to its corresponding hazard code. If the hazard type is not recognized, it raises a ValueError.
+        This function maps a hazard type to its corresponding hazard code. If the hazard type
+        is not recognized, it raises a ValueError.
 
         :param hazard_type: The type of hazard as a string.
         :type hazard_type: str
@@ -419,7 +568,8 @@ class HazardHandler:
         """
         Retrieve the hazard type corresponding to a given hazard code.
 
-        This function maps a hazard code to its corresponding hazard type. If the hazard code is not recognized, it raises a ValueError.
+        This function maps a hazard code to its corresponding hazard type. If the hazard code
+        is not recognized, it raises a ValueError.
 
         :param hazard_code: The hazard code as a string.
         :type hazard_code: str

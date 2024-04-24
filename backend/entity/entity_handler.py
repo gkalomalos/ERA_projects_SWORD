@@ -72,6 +72,18 @@ class EntityHandler:
             raise ValueError(f"Failed to initialize Entity object: {e}")
 
     def get_entity_from_xlsx(self, filepath: str) -> Entity:
+        """
+        Retrieves an Entity object from an Excel file.
+
+        This method reads an Entity object from the specified Excel file. It then checks the
+        validity of the entity and its exposure data before returning it. If any errors occur
+        during the process, it logs the error and returns None.
+
+        :param filepath: The file path of the Excel file containing the Entity data.
+        :type filepath: str
+        :return: An Entity object created from the Excel file.
+        :rtype: Entity or None
+        """
         try:
             entity_filepath = DATA_ENTITIES_DIR / filepath
             entity = Entity.from_excel(entity_filepath)

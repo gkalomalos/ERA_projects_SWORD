@@ -87,7 +87,13 @@ class RunScenario:
         self._clear()
 
     def _clear(self):
-        """Clear previously generated maps and geojson datasets from temp directory"""
+        """
+        Clear previously generated maps and GeoJSON datasets from the temporary directory.
+
+        This method calls the clear_temp_dir function to delete all files in the temporary directory.
+
+        :return: None
+        """
         clear_temp_dir()
 
     def _get_entity_filename(self) -> str:

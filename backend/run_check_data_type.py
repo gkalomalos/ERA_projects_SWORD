@@ -31,6 +31,17 @@ class RunCheckDataType:
         self.logger = LoggerConfig(logger_types=["file"])
 
     def run_check_data_type(self) -> dict:
+        """
+        Run the check data type process.
+
+        This method retrieves the country name and data type from the request, sanitizes the
+        country name, and checks if the CLIMADA API offers the specified data type for the
+        given country. It updates the progress and generates a response based on whether
+        the data type is valid or not.
+
+        :return: A dictionary containing the response data and status.
+        :rtype: dict
+        """
         initial_time = time()
         country_name = self.request.get("country", "")
         country_name = sanitize_country_name(country_name)

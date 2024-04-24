@@ -28,7 +28,19 @@ from pathlib import Path
 import sys
 
 
-def get_base_dir():
+def get_base_dir() -> Path:
+    """
+    Get the base directory of the application.
+
+    This function checks if the application is running in a bundled (packaged by Electron)
+    environment or a normal Python environment (development). It returns the parent directory
+    of the executable in a bundled environment and the parent directory of the current script
+    in a normal Python environment.
+
+    :return: The base directory of the application.
+    :rtype: Path
+    """
+
     if getattr(sys, "frozen", False):
         # We are running in a bundle (packaged by Electron)
         return Path(sys.executable).parent.parent

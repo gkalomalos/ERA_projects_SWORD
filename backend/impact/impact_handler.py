@@ -46,7 +46,20 @@ logger = LoggerConfig(logger_types=["file"])
 
 class ImpactHandler:
     def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
-        """Get the impact function based on the given ID."""
+        """
+        Get the impact function based on the given exposure type and hazard type.
+
+        This method retrieves the impact function based on the specified exposure type
+        and hazard type. It returns an ImpactFuncSet object containing the appropriate
+        impact function.
+
+        :param exposure_type: The type of exposure.
+        :type exposure_type: str
+        :param hazard_type: The type of hazard.
+        :type hazard_type: str
+        :return: An ImpactFuncSet object representing the impact function.
+        :rtype: ImpactFuncSet
+        """
         impf = ImpactFunc()
         # Flood impact functions
         if exposure_type == "buddhist_monks" and hazard_type == "flood":
@@ -327,12 +340,42 @@ class ImpactHandler:
         return impfset
 
     def get_impf_id(self, hazard_type: str) -> int:
+        """
+        Get the impact function ID for a specified hazard type.
+
+        This method retrieves the impact function ID for the specified hazard type
+        based on predefined mappings. If the hazard type is not found in the mappings,
+        it returns the default impact function ID.
+
+        :param hazard_type: The type of hazard for which to retrieve the impact function ID.
+        :type hazard_type: str
+        :return: The impact function ID corresponding to the specified hazard type.
+        :rtype: int
+        """
         impf_ids = {"TC": 1, "RF": 3, "BF": 4, "FL": 5, "EQ": 6, "DEFAULT": 9}
         return impf_ids.get(hazard_type, impf_ids["DEFAULT"])
 
     def calculate_impact(
         self, exposure: Exposures, hazard: Hazard, impact_function_set: ImpactFuncSet
     ) -> Impact:
+        """
+        Calculate the impact of a hazard on exposure data using specified impact functions.
+
+        This method calculates the impact of a hazard on exposure data using the provided
+        exposure, hazard, and impact function set. It initializes an ImpactCalc object with
+        the given parameters and calculates the impact. If successful, it returns the Impact
+        object representing the calculated impact. If any error occurs during the calculation,
+        it logs an error message and returns None.
+
+        :param exposure: The exposure data.
+        :type exposure: Exposures
+        :param hazard: The hazard data.
+        :type hazard: Hazard
+        :param impact_function_set: The set of impact functions corresponding to the hazard.
+        :type impact_function_set: ImpactFuncSet
+        :return: The Impact object representing the calculated impact, or None if an error occurs.
+        :rtype: Impact
+        """
         try:
             # Assign a default impact function ID to the exposure data
             # impf_id = self.get_impf_id(hazard.haz_type)
@@ -354,7 +397,18 @@ class ImpactHandler:
 
     def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
         """
-        Return country GeoDataFrame per admin level
+        Retrieve GeoDataFrame containing administrative boundary data for a specific country.
+
+        This method reads the GeoJSON file containing administrative boundary data for the
+        specified country and admin level. It returns the GeoDataFrame with necessary columns
+        renamed for consistency.
+
+        :param country_code: The ISO 3166-1 alpha-3 country code.
+        :type country_code: str
+        :param admin_level: The administrative level (e.g., 1 for country, 2 for regions).
+        :type admin_level: int
+        :return: GeoDataFrame containing administrative boundary data.
+        :rtype: gpd.GeoDataFrame
         """
         try:
             file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
@@ -377,6 +431,18 @@ class ImpactHandler:
             )
 
     def get_circle_radius(self, hazard_type: str) -> int:
+        """
+        Get the radius for a circle based on the specified hazard type.
+
+        This method returns the radius for a circle based on the hazard type.
+        For drought (hazard_type='D'), the radius is set to 11000 meters.
+        For other hazard types, the default radius is set to 2000 meters.
+
+        :param hazard_type: The type of hazard.
+        :type hazard_type: str
+        :return: The radius of the circle.
+        :rtype: int
+        """
         radius = 2000
         if hazard_type == "D":
             radius = 11000
@@ -385,6 +451,22 @@ class ImpactHandler:
     def generate_impact_geojson(
         self, impact: Impact, country_name: str, return_periods: tuple = (25, 20, 15, 10)
     ):
+        """
+        Generate a GeoJSON file representing impact data.
+
+        This method generates a GeoJSON file representing impact data for visualization.
+        It retrieves administrative area information for the specified country,
+        then spatially joins it with the impact data. The resulting GeoJSON file includes
+        information about impact values at different return periods, along with metadata
+        such as the unit and radius.
+
+        :param impact: The impact data to be visualized.
+        :type impact: Impact
+        :param country_name: The name of the country for which to generate the GeoJSON file.
+        :type country_name: str
+        :param return_periods: The return periods for which impact data is available.
+        :type return_periods: tuple, optional
+        """
         try:
             country_iso3 = get_iso3_country_code(country_name)
             admin_gdf = self.get_admin_data(country_iso3, 2)

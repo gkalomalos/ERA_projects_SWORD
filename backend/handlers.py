@@ -49,7 +49,18 @@ logger = LoggerConfig(logger_types=["file"])
 
 def check_data_type(country_name: str, data_type: str) -> list:
     """
-    Checks if CLIMADA API offers this data type for the specific country.
+    Check if CLIMADA API offers the specified data type for the given country.
+
+    This function queries the CLIMADA API to check if it offers the specified data type
+    for the specified country. It returns a list of dataset information if available,
+    otherwise returns an empty list.
+
+    :param country_name: The name of the country to check.
+    :type country_name: str
+    :param data_type: The type of data to check.
+    :type data_type: str
+    :return: A list of dataset information if available, otherwise an empty list.
+    :rtype: list
     """
     dataset_infos = []
     try:
@@ -66,7 +77,20 @@ def check_data_type(country_name: str, data_type: str) -> list:
         return False
 
 
-def sanitize_country_name(country_name):
+def sanitize_country_name(country_name: str) -> str:
+    """
+    Sanitize the given country name.
+
+    This function attempts to sanitize the provided country name by searching for a
+    matching country using the `pycountry` library. If a match is found, it returns
+    the standardized name of the country. If no match is found, it raises a ValueError.
+
+    :param country_name: The name of the country to sanitize.
+    :type country_name: str
+    :return: The standardized name of the country.
+    :rtype: str
+    :raises ValueError: If the country name cannot be sanitized.
+    """
     try:
         country = pycountry.countries.search_fuzzy(country_name)[0]
         return country.name
@@ -79,6 +103,18 @@ def sanitize_country_name(country_name):
 
 
 def get_iso3_country_code(country_name: str) -> str:
+    """
+    Get the ISO3 country code for the given country name.
+
+    This function attempts to retrieve the ISO3 country code for the provided country name
+    using the `pycountry` library. If the country name is found, it returns the ISO3 code.
+    If the country name is not found, it logs an error and returns None.
+
+    :param country_name: The name of the country to get the ISO3 code for.
+    :type country_name: str
+    :return: The ISO3 country code.
+    :rtype: str
+    """
     try:
         country = pycountry.countries.search_fuzzy(country_name)[0]
         country_code = country.alpha_3
@@ -96,18 +132,18 @@ def get_iso3_country_code(country_name: str) -> str:
         return None
 
 
-def get_interp1d_value(df: pd.DataFrame) -> float:
+def get_interp1d_value(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Get the interpolated value for different return periods.
+    Get the interpolated values for different return periods.
 
-    Parameters
-    ----------
-    df: pandas.DataFrame, required
-        impact data DataFrame object.
+    This function calculates the interpolated values for different return periods
+    based on the provided impact data DataFrame object. It returns a DataFrame containing
+    the interpolated values.
 
-    Returns
-    -------
-    interp1d_df: float
+    :param df: The impact data DataFrame object.
+    :type df: pandas.DataFrame
+    :return: The DataFrame containing the interpolated values.
+    :rtype: pandas.DataFrame
     """
     try:
         rpls = [1000, 750, 500, 400, 250, 200, 150, 100, 50, 10]
@@ -153,16 +189,14 @@ def get_nearest_value(arr: list, value: float) -> float:
     """
     Get the nearest value in an array of numbers.
 
-    Parameters
-    ----------
-    arr: list, required
-        List of numbers.
-    value: float, required
-        Number for which to get the nearest value in the array of numbers.
+    This function finds the nearest value in the provided array of numbers to the given value.
 
-    Returns
-    -------
-    float
+    :param arr: The list of numbers.
+    :type arr: list
+    :param value: The number for which to find the nearest value.
+    :type value: float
+    :return: The nearest value in the array.
+    :rtype: float
     """
     index = np.abs(arr - value).argmin()
     return arr[index]
@@ -170,28 +204,21 @@ def get_nearest_value(arr: list, value: float) -> float:
 
 def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: str) -> str:
     """
-    Generate the map title to present in the UI for the user specified scenario.
+    Generate the map title for the specified hazard, country, time horizon, and scenario.
 
-    Parameters
-    ----------
-    hazard_type: str, required
-        Hazard type to search datasets.
-        Example: river_flood, tropical_cyclone, storm_europe.
-    countries: list, required
-        List of country names for which to search for datasets.
-        Example: ['Greece', 'Bulgaria', 'Slovenia']
-    scenario: str, required
-        Type of scenario to search datasets.
-        Example: historical, rcp26, rcp45 etc.
-    time_horizon: str, required
-        Time horizon to search datasets.
-        Example: 1980-2000, 2030-2050 etc.
+    This function generates a map title to present in the user interface based on the specified
+    hazard type, country, time horizon, and scenario.
 
-
-    Returns
-    -------
-    map_title: str
-        The map title for the user specified scenario.
+    :param hazard_type: The type of hazard to search datasets for.
+    :type hazard_type: str
+    :param country: The name of the country.
+    :type country: str
+    :param time_horizon: The time horizon to search datasets.
+    :type time_horizon: str
+    :param scenario: The type of scenario to search datasets for.
+    :type scenario: str
+    :return: The map title for the specified scenario.
+    :rtype: str
     """
     hazard_beautified = beautify_hazard_type(hazard_type)
     country_beautified = country.capitalize()
@@ -206,18 +233,15 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
 
 def beautify_hazard_type(hazard_type: str) -> str:
     """
-    Get a beautified version of the hazard type to use in UI and reports.
+    Get a beautified version of the hazard type for UI and reports.
 
-    Parameters
-    ----------
-    hazard_type: str, required
-        Hazard type to search datasets.
-        Example: river_flood, tropical_cyclone, storm_europe.
+    This function returns a beautified string version of the hazard type to use in user interface
+    elements and reports.
 
-    Returns
-    -------
-    _hazard_type: str
-        The beautified string version of the hazard type.
+    :param hazard_type: The hazard type to search datasets for.
+    :type hazard_type: str
+    :return: The beautified string version of the hazard type.
+    :rtype: str
     """
     _hazard_type = ""
     if hazard_type == "tropical_cyclone":
@@ -236,18 +260,15 @@ def beautify_hazard_type(hazard_type: str) -> str:
 
 def beautify_scenario(scenario: str) -> str:
     """
-    Get a beautified version of the scenario to use in UI and reports.
+    Get a beautified version of the scenario for UI and reports.
 
-    Parameters
-    ----------
-    scenario: str, required
-        Type of scenario to search datasets.
-        Example: historical, rcp26, rcp45 etc.
+    This function returns a beautified string version of the scenario to use in user interface
+    elements and reports.
 
-    Returns
-    -------
-    _scenario: str
-        The beautified string version of the scenario.
+    :param scenario: The type of scenario to search datasets for.
+    :type scenario: str
+    :return: The beautified string version of the scenario.
+    :rtype: str
     """
     _scenario = ""
     if scenario == "rcp26":
@@ -266,7 +287,7 @@ def beautify_scenario(scenario: str) -> str:
 
 def clear_temp_dir() -> None:
     """
-    Clears the temporary directory.
+    Clear the temporary directory.
 
     This function deletes all files in the temporary directory.
 
@@ -281,7 +302,7 @@ def clear_temp_dir() -> None:
 
 def initalize_data_directories() -> None:
     """
-    Initializes the data directories for the application.
+    Initialize the data directories for the application.
 
     This function creates the necessary folders for storing data, including entities, exposures, hazards, logs, and temporary files.
     If the directories already exist, this function does nothing.

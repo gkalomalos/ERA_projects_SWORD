@@ -1,4 +1,3 @@
-
 """
 Module to configure and manage logging in the backend application.
 
@@ -47,6 +46,17 @@ class LoggerConfig:
                 raise ValueError(f"Unsupported logger type: {logger_type}")
 
     def load_config(self):
+        """
+        Load the configuration from the specified JSON file.
+
+        This method reads the configuration parameters from a JSON file and sets the corresponding
+        attributes of the object. If the file is not found or contains invalid JSON, appropriate
+        errors are raised.
+
+        :return: None
+        :raises FileNotFoundError: If the config file is not found.
+        :raises ValueError: If the JSON in the config file is invalid.
+        """
         try:
             with open(self.CONFIG_PATH, "r") as config_file:
                 config = json.load(config_file)
@@ -59,6 +69,16 @@ class LoggerConfig:
             raise ValueError("Invalid JSON in config file")
 
     def setup_file_logging(self):
+        """
+        Set up file logging using the specified configuration.
+
+        This method configures file logging according to the parameters set in the object's attributes.
+        It creates a FileHandler, sets its level and format, and adds it to the list of loggers.
+        If any error occurs during setup, it raises a RuntimeError.
+
+        :return: None
+        :raises RuntimeError: If an error occurs during file logging setup.
+        """
         LOG_FILE = LOG_DIR / self.filename
         try:
             file_handler = logging.FileHandler(LOG_FILE)
@@ -69,6 +89,16 @@ class LoggerConfig:
             raise RuntimeError(f"Error setting up file logging: {e}")
 
     def setup_console_logging(self):
+        """
+        Set up console logging using the specified configuration.
+
+        This method configures console logging according to the parameters set in the object's attributes.
+        It creates a StreamHandler, sets its level and format, and adds it to the list of loggers.
+        If any error occurs during setup, it raises a RuntimeError.
+
+        :return: None
+        :raises RuntimeError: If an error occurs during console logging setup.
+        """
         try:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(self.level)
@@ -78,6 +108,20 @@ class LoggerConfig:
             raise RuntimeError(f"Error setting up console logging: {e}")
 
     def log(self, level, message):
+        """
+        Log a message with the specified logging level.
+
+        This method logs a message using the specified logging level. It iterates through the list of loggers,
+        sets up a logger, adds the handler, logs the message, and then removes the handler to prevent duplicate logging.
+        If no loggers are initialized, it raises a RuntimeError.
+
+        :param level: The logging level (e.g., INFO, DEBUG, ERROR).
+        :type level: str
+        :param message: The message to be logged.
+        :type message: str
+        :return: None
+        :raises RuntimeError: If an error occurs during logging or if no loggers are initialized.
+        """
         if not self.loggers:
             raise RuntimeError("No loggers initialized")
         for handler in self.loggers:
