@@ -11,7 +11,7 @@ Classes:
 
 Methods:
 - `get_impact_function_set`: Retrieves the impact function set based on the given exposure and 
-   hazard types.
+hazard types.
 - `get_impf_id`: Retrieves the impact function ID based on the hazard type.
 - `calculate_impact`: Calculates the impact of hazards on exposures.
 - `get_admin_data`: Retrieves administrative data for a specific country and administrative level.

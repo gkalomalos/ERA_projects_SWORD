@@ -11,12 +11,12 @@ Classes:
 
 Methods:
 - `get_hazard_time_horizon`: Retrieves the time horizon for a given hazard type, scenario, 
-   and time horizon.
+and time horizon.
 - `get_hazard_dataset_properties`: Retrieves hazard dataset properties based on hazard type,
-   scenario, time horizon, and country.
+scenario, time horizon, and country.
 - `get_hazard_unit`: Retrieves the unit of measurement for a given hazard type.
 - `get_hazard`: Retrieves hazard data based on various parameters, including hazard type, 
-   source, scenario, time horizon, country, and file path.
+source, scenario, time horizon, country, and file path.
 - `_get_hazard_from_client`: Retrieves hazard data from an external API client.
 - `_get_hazard_from_raster`: Retrieves hazard data from a raster file.
 - `_get_hazard_from_mat`: Retrieves hazard data from a MATLAB file.

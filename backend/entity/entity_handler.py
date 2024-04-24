@@ -12,7 +12,7 @@ Methods:
 - `get_entity`: Initialize and return an Entity object based on provided data.
 - `get_entity_from_xlsx`: Retrieve entity data from an Excel file and create an Entity object.
 - `get_future_entity`: Generate a future Entity object based on the provided entity and 
-   parameters.
+parameters.
 
 Author: [SWORD] Georgios Kalomalos
 Email: georgios.kalomalos@sword-group.com

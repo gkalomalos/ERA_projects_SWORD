@@ -10,10 +10,10 @@ Classes:
 
 Methods:
 - `get_measure_set_from_excel`: Retrieve a MeasureSet object related to a specified hazard 
-   code from an Excel file.
+code from an Excel file.
 - `get_discount_rates_from_excel`: Load discount rates from an Excel file.
 - `calculate_cost_benefit`: Calculate cost-benefit analysis based on current and future hazard 
-   and entity data.
+and entity data.
 - `plot_waterfall`: Plot a waterfall chart for the cost-benefit analysis.
 - `plot_cost_benefit`: Plot the cost-benefit chart for the cost-benefit analysis.
 
