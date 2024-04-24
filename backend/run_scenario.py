@@ -7,14 +7,14 @@ It contains classes and methods to orchestrate the execution of ERA and custom s
 conduct cost-benefit analysis, calculate impacts, generate map data files, and prepare responses.
 
 Classes:
-- `RunScenario`: Orchestrates the execution of scenarios based on provided parameters.
+
+- `RunScenario`: 
+    Orchestrates the execution of scenarios based on provided parameters.
 
 Methods:
-- `run_scenario`: Entry point to run a scenario based on provided request parameters.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+- `run_scenario`: 
+    Entry point to run a scenario based on provided request parameters.
 """
 
 import json

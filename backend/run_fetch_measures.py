@@ -6,14 +6,14 @@ It contains a class and methods to fetch adaptation measures from an Excel file,
 types, and prepare response data.
 
 Classes:
-RunFetchScenario: Handles the fetching of adaptation measures based on provided parameters.
+
+RunFetchScenario: 
+    Handles the fetching of adaptation measures based on provided parameters.
 
 Methods:
-run_fetch_measures: Entry point to fetch adaptation measures based on provided request parameters.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+run_fetch_measures: 
+    Entry point to fetch adaptation measures based on provided request parameters.
 """
 
 import json

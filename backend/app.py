@@ -6,13 +6,12 @@ messages, determining the appropriate script to execute based on the message con
 executing the corresponding script.
 
 Functions:
-- process_message(message): Processes the incoming message, determines the script to execute, and executes the script.
-- main(): Main function of the application that continuously listens for incoming messages,
-  processes them, and sends back the response.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+- process_message(message): 
+    Processes the incoming message, determines the script to execute, and executes the script.
+- main(): 
+    Main function of the application that continuously listens for incoming messages,
+    processes them, and sends back the response.
 """
 
 import json

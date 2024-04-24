@@ -7,31 +7,43 @@ methods for fetching hazard data from different sources, processing hazard datas
 and generating hazard GeoJSON files.
 
 Classes:
-- `HazardHandler`: Class for handling hazard-related operations.
+
+- `HazardHandler`: 
+    Class for handling hazard-related operations.
 
 Methods:
-- `get_hazard_time_horizon`: Retrieves the time horizon for a given hazard type, scenario, 
-and time horizon.
-- `get_hazard_dataset_properties`: Retrieves hazard dataset properties based on hazard type,
-scenario, time horizon, and country.
-- `get_hazard_unit`: Retrieves the unit of measurement for a given hazard type.
-- `get_hazard`: Retrieves hazard data based on various parameters, including hazard type, 
-source, scenario, time horizon, country, and file path.
-- `_get_hazard_from_client`: Retrieves hazard data from an external API client.
-- `_get_hazard_from_raster`: Retrieves hazard data from a raster file.
-- `_get_hazard_from_mat`: Retrieves hazard data from a MATLAB file.
-- `get_hazard_intensity_thres`: Retrieves the intensity threshold for a given hazard type.
-- `get_admin_data`: Retrieves administrative data for a specified country and administrative level.
-- `get_circle_radius`: Retrieves the radius for generating hazard circles.
-- `generate_hazard_geojson`: Generates a GeoJSON file containing hazard data.
-- `_get_hazard_from_hdf5`: Retrieves hazard data from an HDF5 file.
-- `get_hazard_from_xlsx`: Retrieves hazard data from an Excel file.
-- `get_hazard_code`: Retrieves the hazard code corresponding to a given hazard type.
-- `get_hazard_type`: Retrieves the hazard type corresponding to a given hazard code.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+- `get_hazard_time_horizon`: 
+    Retrieves the time horizon for a given hazard type, scenario, and time horizon.
+- `get_hazard_dataset_properties`: 
+    Retrieves hazard dataset properties based on hazard type, scenario, time horizon, and country.
+- `get_hazard_unit`: 
+    Retrieves the unit of measurement for a given hazard type.
+- `get_hazard`: 
+    Retrieves hazard data based on various parameters, including hazard type, 
+    source, scenario, time horizon, country, and file path.
+- `_get_hazard_from_client`: 
+    Retrieves hazard data from an external API client.
+- `_get_hazard_from_raster`: 
+    Retrieves hazard data from a raster file.
+- `_get_hazard_from_mat`: 
+    Retrieves hazard data from a MATLAB file.
+- `get_hazard_intensity_thres`: 
+    Retrieves the intensity threshold for a given hazard type.
+- `get_admin_data`: 
+    Retrieves administrative data for a specified country and administrative level.
+- `get_circle_radius`: 
+    Retrieves the radius for generating hazard circles.
+- `generate_hazard_geojson`: 
+    Generates a GeoJSON file containing hazard data.
+- `_get_hazard_from_hdf5`: 
+    Retrieves hazard data from an HDF5 file.
+- `get_hazard_from_xlsx`: 
+    Retrieves hazard data from an Excel file.
+- `get_hazard_code`: 
+    Retrieves the hazard code corresponding to a given hazard type.
+- `get_hazard_type`: 
+    Retrieves the hazard type corresponding to a given hazard code.
 """
 
 import json

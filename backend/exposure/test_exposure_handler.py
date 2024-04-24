@@ -6,17 +6,20 @@ fetching exposure data from an API, calculating exposure growth, retrieving admi
 and generating exposure GeoJSON files.
 
 Classes:
-- `ExposureHandler`: Class for handling exposure data and operations.
+
+- `ExposureHandler`: 
+    Class for handling exposure data and operations.
 
 Methods:
-- `get_exposure_from_api`: Retrieve exposure data from an API for a specific country.
-- `get_growth_exposure`: Calculate exposure growth based on annual growth rate and future year.
-- `get_admin_data`: Retrieve administrative data for a specific country and administrative level.
-- `generate_exposure_geojson`: Generate GeoJSON files for exposure data.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+- `get_exposure_from_api`: 
+    Retrieve exposure data from an API for a specific country.
+- `get_growth_exposure`: 
+    Calculate exposure growth based on annual growth rate and future year.
+- `get_admin_data`: 
+    Retrieve administrative data for a specific country and administrative level.
+- `generate_exposure_geojson`: 
+    Generate GeoJSON files for exposure data.
 """
 
 import unittest

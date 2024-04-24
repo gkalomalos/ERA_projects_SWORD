@@ -6,6 +6,7 @@ and requirements. It also includes a function to determine the base directory de
 the script is running in a bundled environment or a normal Python environment.
 
 Constants:
+
 - BASE_DIR: Base directory path of the project.
 - DATA_DIR: Directory path for storing data files.
 - DATA_ENTITIES_DIR: Directory path for storing entities data.
@@ -17,11 +18,9 @@ Constants:
 - REQUIREMENTS_DIR: Directory path for storing requirements files.
 
 Functions:
-- get_base_dir(): Function to determine the base directory path depending on the environment.
 
-Author: [SWORD] Georgios Kalomalos
-Email: georgios.kalomalos@sword-group.com
-Date: 23/4/2024
+- get_base_dir(): 
+    Function to determine the base directory path depending on the environment.
 """
 
 from pathlib import Path
