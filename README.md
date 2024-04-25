@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# CLIMADERA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+The “Enhancing Risk Assessments (ERA) for improved country risk financing strategies” project aims to provide government partners in Egypt and Thailand with a new generation of climate risk assessments for developing their climate change adaptation measures and, subsequently, their climate and disaster risk financing strategies. To this end, the ERA project will apply the Economics of Climate Change Adaptation (ECA) approach and will enhance the underlying risk assessment tool CLIMADA with the following new features:
 
-In the project directory, you can run:
+1. Analyzing impacts of hazards on macroeconomic indicators (e.g., GDP, employment).
+2. Analyzing the impact of hazards on non-economic impacts (e.g., access to health and education).
+   Additionally, the project aims to enable the dynamic application of CLIMADA by partner institutions through an easy-to-use and accessible graphical user interface (GUI).
 
-### `npm start`
+CLIMADERA is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/research/climada.html). CLIMADERA encompass CLIMADA’s full functionality, including the cost-benefit analyses of adaptation measures and new features developed within the ERA project, in order to enable local project partners to use CLIMADA independently.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Vessel Data Retrieval**: Fetch raw and filtered data for vessels.
+- **Compliance Score Calculation**: Compare compliance scores based on speed adherence between vessels.
+- **Speed Difference Calculation**: Calculate the speed differences between actual and proposed speeds for vessels.
+- **Data Filtering**: Filter invalid data, including outliers, missing values, and incorrect geocoordinates.
+- **Reporting**: Report invalid data and produce suggestions.
 
-### `npm test`
+## Dependencies and limitations
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Physical limitations
+   CLIMADERA is a standalone, portable desktop application designed for ease of use. It is delivered as a self-contained folder containing all the necessary files, including an executable for starting the application. Double-clicking on this executable file will launch the application. No installation or special prerequisites are required. However, to ensure optimal performance, the following minimum system requirements are recommended:
+   CPU: 1GHz dual core. Although CLIMADERA is not heavily CPU-intensive, tasks like impact calculations, map rendering, and report generation may increase CPU usage.
 
-### `npm run build`
+- RAM: 8GB. This is crucial as the application uses Python’s Pandas library for data handling, performing in-memory analytics. When processing large datasets, such as a 10GB dataset, the application requires at least an equivalent amount of free memory. This is because Python performs many calculations in memory, which can significantly increase the overall memory requirement.
+- Operating System: Microsoft Windows 10.
+- Internet Connection: Essential for accessing data through CLIMADA’s API.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+These requirements are typical for a general-use laptop/PC.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. CLIMADA API dependency
+   CLIMADERA frequently communicates with CLIMADA's API to fetch and validate datasets, among other tasks. API availability is crucial if the API is not accessible, significant functionality issues will arise. CLIMADERA uses .hdf5 files for Exposure and Hazard data, obtainable from sources [ETH-Zurich Research Collection](https://www.research-collection.ethz.ch/) and [NASA’s Socioeconomic Data and Applications Center (sedac)](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/sets/browse). The application's Python backend fetches these files. In their absence, users can provide the necessary parameters, and the application will find, download, and store the datasets.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Setup and Running the Application
 
-### `npm run eject`
+### For Developers
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. **Clone the Repository**:
+   ```sh
+   git clone git@ath-git.swordgroup.lan:unu/climada-unu.git
+   cd CLIMADA-UNU
+   git checkout main
+   ```
+2. **Set Up a Virtual Environment** (optional but recommended):
+   _Setting up a local environment is only required to test different parts of the application, for example using Jupyter notebooks to run custom climate scenarios. The application itself does not require a local environment to work, it comes bundled with the frozen climada_env conda environment which includes everything needed for the application to work._
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```sh
+   # Using venv
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   # Or using Conda
+   conda create --name climadera python=3.11
+   conda activate climadera
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   # Or using the prebuilt Conda environment
+   conda env create -f requirements/environment.yml
+   ```
 
-## Learn More
+3. **Install Dependencies for the backend**:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```sh
+   pip install -r requirements/requirements.txt
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+4. **Install Dependencies for the frontend**:
+   Before running the app locally, make sure Node.js is installed. Download and install Node.js from [the official Node.js website](https://nodejs.org/). After installing Node.js, navigate to the root directory of the app where the `package.json` file exists using your terminal or command prompt. Then, run the following command to install the dependencies:
 
-### Code Splitting
+   ```sh
+   npm install
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+5. **Start the ReactJS frontend locally**:
+   To start the ReactJS frontend locally, without the connection to the backend, use:
 
-### Analyzing the Bundle Size
+   ```sh
+   npm start
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+6. **Start the CLIMADERA application locally**:
+   The application is bundled using [electron-builder](https://www.electron.build/). To start the full application locally, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
+   ```sh
+   npm run start:electron
+   ```
 
-### Making a Progressive Web App
+### Build a new executable
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+To create a new executable for the application, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
 
-### Advanced Configuration
+```sh
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This will create a new executable at dist/[ version ]
 
-### Deployment
+## Logging
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The application logs important actions and errors, facilitating debugging and monitoring. The logs are stored locally in the logs/app.log file.
 
-### `npm run build` fails to minify
+## Documentation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Developer documentation, including a detailed description of API endpoints and usage examples, can be found [here](https://ath-git.swordgroup.lan/unu/climada-unu/).
+
+## Before Opening a Pull Request
+
+Ensure you run the tests and comply with the linting standards before opening a pull request:
+
+- Run tests: `python -m unittest tests/test_api.py`
+- Check linting: `pylint app/ --fail-under=8`
+  Failure to meet the test coverage and linting standards will result in CI pipeline failures.
