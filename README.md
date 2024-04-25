@@ -10,14 +10,6 @@ The “Enhancing Risk Assessments (ERA) for improved country risk financing stra
 
 CLIMADERA is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/research/climada.html). CLIMADERA encompass CLIMADA’s full functionality, including the cost-benefit analyses of adaptation measures and new features developed within the ERA project, in order to enable local project partners to use CLIMADA independently.
 
-## Features
-
-- **Vessel Data Retrieval**: Fetch raw and filtered data for vessels.
-- **Compliance Score Calculation**: Compare compliance scores based on speed adherence between vessels.
-- **Speed Difference Calculation**: Calculate the speed differences between actual and proposed speeds for vessels.
-- **Data Filtering**: Filter invalid data, including outliers, missing values, and incorrect geocoordinates.
-- **Reporting**: Report invalid data and produce suggestions.
-
 ## Dependencies and limitations
 
 1. Physical limitations
@@ -28,7 +20,7 @@ CLIMADERA is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/
 - Operating System: Microsoft Windows 10.
 - Internet Connection: Essential for accessing data through CLIMADA’s API.
 
-These requirements are typical for a general-use laptop/PC.
+  These requirements are typical for a general-use laptop/PC.
 
 2. CLIMADA API dependency
    CLIMADERA frequently communicates with CLIMADA's API to fetch and validate datasets, among other tasks. API availability is crucial if the API is not accessible, significant functionality issues will arise. CLIMADERA uses .hdf5 files for Exposure and Hazard data, obtainable from sources [ETH-Zurich Research Collection](https://www.research-collection.ethz.ch/) and [NASA’s Socioeconomic Data and Applications Center (sedac)](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/sets/browse). The application's Python backend fetches these files. In their absence, users can provide the necessary parameters, and the application will find, download, and store the datasets.
