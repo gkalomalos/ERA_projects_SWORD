@@ -24,8 +24,7 @@ const MainView = (props) => {
       {/* Render the main layout with the Parameters section according to each input selected  */}
       {props.selectedTab === 0 && (
         <ViewCard
-          selectedAnnualGDPGrowth={props.selectedAnnualGDPGrowth}
-          selectedAnnualPopulationGrowth={props.selectedAnnualPopulationGrowth}
+          selectedAnnualGrowth={props.selectedAnnualGrowth}
           selectedAppOption={props.selectedAppOption}
           selectedCard={props.selectedCard}
           selectedCountry={props.selectedCountry}
@@ -44,8 +43,7 @@ const MainView = (props) => {
           onChangeHazardFile={props.onChangeHazardFile}
           onChangeScenario={props.onChangeScenario}
           onChangeTimeHorizon={props.onChangeTimeHorizon}
-          onChangeAnnualGDPGrowth={props.onChangeAnnualGDPGrowth}
-          onChangeAnnualPopulationGrowth={props.onChangeAnnualPopulationGrowth}
+          onChangeAnnualGrowth={props.onChangeAnnualGrowth}
           onChangeValidEconomicExposure={props.onChangeValidEconomicExposure}
           onChangeValidNonEconomicExposure={props.onChangeValidNonEconomicExposure}
           onChangeValidHazard={props.onChangeValidHazard}

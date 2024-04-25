@@ -1,3 +1,21 @@
+"""
+Module to handle fetching adaptation measures based on provided hazard type.
+
+This module provides functionality to fetch adaptation measures based on a specified hazard type.
+It contains a class and methods to fetch adaptation measures from an Excel file, beautify hazard 
+types, and prepare response data.
+
+Classes:
+
+RunFetchScenario: 
+    Handles the fetching of adaptation measures based on provided parameters.
+
+Methods:
+
+run_fetch_measures: 
+    Entry point to fetch adaptation measures based on provided request parameters.
+"""
+
 import json
 import sys
 from time import time
@@ -16,6 +34,16 @@ class RunFetchScenario:
         self.hazard_handler = HazardHandler()
 
     def run_fetch_measures(self) -> dict:
+        """
+        Run the process to fetch adaptation measures.
+
+        This method retrieves the hazard type from the request, gets the hazard code, and fetches the adaptation measures
+        from an Excel file based on the hazard code. It updates the progress and generates a response containing the fetched
+        adaptation measures.
+
+        :return: A dictionary containing the response data and status.
+        :rtype: dict
+        """
         initial_time = time()
         hazard_type = self.request.get("hazardType", "")
         hazard_code = self.hazard_handler.get_hazard_code(hazard_type)

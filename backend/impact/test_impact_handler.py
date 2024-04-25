@@ -1,3 +1,24 @@
+"""
+Module to test the functionality of the ImpactHandler class.
+
+This module contains unit tests for the methods defined in the ImpactHandler class.
+It includes tests for calculating impact function sets, retrieving impact function IDs,
+calculating impacts, and generating impact GeoJSON files.
+
+Classes:
+- `TestImpactHandler`: Unit tests for the ImpactHandler class.
+
+Methods:
+- `test_calculate_impact_function_set`: Tests the method for calculating impact function sets.
+- `test_get_impf_id`: Tests the method for retrieving impact function IDs.
+- `test_calculate_impact`: Tests the method for calculating impacts.
+- `test_generate_impact_geojson`: Tests the method for generating impact GeoJSON files.
+
+Author: Georgios Kalomalos
+Email: georgios.kalomalos@sword-group.com
+Date: 23/4/2024
+"""
+
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 

@@ -1,3 +1,27 @@
+"""
+Module for handling exposure data and operations.
+
+This module contains the `ExposureHandler` class, which manages exposure-related operations such as
+fetching exposure data from an API, calculating exposure growth, retrieving administrative data, 
+and generating exposure GeoJSON files.
+
+Classes:
+
+- `ExposureHandler`: 
+    Class for handling exposure data and operations.
+
+Methods:
+
+- `get_exposure_from_api`: 
+    Retrieve exposure data from an API for a specific country.
+- `get_growth_exposure`: 
+    Calculate exposure growth based on annual growth rate and future year.
+- `get_admin_data`: 
+    Retrieve administrative data for a specific country and administrative level.
+- `generate_exposure_geojson`: 
+    Generate GeoJSON files for exposure data.
+"""
+
 from copy import deepcopy
 import json
 from time import time
@@ -19,7 +43,19 @@ class ExposureHandler:
     def __init__(self):
         self.client = Client()
 
-    def get_exposure(self, country: str) -> Exposures:
+    def get_exposure_from_api(self, country: str) -> Exposures:
+        """
+        Retrieves exposure data from an API for a specified country.
+
+        Fetches exposure data for the given country from CLIMADA's API. If any errors occur
+        during the process, it logs an error message and raises a ValueError with details.
+
+        :param country: The name of the country for which exposure data is requested.
+        :type country: str
+        :return: An Exposures object containing exposure data for the specified country.
+        :rtype: Exposures
+        :raises ValueError: If an error occurs during the exposure data retrieval process.
+        """
         start_time = time()
         try:
             exposure = self.client.get_litpop(
@@ -37,6 +73,25 @@ class ExposureHandler:
     def get_growth_exposure(
         self, exposure: Exposures, annual_growth: float, future_year: int
     ) -> Exposures:
+        """
+        Calculates the growth of exposure data for a future year based on the provided
+        annual growth rate.
+
+        This method calculates the exposure growth for a future year based on the provided
+        annual growth rate. It takes the current exposure data, the annual growth rate,
+        and the future year as input parameters. If successful, it returns an Exposures object
+        containing the exposure data for the future year. If any errors occur during the calculation
+        process, it logs an error message and returns None.
+
+        :param exposure: The Exposures object containing the current exposure data.
+        :type exposure: Exposures
+        :param annual_growth: The annual growth rate used to calculate the exposure growth.
+        :type annual_growth: float
+        :param future_year: The year for which the exposure growth is calculated.
+        :type future_year: int
+        :return: An Exposures object containing the exposure data for the future year.
+        :rtype: Exposures
+        """
         try:
             present_year = exposure.ref_year
             exposure_future = deepcopy(exposure)
@@ -53,7 +108,21 @@ class ExposureHandler:
 
     def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
         """
-        Return country GeoDataFrame per admin level
+        Retrieves administrative data for a specific country and administrative level.
+
+        This method retrieves administrative data for a specific country and administrative level
+        from a GeoJSON file. It constructs the file path based on the provided country code
+        and administrative level, reads the GeoJSON file, and returns a GeoDataFrame containing
+        the administrative data. If the file is not found or any errors occur during the process,
+        it logs an error message and returns None.
+
+        :param country_code: The country code representing the specific country.
+        :type country_code: str
+        :param admin_level: The administrative level for which data is retrieved.
+        :type admin_level: int
+        :return: A GeoDataFrame containing the administrative data for the specified country
+                and level, or None if the file is not found or errors occur.
+        :rtype: gpd.GeoDataFrame
         """
         try:
             file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
@@ -76,6 +145,20 @@ class ExposureHandler:
             )
 
     def generate_exposure_geojson(self, exposure: Exposures, country_name: str):
+        """
+        Generate GeoJSON files for exposure data.
+
+        This method generates GeoJSON files for exposure data based on the provided Exposures
+        object and country name. It constructs GeoDataFrames from the exposure data, aggregates
+        values based on administrative layers, and converts the data to GeoJSON format.
+        The generated GeoJSON files include metadata such as unit and title. If any errors occur
+        during the process, it logs an error message.
+
+        :param exposure: The Exposures object containing the exposure data.
+        :type exposure: Exposures
+        :param country_name: The name of the country for which exposure data is generated.
+        :type country_name: str
+        """
         try:
             exp_gdf = exposure.gdf
             # Cast DataFrame to GeoDataFrame to avoid issues with gpd.sjoin later

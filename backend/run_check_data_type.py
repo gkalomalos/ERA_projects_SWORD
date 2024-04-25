@@ -1,3 +1,21 @@
+"""
+Module to handle checking data types availability in the CLIMADA API.
+
+This module provides functionality to check the availability of specific data types for a given 
+country in the CLIMADA API. It contains a class and methods to check data types, sanitize 
+country names, update progress, and prepare response data.
+
+Classes:
+
+RunCheckDataType: 
+    Handles the checking of data types availability in the CLIMADA API.
+
+Methods:
+
+run_check_data_type: 
+    Entry point to check data types availability based on provided request parameters.
+"""
+
 import json
 import sys
 from time import time
@@ -12,6 +30,17 @@ class RunCheckDataType:
         self.logger = LoggerConfig(logger_types=["file"])
 
     def run_check_data_type(self) -> dict:
+        """
+        Run the check data type process.
+
+        This method retrieves the country name and data type from the request, sanitizes the
+        country name, and checks if the CLIMADA API offers the specified data type for the
+        given country. It updates the progress and generates a response based on whether
+        the data type is valid or not.
+
+        :return: A dictionary containing the response data and status.
+        :rtype: dict
+        """
         initial_time = time()
         country_name = self.request.get("country", "")
         country_name = sanitize_country_name(country_name)

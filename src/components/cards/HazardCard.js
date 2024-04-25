@@ -17,7 +17,7 @@ import AlertMessage from "../alerts/AlertMessage";
 
 const hazardDict = {
   thailand: ["flood", "drought", "heatwaves"],
-  egypt: ["flash_flood", "heatwaves"],
+  egypt: ["flood", "heatwaves"],
 };
 
 const HazardCard = ({
@@ -205,6 +205,7 @@ const HazardCard = ({
                 }}
                 variant="contained"
                 onClick={handleFetchButtonClick}
+                disabled={true}
               >
                 {t("card_hazard_fetch_button")}
               </Button>

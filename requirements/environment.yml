@@ -1,4 +1,4 @@
-name: climada_unu
+name: climadera
 channels:
   - conda-forge
   - defaults

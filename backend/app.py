@@ -1,3 +1,19 @@
+"""
+Application entrypoint for processing messages and executing scripts.
+
+This module serves as the entrypoint for the application, responsible for processing incoming 
+messages, determining the appropriate script to execute based on the message content, and 
+executing the corresponding script.
+
+Functions:
+
+- process_message(message): 
+    Processes the incoming message, determines the script to execute, and executes the script.
+- main(): 
+    Main function of the application that continuously listens for incoming messages,
+    processes them, and sends back the response.
+"""
+
 import json
 import sys
 
@@ -7,6 +23,19 @@ from run_fetch_measures import RunFetchScenario
 
 
 def process_message(message):
+    """
+    Process a message and execute the corresponding script.
+
+    This function processes a message containing information about a script to be executed
+    along with optional data. Based on the script name provided in the message, it creates
+    an instance of the corresponding runner class and executes the script. It then returns
+    a response indicating whether the execution was successful along with any results.
+
+    :param message: The message containing information about the script and optional data.
+    :type message: dict
+    :return: A response indicating the success or failure of the script execution and any results.
+    :rtype: dict
+    """
     script_name = message.get("scriptName", "")
     data = message.get("data", None)
 
@@ -29,6 +58,15 @@ def process_message(message):
 
 
 def main():
+    """
+    Main function for interacting with the Node.js process.
+
+    This function sends a 'ready' event to the Node.js process upon initialization.
+    It then enters a loop where it continuously reads messages from stdin, processes
+    each message using the process_message function, and sends the response back through
+    stdout as a JSON string.
+
+    """
     # Send the 'ready' event to the Node.js process
     ready_event = {"type": "event", "name": "ready"}
     print(json.dumps(ready_event))

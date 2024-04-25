@@ -3,10 +3,13 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/material";
 
-const scenarios = ["historical", "rcp45", "rcp85"];
-
-const ScenarioCard = ({ onScenarioSelect, selectedScenario }) => {
+const ScenarioCard = ({ onScenarioSelect, selectedHazard, selectedScenario }) => {
   const { t } = useTranslation();
+
+  const scenarios =
+    selectedHazard === "flood"
+      ? ["historical", "rcp26", "rcp85"]
+      : ["historical", "rcp45", "rcp85"];
 
   const handleCardSelect = (scenario) => {
     if (selectedScenario === scenario) {

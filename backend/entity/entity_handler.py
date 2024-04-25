@@ -1,3 +1,25 @@
+"""
+Module for handling entity data and operations.
+
+This module contains the `EntityHandler` class, which manages entity-related operations such as
+creating entity objects, retrieving entity data from files, and generating future entity 
+projections.
+
+Classes:
+
+- `EntityHandler`: 
+    Class for handling entity data and operations.
+
+Methods:
+
+- `get_entity`: 
+    Initialize and return an Entity object based on provided data.
+- `get_entity_from_xlsx`: 
+    Retrieve entity data from an Excel file and create an Entity object.
+- `get_future_entity`: 
+    Generate a future Entity object based on the provided entity and parameters.
+"""
+
 from copy import deepcopy
 
 from climada.entity import DiscRates, Entity, Exposures
@@ -51,24 +73,24 @@ class EntityHandler:
             raise ValueError(f"Failed to initialize Entity object: {e}")
 
     def get_entity_from_xlsx(self, filepath: str) -> Entity:
+        """
+        Retrieves an Entity object from an Excel file.
+
+        This method reads an Entity object from the specified Excel file. It then checks the
+        validity of the entity and its exposure data before returning it. If any errors occur
+        during the process, it logs the error and returns None.
+
+        :param filepath: The file path of the Excel file containing the Entity data.
+        :type filepath: str
+        :return: An Entity object created from the Excel file.
+        :rtype: Entity or None
+        """
         try:
             entity_filepath = DATA_ENTITIES_DIR / filepath
             entity = Entity.from_excel(entity_filepath)
             entity.check()
-
-            columns = [
-                "category_id",
-                "latitude",
-                "longitude",
-                "value",
-                "value_unit",
-                "deductible",
-                "cover",
-                "impf_",
-            ]
-
             exposure = entity.exposures
-            exposure.gdf = exposure.gdf[columns]
+            exposure.gdf = exposure.gdf.loc[:, ~exposure.gdf.columns.str.contains("^Unnamed")]
             exposure.check()
 
             return entity
@@ -96,7 +118,7 @@ class EntityHandler:
             present_year = entity.exposures.ref_year
             entity_future = deepcopy(entity)
             entity_future.exposures.ref_year = future_year
-            number_of_years = future_year - present_year + 1
+            number_of_years = future_year - present_year  # + 1 TODO: Check if this is needed or not
             growth = aag**number_of_years
             entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
             entity_future.check()
