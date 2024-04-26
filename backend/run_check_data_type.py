@@ -35,7 +35,7 @@ class RunCheckDataType:
     """
 
     def __init__(self, request):
-        self.base_handler = BaseHandler
+        self.base_handler = BaseHandler()
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
 
