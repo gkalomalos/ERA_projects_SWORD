@@ -17,8 +17,6 @@ Methods:
     Retrieves the time horizon for a given hazard type, scenario, and time horizon.
 - `get_hazard_dataset_properties`: 
     Retrieves hazard dataset properties based on hazard type, scenario, time horizon, and country.
-- `get_hazard_unit`: 
-    Retrieves the unit of measurement for a given hazard type.
 - `get_hazard`: 
     Retrieves hazard data based on various parameters, including hazard type, 
     source, scenario, time horizon, country, and file path.
@@ -30,8 +28,6 @@ Methods:
     Retrieves hazard data from a MATLAB file.
 - `get_hazard_intensity_thres`: 
     Retrieves the intensity threshold for a given hazard type.
-- `get_admin_data`: 
-    Retrieves administrative data for a specified country and administrative level.
 - `get_circle_radius`: 
     Retrieves the radius for generating hazard circles.
 - `generate_hazard_geojson`: 
@@ -48,7 +44,6 @@ Methods:
 
 import json
 from pathlib import Path
-from time import time
 
 import geopandas as gpd
 import numpy as np
@@ -60,15 +55,21 @@ from climada.util.api_client import Client
 from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
-    REQUIREMENTS_DIR,
 )
-from handlers import get_iso3_country_code
+from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
 
 
 class HazardHandler:
+    """
+    Class for handling hazard-related operations.
+
+    This class provides methods for retrieving hazard data from various sources, processing
+    hazard datasets, and generating hazard GeoJSON files.
+    """
+
     def __init__(self):
         self.client = Client()
 
@@ -109,15 +110,26 @@ class HazardHandler:
                 "2070_2090": "2080",
             }
 
+            # Check if the scenario is historical
             if scenario == "historical":
+                # Return the time horizon for historical scenarios, if available for the
+                # given hazard type
                 return historical_time_horizons.get(hazard_type, "")
-            else:
-                if hazard_type == "river_flood":
-                    return time_horizon
-                elif hazard_type == "tropical_cyclone":
-                    return tropical_cyclone_future_mapping.get(time_horizon, "")
 
-            return ""  # Default return if no match found
+            # Check if the hazard type is river flood
+            if hazard_type == "river_flood":
+                # Return the provided time horizon for river flood hazards
+                return time_horizon
+
+            # Check if the hazard type is tropical cyclone
+            if hazard_type == "tropical_cyclone":
+                # Return the mapped time horizon for future tropical cyclone scenarios,
+                # if available
+                return tropical_cyclone_future_mapping.get(time_horizon, "")
+
+            # Default return if no match found
+            return ""
+
         except Exception as exception:
             logger.log(
                 "error",
@@ -179,11 +191,6 @@ class HazardHandler:
             }
 
         return hazard_properties
-
-    def get_hazard_unit(self, hazard_type):
-        unit = "No unit"
-        if hazard_type == "drought":
-            pass
 
     def get_hazard(
         self,
@@ -274,14 +281,14 @@ class HazardHandler:
                 dump_dir=DATA_HAZARDS_DIR,
             )
             hazard.intensity_thres = self.get_hazard_intensity_thres(hazard)
-            status_message = f"Finished fetching hazards from client"
+            status_message = "Finished fetching hazards from client"
             logger.log("info", status_message)
             return hazard
 
         except Exception as exc:
             status_message = f"Error while trying to create hazard object. More info: {exc}"
             logger.log("error", status_message)
-            raise ValueError(status_message)
+            raise ValueError(status_message) from exc
 
     def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
         try:
@@ -362,43 +369,6 @@ class HazardHandler:
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
 
-    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
-        """
-        Return country GeoDataFrame per admin level.
-
-        This method retrieves the GeoDataFrame corresponding to the specified country
-        and administrative level.
-
-        :param country_code: The code representing the country for which to retrieve
-            administrative data.
-        :type country_code: str
-        :param admin_level: The administrative level for which to retrieve the GeoDataFrame.
-        :type admin_level: int
-        :return: A GeoDataFrame containing the administrative data for the specified country
-            and level.
-        :rtype: gpd.GeoDataFrame
-        """
-        try:
-            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
-            admin_gdf = gpd.read_file(file_path)
-            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
-            admin_gdf = admin_gdf.rename(
-                columns={
-                    "shapeID": "id",
-                    "shapeName": f"name",
-                    "shapeGroup": "country",
-                }
-            )
-            return admin_gdf
-        except FileNotFoundError:
-            logger.log("error", f"File not found: {file_path}")
-        except Exception as exception:
-            logger.log(
-                "error",
-                "An error occurred while trying to get country admin level information. "
-                f"More info: {exception}",
-            )
-
     def get_circle_radius(self, hazard_type: str) -> int:
         """
         Return the radius of a circle based on the hazard type.
@@ -438,7 +408,7 @@ class HazardHandler:
         """
         try:
             country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = self.get_admin_data(country_iso3, 2)
+            admin_gdf = get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
@@ -480,8 +450,8 @@ class HazardHandler:
             }
 
             # Save the combined GeoJSON file
-            map_data_filepath = DATA_TEMP_DIR / f"hazards_geodata.json"
-            with open(map_data_filepath, "w") as f:
+            map_data_filepath = DATA_TEMP_DIR / "hazards_geodata.json"
+            with open(map_data_filepath, "w", encoding="utf-8") as f:
                 json.dump(hazard_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
@@ -510,8 +480,7 @@ class HazardHandler:
                 )
                 hazard = Hazard.from_hdf5(filepath)
                 return hazard
-            else:
-                raise FileExistsError("Hazard file not found")
+            raise FileExistsError("Hazard file not found")
         except FileExistsError as e:
             logger.log("error", f"File not found: {e}")
             return None

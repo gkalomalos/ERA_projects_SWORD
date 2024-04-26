@@ -40,6 +40,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class CostBenefitHandler:
+    """
+    Class for handling cost-benefit analysis operations.
+
+    This class provides methods for retrieving measures from Excel files, loading discount rates,
+    calculating cost-benefit, and plotting results.
+    """
+
     def get_measure_set_from_excel(self, hazard_code: str) -> MeasureSet:
         """
         Retrieves a MeasureSet object related to a specified hazard code from an Excel file.
@@ -62,14 +69,15 @@ class CostBenefitHandler:
 
             # Check if measures were found for the given hazard code
             if measure_list:
-                # If measures are found, create a new MeasureSet with them and perform any necessary checks
+                # If measures are found, create a new MeasureSet with them and
+                # perform any necessary checks
                 measure_set = MeasureSet(measure_list)
                 measure_set.check()
                 return measure_set
-            else:
-                # Log and handle the case where no measures are found for the hazard code without interrupting the flow
-                logger.log("info", f"No measures found for hazard type '{hazard_code}'")
-                return None
+            # Log and handle the case where no measures are found for the hazard code
+            # without interrupting the flow
+            logger.log("info", f"No measures found for hazard type '{hazard_code}'")
+            return None
         except FileNotFoundError as e:
             # Log the case where the Excel file is not found and return None to continue the flow
             logger.log(
@@ -109,7 +117,10 @@ class CostBenefitHandler:
             # Log the case where the Excel file is not found and return None to continue the flow
             logger.log(
                 "error",
-                f"Adaptation measures excel file not found at {dicsount_rates_path}. More info: {e}",
+                (
+                    f"Adaptation measures excel file not found at {dicsount_rates_path}. "
+                    f"More info: {e}"
+                ),
             )
             return None
         except Exception as exc:
@@ -161,7 +172,7 @@ class CostBenefitHandler:
 
             return cost_benefit
         except Exception as e:
-            raise Exception(f"Failed to calculate cost-benefit: {e}")
+            raise Exception(f"Failed to calculate cost-benefit: {e}") from e
 
     def plot_waterfall(
         self,
@@ -194,7 +205,7 @@ class CostBenefitHandler:
             return axis
         except Exception as e:
             logger.log("error", f"Failed to plot waterfall chart. More info: {e}")
-            raise Exception(f"Failed to plot waterfall chart: {e}")
+            raise Exception(f"Failed to plot waterfall chart: {e}") from e
 
     def plot_cost_benefit(self, cost_benefit: CostBenefit):
         """
@@ -214,4 +225,4 @@ class CostBenefitHandler:
             return axis
         except Exception as e:
             logger.log("error", f"Failed to plot cost-benefit chart. More info: {e}")
-            raise Exception(f"Failed to plot cost-benefit chart: {e}")
+            raise Exception(f"Failed to plot cost-benefit chart: {e}") from e

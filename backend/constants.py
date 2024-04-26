@@ -39,13 +39,12 @@ def get_base_dir() -> Path:
     :return: The base directory of the application.
     :rtype: Path
     """
-
     if getattr(sys, "frozen", False):
         # We are running in a bundle (packaged by Electron)
         return Path(sys.executable).parent.parent
-    else:
-        # We are running in a normal Python environment (development)
-        return Path(__file__).resolve().parent.parent
+
+    # We are running in a normal Python environment (development)
+    return Path(__file__).resolve().parent.parent
 
 
 BASE_DIR = get_base_dir()

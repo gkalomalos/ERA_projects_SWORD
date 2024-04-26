@@ -35,6 +35,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class EntityHandler:
+    """
+    Class for handling entity data and operations.
+
+    This class provides methods for creating entity objects, retrieving entity data from files,
+    and generating future entity projections.
+    """
+
     def __init__(self):
         self.client = Client()
 
@@ -70,7 +77,7 @@ class EntityHandler:
             return entity
         except Exception as e:
             logger.log("error", f"Failed to initialize Entity object: {e}")
-            raise ValueError(f"Failed to initialize Entity object: {e}")
+            raise ValueError(f"Failed to initialize Entity object: {e}") from e
 
     def get_entity_from_xlsx(self, filepath: str) -> Entity:
         """

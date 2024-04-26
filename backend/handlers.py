@@ -36,12 +36,10 @@ import json
 from os import makedirs, path
 import sys
 
-import numpy as np
-import pandas as pd
+import geopandas as gpd
 import pycountry
 
 from climada.util.api_client import Client
-from scipy.interpolate import interp1d
 from constants import (
     DATA_DIR,
     DATA_ENTITIES_DIR,
@@ -49,6 +47,7 @@ from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
     LOG_DIR,
+    REQUIREMENTS_DIR,
 )
 from logger_config import LoggerConfig
 
@@ -81,7 +80,7 @@ def check_data_type(country_name: str, data_type: str) -> list:
         )
         return len(dataset_infos) > 0
     except Exception as exception:
-        logger.log("error", f"An error has occured. More info: {exception}")
+        logger.log("error", f"An error has occurred. More info: {exception}")
         return False
 
 
@@ -107,7 +106,9 @@ def sanitize_country_name(country_name: str) -> str:
             "error",
             f"Error while trying to sanitize country name. More info: {exception}",
         )
-        raise ValueError(f"Failed to sanitize country name: {country_name}. More info: {exception}")
+        raise ValueError(
+            f"Failed to sanitize country: {country_name}. More info: {exception}"
+        ) from exception
 
 
 def get_iso3_country_code(country_name: str) -> str:
@@ -140,76 +141,6 @@ def get_iso3_country_code(country_name: str) -> str:
         return None
 
 
-def get_interp1d_value(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Get the interpolated values for different return periods.
-
-    This function calculates the interpolated values for different return periods
-    based on the provided impact data DataFrame object. It returns a DataFrame containing
-    the interpolated values.
-
-    :param df: The impact data DataFrame object.
-    :type df: pandas.DataFrame
-    :return: The DataFrame containing the interpolated values.
-    :rtype: pandas.DataFrame
-    """
-    try:
-        rpls = [1000, 750, 500, 400, 250, 200, 150, 100, 50, 10]
-        interp1d_df = {"RP": rpls, "sum_loss": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
-
-        interp1d_df = pd.DataFrame(interp1d_df)
-
-        if len(df) == 0:
-            return interp1d_df
-
-        if len(df) == 1:
-            nearest_rp = get_nearest_value(interp1d_df["RP"].values, df["RP"].values)
-            rp = df.iloc[0]["RP"]
-            value = df.iloc[0]["sum_loss"]
-            f = interp1d([0, rp], [0, value], fill_value="extrapolate")
-            exp_value = f(nearest_rp)
-            interp1d_df.loc[interp1d_df["RP"] == nearest_rp, "sum_loss"] = exp_value
-            return interp1d_df
-
-        rpl_high = get_nearest_value(np.array(rpls), df["RP"].max())
-        rpl_low = get_nearest_value(np.array(rpls), df["RP"].min())
-
-        if df["RP"].min() == 0:
-            rpl_low = df.loc[df["sum_loss"] == 0, "RP"]
-
-        # filter the rpl list
-        rpls = list(filter(lambda x: x <= rpl_high and x >= rpl_low, rpls))
-        for rpl in rpls:
-            f = interp1d(df["RP"], df["sum_loss"], fill_value="extrapolate")
-            value = f(rpl)
-            interp1d_df.loc[interp1d_df["RP"] == rpl, "sum_loss"] = value
-
-        # Replace negative sum_loss values with zeros
-        interp1d_df[interp1d_df < 0] = 0
-        return interp1d_df
-
-    except Exception as exc:
-        logger.log("error", f"Error while trying to interpolate values. More info: {exc}")
-        return interp1d_df
-
-
-def get_nearest_value(arr: list, value: float) -> float:
-    """
-    Get the nearest value in an array of numbers.
-
-    This function finds the nearest value in the provided array of numbers to the given value.
-
-    :param arr: The list of numbers.
-    :type arr: list
-    :param value: The number for which to find the nearest value.
-    :type value: float
-    :return: The nearest value in the array.
-    :rtype: float
-    """
-    index = np.abs(arr - value).argmin()
-    return arr[index]
-
-
 def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: str) -> str:
     """
     Generate the map title for the specified hazard, country, time horizon, and scenario.
@@ -233,9 +164,15 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
     scenario_beautified = beautify_scenario(scenario)
 
     if scenario == "historical":
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} {scenario_beautified} scenario."
+        map_title = (
+            f"{hazard_beautified} risk analysis for {country_beautified} "
+            f"in {time_horizon} {scenario_beautified} scenario."
+        )
     else:
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} (scenario {scenario_beautified})."
+        map_title = (
+            f"{hazard_beautified} risk analysis for {country_beautified} "
+            f"in {time_horizon} (scenario {scenario_beautified})."
+        )
     return map_title
 
 
@@ -312,8 +249,9 @@ def initalize_data_directories() -> None:
     """
     Initialize the data directories for the application.
 
-    This function creates the necessary folders for storing data, including entities, exposures, hazards, logs, and temporary files.
-    If the directories already exist, this function does nothing.
+    This function creates the necessary folders for storing data, including entities, exposures,
+    hazards, logs, and temporary files. If the directories already exist, this function
+    does nothing.
 
     :return: None
     """
@@ -344,3 +282,42 @@ def update_progress(progress: int, message: str) -> None:
     print(json.dumps(progress_data))
     logger.log("info", f"send progress {progress} to frontend.")
     sys.stdout.flush()
+
+
+def get_admin_data(country_code: str, admin_level) -> gpd.GeoDataFrame:
+    """
+    Retrieve GeoDataFrame containing administrative boundary data for a specific country.
+
+    This method reads the GeoJSON file containing administrative boundary data for the
+    specified country and admin level. It returns the GeoDataFrame with necessary columns
+    renamed for consistency.
+
+    :param country_code: The ISO 3166-1 alpha-3 country code.
+    :type country_code: str
+    :param admin_level: The administrative level (e.g., 1 for country, 2 for regions).
+    :type admin_level: int
+    :return: GeoDataFrame containing administrative boundary data.
+    :rtype: gpd.GeoDataFrame
+    """
+    try:
+        file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
+        admin_gdf = gpd.read_file(file_path)
+        admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
+        admin_gdf = admin_gdf.rename(
+            columns={
+                "shapeID": "id",
+                "shapeName": "name",
+                "shapeGroup": "country",
+            }
+        )
+        return admin_gdf
+    except FileNotFoundError:
+        logger.log("error", f"File not found: {file_path}")
+        return None
+    except Exception as exception:
+        logger.log(
+            "error",
+            f"An error occured while trying to get country admin level information. "
+            f" More info: {exception}",
+        )
+        return None

@@ -41,6 +41,15 @@ from logger_config import LoggerConfig
 
 
 class RunScenario:
+    """
+    Class for orchestrating the execution of scenarios based on provided parameters.
+
+    This class provides functionality to run scenarios based on parameters such as hazard type, 
+    exposure type, country name, climate scenario type, and future year. It orchestrates the 
+    execution of ERA and custom scenarios, conducts cost-benefit analysis, calculates impacts, 
+    generates map data files, and prepares responses.
+    """
+
     def __init__(self, request):
         # Initialize data folder and subfolders if not exist
         initalize_data_directories()
@@ -90,7 +99,8 @@ class RunScenario:
         """
         Clear previously generated maps and GeoJSON datasets from the temporary directory.
 
-        This method calls the clear_temp_dir function to delete all files in the temporary directory.
+        This method calls the clear_temp_dir function to delete all files in the temporary
+        directory.
 
         :return: None
         """
@@ -116,7 +126,7 @@ class RunScenario:
         This helper method sets the hazard filename in a specific format to be searched
         in the data/hazards directory
 
-        :param is_historical: A flag indicating whether the historical hazard filename should be retrieved.
+        :param is_historical: Flag indicating whether historical hazard should be retrieved.
         :type is_historical: bool
         :return: The hazard filename.
         :rtype: str
@@ -319,9 +329,13 @@ class RunScenario:
             # Generate geojson data files
             update_progress(70, "Generating Exposure map data files...")
             if self.scenario == "historical":
-                self.exposure_handler.generate_exposure_geojson(exposure_present, self.country_name)
+                self.exposure_handler.generate_exposure_geojson(
+                    exposure_present, self.country_name
+                )
             else:
-                self.exposure_handler.generate_exposure_geojson(exposure_future, self.country_name)
+                self.exposure_handler.generate_exposure_geojson(
+                    exposure_future, self.country_name
+                )
 
             update_progress(80, "Generating Hazard map data files...")
             if self.scenario == "historical":
@@ -357,10 +371,11 @@ class RunScenario:
         """
         Run a custom scenario based on the provided request parameters.
 
-        This method orchestrates the execution of a custom scenario based on the provided parameters.
-        It involves setting up Entity, Exposure, and Hazard objects, conducting cost-benefit analysis,
-        plotting cost-benefit charts and waterfall graphs, calculating present and future impacts,
-        and generating geojson data files for exposure, hazard, and impact maps.
+        This method orchestrates the execution of a custom scenario based on the provided
+        parameters. It involves setting up Entity, Exposure, and Hazard objects, conducting 
+        cost-benefit analysis, plotting cost-benefit charts and waterfall graphs, calculating 
+        present and future impacts, and generating geojson data files for exposure, hazard, 
+        and impact maps.
 
         :raises Exception: If an error occurs while running the custom scenario.
         """
@@ -378,12 +393,14 @@ class RunScenario:
             # Set present year for custom scenario from user time horizon selection
             exposure_present.ref_year = self.ref_year
 
-            # Get custom average annual economic/population growth from user annual growth selection
+            # Get custom average annual economic/population growth from user
+            # annual growth selection
             aag = self._get_average_annual_growth()
 
             entity_future = None
             if self.scenario != "historical":
-                # Get future Entity object based on the future year from user time horizon selection
+                # Get future Entity object based on the future year from user
+                # time horizon selection
                 entity_future = self.entity_handler.get_future_entity(
                     entity_present, self.future_year, aag
                 )
@@ -411,7 +428,8 @@ class RunScenario:
                     hazard_type=self.hazard_type,
                     source="climada_api",
                     scenario=self.scenario,
-                    time_horizon=self.time_horizon,  # TODO: This won't work with CLIMADA's predefind ref years
+                    # TODO: This won't work with CLIMADA's predefind ref years
+                    time_horizon=self.time_horizon,
                     country=self.country_name,
                 )
 
@@ -428,7 +446,8 @@ class RunScenario:
                         hazard_type=self.hazard_type,
                         source="climada_api",
                         scenario=self.scenario,
-                        time_horizon=self.time_horizon,  # TODO: This won't work with CLIMADA's predefind ref years
+                        # TODO: This won't work with CLIMADA's predefind ref years
+                        time_horizon=self.time_horizon,
                         country=self.country_name,
                     )
 
@@ -461,9 +480,13 @@ class RunScenario:
             # Generate geojson data files
             update_progress(70, "Generating Exposure map data files...")
             if self.scenario == "historical":
-                self.exposure_handler.generate_exposure_geojson(exposure_present, self.country_name)
+                self.exposure_handler.generate_exposure_geojson(
+                    exposure_present, self.country_name
+                )
             else:
-                self.exposure_handler.generate_exposure_geojson(exposure_future, self.country_name)
+                self.exposure_handler.generate_exposure_geojson(
+                    exposure_future, self.country_name
+                )
 
             update_progress(80, "Generating Hazard map data files...")
             if self.scenario == "historical":
@@ -480,9 +503,13 @@ class RunScenario:
             # Calculate impact geojson data files
             update_progress(90, "Generating Impact map data files...")
             if self.scenario == "historical":
-                self.impact_handler.generate_impact_geojson(impact_present, self.country_name)
+                self.impact_handler.generate_impact_geojson(
+                    impact_present, self.country_name
+                )
             else:
-                self.impact_handler.generate_impact_geojson(impact_future, self.country_name)
+                self.impact_handler.generate_impact_geojson(
+                    impact_future, self.country_name
+                )
 
             update_progress(100, "Scenario run successfully.")
 
@@ -500,8 +527,9 @@ class RunScenario:
         Run the scenario based on the provided request parameters.
 
         This method orchestrates the execution of a scenario based on the provided parameters.
-        It determines whether to run an ERA scenario or a custom scenario and delegates the execution accordingly.
-        After running the scenario, it sets the map title and prepares the response data.
+        It determines whether to run an ERA scenario or a custom scenario and delegates the 
+        execution accordingly. After running the scenario, it sets the map title and prepares 
+        the response data.
 
         :return: A dictionary containing the scenario data and status information.
         :rtype: dict
@@ -509,8 +537,11 @@ class RunScenario:
         initial_time = time()
         self.logger.log(
             "info",
-            f"Running new {'ERA' if self.is_era else 'custom'} scenario for {self.hazard_type} hazard affecting {self.exposure_type} in {self.country_name} for a {self.scenario}.",
+            f"Running new {'ERA' if self.is_era else 'custom'} scenario for "
+            f"{self.hazard_type} hazard affecting {self.exposure_type} in "
+            f"{self.country_name} for a {self.scenario}.",
         )
+
         if self.is_era:
             self._run_era_scenario()
         else:
@@ -528,7 +559,7 @@ class RunScenario:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunScenario(request)
-    response = runner.run_scenario(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunScenario(req)
+    resp = runner.run_scenario()
+    print(json.dumps(resp))

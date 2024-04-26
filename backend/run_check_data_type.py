@@ -25,6 +25,15 @@ from logger_config import LoggerConfig
 
 
 class RunCheckDataType:
+    """
+    Class for handling the checking of data types availability in the CLIMADA API.
+
+    This class provides functionality to retrieve the country name and data type from the request,
+    sanitize the country name, check if the CLIMADA API offers the specified data type for the
+    given country, update progress, and generate a response based on whether the data type is
+    valid or not.
+    """
+
     def __init__(self, request):
         self.request = request
         self.logger = LoggerConfig(logger_types=["file"])
@@ -75,7 +84,7 @@ class RunCheckDataType:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunCheckDataType(request)
-    response = runner.run_check_data_type(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunCheckDataType(req)
+    resp = runner.run_check_data_type()
+    print(json.dumps(resp))
