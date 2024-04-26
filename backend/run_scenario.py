@@ -41,6 +41,15 @@ from logger_config import LoggerConfig
 
 
 class RunScenario:
+    """
+    Class for orchestrating the execution of scenarios based on provided parameters.
+
+    This class provides functionality to run scenarios based on parameters such as hazard type, 
+    exposure type, country name, climate scenario type, and future year. It orchestrates the 
+    execution of ERA and custom scenarios, conducts cost-benefit analysis, calculates impacts, 
+    generates map data files, and prepares responses.
+    """
+
     def __init__(self, request):
         # Initialize data folder and subfolders if not exist
         initalize_data_directories()

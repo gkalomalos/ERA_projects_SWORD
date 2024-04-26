@@ -40,6 +40,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class CostBenefitHandler:
+    """
+    Class for handling cost-benefit analysis operations.
+
+    This class provides methods for retrieving measures from Excel files, loading discount rates,
+    calculating cost-benefit, and plotting results.
+    """
+
     def get_measure_set_from_excel(self, hazard_code: str) -> MeasureSet:
         """
         Retrieves a MeasureSet object related to a specified hazard code from an Excel file.
@@ -62,13 +69,13 @@ class CostBenefitHandler:
 
             # Check if measures were found for the given hazard code
             if measure_list:
-                # If measures are found, create a new MeasureSet with them and 
+                # If measures are found, create a new MeasureSet with them and
                 # perform any necessary checks
                 measure_set = MeasureSet(measure_list)
                 measure_set.check()
                 return measure_set
             else:
-                # Log and handle the case where no measures are found for the hazard code 
+                # Log and handle the case where no measures are found for the hazard code
                 # without interrupting the flow
                 logger.log("info", f"No measures found for hazard type '{hazard_code}'")
                 return None

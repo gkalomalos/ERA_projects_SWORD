@@ -69,6 +69,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class HazardHandler:
+    """
+    Class for handling hazard-related operations.
+
+    This class provides methods for retrieving hazard data from various sources, processing
+    hazard datasets, and generating hazard GeoJSON files.
+    """
+
     def __init__(self):
         self.client = Client()
 

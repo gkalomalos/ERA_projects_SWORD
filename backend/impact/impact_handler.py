@@ -49,6 +49,12 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class ImpactHandler:
+    """
+    Class for handling impact-related operations.
+
+    This class provides methods for generating impact data from various sources, processing
+    impact datasets, and generating impact GeoJSON files.
+    """    
     def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
         """
         Get the impact function based on the given exposure type and hazard type.

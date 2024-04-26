@@ -35,6 +35,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class EntityHandler:
+    """
+    Class for handling entity data and operations.
+
+    This class provides methods for creating entity objects, retrieving entity data from files,
+    and generating future entity projections.
+    """
+
     def __init__(self):
         self.client = Client()
 

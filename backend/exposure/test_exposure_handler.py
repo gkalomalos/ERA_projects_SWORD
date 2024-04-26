@@ -1,25 +1,5 @@
 """
-Module for handling exposure data and operations.
-
-This module contains the `ExposureHandler` class, which manages exposure-related operations such as
-fetching exposure data from an API, calculating exposure growth, retrieving administrative data,
-and generating exposure GeoJSON files.
-
-Classes:
-
-- `ExposureHandler`: 
-    Class for handling exposure data and operations.
-
-Methods:
-
-- `get_exposure_from_api`: 
-    Retrieve exposure data from an API for a specific country.
-- `get_growth_exposure`: 
-    Calculate exposure growth based on annual growth rate and future year.
-- `get_admin_data`: 
-    Retrieve administrative data for a specific country and administrative level.
-- `generate_exposure_geojson`: 
-    Generate GeoJSON files for exposure data.
+Module for testing exposure data and operations.
 """
 
 import unittest
@@ -32,6 +12,9 @@ from backend.exposure.exposure_handler import ExposureHandler
 
 
 class TestExposureHandler(unittest.TestCase):
+    """
+    Class for testing exposure data and operations.
+    """
 
     def setUp(self):
         # Setup code before each test method

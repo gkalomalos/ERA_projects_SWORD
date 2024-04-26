@@ -40,6 +40,13 @@ logger = LoggerConfig(logger_types=["file"])
 
 
 class ExposureHandler:
+    """
+    Class for handling exposure data and operations.
+
+    This class provides methods for fetching exposure data from an API, calculating exposure growth,
+    retrieving administrative data, and generating exposure GeoJSON files.
+    """
+
     def __init__(self):
         self.client = Client()
 
@@ -80,7 +87,7 @@ class ExposureHandler:
         This method calculates the exposure growth for a future year based on the provided
         annual growth rate. It takes the current exposure data, the annual growth rate,
         and the future year as input parameters. If successful, it returns an Exposures object
-        containing the exposure data for the future year. If any errors occur during the 
+        containing the exposure data for the future year. If any errors occur during the
         calculation process, it logs an error message and returns None.
 
         :param exposure: The Exposures object containing the current exposure data.

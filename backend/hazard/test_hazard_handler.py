@@ -33,7 +33,12 @@ from hazard_handler import HazardHandler
 
 
 class TestHazardHandler(unittest.TestCase):
+    """
+    Class for testing hazard-related operations.
 
+    This class provides methods for testing the retrieval of hazard data 
+    from various sources, processing hazard datasets, and generating hazard GeoJSON files.
+    """
     def setUp(self):
         self.handler = HazardHandler()
 

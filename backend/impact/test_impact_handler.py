@@ -30,6 +30,12 @@ from impact_handler import ImpactHandler
 
 
 class TestImpactHandler(unittest.TestCase):
+    """
+    Class for testing impact-related operations.
+
+    This class provides methods for testing the generation of impact data
+    from various sources, processing impact datasets, and generating impact GeoJSON files.
+    """
 
     def setUp(self):
         self.handler = ImpactHandler()
