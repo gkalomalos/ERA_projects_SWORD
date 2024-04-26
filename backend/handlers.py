@@ -77,7 +77,7 @@ def check_data_type(country_name: str, data_type: str) -> list:
         )
         return len(dataset_infos) > 0
     except Exception as exception:
-        logger.log("error", f"An error has occured. More info: {exception}")
+        logger.log("error", f"An error has occurred. More info: {exception}")
         return False
 
 
@@ -103,7 +103,9 @@ def sanitize_country_name(country_name: str) -> str:
             "error",
             f"Error while trying to sanitize country name. More info: {exception}",
         )
-        raise ValueError(f"Failed to sanitize country: {country_name}. More info: {exception}")
+        raise ValueError(
+            f"Failed to sanitize country: {country_name}. More info: {exception}"
+        ) from exception
 
 
 def get_iso3_country_code(country_name: str) -> str:
@@ -169,7 +171,6 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
             f"in {time_horizon} (scenario {scenario_beautified})."
         )
     return map_title
-
 
 
 def beautify_hazard_type(hazard_type: str) -> str:
@@ -245,8 +246,8 @@ def initalize_data_directories() -> None:
     """
     Initialize the data directories for the application.
 
-    This function creates the necessary folders for storing data, including entities, exposures, 
-    hazards, logs, and temporary files. If the directories already exist, this function 
+    This function creates the necessary folders for storing data, including entities, exposures,
+    hazards, logs, and temporary files. If the directories already exist, this function
     does nothing.
 
     :return: None
