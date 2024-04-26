@@ -84,7 +84,7 @@ class RunCheckDataType:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunCheckDataType(request)
-    response = runner.run_check_data_type(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunCheckDataType(req)
+    resp = runner.run_check_data_type(req)
+    print(json.dumps(resp))

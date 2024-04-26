@@ -45,9 +45,9 @@ class RunFetchScenario:
         """
         Run the process to fetch adaptation measures.
 
-        This method retrieves the hazard type from the request, gets the hazard code, 
-        and fetches the adaptation measures from an Excel file based on the hazard code. 
-        It updates the progress and generates a response containing the fetched adaptation 
+        This method retrieves the hazard type from the request, gets the hazard code,
+        and fetches the adaptation measures from an Excel file based on the hazard code.
+        It updates the progress and generates a response containing the fetched adaptation
         measures.
 
         :return: A dictionary containing the response data and status.
@@ -89,7 +89,7 @@ class RunFetchScenario:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunFetchScenario(request)
-    response = runner.run_fetch_measures(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunFetchScenario(req)
+    resp = runner.run_fetch_measures(req)
+    print(json.dumps(resp))

@@ -393,13 +393,13 @@ class RunScenario:
             # Set present year for custom scenario from user time horizon selection
             exposure_present.ref_year = self.ref_year
 
-            # Get custom average annual economic/population growth from user 
+            # Get custom average annual economic/population growth from user
             # annual growth selection
             aag = self._get_average_annual_growth()
 
             entity_future = None
             if self.scenario != "historical":
-                # Get future Entity object based on the future year from user 
+                # Get future Entity object based on the future year from user
                 # time horizon selection
                 entity_future = self.entity_handler.get_future_entity(
                     entity_present, self.future_year, aag
@@ -429,7 +429,7 @@ class RunScenario:
                     source="climada_api",
                     scenario=self.scenario,
                     # TODO: This won't work with CLIMADA's predefind ref years
-                    time_horizon=self.time_horizon,  
+                    time_horizon=self.time_horizon,
                     country=self.country_name,
                 )
 
@@ -447,7 +447,7 @@ class RunScenario:
                         source="climada_api",
                         scenario=self.scenario,
                         # TODO: This won't work with CLIMADA's predefind ref years
-                        time_horizon=self.time_horizon,  
+                        time_horizon=self.time_horizon,
                         country=self.country_name,
                     )
 
@@ -559,7 +559,7 @@ class RunScenario:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunScenario(request)
-    response = runner.run_scenario(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunScenario(req)
+    resp = runner.run_scenario(req)
+    print(json.dumps(resp))

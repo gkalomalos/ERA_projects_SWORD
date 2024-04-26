@@ -118,7 +118,10 @@ class CostBenefitHandler:
             # Log the case where the Excel file is not found and return None to continue the flow
             logger.log(
                 "error",
-                f"Adaptation measures excel file not found at {dicsount_rates_path}. More info: {e}",
+                (
+                    f"Adaptation measures excel file not found at {dicsount_rates_path}. "
+                    "More info: {e}"
+                ),
             )
             return None
         except Exception as exc:

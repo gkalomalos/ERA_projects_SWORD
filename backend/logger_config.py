@@ -34,8 +34,9 @@ class LoggerConfig:
     """
     Class for configuring and managing logging in the backend application.
 
-    This class provides functionality to load logging configuration from a JSON file, set up file and
-    console logging based on the loaded configuration, and log messages at different levels.
+    This class provides functionality to load logging configuration from a JSON file, set up
+    file and console logging based on the loaded configuration, and log messages at different
+    levels.
 
     """
 
