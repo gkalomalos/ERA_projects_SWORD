@@ -19,8 +19,6 @@ Methods:
     Retrieves the impact function ID based on the hazard type.
 - `calculate_impact`: 
     Calculates the impact of hazards on exposures.
-- `get_admin_data`: 
-    Retrieves administrative data for a specific country and administrative level.
 - `get_circle_radius`: 
     Retrieves the radius for impact visualization based on the hazard type.
 - `generate_impact_geojson`: 
@@ -38,11 +36,8 @@ from climada.engine import Impact, ImpactCalc
 from climada.entity import Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet
 from climada.hazard import Hazard
-from constants import (
-    DATA_TEMP_DIR,
-    REQUIREMENTS_DIR,
-)
-from handlers import get_iso3_country_code
+from constants import DATA_TEMP_DIR
+from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -54,7 +49,8 @@ class ImpactHandler:
 
     This class provides methods for generating impact data from various sources, processing
     impact datasets, and generating impact GeoJSON files.
-    """    
+    """
+
     def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
         """
         Get the impact function based on the given exposure type and hazard type.
@@ -405,42 +401,6 @@ class ImpactHandler:
             logger.log("error", status_message)
             return None
 
-    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
-        """
-        Retrieve GeoDataFrame containing administrative boundary data for a specific country.
-
-        This method reads the GeoJSON file containing administrative boundary data for the
-        specified country and admin level. It returns the GeoDataFrame with necessary columns
-        renamed for consistency.
-
-        :param country_code: The ISO 3166-1 alpha-3 country code.
-        :type country_code: str
-        :param admin_level: The administrative level (e.g., 1 for country, 2 for regions).
-        :type admin_level: int
-        :return: GeoDataFrame containing administrative boundary data.
-        :rtype: gpd.GeoDataFrame
-        """
-        try:
-            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
-            admin_gdf = gpd.read_file(file_path)
-            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
-            admin_gdf = admin_gdf.rename(
-                columns={
-                    "shapeID": "id",
-                    "shapeName": f"name",
-                    "shapeGroup": "country",
-                }
-            )
-            return admin_gdf
-        except FileNotFoundError:
-            logger.log("error", f"File not found: {file_path}")
-        except Exception as exception:
-            logger.log(
-                "error",
-                f"An error occured while trying to get country admin level information. "
-                f" More info: {exception}",
-            )
-
     def get_circle_radius(self, hazard_type: str) -> int:
         """
         Get the radius for a circle based on the specified hazard type.
@@ -480,7 +440,7 @@ class ImpactHandler:
         """
         try:
             country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = self.get_admin_data(country_iso3, 2)
+            admin_gdf = get_admin_data(country_iso3, 2)
             coords = np.array(impact.coord_exp)
             local_exceedance_imp = impact.local_exceedance_imp(return_periods)
             local_exceedance_imp = pd.DataFrame(local_exceedance_imp).T

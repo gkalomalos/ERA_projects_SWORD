@@ -35,6 +35,8 @@ update_progress:
 import json
 from os import makedirs, path
 import sys
+
+import geopandas as gpd
 import pycountry
 
 from climada.util.api_client import Client
@@ -45,6 +47,7 @@ from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
     LOG_DIR,
+    REQUIREMENTS_DIR,
 )
 from logger_config import LoggerConfig
 
@@ -279,3 +282,40 @@ def update_progress(progress: int, message: str) -> None:
     print(json.dumps(progress_data))
     logger.log("info", f"send progress {progress} to frontend.")
     sys.stdout.flush()
+
+
+def get_admin_data(country_code: str, admin_level) -> gpd.GeoDataFrame:
+    """
+    Retrieve GeoDataFrame containing administrative boundary data for a specific country.
+
+    This method reads the GeoJSON file containing administrative boundary data for the
+    specified country and admin level. It returns the GeoDataFrame with necessary columns
+    renamed for consistency.
+
+    :param country_code: The ISO 3166-1 alpha-3 country code.
+    :type country_code: str
+    :param admin_level: The administrative level (e.g., 1 for country, 2 for regions).
+    :type admin_level: int
+    :return: GeoDataFrame containing administrative boundary data.
+    :rtype: gpd.GeoDataFrame
+    """
+    try:
+        file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
+        admin_gdf = gpd.read_file(file_path)
+        admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
+        admin_gdf = admin_gdf.rename(
+            columns={
+                "shapeID": "id",
+                "shapeName": f"name",
+                "shapeGroup": "country",
+            }
+        )
+        return admin_gdf
+    except FileNotFoundError:
+        logger.log("error", f"File not found: {file_path}")
+    except Exception as exception:
+        logger.log(
+            "error",
+            f"An error occured while trying to get country admin level information. "
+            f" More info: {exception}",
+        )

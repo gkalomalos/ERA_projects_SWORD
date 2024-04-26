@@ -30,8 +30,6 @@ Methods:
     Retrieves hazard data from a MATLAB file.
 - `get_hazard_intensity_thres`: 
     Retrieves the intensity threshold for a given hazard type.
-- `get_admin_data`: 
-    Retrieves administrative data for a specified country and administrative level.
 - `get_circle_radius`: 
     Retrieves the radius for generating hazard circles.
 - `generate_hazard_geojson`: 
@@ -60,9 +58,8 @@ from climada.util.api_client import Client
 from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
-    REQUIREMENTS_DIR,
 )
-from handlers import get_iso3_country_code
+from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -369,43 +366,6 @@ class HazardHandler:
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
 
-    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
-        """
-        Return country GeoDataFrame per admin level.
-
-        This method retrieves the GeoDataFrame corresponding to the specified country
-        and administrative level.
-
-        :param country_code: The code representing the country for which to retrieve
-            administrative data.
-        :type country_code: str
-        :param admin_level: The administrative level for which to retrieve the GeoDataFrame.
-        :type admin_level: int
-        :return: A GeoDataFrame containing the administrative data for the specified country
-            and level.
-        :rtype: gpd.GeoDataFrame
-        """
-        try:
-            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
-            admin_gdf = gpd.read_file(file_path)
-            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
-            admin_gdf = admin_gdf.rename(
-                columns={
-                    "shapeID": "id",
-                    "shapeName": f"name",
-                    "shapeGroup": "country",
-                }
-            )
-            return admin_gdf
-        except FileNotFoundError:
-            logger.log("error", f"File not found: {file_path}")
-        except Exception as exception:
-            logger.log(
-                "error",
-                "An error occurred while trying to get country admin level information. "
-                f"More info: {exception}",
-            )
-
     def get_circle_radius(self, hazard_type: str) -> int:
         """
         Return the radius of a circle based on the hazard type.
@@ -445,7 +405,7 @@ class HazardHandler:
         """
         try:
             country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = self.get_admin_data(country_iso3, 2)
+            admin_gdf = get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
