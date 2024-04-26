@@ -103,7 +103,7 @@ def sanitize_country_name(country_name: str) -> str:
             "error",
             f"Error while trying to sanitize country name. More info: {exception}",
         )
-        raise ValueError(f"Failed to sanitize country name: {country_name}. More info: {exception}")
+        raise ValueError(f"Failed to sanitize country: {country_name}. More info: {exception}")
 
 
 def get_iso3_country_code(country_name: str) -> str:
@@ -159,10 +159,17 @@ def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: s
     scenario_beautified = beautify_scenario(scenario)
 
     if scenario == "historical":
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} {scenario_beautified} scenario."
+        map_title = (
+            f"{hazard_beautified} risk analysis for {country_beautified} "
+            f"in {time_horizon} {scenario_beautified} scenario."
+        )
     else:
-        map_title = f"{hazard_beautified} risk analysis for {country_beautified} in {time_horizon} (scenario {scenario_beautified})."
+        map_title = (
+            f"{hazard_beautified} risk analysis for {country_beautified} "
+            f"in {time_horizon} (scenario {scenario_beautified})."
+        )
     return map_title
+
 
 
 def beautify_hazard_type(hazard_type: str) -> str:
@@ -238,8 +245,9 @@ def initalize_data_directories() -> None:
     """
     Initialize the data directories for the application.
 
-    This function creates the necessary folders for storing data, including entities, exposures, hazards, logs, and temporary files.
-    If the directories already exist, this function does nothing.
+    This function creates the necessary folders for storing data, including entities, exposures, 
+    hazards, logs, and temporary files. If the directories already exist, this function 
+    does nothing.
 
     :return: None
     """

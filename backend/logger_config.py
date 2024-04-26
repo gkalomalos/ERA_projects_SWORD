@@ -75,9 +75,9 @@ class LoggerConfig:
         """
         Set up file logging using the specified configuration.
 
-        This method configures file logging according to the parameters set in the object's attributes.
-        It creates a FileHandler, sets its level and format, and adds it to the list of loggers.
-        If any error occurs during setup, it raises a RuntimeError.
+        This method configures file logging according to the parameters set in the object's
+        attributes. It creates a FileHandler, sets its level and format, and adds it to the
+        list of loggers. If any error occurs during setup, it raises a RuntimeError.
 
         :return: None
         :raises RuntimeError: If an error occurs during file logging setup.
@@ -95,9 +95,9 @@ class LoggerConfig:
         """
         Set up console logging using the specified configuration.
 
-        This method configures console logging according to the parameters set in the object's attributes.
-        It creates a StreamHandler, sets its level and format, and adds it to the list of loggers.
-        If any error occurs during setup, it raises a RuntimeError.
+        This method configures console logging according to the parameters set in the object's
+        attributes. It creates a StreamHandler, sets its level and format, and adds it to the
+        list of loggers. If any error occurs during setup, it raises a RuntimeError.
 
         :return: None
         :raises RuntimeError: If an error occurs during console logging setup.
@@ -114,9 +114,10 @@ class LoggerConfig:
         """
         Log a message with the specified logging level.
 
-        This method logs a message using the specified logging level. It iterates through the list of loggers,
-        sets up a logger, adds the handler, logs the message, and then removes the handler to prevent duplicate logging.
-        If no loggers are initialized, it raises a RuntimeError.
+        This method logs a message using the specified logging level. It iterates through the
+        list of loggers, sets up a logger, adds the handler, logs the message, and then removes
+        the handler to prevent duplicate logging. If no loggers are initialized, it raises
+        a RuntimeError.
 
         :param level: The logging level (e.g., INFO, DEBUG, ERROR).
         :type level: str

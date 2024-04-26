@@ -431,7 +431,8 @@ class ImpactHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An error occured while trying to get country admin level information. More info: {exception}",
+                f"An error occured while trying to get country admin level information. "
+                f" More info: {exception}",
             )
 
     def get_circle_radius(self, hazard_type: str) -> int:

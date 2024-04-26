@@ -80,8 +80,8 @@ class ExposureHandler:
         This method calculates the exposure growth for a future year based on the provided
         annual growth rate. It takes the current exposure data, the annual growth rate,
         and the future year as input parameters. If successful, it returns an Exposures object
-        containing the exposure data for the future year. If any errors occur during the calculation
-        process, it logs an error message and returns None.
+        containing the exposure data for the future year. If any errors occur during the 
+        calculation process, it logs an error message and returns None.
 
         :param exposure: The Exposures object containing the current exposure data.
         :type exposure: Exposures
@@ -141,7 +141,8 @@ class ExposureHandler:
         except Exception as exception:
             logger.log(
                 "error",
-                f"An error occured while trying to get country admin level information. More info: {exception}",
+                f"An error occured while trying to get country admin level information."
+                f" More info: {exception}",
             )
 
     def generate_exposure_geojson(self, exposure: Exposures, country_name: str):

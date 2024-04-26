@@ -62,12 +62,14 @@ class CostBenefitHandler:
 
             # Check if measures were found for the given hazard code
             if measure_list:
-                # If measures are found, create a new MeasureSet with them and perform any necessary checks
+                # If measures are found, create a new MeasureSet with them and 
+                # perform any necessary checks
                 measure_set = MeasureSet(measure_list)
                 measure_set.check()
                 return measure_set
             else:
-                # Log and handle the case where no measures are found for the hazard code without interrupting the flow
+                # Log and handle the case where no measures are found for the hazard code 
+                # without interrupting the flow
                 logger.log("info", f"No measures found for hazard type '{hazard_code}'")
                 return None
         except FileNotFoundError as e:
