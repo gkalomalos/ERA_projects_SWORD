@@ -44,7 +44,6 @@ Methods:
 
 import json
 from pathlib import Path
-from time import time
 
 import geopandas as gpd
 import numpy as np
@@ -289,7 +288,7 @@ class HazardHandler:
         except Exception as exc:
             status_message = f"Error while trying to create hazard object. More info: {exc}"
             logger.log("error", status_message)
-            raise ValueError(status_message)
+            raise ValueError(status_message) from exc
 
     def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
         try:
@@ -481,8 +480,7 @@ class HazardHandler:
                 )
                 hazard = Hazard.from_hdf5(filepath)
                 return hazard
-            else:
-                raise FileExistsError("Hazard file not found")
+            raise FileExistsError("Hazard file not found")
         except FileExistsError as e:
             logger.log("error", f"File not found: {e}")
             return None

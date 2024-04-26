@@ -46,7 +46,7 @@ class LoggerConfig:
         try:
             self.load_config()
         except Exception as e:
-            raise RuntimeError(f"Error loading logging configuration: {e}")
+            raise RuntimeError(f"Error loading logging configuration: {e}") from e
 
         self.loggers = []
         for logger_type in logger_types:
@@ -70,15 +70,15 @@ class LoggerConfig:
         :raises ValueError: If the JSON in the config file is invalid.
         """
         try:
-            with open(self.CONFIG_PATH, "r") as config_file:
+            with open(self.CONFIG_PATH, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 self.filename = config.get("filename")
                 self.level = getattr(logging, config.get("level", "INFO"))
                 self.format = config.get("format")
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Config file {self.CONFIG_PATH} not found")
-        except json.JSONDecodeError:
-            raise ValueError("Invalid JSON in config file")
+        except FileNotFoundError as exc:
+            raise FileNotFoundError(f"Config file {self.CONFIG_PATH} not found") from exc
+        except json.JSONDecodeError as exc:
+            raise ValueError("Invalid JSON in config file") from exc
 
     def setup_file_logging(self):
         """
@@ -91,14 +91,14 @@ class LoggerConfig:
         :return: None
         :raises RuntimeError: If an error occurs during file logging setup.
         """
-        LOG_FILE = LOG_DIR / self.filename
+        log_file = LOG_DIR / self.filename
         try:
-            file_handler = logging.FileHandler(LOG_FILE)
+            file_handler = logging.FileHandler(log_file)
             file_handler.setLevel(self.level)
             file_handler.setFormatter(logging.Formatter(self.format))
             self.loggers.append(file_handler)
         except Exception as e:
-            raise RuntimeError(f"Error setting up file logging: {e}")
+            raise RuntimeError(f"Error setting up file logging: {e}") from e
 
     def setup_console_logging(self):
         """
@@ -117,7 +117,7 @@ class LoggerConfig:
             console_handler.setFormatter(logging.Formatter(self.format))
             self.loggers.append(console_handler)
         except Exception as e:
-            raise RuntimeError(f"Error setting up console logging: {e}")
+            raise RuntimeError(f"Error setting up console logging: {e}") from e
 
     def log(self, level, message):
         """
@@ -146,4 +146,4 @@ class LoggerConfig:
                 log_function(message)
                 logger.removeHandler(handler)  # Prevent duplicate logging
             except Exception as e:
-                raise RuntimeError(f"Error during logging: {e}")
+                raise RuntimeError(f"Error during logging: {e}") from e

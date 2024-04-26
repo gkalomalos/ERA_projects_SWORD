@@ -313,9 +313,11 @@ def get_admin_data(country_code: str, admin_level) -> gpd.GeoDataFrame:
         return admin_gdf
     except FileNotFoundError:
         logger.log("error", f"File not found: {file_path}")
+        return None
     except Exception as exception:
         logger.log(
             "error",
             f"An error occured while trying to get country admin level information. "
             f" More info: {exception}",
         )
+        return None

@@ -77,7 +77,7 @@ class EntityHandler:
             return entity
         except Exception as e:
             logger.log("error", f"Failed to initialize Entity object: {e}")
-            raise ValueError(f"Failed to initialize Entity object: {e}")
+            raise ValueError(f"Failed to initialize Entity object: {e}") from e
 
     def get_entity_from_xlsx(self, filepath: str) -> Entity:
         """

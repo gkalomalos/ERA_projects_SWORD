@@ -73,7 +73,7 @@ class ExposureHandler:
         except Exception as exc:
             status_message = f"Error while trying to fetch exposure for {country}. More info: {exc}"
             logger.log("error", status_message)
-            raise ValueError(status_message)
+            raise ValueError(status_message) from exc
 
     def get_growth_exposure(
         self, exposure: Exposures, annual_growth: float, future_year: int

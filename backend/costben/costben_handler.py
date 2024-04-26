@@ -172,7 +172,7 @@ class CostBenefitHandler:
 
             return cost_benefit
         except Exception as e:
-            raise Exception(f"Failed to calculate cost-benefit: {e}")
+            raise Exception(f"Failed to calculate cost-benefit: {e}") from e
 
     def plot_waterfall(
         self,
@@ -205,7 +205,7 @@ class CostBenefitHandler:
             return axis
         except Exception as e:
             logger.log("error", f"Failed to plot waterfall chart. More info: {e}")
-            raise Exception(f"Failed to plot waterfall chart: {e}")
+            raise Exception(f"Failed to plot waterfall chart: {e}") from e
 
     def plot_cost_benefit(self, cost_benefit: CostBenefit):
         """
@@ -225,4 +225,4 @@ class CostBenefitHandler:
             return axis
         except Exception as e:
             logger.log("error", f"Failed to plot cost-benefit chart. More info: {e}")
-            raise Exception(f"Failed to plot cost-benefit chart: {e}")
+            raise Exception(f"Failed to plot cost-benefit chart: {e}") from e
