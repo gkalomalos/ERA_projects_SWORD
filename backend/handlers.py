@@ -35,13 +35,9 @@ update_progress:
 import json
 from os import makedirs, path
 import sys
-
-import numpy as np
-import pandas as pd
 import pycountry
 
 from climada.util.api_client import Client
-from scipy.interpolate import interp1d
 from constants import (
     DATA_DIR,
     DATA_ENTITIES_DIR,
@@ -138,76 +134,6 @@ def get_iso3_country_code(country_name: str) -> str:
             f"An error occurred while trying to convert country name to iso3. More info: {exc}",
         )
         return None
-
-
-def get_interp1d_value(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Get the interpolated values for different return periods.
-
-    This function calculates the interpolated values for different return periods
-    based on the provided impact data DataFrame object. It returns a DataFrame containing
-    the interpolated values.
-
-    :param df: The impact data DataFrame object.
-    :type df: pandas.DataFrame
-    :return: The DataFrame containing the interpolated values.
-    :rtype: pandas.DataFrame
-    """
-    try:
-        rpls = [1000, 750, 500, 400, 250, 200, 150, 100, 50, 10]
-        interp1d_df = {"RP": rpls, "sum_loss": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
-
-        interp1d_df = pd.DataFrame(interp1d_df)
-
-        if len(df) == 0:
-            return interp1d_df
-
-        if len(df) == 1:
-            nearest_rp = get_nearest_value(interp1d_df["RP"].values, df["RP"].values)
-            rp = df.iloc[0]["RP"]
-            value = df.iloc[0]["sum_loss"]
-            f = interp1d([0, rp], [0, value], fill_value="extrapolate")
-            exp_value = f(nearest_rp)
-            interp1d_df.loc[interp1d_df["RP"] == nearest_rp, "sum_loss"] = exp_value
-            return interp1d_df
-
-        rpl_high = get_nearest_value(np.array(rpls), df["RP"].max())
-        rpl_low = get_nearest_value(np.array(rpls), df["RP"].min())
-
-        if df["RP"].min() == 0:
-            rpl_low = df.loc[df["sum_loss"] == 0, "RP"]
-
-        # filter the rpl list
-        rpls = list(filter(lambda x: x <= rpl_high and x >= rpl_low, rpls))
-        for rpl in rpls:
-            f = interp1d(df["RP"], df["sum_loss"], fill_value="extrapolate")
-            value = f(rpl)
-            interp1d_df.loc[interp1d_df["RP"] == rpl, "sum_loss"] = value
-
-        # Replace negative sum_loss values with zeros
-        interp1d_df[interp1d_df < 0] = 0
-        return interp1d_df
-
-    except Exception as exc:
-        logger.log("error", f"Error while trying to interpolate values. More info: {exc}")
-        return interp1d_df
-
-
-def get_nearest_value(arr: list, value: float) -> float:
-    """
-    Get the nearest value in an array of numbers.
-
-    This function finds the nearest value in the provided array of numbers to the given value.
-
-    :param arr: The list of numbers.
-    :type arr: list
-    :param value: The number for which to find the nearest value.
-    :type value: float
-    :return: The nearest value in the array.
-    :rtype: float
-    """
-    index = np.abs(arr - value).argmin()
-    return arr[index]
 
 
 def set_map_title(hazard_type: str, country: str, time_horizon: str, scenario: str) -> str:
