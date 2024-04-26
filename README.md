@@ -93,12 +93,34 @@ The application logs important actions and errors, facilitating debugging and mo
 
 ## Documentation
 
+Ensure you generate the updated documentation when pushing relevant code. Navigate to the root directory of the app and using your terminal or command prompt, run the following command:
+
+```sh
+sphinx-build -b html docs/ docs/_build
+```
+
 Developer documentation, including a detailed description of API endpoints and usage examples, can be found [here](https://ath-git.swordgroup.lan/unu/climada-unu/).
 
 ## Before Opening a Pull Request
 
 Ensure you run the tests and comply with the linting standards before opening a pull request:
 
-- Run tests: `python -m unittest tests/test_api.py`
-- Check linting: `pylint app/ --fail-under=8`
-  Failure to meet the test coverage and linting standards will result in CI pipeline failures.
+- Run tests:
+
+```sh
+# Navigate to the backend directory
+cd ./backend
+# Execute tests
+python -m unittest tests/test_api.py
+```
+
+- Check linting:
+
+```sh
+# Navigate to the backend directory
+cd ./backend
+# Run pylint
+pylint --exit-zero --fail-under=9 .
+```
+
+Failure to meet the test coverage and linting standards will result in CI pipeline failures.
