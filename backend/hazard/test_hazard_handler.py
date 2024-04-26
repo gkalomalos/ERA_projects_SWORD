@@ -28,7 +28,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from climada.hazard import Hazard
 
-from hazard_handler import HazardHandler
+from backend.hazard.hazard_handler import HazardHandler
 
 
 class TestHazardHandler(unittest.TestCase):

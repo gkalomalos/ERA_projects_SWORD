@@ -75,22 +75,7 @@ class ImpactHandler:
                 intensity=np.array(
                     [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]
                 ),
-                mdd=np.array(
-                    [
-                        0.0,
-                        0.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                    ]
-                ),
+                mdd=np.array([0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Buddhist monks",
@@ -100,22 +85,7 @@ class ImpactHandler:
                 haz_type="FL",
                 id=102,
                 intensity=np.array([0.0, 0.3, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0, 5.0]),
-                mdd=np.array(
-                    [
-                        0.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0,
-                    ]
-                ),
+                mdd=np.array([0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
                 paa=np.ones(12),
                 intensity_unit="People",
                 name="Students",

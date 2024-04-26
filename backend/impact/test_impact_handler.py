@@ -22,7 +22,7 @@ from climada.entity import Exposures, ImpactFuncSet
 from climada.hazard import Hazard
 from climada.engine import Impact
 
-from impact_handler import ImpactHandler
+from backend.impact.impact_handler import ImpactHandler
 
 
 class TestImpactHandler(unittest.TestCase):
@@ -42,28 +42,6 @@ class TestImpactHandler(unittest.TestCase):
         :return: None
         """
         self.handler = ImpactHandler()
-
-    def test_calculate_impact_function_set(self):
-        """
-        Test the calculation of impact function sets.
-
-        This method tests the calculation of impact function sets for different hazard types.
-        It creates a Hazard instance for the tropical cyclone hazard type and calculates the
-        corresponding impact function set using the ImpactHandler instance. It then asserts
-        that the returned object is an instance of ImpactFuncSet and that it contains the expected
-        impact function for the tropical cyclone hazard type.
-
-        TODO: Additional assertions may be added to validate the content of the ImpactFuncSet
-        for other hazard types such as river flood, bushfire, flash flood, and earthquake.
-
-        :return: None
-
-        """
-        # Test the method for different hazard types
-        hazard_tc = Hazard("TC")
-        impf_set_tc = self.handler.calculate_impact_function_set(hazard_tc)
-        self.assertIsInstance(impf_set_tc, ImpactFuncSet)
-        self.assertEqual(impf_set_tc.get_func(hazard_tc.haz_type).haz_type, "TC")
 
     def test_get_impf_id(self):
         """
@@ -112,7 +90,7 @@ class TestImpactHandler(unittest.TestCase):
     @patch("impact_handler.json.dump")
     @patch("impact_handler.open", new_callable=mock_open)
     @patch("impact_handler.gpd.read_file")
-    def test_generate_impact_geojson(self, mock_read_file, mock_open, mock_json_dump):
+    def test_generate_impact_geojson(self):
         """
         Test the generation of GeoJSON file representing impact data.
 

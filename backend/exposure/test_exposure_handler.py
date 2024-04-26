@@ -5,9 +5,8 @@ Module for testing exposure data and operations.
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 
-from climada.entity import Exposures, Entity
+from climada.entity import Exposures
 
-from backend.constants import DATA_EXPOSURES_DIR
 from backend.exposure.exposure_handler import ExposureHandler
 
 
