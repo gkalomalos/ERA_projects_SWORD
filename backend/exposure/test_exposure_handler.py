@@ -1,67 +1,47 @@
 """
-Module for handling exposure data and operations.
-
-This module contains the `ExposureHandler` class, which manages exposure-related operations such as
-fetching exposure data from an API, calculating exposure growth, retrieving administrative data,
-and generating exposure GeoJSON files.
-
-Classes:
-
-- `ExposureHandler`: 
-    Class for handling exposure data and operations.
-
-Methods:
-
-- `get_exposure_from_api`: 
-    Retrieve exposure data from an API for a specific country.
-- `get_growth_exposure`: 
-    Calculate exposure growth based on annual growth rate and future year.
-- `get_admin_data`: 
-    Retrieve administrative data for a specific country and administrative level.
-- `generate_exposure_geojson`: 
-    Generate GeoJSON files for exposure data.
+Module for testing exposure data and operations.
 """
 
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 
-from climada.entity import Exposures, Entity
+from climada.entity import Exposures
 
-from backend.constants import DATA_EXPOSURES_DIR
 from backend.exposure.exposure_handler import ExposureHandler
 
 
 class TestExposureHandler(unittest.TestCase):
+    """
+    Class for testing exposure data and operations.
+    """
 
     def setUp(self):
-        # Setup code before each test method
+        """
+        Set up the test environment.
+
+        This method initializes the ExposureHandler instance to be used in the unit tests.
+
+        :return: None
+        """
         self.handler = ExposureHandler()
-
-    @patch("exposure_handler.Client")
-    def test_get_exposure_success(self, mock_client):
-        # Mocking the client and its response
-        mock_exposure = Exposures()
-        mock_client.return_value.get_litpop.return_value = mock_exposure
-
-        country = "test_country"
-        result = self.handler.get_exposure(country)
-
-        self.assertIs(result, mock_exposure)
-        mock_client.return_value.get_litpop.assert_called_once_with(
-            country=country, exponents=(1, 1), dump_dir=DATA_EXPOSURES_DIR
-        )
-
-    @patch("exposure_handler.Client")
-    def test_get_exposure_exception(self, mock_client):
-        # Testing exception handling
-        mock_client.return_value.get_litpop.side_effect = Exception("Error message")
-
-        with self.assertRaises(ValueError):
-            self.handler.get_exposure("test_country")
 
     @patch("exposure_handler.deepcopy")
     @patch("exposure_handler.Exposures")
-    def test_get_growth_exposure(self, mock_exposures, mock_deepcopy):
+    def test_get_growth_exposure(self, mock_deepcopy):
+        """
+        Test the `get_growth_exposure` method.
+
+        This method tests the functionality of the `get_growth_exposure` method by mocking the
+        `Exposures` class and `deepcopy` function. It sets up a mock `Exposures` object with a
+        reference year of 2020 and a growth rate of 0.02. The method then calls
+        `get_growth_exposure` with the mock `Exposures` object, a growth rate of 0.02, and a
+        target year of 2025.
+
+        The test verifies that the `get_growth_exposure` method correctly returns an `Exposures`
+        object with the expected reference year (2025) and growth rate.
+
+        :return: None
+        """
         mock_exposure = MagicMock(spec=Exposures)
         mock_exposure.ref_year = 2020
         mock_exposure.gdf = MagicMock()
@@ -78,8 +58,23 @@ class TestExposureHandler(unittest.TestCase):
     @patch("exposure_handler.gpd.read_file")
     @patch("exposure_handler.get_iso3_country_code")
     def test_generate_exposure_geojson(
-        self, mock_get_iso3, mock_read_file, mock_open, mock_json_dump
+        self, mock_get_iso3, mock_read_file, _mock_open, mock_json_dump
     ):
+        """
+        Test the `generate_exposure_geojson` method.
+
+        This method tests the functionality of the `generate_exposure_geojson` method by mocking
+        dependencies such as `json.dump`, `open`, `gpd.read_file`, and `get_iso3_country_code`.
+        It sets up mock responses for these dependencies and creates a mock `Exposures` object
+        with a GeoDataFrame containing features. The method then calls `generate_exposure_geojson`
+        with the mock `Exposures` object and the country name "Testland".
+
+        The test verifies that the method correctly interacts with the dependencies, including
+        calling `open` and `json.dump` once each.
+
+        :return: None
+
+        """
         mock_get_iso3.return_value = "TST"
         mock_read_file.return_value = MagicMock()
         mock_exposure = MagicMock(spec=Exposures)
@@ -88,19 +83,8 @@ class TestExposureHandler(unittest.TestCase):
 
         self.handler.generate_exposure_geojson(mock_exposure, "Testland")
 
-        mock_open.assert_called_once()
+        _mock_open.assert_called_once()
         mock_json_dump.assert_called_once()
-
-    @patch("exposure_handler.Entity.from_excel")
-    def test_get_entity_from_xlsx(self, mock_from_excel):
-        mock_entity = MagicMock(spec=Entity)
-        mock_from_excel.return_value = mock_entity
-        filepath = "test.xlsx"
-
-        result = self.handler.get_entity_from_xlsx(filepath)
-
-        self.assertIs(result, mock_entity)
-        mock_from_excel.assert_called_once_with(DATA_EXPOSURES_DIR / filepath)
 
 
 if __name__ == "__main__":

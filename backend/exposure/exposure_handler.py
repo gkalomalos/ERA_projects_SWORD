@@ -16,8 +16,6 @@ Methods:
     Retrieve exposure data from an API for a specific country.
 - `get_growth_exposure`: 
     Calculate exposure growth based on annual growth rate and future year.
-- `get_admin_data`: 
-    Retrieve administrative data for a specific country and administrative level.
 - `generate_exposure_geojson`: 
     Generate GeoJSON files for exposure data.
 """
@@ -32,14 +30,21 @@ from climada.entity import Exposures
 from climada.util.api_client import Client
 
 
-from constants import DATA_EXPOSURES_DIR, DATA_TEMP_DIR, REQUIREMENTS_DIR
-from handlers import get_iso3_country_code
+from constants import DATA_EXPOSURES_DIR, DATA_TEMP_DIR
+from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
 
 
 class ExposureHandler:
+    """
+    Class for handling exposure data and operations.
+
+    This class provides methods for fetching exposure data from an API, calculating exposure growth,
+    retrieving administrative data, and generating exposure GeoJSON files.
+    """
+
     def __init__(self):
         self.client = Client()
 
@@ -68,7 +73,7 @@ class ExposureHandler:
         except Exception as exc:
             status_message = f"Error while trying to fetch exposure for {country}. More info: {exc}"
             logger.log("error", status_message)
-            raise ValueError(status_message)
+            raise ValueError(status_message) from exc
 
     def get_growth_exposure(
         self, exposure: Exposures, annual_growth: float, future_year: int
@@ -80,8 +85,8 @@ class ExposureHandler:
         This method calculates the exposure growth for a future year based on the provided
         annual growth rate. It takes the current exposure data, the annual growth rate,
         and the future year as input parameters. If successful, it returns an Exposures object
-        containing the exposure data for the future year. If any errors occur during the calculation
-        process, it logs an error message and returns None.
+        containing the exposure data for the future year. If any errors occur during the
+        calculation process, it logs an error message and returns None.
 
         :param exposure: The Exposures object containing the current exposure data.
         :type exposure: Exposures
@@ -105,44 +110,6 @@ class ExposureHandler:
                 "error", f"An error occurred while trying to calculate exposure growth rate: {exc}"
             )
             return None
-
-    def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
-        """
-        Retrieves administrative data for a specific country and administrative level.
-
-        This method retrieves administrative data for a specific country and administrative level
-        from a GeoJSON file. It constructs the file path based on the provided country code
-        and administrative level, reads the GeoJSON file, and returns a GeoDataFrame containing
-        the administrative data. If the file is not found or any errors occur during the process,
-        it logs an error message and returns None.
-
-        :param country_code: The country code representing the specific country.
-        :type country_code: str
-        :param admin_level: The administrative level for which data is retrieved.
-        :type admin_level: int
-        :return: A GeoDataFrame containing the administrative data for the specified country
-                and level, or None if the file is not found or errors occur.
-        :rtype: gpd.GeoDataFrame
-        """
-        try:
-            file_path = REQUIREMENTS_DIR / f"gadm{admin_level}_{country_code}.geojson"
-            admin_gdf = gpd.read_file(file_path)
-            admin_gdf = admin_gdf[["shapeName", "shapeID", "shapeGroup", "geometry"]]
-            admin_gdf = admin_gdf.rename(
-                columns={
-                    "shapeID": "id",
-                    "shapeName": f"name",
-                    "shapeGroup": "country",
-                }
-            )
-            return admin_gdf
-        except FileNotFoundError:
-            logger.log("error", f"File not found: {file_path}")
-        except Exception as exception:
-            logger.log(
-                "error",
-                f"An error occured while trying to get country admin level information. More info: {exception}",
-            )
 
     def generate_exposure_geojson(self, exposure: Exposures, country_name: str):
         """
@@ -174,10 +141,10 @@ class ExposureHandler:
 
             for layer in layers:
                 try:
-                    admin_gdf = self.get_admin_data(country_iso3, layer)
+                    admin_gdf = get_admin_data(country_iso3, layer)
                     joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
-                    aggregated_values = joined_gdf.groupby(f"id")["value"].sum().reset_index()
-                    admin_gdf = admin_gdf.merge(aggregated_values, on=f"id", how="left")
+                    aggregated_values = joined_gdf.groupby("id")["value"].sum().reset_index()
+                    admin_gdf = admin_gdf.merge(aggregated_values, on="id", how="left")
                     admin_gdf["value"] = admin_gdf["value"].round(2).fillna(0)
 
                     # Convert each layer to a GeoJSON Feature and add it to the collection
@@ -194,7 +161,7 @@ class ExposureHandler:
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / "exposures_geodata.json"
-            with open(map_data_filepath, "w") as f:
+            with open(map_data_filepath, "w", encoding="utf-8") as f:
                 json.dump(all_layers_geojson, f)
 
         except AttributeError as e:

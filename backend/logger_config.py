@@ -31,13 +31,22 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class LoggerConfig:
+    """
+    Class for configuring and managing logging in the backend application.
+
+    This class provides functionality to load logging configuration from a JSON file, set up
+    file and console logging based on the loaded configuration, and log messages at different
+    levels.
+
+    """
+
     CONFIG_PATH = BACKEND_DIR / "logging_config.json"
 
     def __init__(self, logger_types):
         try:
             self.load_config()
         except Exception as e:
-            raise RuntimeError(f"Error loading logging configuration: {e}")
+            raise RuntimeError(f"Error loading logging configuration: {e}") from e
 
         self.loggers = []
         for logger_type in logger_types:
@@ -61,43 +70,43 @@ class LoggerConfig:
         :raises ValueError: If the JSON in the config file is invalid.
         """
         try:
-            with open(self.CONFIG_PATH, "r") as config_file:
+            with open(self.CONFIG_PATH, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 self.filename = config.get("filename")
                 self.level = getattr(logging, config.get("level", "INFO"))
                 self.format = config.get("format")
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Config file {self.CONFIG_PATH} not found")
-        except json.JSONDecodeError:
-            raise ValueError("Invalid JSON in config file")
+        except FileNotFoundError as exc:
+            raise FileNotFoundError(f"Config file {self.CONFIG_PATH} not found") from exc
+        except json.JSONDecodeError as exc:
+            raise ValueError("Invalid JSON in config file") from exc
 
     def setup_file_logging(self):
         """
         Set up file logging using the specified configuration.
 
-        This method configures file logging according to the parameters set in the object's attributes.
-        It creates a FileHandler, sets its level and format, and adds it to the list of loggers.
-        If any error occurs during setup, it raises a RuntimeError.
+        This method configures file logging according to the parameters set in the object's
+        attributes. It creates a FileHandler, sets its level and format, and adds it to the
+        list of loggers. If any error occurs during setup, it raises a RuntimeError.
 
         :return: None
         :raises RuntimeError: If an error occurs during file logging setup.
         """
-        LOG_FILE = LOG_DIR / self.filename
+        log_file = LOG_DIR / self.filename
         try:
-            file_handler = logging.FileHandler(LOG_FILE)
+            file_handler = logging.FileHandler(log_file)
             file_handler.setLevel(self.level)
             file_handler.setFormatter(logging.Formatter(self.format))
             self.loggers.append(file_handler)
         except Exception as e:
-            raise RuntimeError(f"Error setting up file logging: {e}")
+            raise RuntimeError(f"Error setting up file logging: {e}") from e
 
     def setup_console_logging(self):
         """
         Set up console logging using the specified configuration.
 
-        This method configures console logging according to the parameters set in the object's attributes.
-        It creates a StreamHandler, sets its level and format, and adds it to the list of loggers.
-        If any error occurs during setup, it raises a RuntimeError.
+        This method configures console logging according to the parameters set in the object's
+        attributes. It creates a StreamHandler, sets its level and format, and adds it to the
+        list of loggers. If any error occurs during setup, it raises a RuntimeError.
 
         :return: None
         :raises RuntimeError: If an error occurs during console logging setup.
@@ -108,15 +117,16 @@ class LoggerConfig:
             console_handler.setFormatter(logging.Formatter(self.format))
             self.loggers.append(console_handler)
         except Exception as e:
-            raise RuntimeError(f"Error setting up console logging: {e}")
+            raise RuntimeError(f"Error setting up console logging: {e}") from e
 
     def log(self, level, message):
         """
         Log a message with the specified logging level.
 
-        This method logs a message using the specified logging level. It iterates through the list of loggers,
-        sets up a logger, adds the handler, logs the message, and then removes the handler to prevent duplicate logging.
-        If no loggers are initialized, it raises a RuntimeError.
+        This method logs a message using the specified logging level. It iterates through the
+        list of loggers, sets up a logger, adds the handler, logs the message, and then removes
+        the handler to prevent duplicate logging. If no loggers are initialized, it raises
+        a RuntimeError.
 
         :param level: The logging level (e.g., INFO, DEBUG, ERROR).
         :type level: str
@@ -136,4 +146,4 @@ class LoggerConfig:
                 log_function(message)
                 logger.removeHandler(handler)  # Prevent duplicate logging
             except Exception as e:
-                raise RuntimeError(f"Error during logging: {e}")
+                raise RuntimeError(f"Error during logging: {e}") from e

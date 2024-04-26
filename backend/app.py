@@ -83,6 +83,7 @@ def main():
             sys.stdout.flush()
 
 
-# Add this condition to ensure the infinite loop is only executed when app.py is run as the main script
+# Add this condition to ensure the infinite loop is only executed when app.py
+# is run as the main script
 if __name__ == "__main__":
     main()

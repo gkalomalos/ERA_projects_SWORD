@@ -27,6 +27,14 @@ from logger_config import LoggerConfig
 
 
 class RunFetchScenario:
+    """
+    Class for handling the fetching of adaptation measures based on provided hazard type.
+
+    This class provides functionality to retrieve the hazard type from the request, get the
+    hazard code, fetch adaptation measures from an Excel file based on the hazard code,
+    update progress, and generate a response containing the fetched adaptation measures.
+    """
+
     def __init__(self, request):
         self.request = request
         self.costben_handler = CostBenefitHandler()
@@ -37,9 +45,10 @@ class RunFetchScenario:
         """
         Run the process to fetch adaptation measures.
 
-        This method retrieves the hazard type from the request, gets the hazard code, and fetches the adaptation measures
-        from an Excel file based on the hazard code. It updates the progress and generates a response containing the fetched
-        adaptation measures.
+        This method retrieves the hazard type from the request, gets the hazard code,
+        and fetches the adaptation measures from an Excel file based on the hazard code.
+        It updates the progress and generates a response containing the fetched adaptation
+        measures.
 
         :return: A dictionary containing the response data and status.
         :rtype: dict
@@ -80,7 +89,7 @@ class RunFetchScenario:
 
 
 if __name__ == "__main__":
-    request = json.loads(sys.argv[1])
-    runner = RunFetchScenario(request)
-    response = runner.run_fetch_measures(request)
-    print(json.dumps(response))
+    req = json.loads(sys.argv[1])
+    runner = RunFetchScenario(req)
+    resp = runner.run_fetch_measures()
+    print(json.dumps(resp))
