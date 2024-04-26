@@ -21,7 +21,8 @@ import sys
 from time import time
 
 from costben.costben_handler import CostBenefitHandler
-from handlers import update_progress, beautify_hazard_type
+
+from base_handler import BaseHandler
 from hazard.hazard_handler import HazardHandler
 from logger_config import LoggerConfig
 
@@ -36,10 +37,11 @@ class RunFetchScenario:
     """
 
     def __init__(self, request):
-        self.request = request
+        self.base_handler = BaseHandler()
         self.costben_handler = CostBenefitHandler()
-        self.logger = LoggerConfig(logger_types=["file"])
         self.hazard_handler = HazardHandler()
+        self.logger = LoggerConfig(logger_types=["file"])
+        self.request = request
 
     def run_fetch_measures(self) -> dict:
         """
@@ -56,12 +58,12 @@ class RunFetchScenario:
         initial_time = time()
         hazard_type = self.request.get("hazardType", "")
         hazard_code = self.hazard_handler.get_hazard_code(hazard_type)
-        hazard_beautified = beautify_hazard_type(hazard_type)
+        hazard_beautified = self.base_handler.beautify_hazard_type(hazard_type)
         status_code = 2000
 
         measure_set = self.costben_handler.get_measure_set_from_excel(hazard_code)
 
-        update_progress(10, "Fetching adaptation measures...")
+        self.base_handler.update_progress(10, "Fetching adaptation measures...")
         if not hazard_code or not measure_set:
             run_status_message = f"No available adaptation measures for {hazard_beautified}."
             adaptation_measures = []
@@ -74,7 +76,7 @@ class RunFetchScenario:
 
         data = {"adaptationMeasures": adaptation_measures}
 
-        update_progress(100, run_status_message)
+        self.base_handler.update_progress(100, run_status_message)
 
         response = {
             "data": data,

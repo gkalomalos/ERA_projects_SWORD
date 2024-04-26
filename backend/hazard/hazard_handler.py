@@ -52,11 +52,12 @@ from shapely.geometry import Point
 
 from climada.hazard import Hazard
 from climada.util.api_client import Client
+
+from base_handler import BaseHandler
 from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
 )
-from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -72,6 +73,7 @@ class HazardHandler:
 
     def __init__(self):
         self.client = Client()
+        self.base_handler = BaseHandler()
 
     # TODO: Needs to be refactored
     def get_hazard_time_horizon(self, hazard_type: str, scenario: str, time_horizon: str) -> str:
@@ -407,8 +409,8 @@ class HazardHandler:
         :type return_periods: tuple, optional
         """
         try:
-            country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = get_admin_data(country_iso3, 2)
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T

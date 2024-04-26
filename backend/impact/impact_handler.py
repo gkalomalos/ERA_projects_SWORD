@@ -36,8 +36,9 @@ from climada.engine import Impact, ImpactCalc
 from climada.entity import Exposures
 from climada.entity.impact_funcs import ImpactFunc, ImpactFuncSet
 from climada.hazard import Hazard
+
+from base_handler import BaseHandler
 from constants import DATA_TEMP_DIR
-from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -50,6 +51,8 @@ class ImpactHandler:
     This class provides methods for generating impact data from various sources, processing
     impact datasets, and generating impact GeoJSON files.
     """
+    def __init__(self) -> None:
+        self.base_handler = BaseHandler()
 
     def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
         """
@@ -405,8 +408,8 @@ class ImpactHandler:
         :type return_periods: tuple, optional
         """
         try:
-            country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = get_admin_data(country_iso3, 2)
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
             coords = np.array(impact.coord_exp)
             local_exceedance_imp = impact.local_exceedance_imp(return_periods)
             local_exceedance_imp = pd.DataFrame(local_exceedance_imp).T
