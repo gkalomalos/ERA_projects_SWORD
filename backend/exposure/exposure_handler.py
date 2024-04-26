@@ -143,8 +143,8 @@ class ExposureHandler:
                 try:
                     admin_gdf = get_admin_data(country_iso3, layer)
                     joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
-                    aggregated_values = joined_gdf.groupby(f"id")["value"].sum().reset_index()
-                    admin_gdf = admin_gdf.merge(aggregated_values, on=f"id", how="left")
+                    aggregated_values = joined_gdf.groupby("id")["value"].sum().reset_index()
+                    admin_gdf = admin_gdf.merge(aggregated_values, on="id", how="left")
                     admin_gdf["value"] = admin_gdf["value"].round(2).fillna(0)
 
                     # Convert each layer to a GeoJSON Feature and add it to the collection

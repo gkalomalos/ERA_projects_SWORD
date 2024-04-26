@@ -306,7 +306,7 @@ def get_admin_data(country_code: str, admin_level) -> gpd.GeoDataFrame:
         admin_gdf = admin_gdf.rename(
             columns={
                 "shapeID": "id",
-                "shapeName": f"name",
+                "shapeName": "name",
                 "shapeGroup": "country",
             }
         )

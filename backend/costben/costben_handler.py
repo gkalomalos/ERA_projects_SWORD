@@ -74,11 +74,10 @@ class CostBenefitHandler:
                 measure_set = MeasureSet(measure_list)
                 measure_set.check()
                 return measure_set
-            else:
-                # Log and handle the case where no measures are found for the hazard code
-                # without interrupting the flow
-                logger.log("info", f"No measures found for hazard type '{hazard_code}'")
-                return None
+            # Log and handle the case where no measures are found for the hazard code
+            # without interrupting the flow
+            logger.log("info", f"No measures found for hazard type '{hazard_code}'")
+            return None
         except FileNotFoundError as e:
             # Log the case where the Excel file is not found and return None to continue the flow
             logger.log(
@@ -120,7 +119,7 @@ class CostBenefitHandler:
                 "error",
                 (
                     f"Adaptation measures excel file not found at {dicsount_rates_path}. "
-                    "More info: {e}"
+                    f"More info: {e}"
                 ),
             )
             return None

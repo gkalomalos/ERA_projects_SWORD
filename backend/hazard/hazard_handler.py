@@ -17,8 +17,6 @@ Methods:
     Retrieves the time horizon for a given hazard type, scenario, and time horizon.
 - `get_hazard_dataset_properties`: 
     Retrieves hazard dataset properties based on hazard type, scenario, time horizon, and country.
-- `get_hazard_unit`: 
-    Retrieves the unit of measurement for a given hazard type.
 - `get_hazard`: 
     Retrieves hazard data based on various parameters, including hazard type, 
     source, scenario, time horizon, country, and file path.
@@ -113,15 +111,26 @@ class HazardHandler:
                 "2070_2090": "2080",
             }
 
+            # Check if the scenario is historical
             if scenario == "historical":
+                # Return the time horizon for historical scenarios, if available for the
+                # given hazard type
                 return historical_time_horizons.get(hazard_type, "")
-            else:
-                if hazard_type == "river_flood":
-                    return time_horizon
-                elif hazard_type == "tropical_cyclone":
-                    return tropical_cyclone_future_mapping.get(time_horizon, "")
 
-            return ""  # Default return if no match found
+            # Check if the hazard type is river flood
+            if hazard_type == "river_flood":
+                # Return the provided time horizon for river flood hazards
+                return time_horizon
+
+            # Check if the hazard type is tropical cyclone
+            if hazard_type == "tropical_cyclone":
+                # Return the mapped time horizon for future tropical cyclone scenarios,
+                # if available
+                return tropical_cyclone_future_mapping.get(time_horizon, "")
+
+            # Default return if no match found
+            return ""
+
         except Exception as exception:
             logger.log(
                 "error",
@@ -183,11 +192,6 @@ class HazardHandler:
             }
 
         return hazard_properties
-
-    def get_hazard_unit(self, hazard_type):
-        unit = "No unit"
-        if hazard_type == "drought":
-            pass
 
     def get_hazard(
         self,
@@ -278,7 +282,7 @@ class HazardHandler:
                 dump_dir=DATA_HAZARDS_DIR,
             )
             hazard.intensity_thres = self.get_hazard_intensity_thres(hazard)
-            status_message = f"Finished fetching hazards from client"
+            status_message = "Finished fetching hazards from client"
             logger.log("info", status_message)
             return hazard
 
@@ -447,7 +451,7 @@ class HazardHandler:
             }
 
             # Save the combined GeoJSON file
-            map_data_filepath = DATA_TEMP_DIR / f"hazards_geodata.json"
+            map_data_filepath = DATA_TEMP_DIR / "hazards_geodata.json"
             with open(map_data_filepath, "w") as f:
                 json.dump(hazard_geojson, f)
         except Exception as exception:

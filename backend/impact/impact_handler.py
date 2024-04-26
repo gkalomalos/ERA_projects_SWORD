@@ -337,10 +337,6 @@ class ImpactHandler:
                 intensity_unit="SPI",
                 name="Markets",
             )
-        elif id == 401:
-            pass
-        elif id == 402:
-            pass
 
         impfset = ImpactFuncSet([impf])
         return impfset
@@ -480,7 +476,7 @@ class ImpactHandler:
             }
 
             # Save the combined GeoJSON file
-            map_data_filepath = DATA_TEMP_DIR / f"risks_geodata.json"
+            map_data_filepath = DATA_TEMP_DIR / "risks_geodata.json"
             with open(map_data_filepath, "w") as f:
                 json.dump(impact_geojson, f)
         except Exception as exception:

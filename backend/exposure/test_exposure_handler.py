@@ -17,11 +17,29 @@ class TestExposureHandler(unittest.TestCase):
     """
 
     def setUp(self):
-        # Setup code before each test method
+        """
+        Set up the test environment.
+
+        This method initializes the ExposureHandler instance to be used in the unit tests.
+
+        :return: None
+        """
         self.handler = ExposureHandler()
 
     @patch("exposure_handler.Client")
     def test_get_exposure_success(self, mock_client):
+        """
+        Test the `get_exposure_success` method.
+
+        This method tests the `get_exposure_success` method by mocking the client and its response.
+        It sets up mock exposure data and verifies that the method correctly retrieves exposure
+        data for the specified country. The method ensures that the client's `get_litpop`
+        method is called with the appropriate parameters, including the country name and
+        dump directory.
+
+        :return: None
+
+        """
         # Mocking the client and its response
         mock_exposure = Exposures()
         mock_client.return_value.get_litpop.return_value = mock_exposure
@@ -36,6 +54,19 @@ class TestExposureHandler(unittest.TestCase):
 
     @patch("exposure_handler.Client")
     def test_get_exposure_exception(self, mock_client):
+        """
+        Test the `get_exposure_exception` method.
+
+        This method tests the exception handling in the `get_exposure` method by mocking the
+        client's `get_litpop` method to raise an exception with a specific error message.
+        It verifies that when the `get_exposure` method is called with a test country name,
+        it raises a `ValueError` exception.
+
+        The test ensures that the exception raised by the mocked client is correctly handled
+        within the `get_exposure` method.
+
+        :return: None
+        """
         # Testing exception handling
         mock_client.return_value.get_litpop.side_effect = Exception("Error message")
 
@@ -44,7 +75,21 @@ class TestExposureHandler(unittest.TestCase):
 
     @patch("exposure_handler.deepcopy")
     @patch("exposure_handler.Exposures")
-    def test_get_growth_exposure(self, mock_exposures, mock_deepcopy):
+    def test_get_growth_exposure(self, mock_deepcopy):
+        """
+        Test the `get_growth_exposure` method.
+
+        This method tests the functionality of the `get_growth_exposure` method by mocking the
+        `Exposures` class and `deepcopy` function. It sets up a mock `Exposures` object with a
+        reference year of 2020 and a growth rate of 0.02. The method then calls
+        `get_growth_exposure` with the mock `Exposures` object, a growth rate of 0.02, and a
+        target year of 2025.
+
+        The test verifies that the `get_growth_exposure` method correctly returns an `Exposures`
+        object with the expected reference year (2025) and growth rate.
+
+        :return: None
+        """
         mock_exposure = MagicMock(spec=Exposures)
         mock_exposure.ref_year = 2020
         mock_exposure.gdf = MagicMock()
@@ -63,6 +108,21 @@ class TestExposureHandler(unittest.TestCase):
     def test_generate_exposure_geojson(
         self, mock_get_iso3, mock_read_file, mock_open, mock_json_dump
     ):
+        """
+        Test the `generate_exposure_geojson` method.
+
+        This method tests the functionality of the `generate_exposure_geojson` method by mocking
+        dependencies such as `json.dump`, `open`, `gpd.read_file`, and `get_iso3_country_code`.
+        It sets up mock responses for these dependencies and creates a mock `Exposures` object
+        with a GeoDataFrame containing features. The method then calls `generate_exposure_geojson`
+        with the mock `Exposures` object and the country name "Testland".
+
+        The test verifies that the method correctly interacts with the dependencies, including
+        calling `open` and `json.dump` once each.
+
+        :return: None
+
+        """
         mock_get_iso3.return_value = "TST"
         mock_read_file.return_value = MagicMock()
         mock_exposure = MagicMock(spec=Exposures)
@@ -76,6 +136,19 @@ class TestExposureHandler(unittest.TestCase):
 
     @patch("exposure_handler.Entity.from_excel")
     def test_get_entity_from_xlsx(self, mock_from_excel):
+        """
+        Test the `get_entity_from_xlsx` method.
+
+        This method tests the functionality of the `get_entity_from_xlsx` method by mocking the
+        dependency `Entity.from_excel`. It sets up a mock response for this dependency and
+        defines a test file path "test.xlsx". The method then calls `get_entity_from_xlsx` with
+        the test file path.
+
+        The test verifies that the method correctly interacts with the `Entity.from_excel`
+        dependency, ensuring that it is called once with the expected file path.
+
+        :return: None
+        """
         mock_entity = MagicMock(spec=Entity)
         mock_from_excel.return_value = mock_entity
         filepath = "test.xlsx"
