@@ -11,4 +11,5 @@ pylint:
     - echo "Pylint Score: $PYLINT_SCORE"
     - if (( $(echo "$PYLINT_SCORE < 9" | bc -l) )); then exit 1; fi # Fail if score is less than 9
   only:
+    - main
     - dev
