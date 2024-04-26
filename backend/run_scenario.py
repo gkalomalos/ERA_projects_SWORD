@@ -561,5 +561,5 @@ class RunScenario:
 if __name__ == "__main__":
     req = json.loads(sys.argv[1])
     runner = RunScenario(req)
-    resp = runner.run_scenario(req)
+    resp = runner.run_scenario()
     print(json.dumps(resp))

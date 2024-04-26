@@ -161,7 +161,7 @@ class ExposureHandler:
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / "exposures_geodata.json"
-            with open(map_data_filepath, "w") as f:
+            with open(map_data_filepath, "w", encoding="utf-8") as f:
                 json.dump(all_layers_geojson, f)
 
         except AttributeError as e:

@@ -91,5 +91,5 @@ class RunFetchScenario:
 if __name__ == "__main__":
     req = json.loads(sys.argv[1])
     runner = RunFetchScenario(req)
-    resp = runner.run_fetch_measures(req)
+    resp = runner.run_fetch_measures()
     print(json.dumps(resp))

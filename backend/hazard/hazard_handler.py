@@ -451,7 +451,7 @@ class HazardHandler:
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / "hazards_geodata.json"
-            with open(map_data_filepath, "w") as f:
+            with open(map_data_filepath, "w", encoding="utf-8") as f:
                 json.dump(hazard_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")

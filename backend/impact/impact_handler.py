@@ -447,7 +447,7 @@ class ImpactHandler:
 
             # Save the combined GeoJSON file
             map_data_filepath = DATA_TEMP_DIR / "risks_geodata.json"
-            with open(map_data_filepath, "w") as f:
+            with open(map_data_filepath, "w", encoding="utf-8") as f:
                 json.dump(impact_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")

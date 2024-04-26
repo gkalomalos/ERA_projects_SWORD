@@ -58,7 +58,7 @@ class TestExposureHandler(unittest.TestCase):
     @patch("exposure_handler.gpd.read_file")
     @patch("exposure_handler.get_iso3_country_code")
     def test_generate_exposure_geojson(
-        self, mock_get_iso3, mock_read_file, mock_open, mock_json_dump
+        self, mock_get_iso3, mock_read_file, _mock_open, mock_json_dump
     ):
         """
         Test the `generate_exposure_geojson` method.
@@ -83,7 +83,7 @@ class TestExposureHandler(unittest.TestCase):
 
         self.handler.generate_exposure_geojson(mock_exposure, "Testland")
 
-        mock_open.assert_called_once()
+        _mock_open.assert_called_once()
         mock_json_dump.assert_called_once()
 
 
