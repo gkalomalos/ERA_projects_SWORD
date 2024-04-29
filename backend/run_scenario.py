@@ -116,30 +116,28 @@ class RunScenario:
 
     def __init__(self, request):
         # Initialize handler instances
+        self._initialize_handlers()
+        # Initialize data folder and subfolders if not exist
+        self.base_handler.initalize_data_directories()
+        # Clear previously generated exposure/hazard/impact maps and temp directory
+        self._clear()
+        # Initialize logger
+        self.logger = LoggerConfig(logger_types=["file"])
+        # Get request parameters from the UI
+        self.request_data = self._extract_request_data(request)
+        # Set default successful status code and message
+        self.status = Status()
+        # Clear previously generated maps and geojson datasets from temp directory
+        self._clear()
+
+    def _initialize_handlers(self):
+        """Initialize handlers."""
         self.base_handler = BaseHandler()
         self.costben_handler = CostBenefitHandler()
         self.entity_handler = EntityHandler()
         self.exposure_handler = ExposureHandler()
         self.hazard_handler = HazardHandler()
         self.impact_handler = ImpactHandler()
-
-        # Initialize data folder and subfolders if not exist
-        self.base_handler.initalize_data_directories()
-
-        # Clear previously generated exposure/hazard/impact maps and temp directory
-        self._clear()
-
-        # Initialize logger
-        self.logger = LoggerConfig(logger_types=["file"])
-
-        # Get request parameters from the UI
-        self.request_data = self._extract_request_data(request)
-
-        # Set default successful status code and message
-        self.status = Status()
-
-        # Clear previously generated maps and geojson datasets from temp directory
-        self._clear()
 
     def _extract_request_data(self, request):
         """
