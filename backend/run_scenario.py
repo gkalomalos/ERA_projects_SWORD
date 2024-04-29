@@ -177,24 +177,6 @@ class RunScenario:
         """
         self.base_handler.clear_temp_dir()
 
-    def _get_entity_filename(self) -> str:
-        """
-        Get the entity filename based on the request parameters.
-        This helper method sets the entity filename in a specific format to be searched
-        in the data/entities directory
-
-        :return: The entity filename.
-        :rtype: str
-        """
-        entity_filename = (
-            "entity_TODAY"
-            f"_{self.request_data.country_code}"
-            f"_{self.request_data.hazard_type}"
-            f"_{self.request_data.exposure_type}"
-            ".xlsx"
-        )
-        return entity_filename
-
     def _get_era_discount_rate(self) -> DiscRates:
         """
         Get the ERA project discount rate based on the request parameters.
@@ -309,7 +291,11 @@ class RunScenario:
             self.base_handler.update_progress(
                 10, "Setting up Entity objects from custom entity file..."
             )
-            entity_filename = self._get_entity_filename()
+            entity_filename = self.entity_handler.get_entity_filename(
+                self.request_data.country_code,
+                self.request_data.hazard_type,
+                self.request_data.exposure_type,
+            )
             entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
 
             # Set static present year to 2024
