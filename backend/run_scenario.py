@@ -195,69 +195,6 @@ class RunScenario:
         )
         return entity_filename
 
-    def _get_hazard_filename(self, is_historical: bool = False) -> str:
-        """
-        Get the hazard filename based on the request parameters.
-        This helper method sets the hazard filename in a specific format to be searched
-        in the data/hazards directory
-
-        :param is_historical: Flag indicating whether historical hazard should be retrieved.
-        :type is_historical: bool
-        :return: The hazard filename.
-        :rtype: str
-        """
-        if is_historical:
-            if self.request_data.hazard_code == "D":
-                hazard_filename = (
-                    "hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    "_historical"
-                    ".mat"
-                )
-            elif self.request_data.hazard_code == "FL":
-                hazard_filename = (
-                    "hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    "_historical"
-                    ".tif"
-                )
-            elif self.request_data.hazard_code == "HW":
-                hazard_filename = (
-                    f"hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    "_historical"
-                    ".tif"
-                )
-        else:
-            if self.request_data.hazard_code == "D":
-                hazard_filename = (
-                    "hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    f"_{self.request_data.scenario}"
-                    ".mat"
-                )
-            elif self.request_data.hazard_code == "FL":
-                hazard_filename = (
-                    "hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    f"_{self.request_data.scenario}"
-                    ".tif"
-                )
-            elif self.request_data.hazard_code == "HW":
-                hazard_filename = (
-                    "hazard"
-                    f"_{self.request_data.hazard_type}"
-                    f"_{self.request_data.country_code}"
-                    f"_{self.request_data.scenario}"
-                    ".tif"
-                )
-        return hazard_filename
-
     def _get_era_discount_rate(self) -> DiscRates:
         """
         Get the ERA project discount rate based on the request parameters.
@@ -400,13 +337,21 @@ class RunScenario:
             self.base_handler.update_progress(
                 30, "Setting up Hazard objects from predefined datasets..."
             )
-            hazard_present_filename = self._get_hazard_filename(is_historical=True)
+            hazard_present_filename = self.hazard_handler.get_hazard_filename(
+                self.request_data.hazard_code,
+                self.request_data.country_code,
+                "historical",
+            )
             hazard_present = self.hazard_handler.get_hazard(
                 hazard_type=self.request_data.hazard_type, filepath=hazard_present_filename
             )
             hazard_future = None
             if self.request_data.scenario != "historical":
-                hazard_future_filename = self._get_hazard_filename(is_historical=False)
+                hazard_future_filename = self.hazard_handler.get_hazard_filename(
+                    self.request_data.hazard_code,
+                    self.request_data.country_code,
+                    self.request_data.scenario,
+                )
                 hazard_future = self.hazard_handler.get_hazard(
                     hazard_type=self.request_data.hazard_type, filepath=hazard_future_filename
                 )

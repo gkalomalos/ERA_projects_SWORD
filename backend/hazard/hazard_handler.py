@@ -589,3 +589,22 @@ class HazardHandler:
             )
 
         return hazard_type
+
+    def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
+        """
+        Get the hazard filename based on the request parameters.
+        This helper method sets the hazard filename in a specific format to be searched
+        in the data/hazards directory
+
+        :param is_historical: Flag indicating whether historical hazard should be retrieved.
+        :type is_historical: bool
+        :return: The hazard filename.
+        :rtype: str
+        """
+        if hazard_code == "D":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.mat"
+        elif hazard_code == "FL":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
+        elif hazard_code == "HW":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
+        return hazard_filename
