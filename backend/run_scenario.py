@@ -65,6 +65,37 @@ class RequestData:
         self.future_year = self.time_horizon[1]  # Set to 2050 if Era project or not selected
 
 
+class Status:
+    """
+    Helper class to handle status codes and messages.
+    """
+
+    def __init__(self):
+        self.code = 2000
+        self.message = "Scenario run successfully."
+
+    def set_error(self, code: int, message: str):
+        """
+        Set error status code and message.
+
+        :param code: The error code.
+        :type code: int
+        :param message: The error message.
+        :type message: str
+        """
+        self.code = code
+        self.message = message
+
+    def get_status(self) -> dict:
+        """
+        Get the status dictionary.
+
+        :return: The status dictionary containing the code and message.
+        :rtype: dict
+        """
+        return {"code": self.code, "message": self.message}
+
+
 class RunScenario:
     """
     Class for orchestrating the execution of scenarios based on provided parameters.
@@ -96,9 +127,8 @@ class RunScenario:
         # Get request parameters from the UI
         self.request_data = self._extract_request_data(request)
 
-        # Set default successfult status code and message
-        self.status_code = 2000
-        self.status_message = "Scenario run successfully."
+        # Set default successful status code and message
+        self.status = Status()
 
         # Clear previously generated maps and geojson datasets from temp directory
         self._clear()
@@ -207,14 +237,12 @@ class RunScenario:
             return discount_rates
 
         except Exception as exception:
-            self.status_code = 3000
-            self.status_message = (
+            status_code = 3000
+            status_message = (
                 f"An error occurred while getting ERA discount rate. More info: {exception}"
             )
-            self.logger.log(
-                "error",
-                f"An error occurred while getting ERA discount rate. More info: {exception}",
-            )
+            self.status.set_error(status_code, status_message)
+            self.logger.log("error", status_message)
             return None
 
     def _get_average_annual_growth(self) -> float:
@@ -406,13 +434,10 @@ class RunScenario:
             self.base_handler.update_progress(100, "Scenario run successfully.")
 
         except Exception as exception:
-            self.status_code = 3000
-            self.status_message = (
-                f"An error occurred while running ERA scenario. More info: {exception}"
-            )
-            self.logger.log(
-                "error", f"An error occurred while running ERA scenario. More info: {exception}"
-            )
+            status_code = 3000
+            status_message = f"An error occurred while running ERA scenario. More info: {exception}"
+            self.status.set_error(status_code, status_message)
+            self.logger.log("error", status_message)
 
     def _run_custom_scenario(self):
         """
@@ -583,13 +608,12 @@ class RunScenario:
             self.base_handler.update_progress(100, "Scenario run successfully.")
 
         except Exception as exception:
-            self.status_code = 3000
-            self.status_message = (
+            status_code = 3000
+            status_message = (
                 f"An error occurred while running custom scenario. More info: {exception}"
             )
-            self.logger.log(
-                "error", f"An error occurred while running custom scenario. More info: {exception}"
-            )
+            self.status.set_error(status_code, status_message)
+            self.logger.log(status_message)
 
     def run_scenario(self) -> dict:
         """
@@ -624,7 +648,7 @@ class RunScenario:
         )
         response = {
             "data": {"mapTitle": map_title},
-            "status": {"code": self.status_code, "message": self.status_message},
+            "status": self.status.get_status(),
         }
         self.logger.log("info", f"Finished running scenario in {time() - initial_time}sec.")
         return response
