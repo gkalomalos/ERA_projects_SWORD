@@ -37,6 +37,14 @@ from logger_config import LoggerConfig
 
 @dataclass
 class RequestData:
+    """
+    Data class to encapsulate request parameters for running scenarios.
+
+    This class stores the parameters required for running scenarios, such as hazard type,
+    exposure type, country name, scenario details, and time horizon. It also handles post-
+    initialization operations to ensure the parameters are cleansed and processed appropriately.
+    """
+
     adaptation_measures: List[str]
     annual_growth: float
     country_name: str
@@ -477,7 +485,9 @@ class RunScenario:
 
         except Exception as exception:
             status_code = 3000
-            status_message = f"An error occurred while running ERA scenario. More info: {exception}"
+            status_message = (
+                "An error occurred while running ERA scenario. " f"More info: {exception}"
+            )
             self.status.set_error(status_code, status_message)
             self.logger.log("error", status_message)
 
@@ -655,7 +665,7 @@ class RunScenario:
                 f"An error occurred while running custom scenario. More info: {exception}"
             )
             self.status.set_error(status_code, status_message)
-            self.logger.log(status_message)
+            self.logger.log("error", status_message)
 
     def run_scenario(self) -> dict:
         """
@@ -673,7 +683,8 @@ class RunScenario:
         self.logger.log(
             "info",
             f"Running new {'ERA' if self.request_data.is_era else 'custom'} scenario for "
-            f"{self.request_data.hazard_type} hazard affecting {self.request_data.exposure_type} in "
+            f"{self.request_data.hazard_type} hazard affecting "
+            f"{self.request_data.exposure_type} in "
             f"{self.request_data.country_name} for a {self.request_data.scenario}.",
         )
 
