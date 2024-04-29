@@ -178,7 +178,13 @@ class RunScenario:
         :return: The entity filename.
         :rtype: str
         """
-        entity_filename = f"entity_TODAY_{self.request_data.country_code}_{self.request_data.hazard_type}_{self.request_data.exposure_type}.xlsx"
+        entity_filename = (
+            "entity_TODAY"
+            f"_{self.request_data.country_code}"
+            f"_{self.request_data.hazard_type}"
+            f"_{self.request_data.exposure_type}"
+            ".xlsx"
+        )
         return entity_filename
 
     def _get_hazard_filename(self, is_historical: bool = False) -> str:
@@ -194,18 +200,54 @@ class RunScenario:
         """
         if is_historical:
             if self.request_data.hazard_code == "D":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_historical.mat"
+                hazard_filename = (
+                    "hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    "_historical"
+                    ".mat"
+                )
             elif self.request_data.hazard_code == "FL":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_historical.tif"
+                hazard_filename = (
+                    "hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    "_historical"
+                    ".tif"
+                )
             elif self.request_data.hazard_code == "HW":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_historical.tif"
+                hazard_filename = (
+                    f"hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    "_historical"
+                    ".tif"
+                )
         else:
             if self.request_data.hazard_code == "D":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_{self.request_data.scenario}.mat"
+                hazard_filename = (
+                    "hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    f"_{self.request_data.scenario}"
+                    ".mat"
+                )
             elif self.request_data.hazard_code == "FL":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_{self.request_data.scenario}.tif"
+                hazard_filename = (
+                    "hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    f"_{self.request_data.scenario}"
+                    ".tif"
+                )
             elif self.request_data.hazard_code == "HW":
-                hazard_filename = f"hazard_{self.request_data.hazard_type}_{self.request_data.country_code}_{self.request_data.scenario}.tif"
+                hazard_filename = (
+                    "hazard"
+                    f"_{self.request_data.hazard_type}"
+                    f"_{self.request_data.country_code}"
+                    f"_{self.request_data.scenario}"
+                    ".tif"
+                )
         return hazard_filename
 
     def _get_era_discount_rate(self) -> DiscRates:
