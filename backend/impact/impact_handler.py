@@ -147,7 +147,7 @@ class ImpactHandler:
                 intensity_unit="People",
                 name="Grass crops farmers",
             )
-        elif exposure_type == "diarrhoea_patients" and hazard_type == "flood":
+        elif exposure_type == "diarrhea_patients" and hazard_type == "flood":
             impf = ImpactFunc(
                 haz_type="FL",
                 id=105,
