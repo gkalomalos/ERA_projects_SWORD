@@ -287,11 +287,11 @@ class RunScenario:
         try:
             # Get ERA entity data
             self.base_handler.update_progress(
-                10, "Setting up Entity objects from custom entity file..."
+                10, "Setting up Entity objects from predefined entity file..."
             )
             entity_filename = self.entity_handler.get_entity_filename(
                 self.request_data.country_code,
-                self.request_data.hazard_type,
+                self.request_data.hazard_code,
                 self.request_data.exposure_type,
             )
             entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
@@ -299,7 +299,7 @@ class RunScenario:
             # Set static present year to 2024
             entity_present.exposures.ref_year = self.request_data.ref_year
 
-            # Get custom average annual economic/population growth
+            # Get predefined average annual economic/population growth
             aag = self._get_average_annual_growth()
 
             entity_future = None

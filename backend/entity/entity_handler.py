@@ -135,7 +135,7 @@ class EntityHandler:
             logger.log("error", f"Failed to generate future entity: {e}")
             return None
 
-    def get_entity_filename(self, country_code: str, hazard_type: str, exposure_type: str) -> str:
+    def get_entity_filename(self, country_code: str, hazard_code: str, exposure_type: str) -> str:
         """
         Get the entity filename based on the request parameters.
         This helper method sets the entity filename in a specific format to be searched
@@ -144,5 +144,5 @@ class EntityHandler:
         :return: The entity filename.
         :rtype: str
         """
-        entity_filename = "entity_TODAY" f"_{country_code}_{hazard_type}_{exposure_type}.xlsx"
+        entity_filename = f"entity_TODAY_{country_code}_{hazard_code}_{exposure_type}.xlsx"
         return entity_filename
