@@ -307,6 +307,10 @@ class HazardHandler:
             )
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
+
+            # This step is required to generate the lat/long columns and avoid issues
+            # with array size mismatch
+            hazard.centroids.set_geometry_points()
             hazard.check()
 
             return hazard
@@ -437,7 +441,8 @@ class HazardHandler:
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
             # TODO: Test if this needs to be refined
-            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+            # TODO: Comment out temporarily to resolve empty df issues
+            # joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
 
