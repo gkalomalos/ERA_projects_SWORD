@@ -309,6 +309,8 @@ class RunScenario:
                 entity_future = self.entity_handler.get_future_entity(
                     entity_present, self.request_data.future_year, aag
                 )
+                if entity_present.disc_rates:
+                    entity_future.disc_rates = entity_present.disc_rates
 
             # Set Exposure objects
             self.base_handler.update_progress(
@@ -587,11 +589,17 @@ class RunScenario:
             self.base_handler.update_progress(90, "Generating Impact map data files...")
             if self.request_data.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(
-                    impact_present, self.request_data.country_name
+                    impact_present,
+                    self.request_data.country_name,
+                    (25, 20, 15, 10),
+                    self.request_data.asset_type,
                 )
             else:
                 self.impact_handler.generate_impact_geojson(
-                    impact_future, self.request_data.country_name
+                    impact_future,
+                    self.request_data.country_name,
+                    (25, 20, 15, 10),
+                    self.request_data.asset_type,
                 )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")
