@@ -305,8 +305,18 @@ class HazardHandler:
                 haz_type=hazard_code,
                 band=[1, 2, 3, 4],
             )
+            # TODO: Set intensity threshold. This step is required to generate meaningful maps
+            # as CLIMADA sets intensity_thres = 10 and in certain hazards this excludes all values.
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
+
+            # Set the hazard code
+            hazard.haz_type = hazard_code
+            # Set hazard units.
+            if hazard_code == "FL":
+                hazard.units = "m"
+            else:
+                hazard.units = "m"
 
             # This step is required to generate the lat/long columns and avoid issues
             # with array size mismatch
@@ -343,7 +353,8 @@ class HazardHandler:
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
             # Set hazard intensity unit in case it's not available in the matlab file
-            # hazard.units
+            # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
+            hazard.units = "-"
 
             return hazard
         except Exception as exception:
@@ -422,6 +433,10 @@ class HazardHandler:
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
             hazard_df = pd.DataFrame(data, columns=columns)
+
+            # Round the hazard rp values to 2 decimal places. Update is vectorized and efficient
+            # for large datasets
+            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(2))
             geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
 

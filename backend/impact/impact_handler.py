@@ -416,7 +416,7 @@ class ImpactHandler:
             data = np.column_stack((coords, local_exceedance_imp))
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
-            impact_df = pd.DataFrame(data, columns=columns)
+            impact_df = pd.DataFrame(data, columns=columns)            
             geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
             impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
 
