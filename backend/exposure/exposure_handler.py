@@ -30,8 +30,8 @@ from climada.entity import Exposures
 from climada.util.api_client import Client
 
 
+from base_handler import BaseHandler
 from constants import DATA_EXPOSURES_DIR, DATA_TEMP_DIR
-from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -47,6 +47,7 @@ class ExposureHandler:
 
     def __init__(self):
         self.client = Client()
+        self.base_handler = BaseHandler()
 
     def get_exposure_from_api(self, country: str) -> Exposures:
         """
@@ -135,13 +136,13 @@ class ExposureHandler:
                     exp_gdf["longitude"], exp_gdf["latitude"], crs="EPSG:4326"
                 ),
             )
-            country_iso3 = get_iso3_country_code(country_name)
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
             layers = [0, 1, 2]
             all_layers_geojson = {"type": "FeatureCollection", "features": []}
 
             for layer in layers:
                 try:
-                    admin_gdf = get_admin_data(country_iso3, layer)
+                    admin_gdf = self.base_handler.get_admin_data(country_iso3, layer)
                     joined_gdf = gpd.sjoin(exposure_gdf, admin_gdf, how="left", predicate="within")
                     aggregated_values = joined_gdf.groupby("id")["value"].sum().reset_index()
                     admin_gdf = admin_gdf.merge(aggregated_values, on="id", how="left")
