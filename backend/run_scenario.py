@@ -56,6 +56,7 @@ class RequestData:
     is_era: bool
     scenario: str
     time_horizon: Tuple[int, int]
+    asset_type: str = field(init=False)
     exposure_type: str = field(init=False)
     country_code: str = field(init=False)
     hazard_code: str = field(init=False)
@@ -71,6 +72,7 @@ class RequestData:
         self.hazard_code = self.hazard_handler.get_hazard_code(self.hazard_type)
         self.ref_year = self.time_horizon[0]  # Set to 2024 if Era project or not selected
         self.future_year = self.time_horizon[1]  # Set to 2050 if Era project or not selected
+        self.asset_type = "economic" if self.exposure_economic else "non_economic"
 
 
 class Status:
@@ -403,11 +405,17 @@ class RunScenario:
             self.base_handler.update_progress(90, "Generating Impact map data files...")
             if self.request_data.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(
-                    impact_present, self.request_data.country_name
+                    impact_present,
+                    self.request_data.country_name,
+                    (25, 20, 15, 10),
+                    self.request_data.asset_type,
                 )
             else:
                 self.impact_handler.generate_impact_geojson(
-                    impact_future, self.request_data.country_name
+                    impact_future,
+                    self.request_data.country_name,
+                    (25, 20, 15, 10),
+                    self.request_data.asset_type,
                 )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")

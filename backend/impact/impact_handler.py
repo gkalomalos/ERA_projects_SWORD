@@ -51,6 +51,7 @@ class ImpactHandler:
     This class provides methods for generating impact data from various sources, processing
     impact datasets, and generating impact GeoJSON files.
     """
+
     def __init__(self) -> None:
         self.base_handler = BaseHandler()
 
@@ -364,6 +365,7 @@ class ImpactHandler:
             )
             # Calculate the impact
             impact = impact_calc.impact(save_mat=True, assign_centroids=True)
+
             return impact
         except Exception as exception:
             status_message = f"An error occurred during impact calculation: More info: {exception}"
@@ -389,7 +391,11 @@ class ImpactHandler:
         return radius
 
     def generate_impact_geojson(
-        self, impact: Impact, country_name: str, return_periods: tuple = (25, 20, 15, 10)
+        self,
+        impact: Impact,
+        country_name: str,
+        return_periods: tuple = (25, 20, 15, 10),
+        asset_type: str = "economic",
     ):
         """
         Generate a GeoJSON file representing impact data.
@@ -406,6 +412,8 @@ class ImpactHandler:
         :type country_name: str
         :param return_periods: The return periods for which impact data is available.
         :type return_periods: tuple, optional
+        :param asset_type: The type of asset (economic or non_economic).
+        :type asset_type: str, optional
         """
         try:
             country_iso3 = self.base_handler.get_iso3_country_code(country_name)
@@ -416,7 +424,14 @@ class ImpactHandler:
             data = np.column_stack((coords, local_exceedance_imp))
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
-            impact_df = pd.DataFrame(data, columns=columns)            
+            impact_df = pd.DataFrame(data, columns=columns)
+
+            # Round the rp values based on the asset_type
+            if asset_type == "economic":
+                impact_df.update(impact_df[[f"rp{rp}" for rp in return_periods]].round(2))
+            elif asset_type == "non_economic":
+                impact_df.update(impact_df[[f"rp{rp}" for rp in return_periods]].apply(np.ceil))
+
             geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
             impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
 
