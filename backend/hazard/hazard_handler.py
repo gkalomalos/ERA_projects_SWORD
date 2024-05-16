@@ -52,11 +52,12 @@ from shapely.geometry import Point
 
 from climada.hazard import Hazard
 from climada.util.api_client import Client
+
+from base_handler import BaseHandler
 from constants import (
     DATA_HAZARDS_DIR,
     DATA_TEMP_DIR,
 )
-from handlers import get_admin_data, get_iso3_country_code
 from logger_config import LoggerConfig
 
 logger = LoggerConfig(logger_types=["file"])
@@ -72,6 +73,7 @@ class HazardHandler:
 
     def __init__(self):
         self.client = Client()
+        self.base_handler = BaseHandler()
 
     # TODO: Needs to be refactored
     def get_hazard_time_horizon(self, hazard_type: str, scenario: str, time_horizon: str) -> str:
@@ -303,8 +305,22 @@ class HazardHandler:
                 haz_type=hazard_code,
                 band=[1, 2, 3, 4],
             )
+            # TODO: Set intensity threshold. This step is required to generate meaningful maps
+            # as CLIMADA sets intensity_thres = 10 and in certain hazards this excludes all values.
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
+
+            # Set the hazard code
+            hazard.haz_type = hazard_code
+            # Set hazard units.
+            if hazard_code == "FL":
+                hazard.units = "m"
+            else:
+                hazard.units = "m"
+
+            # This step is required to generate the lat/long columns and avoid issues
+            # with array size mismatch
+            hazard.centroids.set_geometry_points()
             hazard.check()
 
             return hazard
@@ -337,7 +353,8 @@ class HazardHandler:
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
             # Set hazard intensity unit in case it's not available in the matlab file
-            # hazard.units
+            # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
+            hazard.units = "-"
 
             return hazard
         except Exception as exception:
@@ -407,8 +424,8 @@ class HazardHandler:
         :type return_periods: tuple, optional
         """
         try:
-            country_iso3 = get_iso3_country_code(country_name)
-            admin_gdf = get_admin_data(country_iso3, 2)
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
             local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
             local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
@@ -416,6 +433,10 @@ class HazardHandler:
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
             hazard_df = pd.DataFrame(data, columns=columns)
+
+            # Round the hazard rp values to 2 decimal places. Update is vectorized and efficient
+            # for large datasets
+            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(2))
             geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
 
@@ -435,7 +456,8 @@ class HazardHandler:
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
             # TODO: Test if this needs to be refined
-            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+            # TODO: Comment out temporarily to resolve empty df issues
+            # joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
 
@@ -587,3 +609,22 @@ class HazardHandler:
             )
 
         return hazard_type
+
+    def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
+        """
+        Get the hazard filename based on the request parameters.
+        This helper method sets the hazard filename in a specific format to be searched
+        in the data/hazards directory
+
+        :param is_historical: Flag indicating whether historical hazard should be retrieved.
+        :type is_historical: bool
+        :return: The hazard filename.
+        :rtype: str
+        """
+        if hazard_code == "D":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.mat"
+        elif hazard_code == "FL":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
+        elif hazard_code == "HW":
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
+        return hazard_filename

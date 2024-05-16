@@ -17,7 +17,7 @@ import AlertMessage from "../alerts/AlertMessage";
 
 const exposureNonEconomicDict = {
   thailand: ["tree_crops_farmers", "grass_crops_farmers", "buddhist_monks", "water_users", "roads", "students"],
-  egypt: ["hospitalised_people", "students", "diarrhoea_patients", "roads"],
+  egypt: ["hospitalised_people", "students", "diarrhea_patients", "roads"],
 };
 
 const ExposureNonEconomicCard = ({

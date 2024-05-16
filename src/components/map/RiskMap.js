@@ -20,6 +20,7 @@ const RiskMap = ({ selectedCountry }) => {
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
   const [radius, setRadius] = useState(0);
+  const [unit, setUnit] = useState("");
 
   const mapRef = useRef();
 
@@ -34,6 +35,7 @@ const RiskMap = ({ selectedCountry }) => {
       const data = await response.json();
       setLegendTitle(data._metadata.title);
       setRadius(data._metadata.radius);
+      setUnit(data._metadata.unit);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
       const minValue = Math.min(...values);
       setMinValue(minValue);
@@ -67,7 +69,9 @@ const RiskMap = ({ selectedCountry }) => {
           radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t("value")}: ${value}`
+            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t(
+              "value"
+            )}: ${value} (${unit})`
           )
           .addTo(layerGroup);
       });

@@ -98,6 +98,15 @@ class EntityHandler:
             entity.check()
             exposure = entity.exposures
             exposure.gdf = exposure.gdf.loc[:, ~exposure.gdf.columns.str.contains("^Unnamed")]
+
+            # Retrieve and check unique value units
+            unique_value_units = entity.exposures.gdf["value unit"].unique()
+            if len(unique_value_units) == 1:
+                value_unit = unique_value_units[0]
+                # Set exposure's value unit
+                exposure.value_unit = value_unit
+            else:
+                raise ValueError("There are multiple different 'value unit' values in the DataFrame")
             exposure.check()
 
             return entity
@@ -134,3 +143,15 @@ class EntityHandler:
         except Exception as e:
             logger.log("error", f"Failed to generate future entity: {e}")
             return None
+
+    def get_entity_filename(self, country_code: str, hazard_code: str, exposure_type: str) -> str:
+        """
+        Get the entity filename based on the request parameters.
+        This helper method sets the entity filename in a specific format to be searched
+        in the data/entities directory
+
+        :return: The entity filename.
+        :rtype: str
+        """
+        entity_filename = f"entity_TODAY_{country_code}_{hazard_code}_{exposure_type}.xlsx"
+        return entity_filename
