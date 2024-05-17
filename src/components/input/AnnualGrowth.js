@@ -62,13 +62,13 @@ const AnnualGrowth = ({
     if (selectedAppOption === "era") {
       if (selectedCountry === "thailand") {
         if (selectedExposureEconomic) {
-          // Set static population growth of Thailand to -0.22% if
+          // Set static population growth of Thailand to +2.94% if
           // economic Exposure type is selected
-          setGrowth(-0.22);
-        } else {
-          // Set static GDP growth of Thailand to +2.94% if
-          // non-economic Exposure type is selected
           setGrowth(2.94);
+        } else {
+          // Set static GDP growth of Thailand to -0.22% if
+          // non-economic Exposure type is selected
+          setGrowth(-0.22);
         }
       } else if (selectedCountry === "egypt") {
         if (selectedExposureEconomic) {

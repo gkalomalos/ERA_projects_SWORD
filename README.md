@@ -93,12 +93,51 @@ The application logs important actions and errors, facilitating debugging and mo
 
 ## Documentation
 
+Ensure you generate the updated documentation when pushing relevant code. Navigate to the root directory of the app and using your terminal or command prompt, run the following command:
+
+```sh
+sphinx-build -b html docs/ docs/_build
+```
+
 Developer documentation, including a detailed description of API endpoints and usage examples, can be found [here](https://ath-git.swordgroup.lan/unu/climada-unu/).
 
 ## Before Opening a Pull Request
 
 Ensure you run the tests and comply with the linting standards before opening a pull request:
 
-- Run tests: `python -m unittest tests/test_api.py`
-- Check linting: `pylint app/ --fail-under=8`
-  Failure to meet the test coverage and linting standards will result in CI pipeline failures.
+- Run tests:
+
+```sh
+# Navigate to the backend directory
+cd ./backend
+# Execute tests
+python -m unittest tests/test_api.py
+```
+
+- Check linting:
+
+```sh
+# Navigate to the backend directory
+cd ./backend
+# Run pylint
+pylint --exit-zero --fail-under=9 .
+```
+
+Failure to meet the test coverage and linting standards will result in CI pipeline failures.
+
+## Tag new version
+
+Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly. 
+
+```sh
+git tag -a <version> -m "<tag_title>" -m "tag_comments"
+
+# Example
+git tag -a v0.5.5 -m "CLIMADERA version 0.5.5" -m "
+>> 
+>> - Refactor run scenario process to increase performance and readability.
+>> - Modify information shown on Hazard and Risk maps.
+>> - Modify the run era scenario process with proper entity files.
+>> - Fix minor issues when extracting information out of hazard .mat and .tif files.
+>> "
+```
