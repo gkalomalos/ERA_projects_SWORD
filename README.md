@@ -124,3 +124,20 @@ pylint --exit-zero --fail-under=9 .
 ```
 
 Failure to meet the test coverage and linting standards will result in CI pipeline failures.
+
+## Tag new version
+
+Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly. 
+
+```sh
+git tag -a <version> -m "<tag_title>" -m "tag_comments"
+
+# Example
+git tag -a v0.5.5 -m "CLIMADERA version 0.5.5" -m "
+>> 
+>> - Refactor run scenario process to increase performance and readability.
+>> - Modify information shown on Hazard and Risk maps.
+>> - Modify the run era scenario process with proper entity files.
+>> - Fix minor issues when extracting information out of hazard .mat and .tif files.
+>> "
+```
