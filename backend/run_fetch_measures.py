@@ -43,19 +43,46 @@ class RunFetchScenario:
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
 
+    def valid_request(self) -> bool:
+        """
+        Validate the request data to ensure required fields are present.
+
+        This method checks if the required fields are present in the request data.
+
+        :return: True if the request is valid, False otherwise.
+        :rtype: bool
+        """
+        required_fields = ["hazardType"]
+        for field in required_fields:
+            if field not in self.request:
+                self.logger.log("error", f"Missing required field: {field}")
+                return False
+        return True
+
     def run_fetch_measures(self) -> dict:
         """
         Run the process to fetch adaptation measures.
 
-        This method retrieves the hazard type from the request, gets the hazard code,
-        and fetches the adaptation measures from an Excel file based on the hazard code.
-        It updates the progress and generates a response containing the fetched adaptation
-        measures.
+        This method validates the request, retrieves the hazard type from the request,
+        gets the hazard code, and fetches the adaptation measures from an Excel file based
+        on the hazard code. It updates the progress and generates a response containing the
+        fetched adaptation measures.
 
         :return: A dictionary containing the response data and status.
         :rtype: dict
         """
         initial_time = time()
+
+        if not self.valid_request():
+            run_status_message = "Invalid request: Missing required fields"
+            status_code = 4000
+            self.logger.log("error", run_status_message)
+            response = {
+                "data": {"adaptationMeasures": []},
+                "status": {"code": status_code, "message": run_status_message},
+            }
+            return response
+
         hazard_type = self.request.get("hazardType", "")
         hazard_code = self.hazard_handler.get_hazard_code(hazard_type)
         hazard_beautified = self.base_handler.beautify_hazard_type(hazard_type)
