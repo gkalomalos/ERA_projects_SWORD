@@ -100,13 +100,13 @@ class EntityHandler:
             exposure.gdf = exposure.gdf.loc[:, ~exposure.gdf.columns.str.contains("^Unnamed")]
 
             # Retrieve and check unique value units
-            unique_value_units = entity.exposures.gdf["value unit"].unique()
+            unique_value_units = entity.exposures.gdf["value_unit"].unique()
             if len(unique_value_units) == 1:
                 value_unit = unique_value_units[0]
-                # Set exposure's value unit
+                # Set exposure's value_unit
                 exposure.value_unit = value_unit
             else:
-                raise ValueError("There are multiple different 'value unit' values in the DataFrame")
+                raise ValueError("There are multiple different 'value_unit' values in the DataFrame")
             exposure.check()
 
             return entity
