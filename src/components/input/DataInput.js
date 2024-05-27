@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Grid } from "@mui/material";
@@ -17,7 +18,25 @@ import TimeHorizon from "./TimeHorizon";
 
 import AlertMessage from "../alerts/AlertMessage";
 
-const DataInput = (props) => {
+const DataInput = ({
+  isValidExposureEconomic,
+  isValidExposureNonEconomic,
+  isValidHazard,
+  onChangeCard,
+  onChangeMapTitle,
+  onScenarioRunning,
+  onSelectTab,
+  selectedCountry,
+  selectedAnnualGrowth,
+  selectedAppOption,
+  selectedExposureEconomic,
+  selectedExposureFile,
+  selectedExposureNonEconomic,
+  selectedHazard,
+  selectedHazardFile,
+  selectedScenario,
+  selectedTimeHorizon,
+}) => {
   const { t } = useTranslation();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -28,20 +47,20 @@ const DataInput = (props) => {
 
   const onRunHandler = () => {
     const body = {
-      annualGrowth: props.selectedAnnualGrowth,
-      countryName: props.selectedCountry,
-      exposureEconomic: props.selectedExposureEconomic,
-      exposureFile: props.selectedExposureFile,
-      exposureNonEconomic: props.selectedExposureNonEconomic,
-      hazardType: props.selectedHazard,
-      isEra: props.selectedAppOption === "era" ? true : false,
-      hazardFile: props.selectedHazardFile,
-      scenario: props.selectedScenario,
-      timeHorizon: props.selectedTimeHorizon,
+      annualGrowth: selectedAnnualGrowth,
+      countryName: selectedCountry,
+      exposureEconomic: selectedExposureEconomic,
+      exposureFile: selectedExposureFile,
+      exposureNonEconomic: selectedExposureNonEconomic,
+      hazardType: selectedHazard,
+      isEra: selectedAppOption === "era" ? true : false,
+      hazardFile: selectedHazardFile,
+      scenario: selectedScenario,
+      timeHorizon: selectedTimeHorizon,
     };
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
-    props.onScenarioRunning(true);
+    onScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
         setMessage(response.result.status.message);
@@ -49,8 +68,8 @@ const DataInput = (props) => {
         setShowMessage(true);
         setIsRunButtonLoading(false);
         setIsRunButtonDisabled(false);
-        props.onChangeMapTitle(response.result.data.mapTitle);
-        props.onScenarioRunning(false);
+        onChangeMapTitle(response.result.data.mapTitle);
+        onScenarioRunning(false);
       })
       .catch((error) => {
         console.log(error);
@@ -62,17 +81,17 @@ const DataInput = (props) => {
   };
 
   const onCardClickHandler = (card) => {
-    props.onChangeCard(card);
+    onChangeCard(card);
   };
 
   const handleRunButton = () => {
     if (
-      props.selectedCountry &&
-      props.selectedHazard &&
-      props.selectedScenario &&
-      (props.selectedExposureEconomic || props.selectedExposureNonEconomic) &&
-      props.isValidHazard &&
-      (props.isValidExposureEconomic || props.isValidExposureNonEconomic)
+      selectedCountry &&
+      selectedHazard &&
+      selectedScenario &&
+      (selectedExposureEconomic || selectedExposureNonEconomic) &&
+      isValidHazard &&
+      (isValidExposureEconomic || isValidExposureNonEconomic)
     ) {
       setIsRunButtonDisabled(false);
     } else {
@@ -82,7 +101,24 @@ const DataInput = (props) => {
 
   useEffect(() => {
     handleRunButton();
-  }, [props]);
+  }, [
+    isValidExposureEconomic,
+    isValidExposureNonEconomic,
+    isValidHazard,
+    onChangeCard,
+    onChangeMapTitle,
+    onScenarioRunning,
+    selectedCountry,
+    selectedAnnualGrowth,
+    selectedAppOption,
+    selectedExposureEconomic,
+    selectedExposureFile,
+    selectedExposureNonEconomic,
+    selectedHazard,
+    selectedHazardFile,
+    selectedScenario,
+    selectedTimeHorizon,
+  ]);
 
   return (
     <>
@@ -95,61 +131,61 @@ const DataInput = (props) => {
           <Grid item xs={12}>
             <Country
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedCountry={props.selectedCountry}
+              onSelectTab={onSelectTab}
+              selectedCountry={selectedCountry}
             />
           </Grid>
           <Grid item xs={12}>
             <Hazard
-              isValidHazard={props.isValidHazard}
+              isValidHazard={isValidHazard}
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedHazard={props.selectedHazard}
+              onSelectTab={onSelectTab}
+              selectedHazard={selectedHazard}
             />
           </Grid>
           <Grid item xs={12}>
             <Scenario
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedScenario={props.selectedScenario}
+              onSelectTab={onSelectTab}
+              selectedScenario={selectedScenario}
             />
           </Grid>
           <Grid item xs={12}>
             <TimeHorizon
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedAppOption={props.selectedAppOption}
-              selectedCountry={props.selectedCountry}
-              selectedTimeHorizon={props.selectedTimeHorizon}
+              onSelectTab={onSelectTab}
+              selectedAppOption={selectedAppOption}
+              selectedCountry={selectedCountry}
+              selectedTimeHorizon={selectedTimeHorizon}
             />
           </Grid>
           <Grid item xs={12}>
             <ExposureEconomic
-              isValidExposureEconomic={props.isValidExposureEconomic}
+              isValidExposureEconomic={isValidExposureEconomic}
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedExposureEconomic={props.selectedExposureEconomic}
-              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+              onSelectTab={onSelectTab}
+              selectedExposureEconomic={selectedExposureEconomic}
+              selectedExposureNonEconomic={selectedExposureNonEconomic}
             />
           </Grid>
           <Grid item xs={12}>
             <ExposureNonEconomic
-              isValidExposureNonEconomic={props.isValidExposureNonEconomic}
+              isValidExposureNonEconomic={isValidExposureNonEconomic}
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedExposureEconomic={props.selectedExposureEconomic}
-              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+              onSelectTab={onSelectTab}
+              selectedExposureEconomic={selectedExposureEconomic}
+              selectedExposureNonEconomic={selectedExposureNonEconomic}
             />
           </Grid>
           <Grid item xs={12}>
             <AnnualGrowth
               onCardClick={onCardClickHandler}
-              onSelectTab={props.onSelectTab}
-              selectedAnnualGrowth={props.selectedAnnualGrowth}
-              selectedAppOption={props.selectedAppOption}
-              selectedCountry={props.selectedCountry}
-              selectedExposureEconomic={props.selectedExposureEconomic}
-              selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+              onSelectTab={onSelectTab}
+              selectedAnnualGrowth={selectedAnnualGrowth}
+              selectedAppOption={selectedAppOption}
+              selectedCountry={selectedCountry}
+              selectedExposureEconomic={selectedExposureEconomic}
+              selectedExposureNonEconomic={selectedExposureNonEconomic}
             />
           </Grid>
         </Grid>
@@ -199,6 +235,27 @@ const DataInput = (props) => {
       </Box>
     </>
   );
+};
+
+DataInput.propTypes = {
+  isValidExposureEconomic: PropTypes.bool.isRequired,
+  isValidExposureNonEconomic: PropTypes.bool.isRequired,
+  isValidHazard: PropTypes.bool.isRequired,
+  onChangeCard: PropTypes.func.isRequired,
+  onChangeMapTitle: PropTypes.func.isRequired,
+  onScenarioRunning: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureFile: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedHazardFile: PropTypes.string.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
+  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default DataInput;

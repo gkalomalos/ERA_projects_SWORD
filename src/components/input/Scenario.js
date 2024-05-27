@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const Scenario = (props) => {
+const Scenario = ({ selectedScenario, onCardClick, onSelectTab }) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
@@ -17,12 +18,12 @@ const Scenario = (props) => {
   };
 
   const handleClick = () => {
-    props.onCardClick("scenario");
-    props.onSelectTab(0);
+    onCardClick("scenario");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedScenario) {
+    if (selectedScenario) {
       setBgcolor("#E5F5EB"); // green
     } else {
       setBgcolor("#EBF3F5"); // default light blue
@@ -31,7 +32,7 @@ const Scenario = (props) => {
 
   useEffect(() => {
     handleBgColor();
-  }, [props.selectedScenario]);
+  }, [selectedScenario]);
 
   return (
     <Card
@@ -59,12 +60,12 @@ const Scenario = (props) => {
             {t("scenario_title")}
           </Typography>
 
-          {props.selectedScenario && (
+          {selectedScenario && (
             <TextField
               id="scenario"
               fullWidth
               variant="outlined"
-              value={t(`input_scenario_scenarios_${props.selectedScenario}`)}
+              value={t(`input_scenario_scenarios_${selectedScenario}`)}
               disabled
               InputProps={{
                 readOnly: true,
@@ -82,6 +83,12 @@ const Scenario = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+Scenario.propTypes = {
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
 };
 
 export default Scenario;

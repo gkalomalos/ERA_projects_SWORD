@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
@@ -14,11 +15,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const LoadModal = (props) => {
+const LoadModal = ({ open, message }) => {
   return (
     <>
       <Dialog
-        open={props.open}
+        open={open}
         TransitionComponent={Transition}
         keepMounted
         disableEscapeKeyDown={true}
@@ -30,7 +31,7 @@ const LoadModal = (props) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" textAlign="center">
-            {props.message}
+            {message}
           </DialogContentText>
           <Box
             component="img"
@@ -47,6 +48,11 @@ const LoadModal = (props) => {
       </Dialog>
     </>
   );
+};
+
+LoadModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
 };
 
 export default LoadModal;

@@ -43,15 +43,26 @@ class RunCheckDataType:
         """
         Run the check data type process.
 
-        This method retrieves the country name and data type from the request, sanitizes the
-        country name, and checks if the CLIMADA API offers the specified data type for the
-        given country. It updates the progress and generates a response based on whether
-        the data type is valid or not.
+        This method validates the request, retrieves the country name and data type from the
+        request, sanitizes the country name, and checks if the CLIMADA API offers the specified
+        data type for the given country. It updates the progress and generates a response based
+        on whether the data type is valid or not.
 
         :return: A dictionary containing the response data and status.
         :rtype: dict
         """
         initial_time = time()
+
+        if not self.valid_request():
+            run_status_message = "Invalid request: Missing required fields"
+            status_code = 3000
+            self.logger.log("error", run_status_message)
+            response = {
+                "data": {"data": {}},
+                "status": {"code": status_code, "message": run_status_message},
+            }
+            return response
+
         country_name = self.request.get("country", "")
         country_name = self.base_handler.sanitize_country_name(country_name)
         data_type = self.request.get("dataType", "")
@@ -82,6 +93,22 @@ class RunCheckDataType:
             "info", f"Finished fetching {data_type} data in {time() - initial_time}sec."
         )
         return response
+
+    def valid_request(self) -> bool:
+        """
+        Validate the request data to ensure required fields are present.
+
+        This method checks if the required fields are present in the request data.
+
+        :return: True if the request is valid, False otherwise.
+        :rtype: bool
+        """
+        required_fields = ["country", "dataType"]
+        for field in required_fields:
+            if field not in self.request:
+                self.logger.log("error", f"Missing required field: {field}")
+                return False
+        return True
 
 
 if __name__ == "__main__":

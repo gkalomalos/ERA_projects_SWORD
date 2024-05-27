@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import L from "leaflet";
@@ -159,6 +160,10 @@ const RiskMap = ({ selectedCountry }) => {
       )}
     </MapContainer>
   );
+};
+
+RiskMap.propTypes = {
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default RiskMap;

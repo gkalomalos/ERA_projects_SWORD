@@ -186,7 +186,7 @@ const App = () => {
             style={{
               padding: "16px",
               paddingTop: "174px",
-              height: "calc(100vh - 64px)",
+              // height: "calc(100vh - 64px)",
               overflow: "auto",
             }}
           >

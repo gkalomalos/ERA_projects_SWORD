@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import PropTypes from "prop-types";
 
 import { Snackbar, Stack } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
@@ -22,6 +23,13 @@ const AlertMessage = ({ handleCloseMessage, message, severity, showMessage }) =>
       </Snackbar>
     </Stack>
   );
+};
+
+AlertMessage.propTypes = {
+  handleCloseMessage: PropTypes.func.isRequired,
+  message: PropTypes.string.isRequired,
+  severity: PropTypes.oneOf(["error", "warning", "info", "success"]).isRequired,
+  showMessage: PropTypes.bool.isRequired,
 };
 
 export default AlertMessage;

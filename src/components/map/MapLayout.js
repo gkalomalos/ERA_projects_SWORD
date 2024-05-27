@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { Paper } from "@mui/material";
 
@@ -24,6 +25,11 @@ const MapLayout = ({ activeMap, selectedCountry }) => {
       </Paper>
     </div>
   );
+};
+
+MapLayout.propTypes = {
+  activeMap: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default MapLayout;
