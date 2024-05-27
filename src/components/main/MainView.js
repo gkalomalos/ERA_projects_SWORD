@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 import AdaptationMap from "../map/AdaptationMap";
 import AdaptationChartLayout from "../controls/AdaptationChartLayout";
@@ -112,6 +113,36 @@ const MainView = ({
       )}
     </>
   );
+};
+
+MainView.propTypes = {
+  activeMap: PropTypes.string.isRequired,
+  mapTitle: PropTypes.string.isRequired,
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCard: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureFile: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedHazardFile: PropTypes.string.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
+  selectedSubTab: PropTypes.number.isRequired,
+  selectedTab: PropTypes.number.isRequired,
+  selectedTimeHorizon: PropTypes.array.isRequired,
+  onChangeCountry: PropTypes.func.isRequired,
+  onChangeExposureEconomic: PropTypes.func.isRequired,
+  onChangeExposureFile: PropTypes.func.isRequired,
+  onChangeExposureNonEconomic: PropTypes.func.isRequired,
+  onChangeHazard: PropTypes.func.isRequired,
+  onChangeHazardFile: PropTypes.func.isRequired,
+  onChangeScenario: PropTypes.func.isRequired,
+  onChangeTimeHorizon: PropTypes.func.isRequired,
+  onChangeAnnualGrowth: PropTypes.func.isRequired,
+  onChangeValidEconomicExposure: PropTypes.func.isRequired,
+  onChangeValidNonEconomicExposure: PropTypes.func.isRequired,
+  onChangeValidHazard: PropTypes.func.isRequired,
 };
 
 export default MainView;

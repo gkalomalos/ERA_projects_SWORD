@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { Box } from "@mui/material";
 
@@ -18,6 +19,11 @@ const ResultsView = ({ selectedTab, onChangeActiveMap }) => {
       </Box>
     </Box>
   );
+};
+
+ResultsView.propTypes = {
+  selectedTab: PropTypes.number.isRequired,
+  onChangeActiveMap: PropTypes.func.isRequired,
 };
 
 export default ResultsView;
