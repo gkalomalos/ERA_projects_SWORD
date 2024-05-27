@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const TimeHorizon = (props) => {
+const TimeHorizon = ({
+  onCardClick,
+  onSelectTab,
+  selectedAppOption,
+  selectedCountry,
+  selectedTimeHorizon,
+}) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -11,7 +18,7 @@ const TimeHorizon = (props) => {
   const handleMouseDown = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
     setClicked(true); // Trigger animation
@@ -20,7 +27,7 @@ const TimeHorizon = (props) => {
   const handleMouseUp = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
     setClicked(false); // Reset animation
@@ -29,20 +36,16 @@ const TimeHorizon = (props) => {
   const handleClick = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
-    if (props.selectedAppOption === "era") {
+    if (selectedAppOption === "era") {
       return;
     }
-    props.onCardClick("timeHorizon");
-    props.onSelectTab(0);
+    onCardClick("timeHorizon");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedAppOption === "era" && props.selectedCountry) {
+    if (selectedAppOption === "era" && selectedCountry) {
       setBgColor("#E5F5EB"); //green
-      // } else if (props.selectedAppOption === "era") {
-      //   setBgColor("#FFCCCC"); //red
-      // } else if (props.selectedAppOption === "era") {
-      //   setBgColor("#E6E6E6"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }
@@ -50,7 +53,7 @@ const TimeHorizon = (props) => {
 
   useEffect(() => {
     handleBgColor();
-  }, [props.selectedAppOption, props.selectedCountry]);
+  }, [selectedAppOption, selectedCountry]);
 
   return (
     <Card
@@ -77,12 +80,12 @@ const TimeHorizon = (props) => {
           <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("time_horizon_title")}
           </Typography>
-          {props.selectedTimeHorizon && (
+          {selectedTimeHorizon && (
             <TextField
               id="timeHorizon"
               fullWidth
               variant="outlined"
-              value={`${props.selectedTimeHorizon[0]} - ${props.selectedTimeHorizon[1]}`}
+              value={`${selectedTimeHorizon[0]} - ${selectedTimeHorizon[1]}`}
               disabled
               InputProps={{
                 readOnly: true,
@@ -100,6 +103,14 @@ const TimeHorizon = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+TimeHorizon.propTypes = {
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default TimeHorizon;

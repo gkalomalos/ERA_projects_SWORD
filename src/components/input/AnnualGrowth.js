@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
@@ -48,10 +49,6 @@ const AnnualGrowth = ({
   const handleBgColor = () => {
     if (selectedAppOption === "era" && selectedCountry) {
       setBgColor("#E5F5EB"); //green
-      // } else if (props.selectedAppOption === "era") {
-      //   setBgColor("#FFCCCC"); //red
-      // } else if (props.selectedAppOption === "era") {
-      //   setBgColor("#E6E6E6"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }
@@ -189,6 +186,16 @@ const AnnualGrowth = ({
       </CardContent>
     </Card>
   );
+};
+
+AnnualGrowth.propTypes = {
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default AnnualGrowth;

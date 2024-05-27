@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
@@ -18,7 +19,7 @@ const ExposureMap = ({ selectedCountry }) => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
-  const [unit, setUnit] = useState("")
+  const [unit, setUnit] = useState("");
 
   const mapRef = useRef();
 
@@ -32,7 +33,7 @@ const ExposureMap = ({ selectedCountry }) => {
       }
       const data = await response.json();
       setLegendTitle(data._metadata.title);
-      setUnit(data._metadata.unit)
+      setUnit(data._metadata.unit);
       const filteredFeatures = data.features.filter(
         (feature) => feature.properties.layer === layer
       );
@@ -157,6 +158,10 @@ const ExposureMap = ({ selectedCountry }) => {
       )}
     </MapContainer>
   );
+};
+
+ExposureMap.propTypes = {
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default ExposureMap;

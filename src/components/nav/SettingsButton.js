@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Dialog, DialogTitle, DialogContent, DialogContentText, Slide } from "@mui/material";
@@ -32,6 +33,11 @@ const SettingsModal = ({ isOpen, onClose }) => {
       </DialogContent>
     </Dialog>
   );
+};
+
+SettingsModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onclose: PropTypes.func.isRequired,
 };
 
 export default SettingsModal;

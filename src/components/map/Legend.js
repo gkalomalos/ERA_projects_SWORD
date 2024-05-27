@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import "./Legend.css";
 
@@ -32,6 +33,13 @@ const Legend = ({ colorScale, minValue, maxValue, title }) => {
       </div>
     </div>
   );
+};
+
+Legend.propTypes = {
+  colorScale: PropTypes.any.isRequired,
+  minValue: PropTypes.number.isRequired,
+  maxValue: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default Legend;

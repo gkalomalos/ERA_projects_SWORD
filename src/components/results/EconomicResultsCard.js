@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
@@ -68,6 +69,10 @@ const EconomicResultsCard = ({ onActiveMapSelect }) => {
       </Box>
     </Box>
   );
+};
+
+EconomicResultsCard.propTypes = {
+  onActiveMapSelect: PropTypes.func.isRequired,
 };
 
 export default EconomicResultsCard;

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Typography } from "@mui/material";
@@ -26,6 +27,11 @@ const MainViewTitle = ({ selectedTab, mapTitle }) => {
       </Typography>
     </Box>
   );
+};
+
+MainViewTitle.propTypes = {
+  selectedTab: PropTypes.number.isRequired,
+  mapTitle: PropTypes.string.isRequired,
 };
 
 export default MainViewTitle;

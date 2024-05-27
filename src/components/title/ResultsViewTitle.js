@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 import { useTranslation } from "react-i18next";
 
 import { Box, Typography } from "@mui/material";
@@ -26,6 +28,10 @@ const ResultsViewTitle = ({ selectedTab }) => {
       </Typography>
     </Box>
   );
+};
+
+ResultsViewTitle.proptTypes = {
+  selectedTab: PropTypes.number.isRequired,
 };
 
 export default ResultsViewTitle;

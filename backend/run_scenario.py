@@ -238,13 +238,13 @@ class RunScenario:
         try:
             growth_rates = {
                 "Egypt": {
-                    "tree_crops": 1.04,
-                    "grass_crops": 1.04,
-                    "wet_markets": 1.04,
-                    "grass_crops_farmers": 1.0129,
-                    "tree_crops_farmers": 1.0129,
-                    "buddhist_monks": 1.0129,
-                    "water_users": 1.0129,
+                    "crops": 1.04,
+                    "livestock": 1.04,
+                    "power_plants": 1.04,
+                    "hotels": 1.04,
+                    "hospitalized_people": 1.0129,
+                    "students": 1.0129,
+                    "diarrhea_patients": 1.0129,
                     "roads": 1.0129,
                 },
                 "Thailand": {

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Slider, Typography } from "@mui/material";
@@ -231,6 +232,13 @@ const AnnualGrowthCard = ({
       </CardContent>
     </Card>
   );
+};
+
+AnnualGrowthCard.propTypes = {
+  onGrowthSelect: PropTypes.func.isRequired,
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default AnnualGrowthCard;
