@@ -13,7 +13,6 @@
   },
   "plugins": ["react", "react-hooks"],
   "rules": {
-    "react-hooks/exhaustive-deps": "off", // Disable the exhaustive-deps rule
-    "react/prop-types": 0 // Disable react prop-types rule. TODO: enable on PRD
+    "react-hooks/exhaustive-deps": "off" // Disable the exhaustive-deps rule
   }
 }
