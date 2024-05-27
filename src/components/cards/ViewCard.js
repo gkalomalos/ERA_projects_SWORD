@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import AnnualGrowthCard from "./AnnualGrowthCard";
 import CountryCard from "./CountryCard";
@@ -8,71 +9,119 @@ import HazardCard from "./HazardCard";
 import ScenarioCard from "./ScenarioCard";
 import TimeHorizonCard from "./TimeHorizonCard";
 
-const ViewCard = (props) => {
+const ViewCard = ({
+  onChangeAnnualGrowth,
+  onChangeCountry,
+  onChangeExposureEconomic,
+  onChangeExposureFile,
+  onChangeExposureNonEconomic,
+  onChangeHazard,
+  onChangeHazardFile,
+  onChangeScenario,
+  onChangeTimeHorizon,
+  onChangeValidEconomicExposure,
+  onChangeValidNonEconomicExposure,
+  onChangeValidHazard,
+  selectedAnnualGrowth,
+  selectedAppOption,
+  selectedCard,
+  selectedCountry,
+  selectedExposureEconomic,
+  selectedExposureFile,
+  selectedExposureNonEconomic,
+  selectedHazard,
+  selectedHazardFile,
+  selectedScenario,
+  selectedTimeHorizon,
+}) => {
   return (
     <>
-      {props.selectedCard === "country" && (
-        <CountryCard
-          onCountrySelect={props.onChangeCountry}
-          selectedCountry={props.selectedCountry}
-        />
+      {selectedCard === "country" && (
+        <CountryCard onCountrySelect={onChangeCountry} selectedCountry={selectedCountry} />
       )}
-      {props.selectedCard === "hazard" && (
+      {selectedCard === "hazard" && (
         <HazardCard
-          onChangeValidHazard={props.onChangeValidHazard}
-          onChangeHazardFile={props.onChangeHazardFile}
-          onHazardSelect={props.onChangeHazard}
-          selectedAppOption={props.selectedAppOption}
-          selectedCountry={props.selectedCountry}
-          selectedHazard={props.selectedHazard}
-          selectedHazardFile={props.selectedHazardFile}
+          onChangeValidHazard={onChangeValidHazard}
+          onChangeHazardFile={onChangeHazardFile}
+          onHazardSelect={onChangeHazard}
+          selectedAppOption={selectedAppOption}
+          selectedCountry={selectedCountry}
+          selectedHazard={selectedHazard}
+          selectedHazardFile={selectedHazardFile}
         />
       )}
-      {props.selectedCard === "scenario" && (
+      {selectedCard === "scenario" && (
         <ScenarioCard
-          onScenarioSelect={props.onChangeScenario}
-          selectedHazard={props.selectedHazard}
-          selectedScenario={props.selectedScenario}
+          onScenarioSelect={onChangeScenario}
+          selectedHazard={selectedHazard}
+          selectedScenario={selectedScenario}
         />
       )}
-      {props.selectedCard === "timeHorizon" && (
+      {selectedCard === "timeHorizon" && (
         <TimeHorizonCard
-          onTimeHorizonSelect={props.onChangeTimeHorizon}
-          selectedTimeHorizon={props.selectedTimeHorizon}
+          onTimeHorizonSelect={onChangeTimeHorizon}
+          selectedTimeHorizon={selectedTimeHorizon}
         />
       )}
-      {props.selectedCard === "annualGrowth" && (
+      {selectedCard === "annualGrowth" && (
         <AnnualGrowthCard
-          onGrowthSelect={props.onChangeAnnualGrowth}
-          selectedAnnualGrowth={props.selectedAnnualGrowth}
-          selectedExposureEconomic={props.selectedExposureEconomic}
-          selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+          onGrowthSelect={onChangeAnnualGrowth}
+          selectedAnnualGrowth={selectedAnnualGrowth}
+          selectedExposureEconomic={selectedExposureEconomic}
+          selectedExposureNonEconomic={selectedExposureNonEconomic}
         />
       )}
-      {props.selectedCard === "exposureEconomic" && (
+      {selectedCard === "exposureEconomic" && (
         <ExposureEconomicCard
-          onChangeExposureFile={props.onChangeExposureFile}
-          onChangeValidEconomicExposure={props.onChangeValidEconomicExposure}
-          onExposureEconomicSelect={props.onChangeExposureEconomic}
-          selectedAppOption={props.selectedAppOption}
-          selectedCountry={props.selectedCountry}
-          selectedExposureFile={props.selectedExposureFile}
-          selectedExposureEconomic={props.selectedExposureEconomic}
+          onChangeExposureFile={onChangeExposureFile}
+          onChangeValidEconomicExposure={onChangeValidEconomicExposure}
+          onExposureEconomicSelect={onChangeExposureEconomic}
+          selectedAppOption={selectedAppOption}
+          selectedCountry={selectedCountry}
+          selectedExposureFile={selectedExposureFile}
+          selectedExposureEconomic={selectedExposureEconomic}
         />
       )}
-      {props.selectedCard === "exposureNonEconomic" && (
+      {selectedCard === "exposureNonEconomic" && (
         <ExposureNonEconomicCard
-          onChangeExposureFile={props.onChangeExposureFile}
-          onChangeValidNonEconomicExposure={props.onChangeValidNonEconomicExposure}
-          onExposureNonEconomicSelect={props.onChangeExposureNonEconomic}
-          selectedAppOption={props.selectedAppOption}
-          selectedCountry={props.selectedCountry}
-          selectedExposureFile={props.selectedExposureFile}
-          selectedExposureNonEconomic={props.selectedExposureNonEconomic}
+          onChangeExposureFile={onChangeExposureFile}
+          onChangeValidNonEconomicExposure={onChangeValidNonEconomicExposure}
+          onExposureNonEconomicSelect={onChangeExposureNonEconomic}
+          selectedAppOption={selectedAppOption}
+          selectedCountry={selectedCountry}
+          selectedExposureFile={selectedExposureFile}
+          selectedExposureNonEconomic={selectedExposureNonEconomic}
         />
       )}
     </>
   );
+};
+
+ViewCard.propTypes = {
+  onChangeAnnualGrowth: PropTypes.func.isRequired,
+  onChangeCountry: PropTypes.func.isRequired,
+  onChangeExposureEconomic: PropTypes.func.isRequired,
+  onChangeExposureFile: PropTypes.func.isRequired,
+  onChangeExposureNonEconomic: PropTypes.func.isRequired,
+  onChangeHazard: PropTypes.func.isRequired,
+  onChangeHazardFile: PropTypes.func.isRequired,
+  onChangeScenario: PropTypes.func.isRequired,
+  onChangeTimeHorizon: PropTypes.func.isRequired,
+  onChangeValidEconomicExposure: PropTypes.func.isRequired,
+  onChangeValidNonEconomicExposure: PropTypes.func.isRequired,
+  onChangeValidHazard: PropTypes.func.isRequired,
+
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCard: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureFile: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedHazardFile: PropTypes.string.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
+  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default ViewCard;

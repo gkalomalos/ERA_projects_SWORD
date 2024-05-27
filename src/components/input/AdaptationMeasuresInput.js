@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography } from "@mui/material";
@@ -63,6 +64,10 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
       )}
     </>
   );
+};
+
+AdaptationMeasuresInput.propTypes = {
+  selectedHazard: PropTypes.string.isRequired,
 };
 
 export default AdaptationMeasuresInput;

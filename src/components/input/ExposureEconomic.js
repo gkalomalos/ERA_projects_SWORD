@@ -1,68 +1,59 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const ExposureEconomic = (props) => {
+const ExposureEconomic = ({
+  isValidExposureEconomic,
+  onCardClick,
+  onSelectTab,
+  selectedExposureEconomic,
+  selectedExposureNonEconomic,
+}) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
 
   const handleMouseDown = () => {
     // Deactivate input card click in case non-economic exposure is selected
-    if (props.selectedExposureNonEconomic) {
+    if (selectedExposureNonEconomic) {
       return;
     }
     setClicked(true); // Trigger animation
   };
 
   const handleMouseUp = () => {
-    // Deactivate input card click in case non-economic exposure is selected    
-    if (props.selectedExposureNonEconomic) {
+    // Deactivate input card click in case non-economic exposure is selected
+    if (selectedExposureNonEconomic) {
       return;
     }
     setClicked(false); // Reset animation
   };
 
   const handleClick = () => {
-    if (props.selectedExposureNonEconomic) {
+    if (selectedExposureNonEconomic) {
       return;
     }
-    props.onCardClick("exposureEconomic");
-    props.onSelectTab(0);
+    onCardClick("exposureEconomic");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedExposureEconomic && props.isValidExposureEconomic) {
+    if (selectedExposureEconomic && isValidExposureEconomic) {
       setBgColor("#E5F5EB"); //green
-    } else if (props.selectedExposureEconomic && !props.isValidExposureEconomic) {
+    } else if (selectedExposureEconomic && !isValidExposureEconomic) {
       setBgColor("#FFCCCC"); //red
-    } else if (props.selectedExposureNonEconomic) {
+    } else if (selectedExposureNonEconomic) {
       setBgColor("#E6E6E6"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }
   };
 
-  // TODO:
-  // 1. Define the Function Inside useEffect
-  // If handleBgColor is only used in this useEffect and doesn't depend on external variables that
-  // change over time, you could define it inside the useEffect itself. This way, it doesn't need to
-  // be included in the dependency array:
-  // 2. Use useCallback
-  // If handleBgColor is used outside the useEffect or depends on props or state, you could wrap it
-  // with useCallback to ensure it only gets redefined when its own dependencies change.
-  // This makes it safe to include in the useEffect dependency array:
-  // 3. Exclude the Function with a Justification
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
   useEffect(() => {
     handleBgColor();
-  }, [
-    props.isValidExposureEconomic,
-    props.selectedExposureEconomic,
-    props.selectedExposureNonEconomic,
-  ]);
+  }, [isValidExposureEconomic, selectedExposureEconomic, selectedExposureNonEconomic]);
 
   return (
     <Card
@@ -89,12 +80,12 @@ const ExposureEconomic = (props) => {
           <Typography id="exposure-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("input_exposure_economic_title")}
           </Typography>
-          {props.selectedExposureEconomic && (
+          {selectedExposureEconomic && (
             <TextField
               id="exposure-economic-textfield"
               fullWidth
               variant="outlined"
-              value={t(`input_exposure_economic_${props.selectedExposureEconomic}`)}
+              value={t(`input_exposure_economic_${selectedExposureEconomic}`)}
               disabled
               InputProps={{
                 readOnly: true,
@@ -112,6 +103,14 @@ const ExposureEconomic = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+ExposureEconomic.propTypes = {
+  isValidExposureEconomic: PropTypes.bool.isRequired,
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default ExposureEconomic;

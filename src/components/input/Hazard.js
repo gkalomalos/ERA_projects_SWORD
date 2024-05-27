@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const Hazard = (props) => {
+const Hazard = ({ isValidHazard, onCardClick, onSelectTab, selectedHazard }) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -17,35 +18,23 @@ const Hazard = (props) => {
   };
 
   const handleClick = () => {
-    props.onCardClick("hazard");
-    props.onSelectTab(0);
+    onCardClick("hazard");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedHazard && props.isValidHazard) {
+    if (selectedHazard && isValidHazard) {
       setBgColor("#E5F5EB"); //green
-    } else if (props.selectedHazard && !props.isValidHazard) {
+    } else if (selectedHazard && !isValidHazard) {
       setBgColor("#FFCCCC"); //red
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }
   };
 
-  // TODO:
-  // 1. Define the Function Inside useEffect
-  // If handleBgColor is only used in this useEffect and doesn't depend on external variables that
-  // change over time, you could define it inside the useEffect itself. This way, it doesn't need to
-  // be included in the dependency array:
-  // 2. Use useCallback
-  // If handleBgColor is used outside the useEffect or depends on props or state, you could wrap it
-  // with useCallback to ensure it only gets redefined when its own dependencies change.
-  // This makes it safe to include in the useEffect dependency array:
-  // 3. Exclude the Function with a Justification
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
   useEffect(() => {
     handleBgColor();
-  }, [props.selectedHazard, props.isValidHazard]);
+  }, [selectedHazard, isValidHazard]);
 
   return (
     <Card
@@ -72,12 +61,12 @@ const Hazard = (props) => {
           <Typography id="hazard-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("hazard_title")}
           </Typography>
-          {props.selectedHazard && (
+          {selectedHazard && (
             <TextField
               id="hazard"
               fullWidth
               variant="outlined"
-              value={t(`input_hazard_${props.selectedHazard}`)}
+              value={t(`input_hazard_${selectedHazard}`)}
               disabled
               InputProps={{
                 readOnly: true,
@@ -95,6 +84,13 @@ const Hazard = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+Hazard.propTypes = {
+  isValidHazard: PropTypes.bool.isRequired,
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
 };
 
 export default Hazard;

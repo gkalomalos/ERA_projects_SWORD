@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button } from "@mui/material";
@@ -7,37 +8,39 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
 import APIService from "../../APIService";
 
-const RunScenario = (props) => {
+const RunScenario = ({
+  onChangeMapTitle,
+  onScenarioRunning,
+  selectedAnnualGrowth,
+  selectedCountry,
+  selectedExposure,
+  selectedHazard,
+  selectedScenario,
+  selectedTimeHorizon,
+}) => {
   const { t } = useTranslation();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
   const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false);
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
   const onRunHandler = () => {
     const body = {
-      annualGrowth: props.selectedAnnualPopulationGrowth,
-      country: props.selectedCountry,
-      exposure: props.selectedExposure,
-      hazard: props.selectedHazard,
-      scenario: props.selectedScenario,
-      timeHorizon: props.selectedTimeHorizon,
+      annualGrowth: selectedAnnualGrowth,
+      country: selectedCountry,
+      exposure: selectedExposure,
+      hazard: selectedHazard,
+      scenario: selectedScenario,
+      timeHorizon: selectedTimeHorizon,
     };
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
-    props.onScenarioRunning(true);
-    console.log(body);
+    onScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
         setIsRunButtonLoading(false);
         setIsRunButtonDisabled(false);
-        props.onChangeMapTitle(response.result.data.mapTitle);
-        props.onScenarioRunning(false);
+        onChangeMapTitle(response.result.data.mapTitle);
+        onScenarioRunning(false);
       })
       .catch((error) => {
         console.log(error);
@@ -75,6 +78,17 @@ const RunScenario = (props) => {
       )}
     </Box>
   );
+};
+
+RunScenario.propTypes = {
+  onChangeMapTitle: PropTypes.func.isRequired,
+  onScenarioRunning: PropTypes.func.isRequired,
+  selectedAnnualGrowth: PropTypes.number.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposure: PropTypes.string.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
+  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default RunScenario;

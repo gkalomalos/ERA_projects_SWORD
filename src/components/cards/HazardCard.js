@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import {
@@ -270,6 +271,16 @@ const HazardCard = ({
       )}
     </Card>
   );
+};
+
+HazardCard.propTypes = {
+  onChangeHazardFile: PropTypes.func.isRequired,
+  onChangeValidHazard: PropTypes.func.isRequired,
+  onHazardSelect: PropTypes.func.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedHazardFile: PropTypes.string.isRequired,
 };
 
 export default HazardCard;

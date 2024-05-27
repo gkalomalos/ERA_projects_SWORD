@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/material";
@@ -78,6 +79,12 @@ const ScenarioCard = ({ onScenarioSelect, selectedHazard, selectedScenario }) =>
       </CardContent>
     </Card>
   );
+};
+
+ScenarioCard.propTypes = {
+  onScenarioSelect: PropTypes.func.isRequired,
+  selectedHazard: PropTypes.string.isRequired,
+  selectedScenario: PropTypes.string.isRequired,
 };
 
 export default ScenarioCard;

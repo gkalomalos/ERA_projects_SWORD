@@ -1,10 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+
 import { Box, Card, CardContent, Slider, Typography } from "@mui/material";
 
 const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
   const { t } = useTranslation();
-  
+
   // Initial range state
   const [value, setValue] = React.useState([2024, 2050]);
 
@@ -71,9 +73,9 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
             min={2024}
             max={2075}
             marks={[
-              { value: 2024, label: '2024' },
-              { value: 2050, label: '2050' },
-              { value: 2075, label: '2075' },
+              { value: 2024, label: "2024" },
+              { value: 2050, label: "2050" },
+              { value: 2075, label: "2075" },
             ]}
             sx={{
               color: "#F79191", // Slider track and thumb color
@@ -117,6 +119,11 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
       </CardContent>
     </Card>
   );
+};
+
+TimeHorizonCard.propTypes = {
+  onTimeHorizonSelect: PropTypes.func.isRequired,
+  selectedTimeHorizon: PropTypes.string.isRequired,
 };
 
 export default TimeHorizonCard;
