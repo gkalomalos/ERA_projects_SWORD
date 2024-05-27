@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import {
@@ -16,7 +17,14 @@ import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
 
 const exposureNonEconomicDict = {
-  thailand: ["tree_crops_farmers", "grass_crops_farmers", "buddhist_monks", "water_users", "roads", "students"],
+  thailand: [
+    "tree_crops_farmers",
+    "grass_crops_farmers",
+    "buddhist_monks",
+    "water_users",
+    "roads",
+    "students",
+  ],
   egypt: ["hospitalised_people", "students", "diarrhea_patients", "roads"],
 };
 
@@ -268,6 +276,16 @@ const ExposureNonEconomicCard = ({
       )}
     </Card>
   );
+};
+
+ExposureNonEconomicCard.propTypes = {
+  onChangeExposureFile: PropTypes.func.isRequired,
+  onChangeValidNonEconomicExposure: PropTypes.func.isRequired,
+  onExposureNonEconomicSelect: PropTypes.func.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
+  selectedExposureFile: PropTypes.string.isRequired,
 };
 
 export default ExposureNonEconomicCard;

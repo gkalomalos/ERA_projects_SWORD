@@ -1,41 +1,48 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-const ExposureNonEconomic = (props) => {
+const ExposureNonEconomic = ({
+  isValidExposureNonEconomic,
+  onCardClick,
+  onSelectTab,
+  selectedExposureEconomic,
+  selectedExposureNonEconomic,
+}) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
 
   const handleMouseDown = () => {
-    if (props.selectedExposureEconomic) {
+    if (selectedExposureEconomic) {
       return;
     }
     setClicked(true); // Trigger animation
   };
 
   const handleMouseUp = () => {
-    if (props.selectedExposureEconomic) {
+    if (selectedExposureEconomic) {
       return;
     }
     setClicked(false); // Reset animation
   };
 
   const handleClick = () => {
-    if (props.selectedExposureEconomic) {
+    if (selectedExposureEconomic) {
       return;
     }
-    props.onCardClick("exposureNonEconomic");
-    props.onSelectTab(0);
+    onCardClick("exposureNonEconomic");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedExposureNonEconomic && props.isValidExposureNonEconomic) {
+    if (selectedExposureNonEconomic && isValidExposureNonEconomic) {
       setBgColor("#E5F5EB"); //green
-    } else if (props.selectedExposureNonEconomic && !props.isValidExposureNonEconomic) {
+    } else if (selectedExposureNonEconomic && !isValidExposureNonEconomic) {
       setBgColor("#FFCCCC"); //red
-    } else if (props.selectedExposureEconomic) {
+    } else if (selectedExposureEconomic) {
       setBgColor("#E6E6E6"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
@@ -44,11 +51,7 @@ const ExposureNonEconomic = (props) => {
 
   useEffect(() => {
     handleBgColor();
-  }, [
-    props.isValidExposureNonEconomic,
-    props.selectedExposureEconomic,
-    props.selectedExposureNonEconomic,
-  ]);
+  }, [isValidExposureNonEconomic, selectedExposureEconomic, selectedExposureNonEconomic]);
 
   return (
     <Card
@@ -75,12 +78,12 @@ const ExposureNonEconomic = (props) => {
           <Typography id="exposure-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("input_exposure_non_economic_title")}
           </Typography>
-          {props.selectedExposureNonEconomic && (
+          {selectedExposureNonEconomic && (
             <TextField
               id="exposure-non-economic-textfield"
               fullWidth
               variant="outlined"
-              value={t(`input_exposure_non_economic_${props.selectedExposureNonEconomic}`)}
+              value={t(`input_exposure_non_economic_${selectedExposureNonEconomic}`)}
               disabled
               InputProps={{
                 readOnly: true,
@@ -98,6 +101,14 @@ const ExposureNonEconomic = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+ExposureNonEconomic.propTypes = {
+  isValidExposureNonEconomic: PropTypes.bool.isRequired,
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default ExposureNonEconomic;

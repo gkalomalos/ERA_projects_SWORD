@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+
 import {
   Box,
   Button,
@@ -267,6 +269,16 @@ const ExposureEconomicCard = ({
       )}
     </Card>
   );
+};
+
+ExposureEconomicCard.propTypes = {
+  onChangeExposureFile: PropTypes.func.isRequired,
+  onChangeValidEconomicExposure: PropTypes.func.isRequired,
+  onExposureEconomicSelect: PropTypes.func.isRequired,
+  selectedAppOption: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
+  selectedExposureEconomic: PropTypes.string.isRequired,
+  selectedExposureFile: PropTypes.string.isRequired,
 };
 
 export default ExposureEconomicCard;

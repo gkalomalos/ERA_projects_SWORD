@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography, TextField } from "@mui/material";
 
-const Country = (props) => {
+const Country = ({ onCardClick, onSelectTab, selectedCountry }) => {
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
@@ -17,12 +18,12 @@ const Country = (props) => {
   };
 
   const handleClick = () => {
-    props.onCardClick("country");
-    props.onSelectTab(0);
+    onCardClick("country");
+    onSelectTab(0);
   };
 
   const handleBgColor = () => {
-    if (props.selectedCountry) {
+    if (selectedCountry) {
       setBgcolor("#E5F5EB"); // green
     } else {
       setBgcolor("#EBF3F5"); // default light blue
@@ -31,7 +32,7 @@ const Country = (props) => {
 
   useEffect(() => {
     handleBgColor();
-  }, [props.selectedCountry]);
+  }, [selectedCountry]);
 
   return (
     <Card
@@ -58,12 +59,12 @@ const Country = (props) => {
           <Typography id="country-label" gutterBottom variant="h6" component="div" m={0}>
             {t("country")}
           </Typography>
-          {props.selectedCountry && (
+          {selectedCountry && (
             <TextField
               id="country"
               fullWidth
               variant="outlined"
-              value={t(`input_country_${props.selectedCountry}`)}
+              value={t(`input_country_${selectedCountry}`)}
               disabled
               InputProps={{
                 readOnly: true,
@@ -81,6 +82,12 @@ const Country = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+Country.propTypes = {
+  onCardClick: PropTypes.func.isRequired,
+  onSelectTab: PropTypes.func.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default Country;

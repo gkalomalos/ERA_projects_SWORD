@@ -11,7 +11,35 @@ import SettingsView from "../controls/SettingsView";
 import ViewCard from "../cards/ViewCard";
 import PageUnderConstructionView from "../misc/PageUnderConstructionView";
 
-const MainView = (props) => {
+const MainView = ({
+  activeMap,
+  mapTitle,
+  selectedAnnualGrowth,
+  selectedAppOption,
+  selectedCard,
+  selectedCountry,
+  selectedExposureEconomic,
+  selectedExposureFile,
+  selectedExposureNonEconomic,
+  selectedHazard,
+  selectedHazardFile,
+  selectedScenario,
+  selectedSubTab,
+  selectedTab,
+  selectedTimeHorizon,
+  onChangeCountry,
+  onChangeExposureEconomic,
+  onChangeExposureFile,
+  onChangeExposureNonEconomic,
+  onChangeHazard,
+  onChangeHazardFile,
+  onChangeScenario,
+  onChangeTimeHorizon,
+  onChangeAnnualGrowth,
+  onChangeValidEconomicExposure,
+  onChangeValidNonEconomicExposure,
+  onChangeValidHazard,
+}) => {
   const [viewControl, setViewControl] = useState("display_map");
 
   const setViewControlHandler = (control) => {
@@ -20,41 +48,41 @@ const MainView = (props) => {
 
   return (
     <>
-      {<MainViewTitle selectedTab={props.selectedTab} mapTitle={props.mapTitle} />}
+      {<MainViewTitle selectedTab={selectedTab} mapTitle={mapTitle} />}
       {/* Render the main layout with the Parameters section according to each input selected  */}
-      {props.selectedTab === 0 && (
+      {selectedTab === 0 && (
         <ViewCard
-          selectedAnnualGrowth={props.selectedAnnualGrowth}
-          selectedAppOption={props.selectedAppOption}
-          selectedCard={props.selectedCard}
-          selectedCountry={props.selectedCountry}
-          selectedExposureEconomic={props.selectedExposureEconomic}
-          selectedExposureFile={props.selectedExposureFile}
-          selectedExposureNonEconomic={props.selectedExposureNonEconomic}
-          selectedHazard={props.selectedHazard}
-          selectedHazardFile={props.selectedHazardFile}
-          selectedScenario={props.selectedScenario}
-          selectedTimeHorizon={props.selectedTimeHorizon}
-          onChangeCountry={props.onChangeCountry}
-          onChangeExposureEconomic={props.onChangeExposureEconomic}
-          onChangeExposureFile={props.onChangeExposureFile}
-          onChangeExposureNonEconomic={props.onChangeExposureNonEconomic}
-          onChangeHazard={props.onChangeHazard}
-          onChangeHazardFile={props.onChangeHazardFile}
-          onChangeScenario={props.onChangeScenario}
-          onChangeTimeHorizon={props.onChangeTimeHorizon}
-          onChangeAnnualGrowth={props.onChangeAnnualGrowth}
-          onChangeValidEconomicExposure={props.onChangeValidEconomicExposure}
-          onChangeValidNonEconomicExposure={props.onChangeValidNonEconomicExposure}
-          onChangeValidHazard={props.onChangeValidHazard}
+          selectedAnnualGrowth={selectedAnnualGrowth}
+          selectedAppOption={selectedAppOption}
+          selectedCard={selectedCard}
+          selectedCountry={selectedCountry}
+          selectedExposureEconomic={selectedExposureEconomic}
+          selectedExposureFile={selectedExposureFile}
+          selectedExposureNonEconomic={selectedExposureNonEconomic}
+          selectedHazard={selectedHazard}
+          selectedHazardFile={selectedHazardFile}
+          selectedScenario={selectedScenario}
+          selectedTimeHorizon={selectedTimeHorizon}
+          onChangeCountry={onChangeCountry}
+          onChangeExposureEconomic={onChangeExposureEconomic}
+          onChangeExposureFile={onChangeExposureFile}
+          onChangeExposureNonEconomic={onChangeExposureNonEconomic}
+          onChangeHazard={onChangeHazard}
+          onChangeHazardFile={onChangeHazardFile}
+          onChangeScenario={onChangeScenario}
+          onChangeTimeHorizon={onChangeTimeHorizon}
+          onChangeAnnualGrowth={onChangeAnnualGrowth}
+          onChangeValidEconomicExposure={onChangeValidEconomicExposure}
+          onChangeValidNonEconomicExposure={onChangeValidNonEconomicExposure}
+          onChangeValidHazard={onChangeValidHazard}
         />
       )}
       {/* Render the main layout with the Economic & Non-Economic section according to each sub tab selected  */}
       {/* Render Economic & non-Economic - Risk view */}
-      {props.selectedTab === 1 && props.selectedSubTab === 0 && (
+      {selectedTab === 1 && selectedSubTab === 0 && (
         <>
           {viewControl === "display_map" && (
-            <MapLayout selectedCountry={props.selectedCountry} activeMap={props.activeMap} />
+            <MapLayout selectedCountry={selectedCountry} activeMap={activeMap} />
           )}
           {viewControl === "display_chart" && <RiskChartLayout />}
           {viewControl === "settings" && <SettingsView />}
@@ -63,7 +91,7 @@ const MainView = (props) => {
         </>
       )}
       {/* Render Economic & non-Economic - Adaptation view */}
-      {props.selectedTab === 1 && props.selectedSubTab === 1 && (
+      {selectedTab === 1 && selectedSubTab === 1 && (
         <>
           {viewControl === "display_map" && <AdaptationMap />}
           {viewControl === "display_chart" && <AdaptationChartLayout />}
@@ -72,12 +100,12 @@ const MainView = (props) => {
           <MainViewControls onChangeViewControls={setViewControlHandler} />
         </>
       )}
-      {props.selectedTab === 2 && (
+      {selectedTab === 2 && (
         <>
           <PageUnderConstructionView />
         </>
       )}
-      {props.selectedTab === 3 && (
+      {selectedTab === 3 && (
         <>
           <PageUnderConstructionView />
         </>

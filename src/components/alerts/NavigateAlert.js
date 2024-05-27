@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -239,6 +240,11 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
       </DialogContent>
     </Dialog>
   );
+};
+
+NavigateAlert.propTypes = {
+  onChangeOption: PropTypes.func.isRequired,
+  selectedOption: PropTypes.string.isRequired,
 };
 
 export default NavigateAlert;

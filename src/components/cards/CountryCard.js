@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/material";
@@ -85,6 +86,11 @@ const CountryCard = ({ onCountrySelect, selectedCountry }) => {
       </CardContent>
     </Card>
   );
+};
+
+CountryCard.propTypes = {
+  onCountrySelect: PropTypes.func.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default CountryCard;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
@@ -71,6 +72,10 @@ const MainViewControls = ({ onChangeViewControls }) => {
       </CardContent>
     </Card>
   );
+};
+
+MainViewControls.propTypes = {
+  onChangeViewControls: PropTypes.func.isRequired,
 };
 
 export default MainViewControls;

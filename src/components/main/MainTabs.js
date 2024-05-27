@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
 import { AppBar, Tabs, Tab, Box, Paper } from "@mui/material";
 
@@ -128,6 +129,13 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
       {renderSubTabs()}
     </Box>
   );
+};
+
+MainTabs.propTypes = {
+  onChangeTab: PropTypes.func.isRequired,
+  onChangeSubTab: PropTypes.func.isRequired,
+  propSelectedSubTab: PropTypes.number.isRequired,
+  propSelectedTab: PropTypes.number.isRequired,
 };
 
 export default MainTabs;
