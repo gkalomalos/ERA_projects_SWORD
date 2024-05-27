@@ -1,9 +1,14 @@
 import React from "react";
 
-import PageUnderConstructionView from "../misc/PageUnderConstructionView";
+// import PageUnderConstructionView from "../misc/PageUnderConstructionView";
 
 const OutputResultsCard = () => {
-  return <PageUnderConstructionView />;
+  return (
+    <>
+      test
+      {/* <PageUnderConstructionView />; */}
+    </>
+  );
 };
 
 export default OutputResultsCard;

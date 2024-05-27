@@ -30,7 +30,7 @@ const ResultsViewTitle = ({ selectedTab }) => {
   );
 };
 
-ResultsViewTitle.proptTypes = {
+ResultsViewTitle.propTypes = {
   selectedTab: PropTypes.number.isRequired,
 };
 
