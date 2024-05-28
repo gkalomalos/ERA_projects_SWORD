@@ -1,17 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import image from "./risks_waterfall_plot.png";
 
-import {
-  Box,
-  Typography,
-  IconButton,
-  Icon,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-} from "@mui/material";
+import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import AlertMessage from "../alerts/AlertMessage";
@@ -42,68 +34,69 @@ const ReportsCard = () => {
   return (
     <Box
       sx={{
+        alignItems: "flex-start",
         border: "1px solid #ccc",
         borderRadius: "16px",
-        padding: 2,
-        // marginBottom: 2,
-        // m:2,
         display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        // width: 300,
+        flexDirection: "row",
+        marginBottom: 2,
+        width: "100%",
+        // maxHeight: "128px",
+        height: "128px",
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        Flood Expansion – <span style={{ fontWeight: "normal" }}>return period 1 in 100 years</span>
-      </Typography>
-      <List dense>
-        <ListItem>
-          <ListItemText
-            primary={
-              <>
-                <span style={{ fontWeight: "bold" }}>Type:</span> Economic – Risk – Hazard – Map
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary={
-              <>
-                <span style={{ fontWeight: "bold" }}>Data:</span>{" "}
-                Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...
-              </>
-            }
-          />
-        </ListItem>
-      </List>
+      <Box sx={{ flex: 1, maxWidth: "10%" }}>
+        <List dense>
+          <ListItem>
+            <ListItemText primary="Title:" />
+          </ListItem>
+          <ListItem>
+            <ListItemText secondary="Type:" />
+          </ListItem>
+          <ListItem>
+            <ListItemText secondary="Data:" />
+          </ListItem>
+        </List>
+      </Box>
+
+      <Box sx={{ flex: 2, maxWidth: "55%" }}>
+        <List dense>
+          <ListItem>
+            <ListItemText primary="Flood Expansion – return period 1 in 100 years" />
+          </ListItem>
+          <ListItem>
+            <ListItemText secondary="Economic – Risk – Hazard – Map" />
+          </ListItem>
+          <ListItem>
+            <ListItemText secondary="Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/..." />
+          </ListItem>
+        </List>
+      </Box>
+
       <Box
         component="img"
         sx={{
-          width: "100%",
-          height: "auto",
+          flex: 1,
+          maxWidth: "25%",
+          width: "128px",
+          height: "128px",
           marginBottom: 2,
         }}
         alt="Map"
-        src="your-image-url" // Replace this with the actual URL or import of your image
+        src={image}
       />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Box>
-          <IconButton onClick={() => handleDeleteButtonClick()}>
+
+      <Box>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%" }}>
+          <IconButton onClick={handleDeleteButtonClick} sx={{ marginBottom: 1 }}>
             <Delete />
             <Typography>Remove</Typography>
           </IconButton>
-          <IconButton onClick={() => handleUpButtonClick()}>
+          <IconButton onClick={handleUpButtonClick} sx={{ marginBottom: 1 }}>
             <ArrowUpward />
             <Typography>Move Up</Typography>
           </IconButton>
-          <IconButton onClick={() => handleDownButtonClick()}>
+          <IconButton onClick={handleDownButtonClick}>
             <ArrowDownward />
             <Typography>Move Down</Typography>
           </IconButton>
@@ -112,4 +105,5 @@ const ReportsCard = () => {
     </Box>
   );
 };
+
 export default ReportsCard;
