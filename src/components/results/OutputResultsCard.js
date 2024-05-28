@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 const OutputResultsCard = () => {
   const { t } = useTranslation();
@@ -12,8 +12,10 @@ const OutputResultsCard = () => {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        {/* Button Section container for both sets of buttons */}
         <Box sx={{ display: "flex", justifyContent: "space-around", marginBottom: 2 }}>
           <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
+            {/* First set of buttons container */}
             {["pdf", "excel", "word", "gis"].map((type) => (
               <Button
                 key={type}
@@ -33,6 +35,7 @@ const OutputResultsCard = () => {
               </Button>
             ))}
           </Box>
+          {/* Second set of buttons container */}
           <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
             {["gis", "ppt", "other"].map((type) => (
               <Button
@@ -53,6 +56,35 @@ const OutputResultsCard = () => {
               </Button>
             ))}
           </Box>
+        </Box>
+        {/* Result Details section */}
+        <Box
+          sx={{
+            bgcolor: "#FFCCCC",
+            padding: 2,
+            borderRadius: "4px",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              borderBottom: "1px solid #6F6F6F",
+              paddingBottom: 1,
+              color: "#6F6F6F",
+              textAlign: "center",
+            }}
+          >
+            {t("results_report_details")}
+          </Typography>
+          {/* Content here will grow to fill available space */}
+          <Typography variant="body1" sx={{ marginTop: 2, flexGrow: 1, color: "#6F6F6F" }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+            mollit anim id est laborum.
+          </Typography>
         </Box>
       </Box>
     </>
