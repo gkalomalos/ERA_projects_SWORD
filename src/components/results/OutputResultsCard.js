@@ -5,6 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 
 const OutputResultsCard = () => {
   const { t } = useTranslation();
+
   const handleButtonClick = (type) => {
     console.log(type);
   };

@@ -11,6 +11,7 @@ import ProgressView from "../controls/ProgressView";
 import SettingsView from "../controls/SettingsView";
 import ViewCard from "../cards/ViewCard";
 import PageUnderConstructionView from "../misc/PageUnderConstructionView";
+import ReportsView from "../reports/ReportsView";
 
 const MainView = ({
   activeMap,
@@ -108,7 +109,7 @@ const MainView = ({
       )}
       {selectedTab === 3 && (
         <>
-          <PageUnderConstructionView />
+          <ReportsView />
         </>
       )}
     </>
