@@ -41,12 +41,10 @@ const ReportsCard = () => {
         flexDirection: "row",
         marginBottom: 2,
         width: "100%",
-        // maxHeight: "128px",
-        height: "128px",
       }}
     >
       <Box sx={{ flex: 1, maxWidth: "10%" }}>
-        <List dense>
+        <List dense disablePadding>
           <ListItem>
             <ListItemText primary="Title:" />
           </ListItem>
@@ -60,7 +58,7 @@ const ReportsCard = () => {
       </Box>
 
       <Box sx={{ flex: 2, maxWidth: "55%" }}>
-        <List dense>
+        <List dense disablePadding>
           <ListItem>
             <ListItemText primary="Flood Expansion – return period 1 in 100 years" />
           </ListItem>
@@ -73,33 +71,32 @@ const ReportsCard = () => {
         </List>
       </Box>
 
-      <Box
-        component="img"
-        sx={{
-          flex: 1,
-          maxWidth: "25%",
-          width: "128px",
-          height: "128px",
-          marginBottom: 2,
-        }}
-        alt="Map"
-        src={image}
-      />
+      <Box sx={{ flex: 3, maxWidth: "25%" }}>
+        <Box
+          component="img"
+          sx={{
+            width: "128px",
+            height: "100%",
+          }}
+          alt="report_image"
+          src={image}
+        />
+      </Box>
 
       <Box>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start", width: "100%" }}>
-          <IconButton onClick={handleDeleteButtonClick} sx={{ marginBottom: 1 }}>
-            <Delete />
+          <IconButton aria-label="delete" onClick={handleDeleteButtonClick} size="small" >
+            <Delete fontSize="small" />
             <Typography>Remove</Typography>
           </IconButton>
-          <IconButton onClick={handleUpButtonClick} sx={{ marginBottom: 1 }}>
-            <ArrowUpward />
+          <IconButton aria-label="move_up" onClick={handleUpButtonClick} size="small">
+            <ArrowUpward fontSize="small" />
             <Typography>Move Up</Typography>
           </IconButton>
-          <IconButton onClick={handleDownButtonClick}>
-            <ArrowDownward />
+          <IconButton aria-label="move_down" onClick={handleDownButtonClick} size="small">
+            <ArrowDownward fontSize="small" />
             <Typography>Move Down</Typography>
-          </IconButton>
+          </IconButton> 
         </Box>
       </Box>
     </Box>

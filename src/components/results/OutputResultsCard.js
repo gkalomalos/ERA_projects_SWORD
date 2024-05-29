@@ -14,13 +14,15 @@ const OutputResultsCard = () => {
     <>
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
         {/* Button Section container for both sets of buttons */}
-        <Box sx={{ display: "flex", justifyContent: "space-around", marginBottom: 2 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
-            {/* First set of buttons container */}
+        <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+          
+          {/* First set of buttons container */}
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
             {["pdf", "excel", "word", "gis"].map((type) => (
               <Button
                 key={type}
                 variant="contained"
+                size="small"
                 sx={{
                   marginBottom: 2,
                   bgcolor: "#FFCCCC",
@@ -29,6 +31,7 @@ const OutputResultsCard = () => {
                     transform: "scale(0.96)",
                   },
                   "&:hover": { bgcolor: "#F79191" },
+                  textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
               >
@@ -36,12 +39,14 @@ const OutputResultsCard = () => {
               </Button>
             ))}
           </Box>
+
           {/* Second set of buttons container */}
-          <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
             {["gis", "ppt", "other"].map((type) => (
               <Button
                 key={type}
                 variant="contained"
+                size="small"
                 sx={{
                   marginBottom: 2,
                   bgcolor: "#FFCCCC",
@@ -50,6 +55,7 @@ const OutputResultsCard = () => {
                     transform: "scale(0.96)",
                   },
                   "&:hover": { bgcolor: "#F79191" },
+                  textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
               >
