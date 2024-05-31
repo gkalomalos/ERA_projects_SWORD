@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
@@ -26,6 +28,10 @@ const LinearProgressWithLabel = (props) => {
       </Box>
     </Box>
   );
+};
+
+LinearProgressWithLabel.propTypes = {
+  value: PropTypes.number.isRequired,
 };
 
 const Loader = () => {

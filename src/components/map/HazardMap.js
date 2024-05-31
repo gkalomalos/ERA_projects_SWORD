@@ -82,6 +82,24 @@ const HazardMap = ({ selectedCountry }) => {
     return null;
   };
 
+  CircleLayer.propTypes = {
+    data: PropTypes.shape({
+      features: PropTypes.arrayOf(
+        PropTypes.shape({
+          geometry: PropTypes.shape({
+            coordinates: PropTypes.arrayOf(PropTypes.number).isRequired,
+          }).isRequired,
+          properties: PropTypes.shape({
+            [`rp${activeRPLayer}`]: PropTypes.number.isRequired,
+            country: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+          }).isRequired,
+        }).isRequired
+      ).isRequired,
+    }).isRequired,
+    colorScale: PropTypes.func.isRequired,
+  };
+
   const handleRPLayerChange = async (rp) => {
     await fetchGeoJson();
     setActiveRPLayer(rp);
