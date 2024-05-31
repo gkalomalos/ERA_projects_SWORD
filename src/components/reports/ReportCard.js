@@ -8,12 +8,25 @@ import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import AlertMessage from "../alerts/AlertMessage";
 
-const ReportsCard = ({ data, image, title, type }) => {
+const ReportsCard = ({ data, image, id, isSelected, onCardClick, title, type }) => {
   const { t } = useTranslation();
 
+  const [clicked, setClicked] = useState(false); // State to manage click animation
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
+
+  const handleMouseDown = () => {
+    setClicked(true); // Trigger animation
+  };
+
+  const handleMouseUp = () => {
+    setClicked(false); // Reset animation
+  };
+
+  const handleClick = () => {
+    onCardClick(id);
+  };
 
   const handleCloseMessage = () => {
     setShowMessage(false);
@@ -37,26 +50,47 @@ const ReportsCard = ({ data, image, title, type }) => {
   return (
     <>
       <Box
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
+        onClick={handleClick}
         sx={{
           alignItems: "flex-start",
+          backgroundColor: isSelected ? "#EBF3F5" : "FFFFFF",
           border: "1px solid #ccc",
           borderRadius: "16px",
           display: "flex",
           flexDirection: "row",
           marginBottom: 2,
           width: "100%",
+
+          cursor: "pointer",
+          transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
+          "&:hover": {
+            bgcolor: "#DAE7EA",
+          },
+          ".MuiCardContent-root:last-child": {
+            padding: 2,
+          },
+          transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
         }}
       >
         <Box sx={{ flex: 1, maxWidth: "10%" }}>
           <List dense disablePadding>
             <ListItem>
-              <ListItemText primary="Title:" />
+              <ListItemText
+                primary={<Typography variant="body2">{t("results_report_card_title")}</Typography>}
+              />
             </ListItem>
             <ListItem>
-              <ListItemText secondary="Type:" />
+              <ListItemText
+                secondary={<Typography variant="body2">{t("results_report_card_type")}</Typography>}
+              />
             </ListItem>
             <ListItem>
-              <ListItemText secondary="Data:" />
+              <ListItemText
+                secondary={<Typography variant="body2">{t("results_report_card_data")}</Typography>}
+              />
             </ListItem>
           </List>
         </Box>
@@ -93,15 +127,15 @@ const ReportsCard = ({ data, image, title, type }) => {
           >
             <IconButton aria-label="delete" onClick={handleDeleteButtonClick} size="small">
               <Delete fontSize="small" />
-              <Typography>Remove</Typography>
+              <Typography>{t("results_report_card_remove")}</Typography>
             </IconButton>
             <IconButton aria-label="move_up" onClick={handleUpButtonClick} size="small">
               <ArrowUpward fontSize="small" />
-              <Typography>Move Up</Typography>
+              <Typography>{t("results_report_card_move_up")}</Typography>
             </IconButton>
             <IconButton aria-label="move_down" onClick={handleDownButtonClick} size="small">
               <ArrowDownward fontSize="small" />
-              <Typography>Move Down</Typography>
+              <Typography>{t("results_report_card_move_down")}</Typography>
             </IconButton>
           </Box>
         </Box>
@@ -121,7 +155,10 @@ const ReportsCard = ({ data, image, title, type }) => {
 
 ReportsCard.propTypes = {
   data: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   image: PropTypes.any.isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  onCardClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
 };
