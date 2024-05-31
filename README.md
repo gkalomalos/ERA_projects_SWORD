@@ -112,6 +112,11 @@ Ensure you run the tests and comply with the linting standards before opening a 
 cd ./backend
 # Execute tests
 python -m unittest tests/test_api.py
+
+# Navigate to the frontend directory
+cd ./src
+# Execute tests
+npx eslint .
 ```
 
 - Check linting:

@@ -37,7 +37,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
 SettingsModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  onclose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default SettingsModal;
