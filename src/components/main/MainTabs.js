@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import { AppBar, Tabs, Tab, Box, Paper } from "@mui/material";
+import { AppBar, Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import MacroIcon from "@mui/icons-material/Assessment";
@@ -21,6 +21,10 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
   const handleSubTabChange = (event, newValue) => {
     setSelectedSubTab(newValue);
     onChangeSubTab(newValue);
+  };
+
+  const handleAddToOutput = () => {
+    console.log("add to output");
   };
 
   const subTabsMap = {
@@ -70,9 +74,31 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
             ".MuiTab-root:not(.Mui-selected)": { bgcolor: "#8AC8D0" },
           }}
         >
-          {subTabs.map((label, index) => (
-            <Tab key={index} label={label} sx={{ minHeight: 24 }} /> // Apply the reduced height here as well
-          ))}
+          {subTabs.map((label, index) =>
+            // Conditionally render a button instead of a tab for "+ Add to Output"
+            index === 2 ? (
+              <Box key={index} sx={{ position: "absolute", top: 0, right: 8 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    bgcolor: "#FFCCCC",
+                    transition: "transform 0.1s ease-in-out",
+                    "&:active": {
+                      transform: "scale(0.96)",
+                    },
+                    "&:hover": { bgcolor: "#F79191" },
+                    textTransform: "none",
+                  }}
+                  onClick={() => handleAddToOutput()}
+                >
+                  {label}
+                </Button>
+              </Box>
+            ) : (
+              <Tab key={index} label={label} sx={{ minHeight: 24 }} /> // Apply the reduced height
+            )
+          )}
         </Tabs>
       </Paper>
     );
