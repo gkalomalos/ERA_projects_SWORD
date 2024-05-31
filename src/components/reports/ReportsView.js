@@ -13,35 +13,45 @@ const ReportsView = () => {
     setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
   };
 
+  // Test report data
+  const reportData = [
+    {
+      id: "1",
+      data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
+      image: image2,
+      title: "Flood Expansion – return period 1 in 100 years",
+      type: "Economic – Risk – Hazard – Map",
+    },
+    {
+      id: "2",
+      data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/…",
+      image: image3,
+      title: "Exposure of Markets",
+      type: "Economic – Risk – Exposure – Map",
+    },
+    {
+      id: "3",
+      data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
+      image: image1,
+      title: "Cost-Benefit Analysis of Adaptation Measures",
+      type: "Economic – Adaptation – Cost-Benefit – Chart",
+    },
+  ];
+
   return (
     <>
-      <ReportCard
-        data="Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/..."
-        id="1"
-        image={image2}
-        isSelected={selectedReport === "1"}
-        onCardClick={onCardClickHandler}
-        title="Flood Expansion – return period 1 in 100 years"
-        type="Economic – Risk – Hazard – Map"
-      />
-      <ReportCard
-        data="Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/…"
-        id="2"
-        image={image3}
-        isSelected={selectedReport === "2"}
-        onCardClick={onCardClickHandler}
-        title="Exposure of Markets"
-        type="Economic – Risk – Exposure – Map "
-      />
-      <ReportCard
-        data="Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/..."
-        id="3"
-        image={image1}
-        isSelected={selectedReport === "3"}
-        onCardClick={onCardClickHandler}
-        title="Cost-Benefit Analysis of Adaptation Measures"
-        type="Economic – Adaptation – Cost-Benefit – Chart "
-      />
+      {reportData.map((report) => (
+        <ReportCard
+          key={report.id}
+          data={report.data}
+          id={report.id}
+          image={report.image}
+          isSelected={selectedReport === report.id}
+          onCardClick={onCardClickHandler}
+          title={report.title}
+          type={report.type}
+        />
+      ))}
     </>
   );
 };
