@@ -7,7 +7,7 @@ import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import AlertMessage from "../alerts/AlertMessage";
 
-const ReportsCard = ({ data, image, id, isSelected, onCardClick, title, type }) => {
+const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
@@ -35,15 +35,15 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, title, type }) 
     setMessage("Report deleted successfully.");
     setSeverity("success");
     setShowMessage(true);
-    console.log("delete");
+    onReportAction(id, "delete");
   };
 
   const handleDownButtonClick = () => {
-    console.log("up");
+    onReportAction(id, "down");
   };
 
   const handleUpButtonClick = () => {
-    console.log("down");
+    onReportAction(id, "up");
   };
 
   return (
@@ -158,6 +158,7 @@ ReportsCard.propTypes = {
   image: PropTypes.any.isRequired,
   isSelected: PropTypes.bool.isRequired,
   onCardClick: PropTypes.func.isRequired,
+  onReportAction: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
 };
