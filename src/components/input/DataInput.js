@@ -124,26 +124,13 @@ const DataInput = () => {
       <Box sx={{ backgroundColor: "#DDEBEF", padding: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Country
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedCountry={selectedCountry}
-            />
+            <Country />
           </Grid>
           <Grid item xs={12}>
-            <Hazard
-              isValidHazard={isValidHazard}
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedHazard={selectedHazard}
-            />
+            <Hazard />
           </Grid>
           <Grid item xs={12}>
-            <Scenario
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedScenario={selectedScenario}
-            />
+            <Scenario />
           </Grid>
           <Grid item xs={12}>
             <TimeHorizon
