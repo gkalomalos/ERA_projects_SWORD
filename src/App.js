@@ -14,16 +14,13 @@ import useStore from "./store";
 
 const App = () => {
   const {
-    activeMap,
     isScenarioRunning,
     isValidExposureEconomic,
     isValidExposureNonEconomic,
     isValidHazard,
-    mapTitle,
     modalMessage,
     selectedAnnualGrowth,
     selectedAppOption,
-    selectedCard,
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureFile,
@@ -39,14 +36,12 @@ const App = () => {
     setSelectedAppOption,
     setSelectedAnnualGrowth,
     setSelectedCard,
-    setSelectedCountry,
     setSelectedExposureEconomic,
     setSelectedExposureFile,
     setSelectedExposureNonEconomic,
     setSelectedHazard,
     setSelectedHazardFile,
     setSelectedScenario,
-    setSelectedSubTab,
     setSelectedTab,
     setSelectedTimeHorizon,
     setIsScenarioRunning,
@@ -99,12 +94,7 @@ const App = () => {
       ) : (
         <>
           <Header />
-          <MainTabs
-            onChangeTab={setSelectedTab}
-            onChangeSubTab={setSelectedSubTab}
-            propSelectedSubTab={selectedSubTab}
-            propSelectedTab={selectedTab}
-          />
+          <MainTabs />
           <Grid
             container
             spacing={2}
@@ -141,36 +131,7 @@ const App = () => {
               )}
             </Grid>
             <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
-              <MainView
-                activeMap={activeMap}
-                mapTitle={mapTitle}
-                selectedAnnualGrowth={selectedAnnualGrowth}
-                selectedAppOption={selectedAppOption}
-                selectedCard={selectedCard}
-                selectedCountry={selectedCountry}
-                selectedExposureEconomic={selectedExposureEconomic}
-                selectedExposureFile={selectedExposureFile}
-                selectedExposureNonEconomic={selectedExposureNonEconomic}
-                selectedHazard={selectedHazard}
-                selectedHazardFile={selectedHazardFile}
-                selectedScenario={selectedScenario}
-                selectedTimeHorizon={selectedTimeHorizon}
-                selectedTab={selectedTab}
-                selectedSubTab={selectedSubTab}
-                onChangeActiveMap={setActiveMap}
-                onChangeAnnualGrowth={setSelectedAnnualGrowth}
-                onChangeCountry={setSelectedCountry}
-                onChangeExposureEconomic={setSelectedExposureEconomic}
-                onChangeExposureFile={setSelectedExposureFile}
-                onChangeExposureNonEconomic={setSelectedExposureNonEconomic}
-                onChangeHazard={setSelectedHazard}
-                onChangeHazardFile={setSelectedHazardFile}
-                onChangeScenario={setSelectedScenario}
-                onChangeTimeHorizon={setSelectedTimeHorizon}
-                onChangeValidEconomicExposure={setIsValidExposureEconomic}
-                onChangeValidNonEconomicExposure={setIsValidExposureNonEconomic}
-                onChangeValidHazard={setIsValidHazard}
-              />
+              <MainView />
             </Grid>
             {selectedTab !== 0 && (
               <Grid item xs={12} md={2}>
