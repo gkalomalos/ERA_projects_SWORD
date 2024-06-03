@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
+
 import {
   Box,
   Button,
@@ -15,6 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
+import useStore from "../../store";
 
 const exposureNonEconomicDict = {
   thailand: [
@@ -28,15 +28,16 @@ const exposureNonEconomicDict = {
   egypt: ["hospitalised_people", "students", "diarrhea_patients", "roads"],
 };
 
-const ExposureNonEconomicCard = ({
-  onChangeExposureFile,
-  onChangeValidNonEconomicExposure,
-  onExposureNonEconomicSelect,
-  selectedAppOption,
-  selectedCountry,
-  selectedExposureNonEconomic,
-  selectedExposureFile,
-}) => {
+const ExposureNonEconomicCard = () => {
+  const {
+    selectedAppOption,
+    selectedCountry,
+    selectedExposureNonEconomic,
+    selectedExposureFile,
+    setIsValidExposureNonEconomic,
+    setSelectedExposureFile,
+    setSelectedExposureNonEconomic,
+  } = useStore();
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
@@ -48,12 +49,12 @@ const ExposureNonEconomicCard = ({
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {
-      onExposureNonEconomicSelect(""); // Deselect if already selected
+      setSelectedExposureNonEconomic(""); // Deselect if already selected
     } else {
-      onExposureNonEconomicSelect(exposure);
+      setSelectedExposureNonEconomic(exposure);
     }
-    onChangeExposureFile("");
-    onChangeValidNonEconomicExposure(false);
+    setSelectedExposureFile("");
+    setIsValidExposureNonEconomic(false);
     setFetchExposureMessage("");
   };
 
@@ -62,12 +63,12 @@ const ExposureNonEconomicCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
-    onChangeExposureFile("");
-    onChangeValidNonEconomicExposure(false);
+    setSelectedExposureFile("");
+    setIsValidExposureNonEconomic(false);
     const file = event.target.files[0];
     if (file) {
-      onChangeExposureFile(file.name);
-      onChangeValidNonEconomicExposure(true);
+      setSelectedExposureFile(file.name);
+      setIsValidExposureNonEconomic(true);
     }
   };
 
@@ -76,22 +77,22 @@ const ExposureNonEconomicCard = ({
   };
 
   const clearUploadedFile = () => {
-    onChangeExposureFile("");
-    onChangeValidNonEconomicExposure(false);
+    setSelectedExposureFile("");
+    setIsValidExposureNonEconomic(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-non-economic-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchExposureMessage("");
-    onChangeValidNonEconomicExposure(false);
+    setIsValidExposureNonEconomic(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    onChangeExposureFile("");
+    setSelectedExposureFile("");
     setFetchExposureMessage("");
-    onChangeValidNonEconomicExposure(false);
+    setIsValidExposureNonEconomic(false);
     const body = {
       country: selectedCountry,
       dataType: selectedExposureNonEconomic,
@@ -102,7 +103,7 @@ const ExposureNonEconomicCard = ({
         response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
         setShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
-        onChangeValidNonEconomicExposure(response.result.status.code === 2000);
+        setIsValidExposureNonEconomic(response.result.status.code === 2000);
       })
       .catch((error) => {
         console.log(error);
@@ -276,16 +277,6 @@ const ExposureNonEconomicCard = ({
       )}
     </Card>
   );
-};
-
-ExposureNonEconomicCard.propTypes = {
-  onChangeExposureFile: PropTypes.func.isRequired,
-  onChangeValidNonEconomicExposure: PropTypes.func.isRequired,
-  onExposureNonEconomicSelect: PropTypes.func.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedExposureNonEconomic: PropTypes.string.isRequired,
-  selectedExposureFile: PropTypes.string.isRequired,
 };
 
 export default ExposureNonEconomicCard;

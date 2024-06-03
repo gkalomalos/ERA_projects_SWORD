@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -15,21 +14,23 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
+import useStore from "../../store";
 
 const exposureEconomicDict = {
   thailand: ["tree_crops", "grass_crops", "wet_markets"],
   egypt: ["crops", "livestock", "power_plants", "hotels"],
 };
 
-const ExposureEconomicCard = ({
-  onChangeExposureFile,
-  onChangeValidEconomicExposure,
-  onExposureEconomicSelect,
-  selectedAppOption,
-  selectedCountry,
-  selectedExposureEconomic,
-  selectedExposureFile,
-}) => {
+const ExposureEconomicCard = () => {
+  const {
+    selectedAppOption,
+    selectedCountry,
+    selectedExposureEconomic,
+    selectedExposureFile,
+    setIsValidExposureEconomic,
+    setSelectedExposureEconomic,
+    setSelectedExposureFile,
+  } = useStore();
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
@@ -41,12 +42,12 @@ const ExposureEconomicCard = ({
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureEconomic === exposure) {
-      onExposureEconomicSelect(""); // Deselect if already selected
+      setSelectedExposureEconomic(""); // Deselect if already selected
     } else {
-      onExposureEconomicSelect(exposure);
+      setSelectedExposureEconomic(exposure);
     }
-    onChangeExposureFile("");
-    onChangeValidEconomicExposure(false);
+    setSelectedExposureFile("");
+    setIsValidExposureEconomic(false);
     setFetchExposureMessage("");
   };
 
@@ -55,12 +56,12 @@ const ExposureEconomicCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
-    onChangeExposureFile("");
-    onChangeValidEconomicExposure(false);
+    selectedExposureFile("");
+    setIsValidExposureEconomic(false);
     const file = event.target.files[0];
     if (file) {
-      onChangeExposureFile(file.name);
-      onChangeValidEconomicExposure(true);
+      selectedExposureFile(file.name);
+      setIsValidExposureEconomic(true);
     }
   };
 
@@ -69,22 +70,22 @@ const ExposureEconomicCard = ({
   };
 
   const clearUploadedFile = () => {
-    onChangeExposureFile("");
-    onChangeValidEconomicExposure(false);
+    selectedExposureFile("");
+    setIsValidExposureEconomic(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-economic-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchExposureMessage("");
-    onChangeValidEconomicExposure(false);
+    setIsValidExposureEconomic(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    onChangeExposureFile("");
+    selectedExposureFile("");
     setFetchExposureMessage("");
-    onChangeValidEconomicExposure(false);
+    setIsValidExposureEconomic(false);
     const body = {
       country: selectedCountry,
       dataType: selectedExposureEconomic,
@@ -95,7 +96,7 @@ const ExposureEconomicCard = ({
         response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
         setShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
-        onChangeValidEconomicExposure(response.result.status.code === 2000);
+        setIsValidExposureEconomic(response.result.status.code === 2000);
       })
       .catch((error) => {
         console.log(error);
@@ -269,16 +270,6 @@ const ExposureEconomicCard = ({
       )}
     </Card>
   );
-};
-
-ExposureEconomicCard.propTypes = {
-  onChangeExposureFile: PropTypes.func.isRequired,
-  onChangeValidEconomicExposure: PropTypes.func.isRequired,
-  onExposureEconomicSelect: PropTypes.func.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedExposureEconomic: PropTypes.string.isRequired,
-  selectedExposureFile: PropTypes.string.isRequired,
 };
 
 export default ExposureEconomicCard;

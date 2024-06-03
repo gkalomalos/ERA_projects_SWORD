@@ -1,8 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
+
 import { Box, Card, CardContent, Slider, Typography } from "@mui/material";
+import useStore from "../../store";
 
 const populationMarks = [
   { value: -2, label: "-2%" },
@@ -17,16 +17,17 @@ const valueText = (value) => {
   return `${value}`;
 };
 
-const AnnualGrowthCard = ({
-  onGrowthSelect,
-  selectedAnnualGrowth,
-  selectedExposureEconomic,
-  selectedExposureNonEconomic,
-}) => {
+const AnnualGrowthCard = () => {
+  const {
+    selectedAnnualGrowth,
+    selectedExposureEconomic,
+    selectedExposureNonEconomic,
+    setSelectedAnnualGrowth,
+  } = useStore();
   const { t } = useTranslation();
 
   const handleGrowthCardSelect = (event, value) => {
-    onGrowthSelect(value);
+    setSelectedAnnualGrowth(value);
   };
 
   return (
@@ -232,13 +233,6 @@ const AnnualGrowthCard = ({
       </CardContent>
     </Card>
   );
-};
-
-AnnualGrowthCard.propTypes = {
-  onGrowthSelect: PropTypes.func.isRequired,
-  selectedAnnualGrowth: PropTypes.number.isRequired,
-  selectedExposureEconomic: PropTypes.string.isRequired,
-  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default AnnualGrowthCard;

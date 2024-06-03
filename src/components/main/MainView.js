@@ -16,7 +16,6 @@ import useStore from "../../store";
 const MainView = () => {
   const {
     activeMap,
-    mapTitle,
     selectedAnnualGrowth,
     selectedAppOption,
     selectedCard,
@@ -52,7 +51,7 @@ const MainView = () => {
 
   return (
     <>
-      {<MainViewTitle selectedTab={selectedTab} mapTitle={mapTitle} />}
+      {<MainViewTitle />}
       {selectedTab === 0 && (
         <ViewCard
           selectedAnnualGrowth={selectedAnnualGrowth}

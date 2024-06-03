@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
+
 import {
   Box,
   Button,
@@ -15,22 +14,24 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import APIService from "../../APIService";
 import AlertMessage from "../alerts/AlertMessage";
+import useStore from "../../store";
 
 const hazardDict = {
   thailand: ["flood", "drought", "heatwaves"],
   egypt: ["flood", "heatwaves"],
 };
 
-const HazardCard = ({
-  onChangeHazardFile,
-  onChangeValidHazard,
-  onHazardSelect,
-  selectedAppOption,
-  selectedCountry,
-  selectedHazard,
-  selectedHazardFile,
-}) => {
+const HazardCard = () => {
   const { t } = useTranslation();
+  const {
+    selectedAppOption,
+    selectedCountry,
+    selectedHazard,
+    selectedHazardFile,
+    setIsValidHazard,
+    setSelectedHazard,
+    setSelectedHazardFile,
+  } = useStore();
 
   const [fetchHazardMessage, setFetchHazardMessage] = useState("");
   const [message, setMessage] = useState("");
@@ -41,12 +42,12 @@ const HazardCard = ({
 
   const handleCardSelect = (hazard) => {
     if (selectedHazard === hazard) {
-      onHazardSelect("");
+      setSelectedHazard("");
     } else {
-      onHazardSelect(hazard);
+      setSelectedHazard(hazard);
     }
-    onChangeHazardFile("");
-    onChangeValidHazard(false);
+    setSelectedHazardFile("");
+    setIsValidHazard(false);
     setFetchHazardMessage("");
   };
 
@@ -55,12 +56,12 @@ const HazardCard = ({
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Hazard data if existing
     setFetchHazardMessage("");
-    onChangeHazardFile("");
-    onChangeValidHazard(false);
+    setSelectedHazardFile("");
+    setIsValidHazard(false);
     const file = event.target.files[0];
     if (file) {
-      onChangeHazardFile(file.name);
-      onChangeValidHazard(true);
+      setSelectedHazardFile(file.name);
+      setIsValidHazard(true);
     }
   };
 
@@ -69,22 +70,22 @@ const HazardCard = ({
   };
 
   const clearUploadedFile = () => {
-    onChangeHazardFile("");
-    onChangeValidHazard(false);
+    setSelectedHazardFile("");
+    setIsValidHazard(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("hazard-contained-button-file").value = "";
   };
 
   const clearFetchedData = () => {
     setFetchHazardMessage("");
-    onChangeValidHazard(false);
+    setIsValidHazard(false);
   };
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    onChangeHazardFile("");
+    setSelectedHazardFile("");
     setFetchHazardMessage("");
-    onChangeValidHazard(false);
+    setIsValidHazard(false);
     const body = {
       country: selectedCountry,
       dataType: selectedHazard,
@@ -95,7 +96,7 @@ const HazardCard = ({
         response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
         setShowMessage(true);
         setFetchHazardMessage(response.result.status.message);
-        onChangeValidHazard(response.result.status.code === 2000);
+        setIsValidHazard(response.result.status.code === 2000);
       })
       .catch((error) => {
         console.log(error);
@@ -271,16 +272,6 @@ const HazardCard = ({
       )}
     </Card>
   );
-};
-
-HazardCard.propTypes = {
-  onChangeHazardFile: PropTypes.func.isRequired,
-  onChangeValidHazard: PropTypes.func.isRequired,
-  onHazardSelect: PropTypes.func.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedHazard: PropTypes.string.isRequired,
-  selectedHazardFile: PropTypes.string.isRequired,
 };
 
 export default HazardCard;

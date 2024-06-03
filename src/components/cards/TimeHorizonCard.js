@@ -1,10 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, Slider, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
+const TimeHorizonCard = () => {
+  const { setSelectedTimeHorizon } = useStore();
   const { t } = useTranslation();
 
   // Initial range state
@@ -12,7 +13,7 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    onTimeHorizonSelect(newValue);
+    setSelectedTimeHorizon(newValue);
   };
 
   return (
@@ -119,11 +120,6 @@ const TimeHorizonCard = ({ onTimeHorizonSelect, selectedTimeHorizon }) => {
       </CardContent>
     </Card>
   );
-};
-
-TimeHorizonCard.propTypes = {
-  onTimeHorizonSelect: PropTypes.func.isRequired,
-  selectedTimeHorizon: PropTypes.string.isRequired,
 };
 
 export default TimeHorizonCard;
