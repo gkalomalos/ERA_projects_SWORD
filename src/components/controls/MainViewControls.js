@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
@@ -8,6 +7,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import TuneIcon from "@mui/icons-material/Tune";
 import PendingIcon from "@mui/icons-material/Pending";
 
+import useStore from "../../store";
+
 const controls = [
   { id: "display_map", icon: <MapIcon /> },
   { id: "display_chart", icon: <BarChartIcon /> },
@@ -15,13 +16,14 @@ const controls = [
   { id: "progress", icon: <PendingIcon /> },
 ];
 
-const MainViewControls = ({ onChangeViewControls }) => {
+const MainViewControls = () => {
+  const { setViewControl } = useStore();
   const { t } = useTranslation();
   const [activeControl, setActiveControl] = useState("display_map");
 
   const handleSelect = (control) => {
     setActiveControl(control);
-    onChangeViewControls(control);
+    setViewControl(control);
   };
 
   return (
@@ -72,10 +74,6 @@ const MainViewControls = ({ onChangeViewControls }) => {
       </CardContent>
     </Card>
   );
-};
-
-MainViewControls.propTypes = {
-  onChangeViewControls: PropTypes.func.isRequired,
 };
 
 export default MainViewControls;

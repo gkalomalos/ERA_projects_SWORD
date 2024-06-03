@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import AdaptationMap from "../map/AdaptationMap";
 import AdaptationChartLayout from "../controls/AdaptationChartLayout";
@@ -14,12 +14,7 @@ import ReportsView from "../reports/ReportsView";
 import useStore from "../../store";
 
 const MainView = () => {
-  const [viewControl, setViewControl] = useState("display_map");
-  const { selectedSubTab, selectedTab } = useStore();
-
-  const setViewControlHandler = (control) => {
-    setViewControl(control);
-  };
+  const { selectedSubTab, selectedTab, viewControl } = useStore();
 
   return (
     <>
@@ -31,7 +26,7 @@ const MainView = () => {
           {viewControl === "display_chart" && <RiskChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}
-          <MainViewControls onChangeViewControls={setViewControlHandler} />
+          <MainViewControls />
         </>
       )}
       {selectedTab === 1 && selectedSubTab === 1 && (
@@ -40,7 +35,7 @@ const MainView = () => {
           {viewControl === "display_chart" && <AdaptationChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}
-          <MainViewControls onChangeViewControls={setViewControlHandler} />
+          <MainViewControls />
         </>
       )}
       {selectedTab === 2 && (

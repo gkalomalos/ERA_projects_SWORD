@@ -21,6 +21,7 @@ const useStore = create((set, get) => ({
   selectedTab: 0,
   selectedSubTab: 0,
   selectedTimeHorizon: [2024, 2050],
+  viewControl: "display_map",
 
   setActiveMap: (map) => set({ activeMap: map }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
@@ -65,6 +66,7 @@ const useStore = create((set, get) => ({
   setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
   setSelectedTimeHorizon: (timeHorizon) => set({ selectedTimeHorizon: timeHorizon }),
+  setViewControl: (control) => set({ viewControl: control }),
 }));
 
 export default useStore;
