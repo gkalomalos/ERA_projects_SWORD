@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
-import "leaflet/dist/leaflet.css";
 
+import "leaflet/dist/leaflet.css";
 import Legend from "./Legend";
+import useStore from "../../store";
 
 const adminLayers = [0, 1, 2]; // Administrative layers
 
-const ExposureMap = ({ selectedCountry }) => {
+const ExposureMap = () => {
+  const { selectedCountry } = useStore();
   const { t } = useTranslation();
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const [legendTitle, setLegendTitle] = useState("");
@@ -158,10 +159,6 @@ const ExposureMap = ({ selectedCountry }) => {
       )}
     </MapContainer>
   );
-};
-
-ExposureMap.propTypes = {
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default ExposureMap;

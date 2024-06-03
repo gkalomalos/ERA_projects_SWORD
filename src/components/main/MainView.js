@@ -14,36 +14,8 @@ import ReportsView from "../reports/ReportsView";
 import useStore from "../../store";
 
 const MainView = () => {
-  const {
-    activeMap,
-    selectedAnnualGrowth,
-    selectedAppOption,
-    selectedCard,
-    selectedCountry,
-    selectedExposureEconomic,
-    selectedExposureFile,
-    selectedExposureNonEconomic,
-    selectedHazard,
-    selectedHazardFile,
-    selectedScenario,
-    selectedSubTab,
-    selectedTab,
-    selectedTimeHorizon,
-    setSelectedCountry,
-    setSelectedExposureEconomic,
-    setSelectedExposureFile,
-    setSelectedExposureNonEconomic,
-    setSelectedHazard,
-    setSelectedHazardFile,
-    setSelectedScenario,
-    setSelectedTimeHorizon,
-    setSelectedAnnualGrowth,
-    setIsValidExposureEconomic,
-    setIsValidExposureNonEconomic,
-    setIsValidHazard,
-  } = useStore();
-
   const [viewControl, setViewControl] = useState("display_map");
+  const { selectedSubTab, selectedTab } = useStore();
 
   const setViewControlHandler = (control) => {
     setViewControl(control);
@@ -52,38 +24,10 @@ const MainView = () => {
   return (
     <>
       {<MainViewTitle />}
-      {selectedTab === 0 && (
-        <ViewCard
-          selectedAnnualGrowth={selectedAnnualGrowth}
-          selectedAppOption={selectedAppOption}
-          selectedCard={selectedCard}
-          selectedCountry={selectedCountry}
-          selectedExposureEconomic={selectedExposureEconomic}
-          selectedExposureFile={selectedExposureFile}
-          selectedExposureNonEconomic={selectedExposureNonEconomic}
-          selectedHazard={selectedHazard}
-          selectedHazardFile={selectedHazardFile}
-          selectedScenario={selectedScenario}
-          selectedTimeHorizon={selectedTimeHorizon}
-          onChangeCountry={setSelectedCountry}
-          onChangeExposureEconomic={setSelectedExposureEconomic}
-          onChangeExposureFile={setSelectedExposureFile}
-          onChangeExposureNonEconomic={setSelectedExposureNonEconomic}
-          onChangeHazard={setSelectedHazard}
-          onChangeHazardFile={setSelectedHazardFile}
-          onChangeScenario={setSelectedScenario}
-          onChangeTimeHorizon={setSelectedTimeHorizon}
-          onChangeAnnualGrowth={setSelectedAnnualGrowth}
-          onChangeValidEconomicExposure={setIsValidExposureEconomic}
-          onChangeValidNonEconomicExposure={setIsValidExposureNonEconomic}
-          onChangeValidHazard={setIsValidHazard}
-        />
-      )}
+      {selectedTab === 0 && <ViewCard />}
       {selectedTab === 1 && selectedSubTab === 0 && (
         <>
-          {viewControl === "display_map" && (
-            <MapLayout selectedCountry={selectedCountry} activeMap={activeMap} />
-          )}
+          {viewControl === "display_map" && <MapLayout />}
           {viewControl === "display_chart" && <RiskChartLayout />}
           {viewControl === "settings" && <SettingsView />}
           {viewControl === "progress" && <ProgressView />}

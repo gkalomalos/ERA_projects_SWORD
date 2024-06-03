@@ -7,14 +7,17 @@ import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { scaleSequential } from "d3-scale";
 import { interpolateRdYlGn } from "d3-scale-chromatic";
-import "leaflet/dist/leaflet.css";
 
+import "leaflet/dist/leaflet.css";
 import Legend from "./Legend";
+import useStore from "../../store";
 
 const returnPeriods = [10, 15, 20, 25];
 
-const RiskMap = ({ selectedCountry }) => {
+const RiskMap = () => {
+  const { selectedCountry } = useStore();
   const { t } = useTranslation();
+
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
@@ -178,10 +181,6 @@ const RiskMap = ({ selectedCountry }) => {
       )}
     </MapContainer>
   );
-};
-
-RiskMap.propTypes = {
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default RiskMap;
