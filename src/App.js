@@ -33,7 +33,6 @@ const App = () => {
     selectedTimeHorizon,
     setActiveMap,
     setMapTitle,
-    setSelectedAppOption,
     setSelectedAnnualGrowth,
     setSelectedCard,
     setSelectedExposureEconomic,
@@ -90,7 +89,7 @@ const App = () => {
   return (
     <>
       {selectedAppOption === "" ? (
-        <NavigateAlert onChangeOption={setSelectedAppOption} selectedOption={selectedAppOption} />
+        <NavigateAlert />
       ) : (
         <>
           <Header />

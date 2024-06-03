@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+
+import useStore from "../../store";
 
 import {
   Box,
@@ -19,7 +20,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const NavigateAlert = ({ onChangeOption, selectedOption }) => {
+const NavigateAlert = () => {
+  const { selectedAppOption, setSelectedAppOption } = useStore();
   const { t } = useTranslation();
 
   const options = ["era", "explore"];
@@ -30,13 +32,13 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
       // Show verification message for "explore" option
       setShowVerification(true);
     } else {
-      onChangeOption(option);
+      setSelectedAppOption(option);
     }
   };
 
   const handleVerification = () => {
     // Call onChangeOption with "explore" after verification
-    onChangeOption("explore");
+    setSelectedAppOption("explore");
     setShowVerification(false); // Reset verification state
   };
 
@@ -119,7 +121,7 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
 
   return (
     <Dialog
-      open={selectedOption === "" ? true : false}
+      open={selectedAppOption === "" ? true : false}
       TransitionComponent={Transition}
       maxWidth="sm"
       fullWidth
@@ -240,11 +242,6 @@ const NavigateAlert = ({ onChangeOption, selectedOption }) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-NavigateAlert.propTypes = {
-  onChangeOption: PropTypes.func.isRequired,
-  selectedOption: PropTypes.string.isRequired,
 };
 
 export default NavigateAlert;
