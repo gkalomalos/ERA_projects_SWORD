@@ -23,10 +23,8 @@ const DataInput = () => {
     isValidExposureEconomic,
     isValidExposureNonEconomic,
     isValidHazard,
-    setSelectedCard,
     setMapTitle,
     setIsScenarioRunning,
-    setSelectedTab,
     selectedCountry,
     selectedAnnualGrowth,
     selectedAppOption,
@@ -81,10 +79,6 @@ const DataInput = () => {
     setShowMessage(false);
   };
 
-  const onCardClickHandler = (card) => {
-    setSelectedCard(card);
-  };
-
   const handleRunButton = () => {
     if (
       selectedCountry &&
@@ -133,42 +127,16 @@ const DataInput = () => {
             <Scenario />
           </Grid>
           <Grid item xs={12}>
-            <TimeHorizon
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedAppOption={selectedAppOption}
-              selectedCountry={selectedCountry}
-              selectedTimeHorizon={selectedTimeHorizon}
-            />
+            <TimeHorizon />
           </Grid>
           <Grid item xs={12}>
-            <ExposureEconomic
-              isValidExposureEconomic={isValidExposureEconomic}
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <ExposureEconomic />
           </Grid>
           <Grid item xs={12}>
-            <ExposureNonEconomic
-              isValidExposureNonEconomic={isValidExposureNonEconomic}
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <ExposureNonEconomic />
           </Grid>
           <Grid item xs={12}>
-            <AnnualGrowth
-              onCardClick={onCardClickHandler}
-              onSelectTab={setSelectedTab}
-              selectedAnnualGrowth={selectedAnnualGrowth}
-              selectedAppOption={selectedAppOption}
-              selectedCountry={selectedCountry}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <AnnualGrowth />
           </Grid>
         </Grid>
 

@@ -15,35 +15,23 @@ import useStore from "./store";
 const App = () => {
   const {
     isScenarioRunning,
-    isValidExposureEconomic,
-    isValidExposureNonEconomic,
-    isValidHazard,
     modalMessage,
-    selectedAnnualGrowth,
     selectedAppOption,
     selectedCountry,
     selectedExposureEconomic,
-    selectedExposureFile,
     selectedExposureNonEconomic,
     selectedHazard,
-    selectedHazardFile,
-    selectedScenario,
     selectedTab,
     selectedSubTab,
-    selectedTimeHorizon,
     setActiveMap,
-    setMapTitle,
     setSelectedAnnualGrowth,
-    setSelectedCard,
     setSelectedExposureEconomic,
     setSelectedExposureFile,
     setSelectedExposureNonEconomic,
     setSelectedHazard,
     setSelectedHazardFile,
     setSelectedScenario,
-    setSelectedTab,
     setSelectedTimeHorizon,
-    setIsScenarioRunning,
     setIsValidExposureEconomic,
     setIsValidExposureNonEconomic,
     setIsValidHazard,
@@ -104,30 +92,8 @@ const App = () => {
             }}
           >
             <Grid item xs={12} md={2}>
-              {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && (
-                <DataInput
-                  isValidExposureEconomic={isValidExposureEconomic}
-                  isValidExposureNonEconomic={isValidExposureNonEconomic}
-                  isValidHazard={isValidHazard}
-                  onChangeCard={setSelectedCard}
-                  onChangeMapTitle={setMapTitle}
-                  onScenarioRunning={setIsScenarioRunning}
-                  onSelectTab={setSelectedTab}
-                  selectedAnnualGrowth={selectedAnnualGrowth}
-                  selectedAppOption={selectedAppOption}
-                  selectedCountry={selectedCountry}
-                  selectedExposureEconomic={selectedExposureEconomic}
-                  selectedExposureFile={selectedExposureFile}
-                  selectedExposureNonEconomic={selectedExposureNonEconomic}
-                  selectedHazard={selectedHazard}
-                  selectedHazardFile={selectedHazardFile}
-                  selectedScenario={selectedScenario}
-                  selectedTimeHorizon={selectedTimeHorizon}
-                />
-              )}
-              {selectedTab === 1 && selectedSubTab === 1 && (
-                <AdaptationMeasuresInput selectedHazard={selectedHazard} />
-              )}
+              {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && <DataInput />}
+              {selectedTab === 1 && selectedSubTab === 1 && <AdaptationMeasuresInput />}
             </Grid>
             <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
               <MainView />

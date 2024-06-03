@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const AnnualGrowth = ({
-  selectedAppOption,
-  selectedCountry,
-  selectedAnnualGrowth,
-  selectedExposureEconomic,
-  selectedExposureNonEconomic,
-  onCardClick,
-  onSelectTab,
-}) => {
+const AnnualGrowth = () => {
+  const {
+    selectedAppOption,
+    selectedCountry,
+    selectedAnnualGrowth,
+    selectedExposureEconomic,
+    selectedExposureNonEconomic,
+    setSelectedCard,
+    setSelectedTab,
+  } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -42,8 +43,8 @@ const AnnualGrowth = ({
     if (selectedAppOption === "era") {
       return;
     }
-    onCardClick("annualGrowth");
-    onSelectTab(0);
+    setSelectedCard("annualGrowth");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -186,16 +187,6 @@ const AnnualGrowth = ({
       </CardContent>
     </Card>
   );
-};
-
-AnnualGrowth.propTypes = {
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedAnnualGrowth: PropTypes.number.isRequired,
-  selectedExposureEconomic: PropTypes.string.isRequired,
-  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default AnnualGrowth;
