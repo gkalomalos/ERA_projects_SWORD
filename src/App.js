@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Grid } from "@mui/material";
 
@@ -13,66 +13,7 @@ import ResultsView from "./components/results/ResultsView";
 import useStore from "./store";
 
 const App = () => {
-  const {
-    isScenarioRunning,
-    modalMessage,
-    selectedAppOption,
-    selectedCountry,
-    selectedExposureEconomic,
-    selectedExposureNonEconomic,
-    selectedHazard,
-    selectedTab,
-    selectedSubTab,
-    setActiveMap,
-    setSelectedAnnualGrowth,
-    setSelectedExposureEconomic,
-    setSelectedExposureFile,
-    setSelectedExposureNonEconomic,
-    setSelectedHazard,
-    setSelectedHazardFile,
-    setSelectedScenario,
-    setSelectedTimeHorizon,
-    setIsValidExposureEconomic,
-    setIsValidExposureNonEconomic,
-    setIsValidHazard,
-    setModalMessage,
-  } = useStore();
-
-  useEffect(() => {
-    setSelectedAnnualGrowth(0);
-    setSelectedExposureEconomic("");
-    setSelectedExposureFile("");
-    setSelectedExposureNonEconomic("");
-    setSelectedHazard("");
-    setSelectedHazardFile("");
-    setSelectedScenario("");
-    setSelectedTimeHorizon([2024, 2050]);
-    setIsValidExposureEconomic(false);
-    setIsValidExposureNonEconomic(false);
-    setIsValidHazard(false);
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    setSelectedScenario("");
-  }, [selectedHazard]);
-
-  useEffect(() => {
-    setSelectedAnnualGrowth(0);
-  }, [selectedExposureEconomic, selectedExposureNonEconomic]);
-
-  useEffect(() => {
-    const progressListener = (event, data) => {
-      setModalMessage(data.message);
-    };
-    try {
-      window.electron.on("progress", progressListener);
-      return () => {
-        window.electron.remove("progress", progressListener);
-      };
-    } catch (e) {
-      console.log("Not running in electron");
-    }
-  }, []);
+  const { selectedAppOption, selectedTab, selectedSubTab } = useStore();
 
   return (
     <>
@@ -100,11 +41,11 @@ const App = () => {
             </Grid>
             {selectedTab !== 0 && (
               <Grid item xs={12} md={2}>
-                <ResultsView selectedTab={selectedTab} onChangeActiveMap={setActiveMap} />
+                <ResultsView />
               </Grid>
             )}
           </Grid>
-          {isScenarioRunning && <LoadModal message={modalMessage} open={isScenarioRunning} />}
+          <LoadModal />
         </>
       )}
     </>

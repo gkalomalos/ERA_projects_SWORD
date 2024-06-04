@@ -54,13 +54,32 @@ const useStore = create((set, get) => ({
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),
   setSelectedCard: (card) => set({ selectedCard: card }),
-  setSelectedCountry: (country) => set({ selectedCountry: country }),
-  setSelectedExposureEconomic: (exposureEconomic) =>
-    set({ selectedExposureEconomic: exposureEconomic }),
+  setSelectedCountry: (country) => {
+    set({
+      selectedCountry: country,
+      selectedAnnualGrowth: 0,
+      selectedExposureEconomic: "",
+      selectedExposureFile: "",
+      selectedExposureNonEconomic: "",
+      selectedHazard: "",
+      selectedHazardFile: "",
+      selectedScenario: "",
+      selectedTimeHorizon: [2024, 2050],
+      isValidExposureEconomic: false,
+      isValidExposureNonEconomic: false,
+      isValidHazard: false,
+    });
+  },
+  setSelectedExposureEconomic: (exposureEconomic) => {
+    set({ selectedExposureEconomic: exposureEconomic, selectedAnnualGrowth: 0 });
+  },
+  setSelectedExposureNonEconomic: (exposureNonEconomic) => {
+    set({ selectedExposureNonEconomic: exposureNonEconomic, selectedAnnualGrowth: 0 });
+  },
+  setSelectedHazard: (hazard) => {
+    set({ selectedHazard: hazard, selectedScenario: "" });
+  },
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
-  setSelectedExposureNonEconomic: (exposureNonEconomic) =>
-    set({ selectedExposureNonEconomic: exposureNonEconomic }),
-  setSelectedHazard: (hazard) => set({ selectedHazard: hazard }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
   setSelectedScenario: (scenario) => set({ selectedScenario: scenario }),
   setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),

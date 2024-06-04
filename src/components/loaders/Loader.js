@@ -41,11 +41,14 @@ const Loader = () => {
     const handleProgress = (event, json) => {
       setProgress(json.progress);
     };
-
-    electron.on("progress", handleProgress);
-    return () => {
-      electron.remove("progress", handleProgress);
-    };
+    try {
+      electron.on("progress", handleProgress);
+      return () => {
+        electron.remove("progress", handleProgress);
+      };
+    } catch (e) {
+      console.log("Not running in electron");
+    }
   }, []);
 
   return (
