@@ -240,6 +240,8 @@ class HazardHandler:
                 source = "mat"
             if hazard_type == "flood":
                 source = "raster"
+            if hazard_type == "heatwaves":
+                source = "raster"
         if source == "climada_api":
             hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
         if source == "raster":
