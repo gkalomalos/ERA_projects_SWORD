@@ -459,7 +459,7 @@ class HazardHandler:
             # Remove points outside of the country
             # TODO: Test if this needs to be refined
             # TODO: Comment out temporarily to resolve empty df issues
-            # joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
 
