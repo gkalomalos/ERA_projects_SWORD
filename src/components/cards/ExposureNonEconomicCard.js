@@ -34,6 +34,7 @@ const ExposureNonEconomicCard = () => {
     selectedCountry,
     selectedExposureNonEconomic,
     selectedExposureFile,
+    selectedHazard,
     setIsValidExposureNonEconomic,
     setSelectedExposureFile,
     setSelectedExposureNonEconomic,
@@ -45,7 +46,16 @@ const ExposureNonEconomicCard = () => {
   const [severity, setSeverity] = useState("info");
   const [showMessage, setShowMessage] = useState(true);
 
-  const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry] || [];
+  // Create a copy of the exposureNonEconomicDict to handle different assets per hazard
+  let exposuresNonEconomic = [...(exposureNonEconomicDict[selectedCountry] || [])];
+
+  if (selectedCountry === "egypt") {
+    if (selectedHazard === "flood") {
+      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "hospitalised_people");
+    } else if (selectedHazard === "heatwaves") {
+      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "diarrhea_patients");
+    }
+  }
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {
