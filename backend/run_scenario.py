@@ -238,28 +238,28 @@ class RunScenario:
         try:
             growth_rates = {
                 "Egypt": {
-                    "crops": 1.04,
-                    "livestock": 1.04,
-                    "power_plants": 1.04,
-                    "hotels": 1.04,
-                    "hospitalized_people": 1.0129,
-                    "students": 1.0129,
-                    "diarrhea_patients": 1.0129,
-                    "roads": 1.0129,
+                    "crops": 0.04,
+                    "livestock": 0.04,
+                    "power_plants": 0.04,
+                    "hotels": 0.04,
+                    "hospitalized_people": 0.0129,
+                    "students": 0.0129,
+                    "diarrhea_patients": 0.0129,
+                    "roads": 0.0129,
                 },
                 "Thailand": {
-                    "tree_crops": 1.0294,
-                    "grass_crops": 1.0294,
-                    "wet_markets": 1.0294,
-                    "grass_crops_farmers": 0.9978,
-                    "tree_crops_farmers": 0.9978,
-                    "buddhist_monks": 0.9978,
-                    "water_users": 0.9978,
-                    "roads": 0.9978,
+                    "tree_crops": 0.0294,
+                    "grass_crops": 0.0294,
+                    "wet_markets": 0.0294,
+                    "grass_crops_farmers": -0.0022,
+                    "tree_crops_farmers": -0.0022,
+                    "buddhist_monks": -0.0022,
+                    "water_users": -0.0022,
+                    "roads": -0.0022,
                 },
             }
             if self.request_data.is_era:
-                default_growth_rate = 1.0
+                default_growth_rate = 0
                 country_growth_rates = growth_rates.get(self.request_data.country_name, {})
                 growth = country_growth_rates.get(
                     self.request_data.exposure_type, default_growth_rate
