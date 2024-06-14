@@ -317,6 +317,8 @@ class HazardHandler:
             # Set hazard units.
             if hazard_code == "FL":
                 hazard.units = "m"
+            elif hazard_code == "HW":
+                hazard.units = ""
             else:
                 hazard.units = "m"
 
@@ -469,7 +471,7 @@ class HazardHandler:
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
                 "unit": hazard.units,
-                "title": f"Hazard ({hazard.units})",
+                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "radius": radius,
             }
 
