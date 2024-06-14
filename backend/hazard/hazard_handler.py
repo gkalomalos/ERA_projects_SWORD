@@ -358,7 +358,7 @@ class HazardHandler:
             hazard.intensity_thres = intensity_thres
             # Set hazard intensity unit in case it's not available in the matlab file
             # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
-            hazard.units = "-"
+            hazard.units = ""
 
             return hazard
         except Exception as exception:
