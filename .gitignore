@@ -11,7 +11,6 @@ gadm0_EGY.geojson
 gadm1_EGY.geojson
 gadm2_EGY.geojson
 
-
 # frontend
 node_modules
 build
@@ -36,3 +35,7 @@ __pycache_
 
 # documentation
 docs/_build
+
+# development
+test
+test.ipynb
