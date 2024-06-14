@@ -254,7 +254,8 @@ class RunScenario:
                     "grass_crops_farmers": -0.0022,
                     "tree_crops_farmers": -0.0022,
                     "buddhist_monks": -0.0022,
-                    "water_users": -0.0022,
+                    "diarrhea_patients": -0.0022,
+                    "students": -0.0022,
                     "roads": -0.0022,
                 },
             }
