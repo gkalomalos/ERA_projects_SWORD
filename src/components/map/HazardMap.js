@@ -12,6 +12,7 @@ import Legend from "./Legend";
 import useStore from "../../store";
 
 const returnPeriods = [10, 15, 20, 25];
+
 const HazardMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();

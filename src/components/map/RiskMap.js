@@ -5,17 +5,16 @@ import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import { scaleSequential } from "d3-scale";
-import { interpolateRdYlGn } from "d3-scale-chromatic";
 
 import "leaflet/dist/leaflet.css";
+import { getScale } from "../../utils/colorScales";
 import Legend from "./Legend";
 import useStore from "../../store";
 
 const returnPeriods = [10, 15, 20, 25];
 
 const RiskMap = () => {
-  const { selectedCountry } = useStore();
+  const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
 
   const [activeRPLayer, setActiveRPLayer] = useState(10);
@@ -45,7 +44,8 @@ const RiskMap = () => {
       setMinValue(minValue);
       const maxValue = Math.max(...values);
       setMaxValue(maxValue);
-      const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
+
+      const scale = getScale(selectedHazard, maxValue, minValue);
 
       setMapInfo({ geoJson: data, colorScale: scale });
     } catch (error) {
