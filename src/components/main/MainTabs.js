@@ -18,7 +18,7 @@ const MainTabs = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: "#70ADB5" }}>
+    <Box sx={{ bgcolor: "#70ADB5" }}>
       <AppBar
         position="fixed"
         sx={{ bgcolor: "#70ADB5", top: "80px", zIndex: (theme) => theme.zIndex.drawer + 1 }}
