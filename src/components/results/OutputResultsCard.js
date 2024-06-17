@@ -15,10 +15,9 @@ const OutputResultsCard = () => {
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
         {/* Button Section container for both sets of buttons */}
         <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-          
           {/* First set of buttons container */}
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            {["pdf", "excel", "word", "gis"].map((type) => (
+            {["pdf", "word"].map((type) => (
               <Button
                 key={type}
                 variant="contained"
@@ -42,7 +41,7 @@ const OutputResultsCard = () => {
 
           {/* Second set of buttons container */}
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            {["gis", "ppt", "other"].map((type) => (
+            {["excel", "gis"].map((type) => (
               <Button
                 key={type}
                 variant="contained"

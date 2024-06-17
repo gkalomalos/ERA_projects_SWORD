@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
 
-const EconomicResultsCard = ({ onActiveMapSelect }) => {
+import useStore from "../../store";
+
+const EconomicResultsCard = () => {
+  const { setActiveMap } = useStore();
   const { t } = useTranslation();
   const [selectedButton, setSelectedButton] = useState("hazard");
 
   const handleButtonClick = (type) => {
     setSelectedButton(type);
-    onActiveMapSelect(type);
+    setActiveMap(type);
   };
 
   const isButtonSelected = (type) => selectedButton === type;
@@ -69,10 +71,6 @@ const EconomicResultsCard = ({ onActiveMapSelect }) => {
       </Box>
     </Box>
   );
-};
-
-EconomicResultsCard.propTypes = {
-  onActiveMapSelect: PropTypes.func.isRequired,
 };
 
 export default EconomicResultsCard;

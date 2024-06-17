@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
+import useStore from "../../store";
+
 const { electron } = window;
 
 const LinearProgressWithLabel = (props) => {
@@ -35,17 +37,20 @@ LinearProgressWithLabel.propTypes = {
 };
 
 const Loader = () => {
-  const [progress, setProgress] = useState(0);
+  const { progress, setProgress } = useStore();
 
   useEffect(() => {
     const handleProgress = (event, json) => {
       setProgress(json.progress);
     };
-
-    electron.on("progress", handleProgress);
-    return () => {
-      electron.remove("progress", handleProgress);
-    };
+    try {
+      electron.on("progress", handleProgress);
+      return () => {
+        electron.remove("progress", handleProgress);
+      };
+    } catch (e) {
+      console.log("Not running in electron");
+    }
   }, []);
 
   return (

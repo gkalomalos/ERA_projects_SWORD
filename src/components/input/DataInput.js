@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Grid } from "@mui/material";
@@ -15,28 +14,28 @@ import ExposureNonEconomic from "./ExposureNonEconomic";
 import Hazard from "./Hazard";
 import Scenario from "./Scenario";
 import TimeHorizon from "./TimeHorizon";
+import useStore from "../../store";
 
 import AlertMessage from "../alerts/AlertMessage";
 
-const DataInput = ({
-  isValidExposureEconomic,
-  isValidExposureNonEconomic,
-  isValidHazard,
-  onChangeCard,
-  onChangeMapTitle,
-  onScenarioRunning,
-  onSelectTab,
-  selectedCountry,
-  selectedAnnualGrowth,
-  selectedAppOption,
-  selectedExposureEconomic,
-  selectedExposureFile,
-  selectedExposureNonEconomic,
-  selectedHazard,
-  selectedHazardFile,
-  selectedScenario,
-  selectedTimeHorizon,
-}) => {
+const DataInput = () => {
+  const {
+    isValidExposureEconomic,
+    isValidExposureNonEconomic,
+    isValidHazard,
+    setMapTitle,
+    setIsScenarioRunning,
+    selectedCountry,
+    selectedAnnualGrowth,
+    selectedAppOption,
+    selectedExposureEconomic,
+    selectedExposureFile,
+    selectedExposureNonEconomic,
+    selectedHazard,
+    selectedHazardFile,
+    selectedScenario,
+    selectedTimeHorizon,
+  } = useStore();
   const { t } = useTranslation();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -60,7 +59,7 @@ const DataInput = ({
     };
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
-    onScenarioRunning(true);
+    setIsScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
         setMessage(response.result.status.message);
@@ -68,8 +67,8 @@ const DataInput = ({
         setShowMessage(true);
         setIsRunButtonLoading(false);
         setIsRunButtonDisabled(false);
-        onChangeMapTitle(response.result.data.mapTitle);
-        onScenarioRunning(false);
+        setMapTitle(response.result.data.mapTitle);
+        setIsScenarioRunning(false);
       })
       .catch((error) => {
         console.log(error);
@@ -78,10 +77,6 @@ const DataInput = ({
 
   const handleCloseMessage = () => {
     setShowMessage(false);
-  };
-
-  const onCardClickHandler = (card) => {
-    onChangeCard(card);
   };
 
   const handleRunButton = () => {
@@ -102,12 +97,6 @@ const DataInput = ({
   useEffect(() => {
     handleRunButton();
   }, [
-    isValidExposureEconomic,
-    isValidExposureNonEconomic,
-    isValidHazard,
-    onChangeCard,
-    onChangeMapTitle,
-    onScenarioRunning,
     selectedCountry,
     selectedAnnualGrowth,
     selectedAppOption,
@@ -129,64 +118,25 @@ const DataInput = ({
       <Box sx={{ backgroundColor: "#DDEBEF", padding: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Country
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedCountry={selectedCountry}
-            />
+            <Country />
           </Grid>
           <Grid item xs={12}>
-            <Hazard
-              isValidHazard={isValidHazard}
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedHazard={selectedHazard}
-            />
+            <Hazard />
           </Grid>
           <Grid item xs={12}>
-            <Scenario
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedScenario={selectedScenario}
-            />
+            <Scenario />
           </Grid>
           <Grid item xs={12}>
-            <TimeHorizon
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedAppOption={selectedAppOption}
-              selectedCountry={selectedCountry}
-              selectedTimeHorizon={selectedTimeHorizon}
-            />
+            <TimeHorizon />
           </Grid>
           <Grid item xs={12}>
-            <ExposureEconomic
-              isValidExposureEconomic={isValidExposureEconomic}
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <ExposureEconomic />
           </Grid>
           <Grid item xs={12}>
-            <ExposureNonEconomic
-              isValidExposureNonEconomic={isValidExposureNonEconomic}
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <ExposureNonEconomic />
           </Grid>
           <Grid item xs={12}>
-            <AnnualGrowth
-              onCardClick={onCardClickHandler}
-              onSelectTab={onSelectTab}
-              selectedAnnualGrowth={selectedAnnualGrowth}
-              selectedAppOption={selectedAppOption}
-              selectedCountry={selectedCountry}
-              selectedExposureEconomic={selectedExposureEconomic}
-              selectedExposureNonEconomic={selectedExposureNonEconomic}
-            />
+            <AnnualGrowth />
           </Grid>
         </Grid>
 
@@ -235,27 +185,6 @@ const DataInput = ({
       </Box>
     </>
   );
-};
-
-DataInput.propTypes = {
-  isValidExposureEconomic: PropTypes.bool.isRequired,
-  isValidExposureNonEconomic: PropTypes.bool.isRequired,
-  isValidHazard: PropTypes.bool.isRequired,
-  onChangeCard: PropTypes.func.isRequired,
-  onChangeMapTitle: PropTypes.func.isRequired,
-  onScenarioRunning: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-
-  selectedAnnualGrowth: PropTypes.number.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedExposureEconomic: PropTypes.string.isRequired,
-  selectedExposureFile: PropTypes.string.isRequired,
-  selectedExposureNonEconomic: PropTypes.string.isRequired,
-  selectedHazard: PropTypes.string.isRequired,
-  selectedHazardFile: PropTypes.string.isRequired,
-  selectedScenario: PropTypes.string.isRequired,
-  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default DataInput;

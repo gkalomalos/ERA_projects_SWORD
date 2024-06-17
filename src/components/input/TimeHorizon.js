@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const TimeHorizon = ({
-  onCardClick,
-  onSelectTab,
-  selectedAppOption,
-  selectedCountry,
-  selectedTimeHorizon,
-}) => {
+const TimeHorizon = () => {
+  const {
+    selectedAppOption,
+    selectedCountry,
+    selectedTimeHorizon,
+    setSelectedCard,
+    setSelectedTab,
+  } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -39,8 +40,8 @@ const TimeHorizon = ({
     if (selectedAppOption === "era") {
       return;
     }
-    onCardClick("timeHorizon");
-    onSelectTab(0);
+    setSelectedCard("timeHorizon");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -103,14 +104,6 @@ const TimeHorizon = ({
       </CardContent>
     </Card>
   );
-};
-
-TimeHorizon.propTypes = {
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedAppOption: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default TimeHorizon;

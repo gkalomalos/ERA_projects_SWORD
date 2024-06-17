@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const ExposureNonEconomic = ({
-  isValidExposureNonEconomic,
-  onCardClick,
-  onSelectTab,
-  selectedExposureEconomic,
-  selectedExposureNonEconomic,
-}) => {
+const ExposureNonEconomic = () => {
+  const {
+    isValidExposureNonEconomic,
+    selectedExposureEconomic,
+    selectedExposureNonEconomic,
+    setSelectedCard,
+    setSelectedTab,
+  } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -33,8 +34,8 @@ const ExposureNonEconomic = ({
     if (selectedExposureEconomic) {
       return;
     }
-    onCardClick("exposureNonEconomic");
-    onSelectTab(0);
+    setSelectedCard("exposureNonEconomic");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -101,14 +102,6 @@ const ExposureNonEconomic = ({
       </CardContent>
     </Card>
   );
-};
-
-ExposureNonEconomic.propTypes = {
-  isValidExposureNonEconomic: PropTypes.bool.isRequired,
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedExposureEconomic: PropTypes.string.isRequired,
-  selectedExposureNonEconomic: PropTypes.string.isRequired,
 };
 
 export default ExposureNonEconomic;

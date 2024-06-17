@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const Hazard = ({ isValidHazard, onCardClick, onSelectTab, selectedHazard }) => {
+const Hazard = () => {
+  const { isValidHazard, selectedHazard, setSelectedCard, setSelectedTab } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -18,8 +19,8 @@ const Hazard = ({ isValidHazard, onCardClick, onSelectTab, selectedHazard }) => 
   };
 
   const handleClick = () => {
-    onCardClick("hazard");
-    onSelectTab(0);
+    setSelectedCard("hazard");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -84,13 +85,6 @@ const Hazard = ({ isValidHazard, onCardClick, onSelectTab, selectedHazard }) => 
       </CardContent>
     </Card>
   );
-};
-
-Hazard.propTypes = {
-  isValidHazard: PropTypes.bool.isRequired,
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedHazard: PropTypes.string.isRequired,
 };
 
 export default Hazard;

@@ -5,15 +5,18 @@ import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import { scaleSequential } from "d3-scale";
-import { interpolateRdYlGn } from "d3-scale-chromatic";
-import "leaflet/dist/leaflet.css";
 
+import "leaflet/dist/leaflet.css";
+import { getScale } from "../../utils/colorScales";
 import Legend from "./Legend";
+import useStore from "../../store";
 
 const returnPeriods = [10, 15, 20, 25];
-const HazardMap = ({ selectedCountry }) => {
+
+const HazardMap = () => {
+  const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
+
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
@@ -41,7 +44,8 @@ const HazardMap = ({ selectedCountry }) => {
       setMinValue(minValue);
       const maxValue = Math.max(...values);
       setMaxValue(maxValue);
-      const scale = scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
+
+      const scale = getScale(selectedHazard, maxValue, minValue);
 
       setMapInfo({ geoJson: data, colorScale: scale });
     } catch (error) {
@@ -71,7 +75,7 @@ const HazardMap = ({ selectedCountry }) => {
           .bindPopup(
             `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t(
               "value"
-            )}: ${value} (${unit})`
+            )}: ${value} ${unit}`
           )
           .addTo(layerGroup);
       });
@@ -177,10 +181,6 @@ const HazardMap = ({ selectedCountry }) => {
       )}
     </MapContainer>
   );
-};
-
-HazardMap.propTypes = {
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default HazardMap;

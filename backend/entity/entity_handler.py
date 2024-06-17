@@ -106,7 +106,9 @@ class EntityHandler:
                 # Set exposure's value_unit
                 exposure.value_unit = value_unit
             else:
-                raise ValueError("There are multiple different 'value_unit' values in the DataFrame")
+                raise ValueError(
+                    "There are multiple different 'value_unit' values in the DataFrame"
+                )
             exposure.check()
 
             return entity
@@ -134,9 +136,17 @@ class EntityHandler:
             present_year = entity.exposures.ref_year
             entity_future = deepcopy(entity)
             entity_future.exposures.ref_year = future_year
-            number_of_years = future_year - present_year  # + 1 TODO: Check if this is needed or not
-            growth = aag**number_of_years
-            entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
+
+            # Approach #1
+            entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"].values * (
+                1 + aag
+            ) ** (future_year - present_year)
+
+            # Approach #2
+            # number_of_years = future_year - present_year  # + 1 TODO: Check if this is needed or not
+            # growth = aag**number_of_years
+            # entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
+
             entity_future.check()
 
             return entity_future

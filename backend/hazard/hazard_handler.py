@@ -240,6 +240,8 @@ class HazardHandler:
                 source = "mat"
             if hazard_type == "flood":
                 source = "raster"
+            if hazard_type == "heatwaves":
+                source = "raster"
         if source == "climada_api":
             hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
         if source == "raster":
@@ -315,6 +317,8 @@ class HazardHandler:
             # Set hazard units.
             if hazard_code == "FL":
                 hazard.units = "m"
+            elif hazard_code == "HW":
+                hazard.units = ""
             else:
                 hazard.units = "m"
 
@@ -354,7 +358,7 @@ class HazardHandler:
             hazard.intensity_thres = intensity_thres
             # Set hazard intensity unit in case it's not available in the matlab file
             # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
-            hazard.units = "-"
+            hazard.units = ""
 
             return hazard
         except Exception as exception:
@@ -457,7 +461,7 @@ class HazardHandler:
             # Remove points outside of the country
             # TODO: Test if this needs to be refined
             # TODO: Comment out temporarily to resolve empty df issues
-            # joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
+            joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
 
@@ -467,7 +471,7 @@ class HazardHandler:
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
                 "unit": hazard.units,
-                "title": f"Hazard ({hazard.units})",
+                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "radius": radius,
             }
 

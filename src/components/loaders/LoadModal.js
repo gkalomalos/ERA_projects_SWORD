@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
@@ -10,16 +9,33 @@ import Slide from "@mui/material/Slide";
 
 import Loader from "./Loader";
 import GearLoader from "../../assets/gear-loader.svg";
+import useStore from "../../store";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const LoadModal = ({ open, message }) => {
+const LoadModal = () => {
+  const { isScenarioRunning, modalMessage, setModalMessage } = useStore();
+
+  useEffect(() => {
+    const progressListener = (event, data) => {
+      setModalMessage(data.message);
+    };
+    try {
+      window.electron.on("progress", progressListener);
+      return () => {
+        window.electron.remove("progress", progressListener);
+      };
+    } catch (e) {
+      console.log("Not running in electron");
+    }
+  }, []);
+
   return (
     <>
       <Dialog
-        open={open}
+        open={isScenarioRunning}
         TransitionComponent={Transition}
         keepMounted
         disableEscapeKeyDown={true}
@@ -31,7 +47,7 @@ const LoadModal = ({ open, message }) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" textAlign="center">
-            {message}
+            {modalMessage}
           </DialogContentText>
           <Box
             component="img"
@@ -48,11 +64,6 @@ const LoadModal = ({ open, message }) => {
       </Dialog>
     </>
   );
-};
-
-LoadModal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  message: PropTypes.string.isRequired,
 };
 
 export default LoadModal;

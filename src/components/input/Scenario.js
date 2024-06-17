@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const Scenario = ({ selectedScenario, onCardClick, onSelectTab }) => {
+const Scenario = () => {
+  const { selectedScenario, setSelectedCard, setSelectedTab } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
@@ -18,8 +19,8 @@ const Scenario = ({ selectedScenario, onCardClick, onSelectTab }) => {
   };
 
   const handleClick = () => {
-    onCardClick("scenario");
-    onSelectTab(0);
+    setSelectedCard("scenario");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -83,12 +84,6 @@ const Scenario = ({ selectedScenario, onCardClick, onSelectTab }) => {
       </CardContent>
     </Card>
   );
-};
-
-Scenario.propTypes = {
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedScenario: PropTypes.string.isRequired,
 };
 
 export default Scenario;

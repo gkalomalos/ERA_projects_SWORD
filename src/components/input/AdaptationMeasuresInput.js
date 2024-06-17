@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 
 import AdaptationMeasuresViewTitle from "../title/AdaptationMeasuresViewTitle";
 import APIService from "../../APIService";
+import useStore from "../../store";
 
-const AdaptationMeasuresInput = ({ selectedHazard }) => {
+const AdaptationMeasuresInput = () => {
+  const { selectedHazard } = useStore();
   const { t } = useTranslation();
+
   const [adaptationMeasures, setAdaptationMeasures] = useState([]);
 
   const onFetchAdaptationMeasuresHandler = async () => {
@@ -64,10 +66,6 @@ const AdaptationMeasuresInput = ({ selectedHazard }) => {
       )}
     </>
   );
-};
-
-AdaptationMeasuresInput.propTypes = {
-  selectedHazard: PropTypes.string.isRequired,
 };
 
 export default AdaptationMeasuresInput;

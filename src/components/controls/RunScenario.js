@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button } from "@mui/material";
@@ -7,17 +6,19 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
 import APIService from "../../APIService";
+import useStore from "../../store";
 
-const RunScenario = ({
-  onChangeMapTitle,
-  onScenarioRunning,
-  selectedAnnualGrowth,
-  selectedCountry,
-  selectedExposure,
-  selectedHazard,
-  selectedScenario,
-  selectedTimeHorizon,
-}) => {
+const RunScenario = () => {
+  const {
+    selectedAnnualGrowth,
+    selectedCountry,
+    selectedExposure,
+    selectedHazard,
+    selectedScenario,
+    selectedTimeHorizon,
+    setMapTitle,
+    setIsScenarioRunning,
+  } = useStore();
   const { t } = useTranslation();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -34,13 +35,13 @@ const RunScenario = ({
     };
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
-    onScenarioRunning(true);
+    setIsScenarioRunning(true);
     APIService.Run(body)
       .then((response) => {
         setIsRunButtonLoading(false);
         setIsRunButtonDisabled(false);
-        onChangeMapTitle(response.result.data.mapTitle);
-        onScenarioRunning(false);
+        setMapTitle(response.result.data.mapTitle);
+        setIsScenarioRunning(false);
       })
       .catch((error) => {
         console.log(error);
@@ -78,17 +79,6 @@ const RunScenario = ({
       )}
     </Box>
   );
-};
-
-RunScenario.propTypes = {
-  onChangeMapTitle: PropTypes.func.isRequired,
-  onScenarioRunning: PropTypes.func.isRequired,
-  selectedAnnualGrowth: PropTypes.number.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
-  selectedExposure: PropTypes.string.isRequired,
-  selectedHazard: PropTypes.string.isRequired,
-  selectedScenario: PropTypes.string.isRequired,
-  selectedTimeHorizon: PropTypes.array.isRequired,
 };
 
 export default RunScenario;
