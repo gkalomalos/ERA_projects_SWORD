@@ -14,7 +14,7 @@ import useStore from "./store";
 import "./App.css";
 
 const App = () => {
-  const { selectedAppOption } = useStore();
+  const { selectedAppOption, selectedTab } = useStore();
 
   return (
     <>
@@ -43,7 +43,7 @@ const App = () => {
                 <DataInput />
                 <AdaptationMeasuresInput />
               </Grid>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
                 <MainView />
               </Grid>
               <Grid item xs={12} md={2}>
