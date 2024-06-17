@@ -12,6 +12,7 @@ const MapLayout = () => {
 
   return (
     <div style={{ height: "80%", display: "flex", flexDirection: "column" }}>
+    {/* <div style={{ height: "calc(100vh - 320px)", display: "flex", flexDirection: "column" }}> */}
       <Paper
         elevation={3}
         style={{

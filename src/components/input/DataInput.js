@@ -34,6 +34,8 @@ const DataInput = () => {
     selectedHazard,
     selectedHazardFile,
     selectedScenario,
+    selectedSubTab,
+    selectedTab,
     selectedTimeHorizon,
   } = useStore();
   const { t } = useTranslation();
@@ -108,6 +110,10 @@ const DataInput = () => {
     selectedScenario,
     selectedTimeHorizon,
   ]);
+
+  if (!(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0))) {
+    return null;
+  }
 
   return (
     <>

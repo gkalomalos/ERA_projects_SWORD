@@ -8,7 +8,7 @@ import APIService from "../../APIService";
 import useStore from "../../store";
 
 const AdaptationMeasuresInput = () => {
-  const { selectedHazard } = useStore();
+  const { selectedHazard, selectedSubTab, selectedTab } = useStore();
   const { t } = useTranslation();
 
   const [adaptationMeasures, setAdaptationMeasures] = useState([]);
@@ -31,6 +31,10 @@ const AdaptationMeasuresInput = () => {
       onFetchAdaptationMeasuresHandler();
     }
   }, [selectedHazard]);
+
+  if (!(selectedTab === 1 && selectedSubTab === 1)) {
+    return null;
+  }
 
   return (
     <>

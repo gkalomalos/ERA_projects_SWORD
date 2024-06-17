@@ -18,7 +18,7 @@ const EconomicResultsCard = () => {
   const isButtonSelected = (type) => selectedButton === type;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "85vh" }}>
       {/* Button Section with flex column direction */}
       <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
         {["hazard", "exposure", "impact"].map((type) => (
