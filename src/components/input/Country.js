@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
-import { Box, Card, CardContent, Typography, TextField } from "@mui/material";
 
-const Country = ({ onCardClick, onSelectTab, selectedCountry }) => {
+import { Box, Card, CardContent, Typography, TextField } from "@mui/material";
+import useStore from "../../store";
+
+const Country = () => {
+  const { selectedCountry, setSelectedCard, setSelectedTab } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
@@ -18,8 +19,8 @@ const Country = ({ onCardClick, onSelectTab, selectedCountry }) => {
   };
 
   const handleClick = () => {
-    onCardClick("country");
-    onSelectTab(0);
+    setSelectedCard("country");
+    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -82,12 +83,6 @@ const Country = ({ onCardClick, onSelectTab, selectedCountry }) => {
       </CardContent>
     </Card>
   );
-};
-
-Country.propTypes = {
-  onCardClick: PropTypes.func.isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default Country;

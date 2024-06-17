@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 
 import { AppBar, Box, Button, Tabs, Tab, Paper } from "@mui/material";
-
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import MacroIcon from "@mui/icons-material/Assessment";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import TuneIcon from "@mui/icons-material/Tune";
 
-const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSubTab }) => {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedSubTab, setSelectedSubTab] = useState(0);
+import useStore from "../../store";
+
+const MainTabs = () => {
+  const { selectedTab, selectedSubTab, setSelectedTab, setSelectedSubTab } = useStore();
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
     setSelectedSubTab(0);
-    onChangeTab(newValue);
   };
 
   const handleSubTabChange = (event, newValue) => {
     setSelectedSubTab(newValue);
-    onChangeSubTab(newValue);
   };
 
   const handleAddToOutput = () => {
@@ -104,10 +101,6 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
     );
   };
 
-  useEffect(() => {
-    setSelectedTab(propSelectedTab);
-  }, [propSelectedTab]);
-
   return (
     <Box sx={{ flexGrow: 1, bgcolor: "#70ADB5" }}>
       <AppBar
@@ -155,13 +148,6 @@ const MainTabs = ({ onChangeTab, onChangeSubTab, propSelectedTab, propSelectedSu
       {renderSubTabs()}
     </Box>
   );
-};
-
-MainTabs.propTypes = {
-  onChangeTab: PropTypes.func.isRequired,
-  onChangeSubTab: PropTypes.func.isRequired,
-  propSelectedSubTab: PropTypes.number.isRequired,
-  propSelectedTab: PropTypes.number.isRequired,
 };
 
 export default MainTabs;

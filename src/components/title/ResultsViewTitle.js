@@ -1,11 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
 
 import { Box, Typography } from "@mui/material";
+import useStore from "../../store";
 
-const ResultsViewTitle = ({ selectedTab }) => {
+const ResultsViewTitle = () => {
+  const { selectedTab } = useStore();
   const { t } = useTranslation();
 
   return (
@@ -28,10 +28,6 @@ const ResultsViewTitle = ({ selectedTab }) => {
       </Typography>
     </Box>
   );
-};
-
-ResultsViewTitle.propTypes = {
-  selectedTab: PropTypes.number.isRequired,
 };
 
 export default ResultsViewTitle;

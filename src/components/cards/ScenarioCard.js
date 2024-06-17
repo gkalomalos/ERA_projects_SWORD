@@ -1,10 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/material";
+import useStore from "../../store";
 
-const ScenarioCard = ({ onScenarioSelect, selectedHazard, selectedScenario }) => {
+const ScenarioCard = () => {
+  const { selectedHazard, selectedScenario, setSelectedScenario } = useStore();
   const { t } = useTranslation();
 
   const scenarios =
@@ -14,9 +15,9 @@ const ScenarioCard = ({ onScenarioSelect, selectedHazard, selectedScenario }) =>
 
   const handleCardSelect = (scenario) => {
     if (selectedScenario === scenario) {
-      onScenarioSelect(""); // Deselect if already selected
+      setSelectedScenario(""); // Deselect if already selected
     } else {
-      onScenarioSelect(scenario);
+      setSelectedScenario(scenario);
     }
   };
 
@@ -79,12 +80,6 @@ const ScenarioCard = ({ onScenarioSelect, selectedHazard, selectedScenario }) =>
       </CardContent>
     </Card>
   );
-};
-
-ScenarioCard.propTypes = {
-  onScenarioSelect: PropTypes.func.isRequired,
-  selectedHazard: PropTypes.string.isRequired,
-  selectedScenario: PropTypes.string.isRequired,
 };
 
 export default ScenarioCard;

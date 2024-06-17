@@ -1,19 +1,20 @@
 import React from "react";
-import PropTypes from "prop-types";
-
 import { useTranslation } from "react-i18next";
+
 import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/material";
+import useStore from "../../store";
 
 const countries = ["egypt", "thailand"];
 
-const CountryCard = ({ onCountrySelect, selectedCountry }) => {
+const CountryCard = () => {
   const { t } = useTranslation();
+  const { selectedCountry, setSelectedCountry } = useStore();
 
   const handleSelect = (country) => {
     if (selectedCountry === country) {
-      onCountrySelect(""); // Deselect if already selected
+      setSelectedCountry(""); // Deselect if already selected
     } else {
-      onCountrySelect(country);
+      setSelectedCountry(country);
     }
   };
 
@@ -86,11 +87,6 @@ const CountryCard = ({ onCountrySelect, selectedCountry }) => {
       </CardContent>
     </Card>
   );
-};
-
-CountryCard.propTypes = {
-  onCountrySelect: PropTypes.func.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default CountryCard;

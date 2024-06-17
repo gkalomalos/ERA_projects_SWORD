@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { Grid } from "@mui/material";
 
@@ -8,254 +8,44 @@ import Header from "./components/nav/Header";
 import LoadModal from "./components/loaders/LoadModal";
 import MainTabs from "./components/main/MainTabs";
 import MainView from "./components/main/MainView";
-import ResultsView from "./components/results/ResultsView";
-
 import NavigateAlert from "./components/alerts/NavigateAlert";
+import ResultsView from "./components/results/ResultsView";
+import useStore from "./store";
 
 const App = () => {
-  const [activeMap, setActiveMap] = useState("hazard");
-  const [isScenarioRunning, setIsScenarioRunning] = useState(false);
-  const [isValidExposureEconomic, setIsValidExposureEconomic] = useState(false);
-  const [isValidExposureNonEconomic, setIsValidExposureNonEconomic] = useState(false);
-  const [isValidHazard, setIsValidHazard] = useState(false);
-  const [mapTitle, setMapTitle] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
-  const [selectedAnnualGrowth, setSelectedAnnualGrowth] = useState(0);
-  const [selectedAppOption, setSelectedAppOption] = useState("");
-  const [selectedCard, setSelectedCard] = useState("country");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedExposureEconomic, setSelectedExposureEconomic] = useState("");
-  const [selectedExposureFile, setSelectedExposureFile] = useState("");
-  const [selectedExposureNonEconomic, setSelectedExposureNonEconomic] = useState("");
-  const [selectedHazard, setSelectedHazard] = useState("");
-  const [selectedHazardFile, setSelectedHazardFile] = useState("");
-  const [selectedScenario, setSelectedScenario] = useState("");
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedSubTab, setSelectedSubTab] = useState(0);
-  const [selectedTimeHorizon, setSelectedTimeHorizon] = useState([2024, 2050]);
-
-  const setMapTitleHandler = (data) => {
-    setMapTitle(data);
-  };
-
-  const setSelectedAppOptionHandler = (option) => {
-    setSelectedAppOption(option);
-  };
-
-  const setIsScenarioRunningHandler = (data) => {
-    setIsScenarioRunning(data);
-  };
-
-  const setSelectedCountryHandler = (country) => {
-    setSelectedCountry(country);
-  };
-
-  const setSelectedExposureEconomicHandler = (exposureEconomic) => {
-    setSelectedExposureEconomic(exposureEconomic);
-  };
-
-  const setSelectedExposureFileHandler = (exposureFile) => {
-    setSelectedExposureFile(exposureFile);
-  };
-
-  const setValidExposureEconomicHandler = (isValid) => {
-    if (selectedAppOption === "era") {
-      setIsValidExposureEconomic(true);
-    } else {
-      setIsValidExposureEconomic(isValid);
-    }
-  };
-
-  const setValidExposureNonEconomicHandler = (isValid) => {
-    if (selectedAppOption === "era") {
-      setIsValidExposureNonEconomic(true);
-    } else {
-      setIsValidExposureNonEconomic(isValid);
-    }
-  };
-
-  const setValidHazardHandler = (isValid) => {
-    if (selectedAppOption === "era") {
-      setIsValidHazard(true);
-    } else {
-      setIsValidHazard(isValid);
-    }
-  };
-
-  const setSelectedExposureNonEconomicHandler = (exposureNonEconomic) => {
-    setSelectedExposureNonEconomic(exposureNonEconomic);
-  };
-
-  const setSelectedHazardHandler = (hazard) => {
-    setSelectedHazard(hazard);
-  };
-
-  const setSelectedHazardFileHandler = (hazardFile) => {
-    setSelectedHazardFile(hazardFile);
-  };
-
-  const setSelectedScenarioHandler = (scenario) => {
-    setSelectedScenario(scenario);
-  };
-
-  const setSelectedTimeHorizonHandler = (timeHorizon) => {
-    setSelectedTimeHorizon(timeHorizon);
-  };
-
-  const setSelectedAnnualGrowthHandler = (annualGrowth) => {
-    setSelectedAnnualGrowth(annualGrowth);
-  };
-
-  const setSelectedCardHandler = (card) => {
-    setSelectedCard(card);
-  };
-
-  const setSelectedTabHandler = (tab) => {
-    setSelectedTab(tab);
-    setSelectedSubTab(0);
-  };
-
-  const setSelectedSubTabHandler = (subTab) => {
-    setSelectedSubTab(subTab);
-  };
-
-  const setActiveMapHandler = (map) => {
-    setActiveMap(map);
-  };
-
-  // Reset states when selectedCountry changes
-  useEffect(() => {
-    setSelectedAnnualGrowth(0);
-    setSelectedExposureEconomic("");
-    setSelectedExposureFile("");
-    setSelectedExposureNonEconomic("");
-    setSelectedHazard("");
-    setSelectedHazardFile("");
-    setSelectedScenario("");
-    setSelectedTimeHorizon([2024, 2050]);
-    setValidExposureEconomicHandler(false);
-    setValidExposureNonEconomicHandler(false);
-    setValidHazardHandler(false);
-  }, [selectedCountry]);
-
-  // Reset selected scenario when selected hazard changes. Different hazards
-  // support different types of climate scenarios.
-  useEffect(() => {
-    setSelectedScenario("");
-  }, [selectedHazard]);
-
-  // Reset selected annual growth when exposure selection changes. Economic exposures
-  // support GPD projections and non-economic exposures support population projectsion.
-  useEffect(() => {
-    setSelectedAnnualGrowth(0)
-  }, [selectedExposureEconomic, selectedExposureNonEconomic]);
-
-  useEffect(() => {
-    const progressListener = (event, data) => {
-      setModalMessage(data.message);
-    };
-    try {
-      window.electron.on("progress", progressListener);
-      return () => {
-        window.electron.remove("progress", progressListener);
-      };
-    } catch (e) {
-      console.log("Not running in electron");
-    }
-  }, []);
+  const { selectedAppOption, selectedTab, selectedSubTab } = useStore();
 
   return (
     <>
       {selectedAppOption === "" ? (
-        <NavigateAlert
-          onChangeOption={setSelectedAppOptionHandler}
-          selectedOption={selectedAppOption}
-        />
+        <NavigateAlert />
       ) : (
         <>
           <Header />
-          <MainTabs
-            onChangeTab={setSelectedTabHandler}
-            onChangeSubTab={setSelectedSubTabHandler}
-            propSelectedSubTab={selectedSubTab}
-            propSelectedTab={selectedTab}
-          />
+          <MainTabs />
           <Grid
             container
             spacing={2}
             style={{
               padding: "16px",
               paddingTop: "174px",
-              // height: "calc(100vh - 64px)",
               overflow: "auto",
             }}
           >
             <Grid item xs={12} md={2}>
-              {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && (
-                <DataInput
-                  isValidExposureEconomic={isValidExposureEconomic}
-                  isValidExposureNonEconomic={isValidExposureNonEconomic}
-                  isValidHazard={isValidHazard}
-                  onChangeCard={setSelectedCardHandler}
-                  onChangeMapTitle={setMapTitleHandler}
-                  onScenarioRunning={setIsScenarioRunningHandler}
-                  onSelectTab={setSelectedTabHandler}
-                  selectedAnnualGrowth={selectedAnnualGrowth}
-                  selectedAppOption={selectedAppOption}
-                  selectedCountry={selectedCountry}
-                  selectedExposureEconomic={selectedExposureEconomic}
-                  selectedExposureFile={selectedExposureFile}
-                  selectedExposureNonEconomic={selectedExposureNonEconomic}
-                  selectedHazard={selectedHazard}
-                  selectedHazardFile={selectedHazardFile}
-                  selectedScenario={selectedScenario}
-                  selectedTimeHorizon={selectedTimeHorizon}
-                />
-              )}
-              {selectedTab === 1 && selectedSubTab === 1 && (
-                <AdaptationMeasuresInput selectedHazard={selectedHazard} />
-              )}
+              {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && <DataInput />}
+              {selectedTab === 1 && selectedSubTab === 1 && <AdaptationMeasuresInput />}
             </Grid>
             <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
-              <MainView
-                activeMap={activeMap}
-                mapTitle={mapTitle}
-                selectedAnnualGrowth={selectedAnnualGrowth}
-                selectedAppOption={selectedAppOption}
-                selectedCard={selectedCard}
-                selectedCountry={selectedCountry}
-                selectedExposureEconomic={selectedExposureEconomic}
-                selectedExposureFile={selectedExposureFile}
-                selectedExposureNonEconomic={selectedExposureNonEconomic}
-                selectedHazard={selectedHazard}
-                selectedHazardFile={selectedHazardFile}
-                selectedScenario={selectedScenario}
-                selectedTimeHorizon={selectedTimeHorizon}
-                selectedTab={selectedTab}
-                selectedSubTab={selectedSubTab}
-                onChangeActiveMap={setActiveMapHandler}
-                onChangeAnnualGrowth={setSelectedAnnualGrowthHandler}
-                onChangeCountry={setSelectedCountryHandler}
-                onChangeExposureEconomic={setSelectedExposureEconomicHandler}
-                onChangeExposureFile={setSelectedExposureFileHandler}
-                onChangeExposureNonEconomic={setSelectedExposureNonEconomicHandler}
-                onChangeHazard={setSelectedHazardHandler}
-                onChangeHazardFile={setSelectedHazardFileHandler}
-                onChangeScenario={setSelectedScenarioHandler}
-                onChangeTimeHorizon={setSelectedTimeHorizonHandler}
-                onChangeValidEconomicExposure={setValidExposureEconomicHandler}
-                onChangeValidNonEconomicExposure={setValidExposureNonEconomicHandler}
-                onChangeValidHazard={setValidHazardHandler}
-              />
+              <MainView />
             </Grid>
-
             {selectedTab !== 0 && (
               <Grid item xs={12} md={2}>
-                <ResultsView selectedTab={selectedTab} onChangeActiveMap={setActiveMapHandler} />
+                <ResultsView />
               </Grid>
             )}
           </Grid>
-          {isScenarioRunning && <LoadModal message={modalMessage} open={isScenarioRunning} />}
+          <LoadModal />
         </>
       )}
     </>

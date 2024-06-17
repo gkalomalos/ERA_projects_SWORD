@@ -1,13 +1,15 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { Paper } from "@mui/material";
 
 import ExposureMap from "./ExposureMap";
 import HazardMap from "./HazardMap";
 import RiskMap from "./RiskMap";
+import useStore from "../../store";
 
-const MapLayout = ({ activeMap, selectedCountry }) => {
+const MapLayout = () => {
+  const { activeMap } = useStore();
+
   return (
     <div style={{ height: "80%", display: "flex", flexDirection: "column" }}>
       <Paper
@@ -19,17 +21,12 @@ const MapLayout = ({ activeMap, selectedCountry }) => {
           overflow: "hidden",
         }}
       >
-        {activeMap === "exposure" && <ExposureMap selectedCountry={selectedCountry} />}
-        {activeMap === "hazard" && <HazardMap selectedCountry={selectedCountry} />}
-        {activeMap === "impact" && <RiskMap selectedCountry={selectedCountry} />}
+        {activeMap === "exposure" && <ExposureMap />}
+        {activeMap === "hazard" && <HazardMap />}
+        {activeMap === "impact" && <RiskMap />}
       </Paper>
     </div>
   );
-};
-
-MapLayout.propTypes = {
-  activeMap: PropTypes.string.isRequired,
-  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default MapLayout;
