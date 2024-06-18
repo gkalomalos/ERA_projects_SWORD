@@ -27,6 +27,9 @@ const ExposureEconomicCard = () => {
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureFile,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setIsValidExposureEconomic,
     setSelectedExposureEconomic,
     setSelectedExposureFile,
@@ -34,9 +37,6 @@ const ExposureEconomicCard = () => {
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
   const exposuresEconomic = exposureEconomicDict[selectedCountry] || [];
 
@@ -65,10 +65,6 @@ const ExposureEconomicCard = () => {
     }
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const clearUploadedFile = () => {
     selectedExposureFile("");
     setIsValidExposureEconomic(false);
@@ -92,9 +88,11 @@ const ExposureEconomicCard = () => {
     };
     APIService.CheckDataType(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
         setIsValidExposureEconomic(response.result.status.code === 2000);
       })
@@ -260,14 +258,7 @@ const ExposureEconomicCard = () => {
       </CardContent>
 
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </Card>
   );
 };

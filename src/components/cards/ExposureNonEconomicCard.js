@@ -35,6 +35,9 @@ const ExposureNonEconomicCard = () => {
     selectedExposureNonEconomic,
     selectedExposureFile,
     selectedHazard,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setIsValidExposureNonEconomic,
     setSelectedExposureFile,
     setSelectedExposureNonEconomic,
@@ -42,9 +45,6 @@ const ExposureNonEconomicCard = () => {
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
   // Create a copy of the exposureNonEconomicDict to handle different assets per hazard
   let exposuresNonEconomic = [...(exposureNonEconomicDict[selectedCountry] || [])];
@@ -82,10 +82,6 @@ const ExposureNonEconomicCard = () => {
     }
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const clearUploadedFile = () => {
     setSelectedExposureFile("");
     setIsValidExposureNonEconomic(false);
@@ -109,9 +105,11 @@ const ExposureNonEconomicCard = () => {
     };
     APIService.CheckDataType(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
         setIsValidExposureNonEconomic(response.result.status.code === 2000);
       })
@@ -277,14 +275,7 @@ const ExposureNonEconomicCard = () => {
       </CardContent>
 
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </Card>
   );
 };

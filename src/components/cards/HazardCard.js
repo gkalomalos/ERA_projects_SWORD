@@ -28,15 +28,15 @@ const HazardCard = () => {
     selectedCountry,
     selectedHazard,
     selectedHazardFile,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setIsValidHazard,
     setSelectedHazard,
     setSelectedHazardFile,
   } = useStore();
 
   const [fetchHazardMessage, setFetchHazardMessage] = useState("");
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
   const hazards = hazardDict[selectedCountry] || [];
 
@@ -65,10 +65,6 @@ const HazardCard = () => {
     }
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const clearUploadedFile = () => {
     setSelectedHazardFile("");
     setIsValidHazard(false);
@@ -92,9 +88,11 @@ const HazardCard = () => {
     };
     APIService.CheckDataType(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
         setFetchHazardMessage(response.result.status.message);
         setIsValidHazard(response.result.status.code === 2000);
       })
@@ -262,14 +260,7 @@ const HazardCard = () => {
       </CardContent>
 
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </Card>
   );
 };

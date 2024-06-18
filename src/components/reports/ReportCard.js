@@ -6,14 +6,13 @@ import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 import AlertMessage from "../alerts/AlertMessage";
+import useStore from "../../store";
 
 const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
+  const { setAlertMessage, setAlertSeverity, setAlertShowMessage } = useStore();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
   const handleMouseDown = () => {
     setClicked(true); // Trigger animation
@@ -27,14 +26,10 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
     onCardClick(id);
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const handleDeleteButtonClick = () => {
-    setMessage("Report deleted successfully.");
-    setSeverity("success");
-    setShowMessage(true);
+    setAlertMessage("Report deleted successfully.");
+    setAlertSeverity("success");
+    setAlertShowMessage(true);
     onReportAction(id, "delete");
   };
 
@@ -140,14 +135,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
         </Box>
       </Box>
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </>
   );
 };
