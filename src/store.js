@@ -2,6 +2,9 @@ import { create } from "zustand";
 
 const useStore = create((set, get) => ({
   activeMap: "hazard",
+  alertMessage: "",
+  alertSeverity: "info",
+  alertShowMessage: false,
   isScenarioRunning: false,
   isValidExposureEconomic: false,
   isValidExposureNonEconomic: false,
@@ -25,6 +28,9 @@ const useStore = create((set, get) => ({
   viewControl: "display_map",
 
   setActiveMap: (map) => set({ activeMap: map }),
+  setAlertMessage: (message) => set({ alertMessage: message }),
+  setAlertSeverity: (severity) => set({ alertSeverity: severity }),
+  setAlertShowMessage: (show) => set({ alertShowMessage: show }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
   setIsValidExposureEconomic: (isValid) => {
     const { selectedAppOption } = get();
