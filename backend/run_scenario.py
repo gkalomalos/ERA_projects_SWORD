@@ -116,9 +116,10 @@ class RunScenario:
     generates map data files, and prepares responses.
     """
 
-    def __init__(self, request):
+    def __init__(self, request, pipe):
+        self.pipe = pipe
         # Initialize handler instances
-        self._initialize_handlers()
+        self._initialize_handlers(pipe)
         # Initialize data folder and subfolders if not exist
         self.base_handler.initalize_data_directories()
         # Clear previously generated exposure/hazard/impact maps and temp directory
@@ -132,14 +133,14 @@ class RunScenario:
         # Clear previously generated maps and geojson datasets from temp directory
         self._clear()
 
-    def _initialize_handlers(self):
+    def _initialize_handlers(self, pipe):
         """Initialize handlers."""
-        self.base_handler = BaseHandler()
+        self.base_handler = BaseHandler(pipe)
         self.costben_handler = CostBenefitHandler()
         self.entity_handler = EntityHandler()
-        self.exposure_handler = ExposureHandler()
-        self.hazard_handler = HazardHandler()
-        self.impact_handler = ImpactHandler()
+        self.exposure_handler = ExposureHandler(pipe)
+        self.hazard_handler = HazardHandler(pipe)
+        self.impact_handler = ImpactHandler(pipe)
 
     def _extract_request_data(self, request):
         """
@@ -657,4 +658,3 @@ if __name__ == "__main__":
     req = json.loads(sys.argv[1])
     runner = RunScenario(req)
     resp = runner.run_scenario()
-    print(json.dumps(resp))

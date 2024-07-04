@@ -32,10 +32,8 @@ from climada.hazard import Hazard
 import matplotlib.pyplot as plt
 
 from constants import DATA_TEMP_DIR, REQUIREMENTS_DIR
-from hazard.hazard_handler import HazardHandler
 from logger_config import LoggerConfig
 
-hazard_handler = HazardHandler()
 logger = LoggerConfig(logger_types=["file"])
 
 

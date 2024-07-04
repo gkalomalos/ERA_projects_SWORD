@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const { spawn } = require("child_process");
+const net = require("net");
 const path = require("path");
 
 global.pythonProcess = null;
@@ -7,6 +7,8 @@ global.pythonProcess = null;
 const basePath = app.getAppPath();
 let mainWindow;
 let loaderWindow;
+
+const pipeName = "\\\\.\\pipe\\electron-python-pipe";
 
 const isDevelopmentEnv = () => {
   return !app.isPackaged;
@@ -58,21 +60,21 @@ const createLoaderWindow = () => {
   loaderWindow.loadFile(loaderPath);
 };
 
-const waitForPythonProcessReady = (pythonProcess) => {
+const waitForPythonProcessReady = () => {
   return new Promise((resolve) => {
     const handleData = (data) => {
       const message = data.toString().trim();
       try {
         const event = JSON.parse(message);
         if (event.type === "event" && event.name === "ready") {
-          pythonProcess.stdout.off("data", handleData);
+          global.pythonProcess.stdout.off("data", handleData);
           resolve();
         }
       } catch (error) {
         console.error("Error parsing Python stdout:", error);
       }
     };
-    pythonProcess.stdout.on("data", handleData);
+    global.pythonProcess.stdout.on("data", handleData);
   });
 };
 
@@ -107,47 +109,47 @@ const createMainWindow = () => {
 
 const runPythonScript = (mainWindow, scriptName, data) => {
   return new Promise((resolve, reject) => {
-    let buffer = "";
+    const client = net.connect({ path: pipeName, timeout: 300000 }, () => {
+      const message = JSON.stringify({ scriptName, data });
+      client.write(message);
+    });
 
-    const message = {
-      scriptName,
-      data,
-    };
+    let responseData = "";
 
-    global.pythonProcess.stdin.write(JSON.stringify(message) + "\n");
+    client.on("data", (data) => {
+      responseData += data.toString();
 
-    const handleData = (data) => {
-      buffer += data.toString();
-      let boundary = buffer.indexOf("\n");
+      try {
+        const response = JSON.parse(responseData);
 
-      while (boundary !== -1) {
-        const rawData = buffer.substring(0, boundary);
-        buffer = buffer.substring(boundary + 1);
-
-        if (rawData.trim().startsWith("{") || rawData.trim().startsWith("[")) {
-          try {
-            const response = JSON.parse(rawData);
-            if (response.type === "progress") {
-              mainWindow.webContents.send("progress", response);
-            } else {
-              global.pythonProcess.stdout.off("data", handleData);
-              if (response.success) {
-                resolve(response.result);
-              } else {
-                reject(new Error(response.error));
-              }
-            }
-          } catch (error) {
-            console.error("Error parsing Python stdout:", error);
-            reject(error);
+        if (response.type === "progress") {
+          mainWindow.webContents.send("progress-update", response);
+          responseData = ""; // Reset responseData for next chunk
+        } else if (response.success !== undefined) {
+          client.end();
+          if (response.success) {
+            resolve(response.result);
+          } else {
+            reject(new Error(response.error));
           }
         }
-
-        boundary = buffer.indexOf("\n");
+      } catch (error) {
+        if (!error.message.includes("Unexpected end of JSON input")) {
+          console.error("Error parsing response data:", error);
+          client.end();
+          reject(error);
+        }
       }
-    };
+    });
 
-    global.pythonProcess.stdout.on("data", handleData);
+    client.on("error", (error) => {
+      console.error("Error with pipe connection:", error);
+      reject(error);
+    });
+
+    client.on("end", () => {
+      console.log("Pipe connection ended.");
+    });
   });
 };
 
@@ -157,9 +159,7 @@ const createPythonProcess = () => {
   const pythonExecutable = path.join(basePath, "climada_env", "python.exe");
 
   try {
-    const process = spawn(pythonExecutable, [scriptPath], {
-      stdio: ["pipe", "pipe", "pipe", "ipc"],
-    });
+    const process = require("child_process").spawn(pythonExecutable, [scriptPath]);
 
     process.on("error", (error) => {
       console.error("Error occurred during Python process creation:", error);

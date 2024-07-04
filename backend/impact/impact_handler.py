@@ -52,8 +52,8 @@ class ImpactHandler:
     impact datasets, and generating impact GeoJSON files.
     """
 
-    def __init__(self) -> None:
-        self.base_handler = BaseHandler()
+    def __init__(self, pipe) -> None:
+        self.base_handler = BaseHandler(pipe)
 
     def get_impact_function_set(self, exposure_type: str, hazard_type: str) -> ImpactFuncSet:
         """

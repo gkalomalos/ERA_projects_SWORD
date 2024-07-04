@@ -16,13 +16,18 @@ Functions:
 
 import json
 import sys
+import win32pipe, win32file
 
+from logger_config import LoggerConfig
 from run_check_data_type import RunCheckDataType
-from run_scenario import RunScenario
 from run_fetch_measures import RunFetchScenario
+from run_scenario import RunScenario
+
+pipe_name = r"\\.\pipe\electron-python-pipe"
+logger = LoggerConfig(logger_types=["file"])
 
 
-def process_message(message):
+def process_message(pipe, message):
     """
     Process a message and execute the corresponding script.
 
@@ -31,6 +36,7 @@ def process_message(message):
     an instance of the corresponding runner class and executes the script. It then returns
     a response indicating whether the execution was successful along with any results.
 
+    :param pipe: The pipe handle used for communication.
     :param message: The message containing information about the script and optional data.
     :type message: dict
     :return: A response indicating the success or failure of the script execution and any results.
@@ -40,15 +46,15 @@ def process_message(message):
     data = message.get("data", None)
 
     if script_name == "run_scenario.py":
-        runner = RunScenario(data)
+        runner = RunScenario(data, pipe)
         result = runner.run_scenario()
         response = {"success": True, "result": result}
     elif script_name == "run_check_data_type.py":
-        runner = RunCheckDataType(data)
+        runner = RunCheckDataType(data, pipe)
         result = runner.run_check_data_type()
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_measures.py":
-        runner = RunFetchScenario(data)
+        runner = RunFetchScenario(data, pipe)
         result = runner.run_fetch_measures()
         response = {"success": True, "result": result}
     else:
@@ -59,28 +65,43 @@ def process_message(message):
 
 def main():
     """
-    Main function for interacting with the Node.js process.
+    Main function for interacting with the Electron process through a named pipe.
 
-    This function sends a 'ready' event to the Node.js process upon initialization.
-    It then enters a loop where it continuously reads messages from stdin, processes
+    This function sends a 'ready' event to the Electron process upon initialization.
+    It then enters a loop where it continuously reads messages from the named pipe, processes
     each message using the process_message function, and sends the response back through
-    stdout as a JSON string.
-
+    the named pipe as a JSON string.
     """
-    # Send the 'ready' event to the Node.js process
-    ready_event = {"type": "event", "name": "ready"}
-    print(json.dumps(ready_event))
-    sys.stdout.flush()
-
+    logger.log("info", json.dumps({"type": "event", "name": "ready"}))
     while True:
-        raw_message = sys.stdin.readline().strip()
+        pipe = win32pipe.CreateNamedPipe(
+            pipe_name,
+            win32pipe.PIPE_ACCESS_DUPLEX,
+            win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_WAIT,
+            1,
+            65536,
+            65536,
+            300000,  # Increase timeout to 300 seconds
+            None,
+        )
 
-        if raw_message:
-            message = json.loads(raw_message)
-            response = process_message(message)
-            # Send the response back through stdout as a JSON string
-            sys.stdout.write(json.dumps(response) + "\n")
-            sys.stdout.flush()
+        win32pipe.ConnectNamedPipe(pipe, None)
+
+        while True:
+            try:
+                result, data = win32file.ReadFile(pipe, 4096)
+                if not data:
+                    break
+                message = json.loads(data.decode("utf-8"))
+                response = process_message(pipe, message)
+                response_data = json.dumps(response).encode("utf-8")
+                win32file.WriteFile(pipe, response_data)
+            except Exception as e:
+                logger.log("info", f"Error in named pipe. More info: {e}")
+                break
+
+        win32pipe.DisconnectNamedPipe(pipe)
+        win32file.CloseHandle(pipe)
 
 
 # Add this condition to ensure the infinite loop is only executed when app.py

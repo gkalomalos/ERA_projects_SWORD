@@ -36,12 +36,13 @@ class RunFetchScenario:
     update progress, and generate a response containing the fetched adaptation measures.
     """
 
-    def __init__(self, request):
-        self.base_handler = BaseHandler()
+    def __init__(self, request, pipe):
+        self.base_handler = BaseHandler(pipe)
         self.costben_handler = CostBenefitHandler()
-        self.hazard_handler = HazardHandler()
+        self.hazard_handler = HazardHandler(pipe)
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
+        self.pipe = pipe
 
     def valid_request(self) -> bool:
         """
@@ -121,4 +122,3 @@ if __name__ == "__main__":
     req = json.loads(sys.argv[1])
     runner = RunFetchScenario(req)
     resp = runner.run_fetch_measures()
-    print(json.dumps(resp))

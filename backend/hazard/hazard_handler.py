@@ -71,9 +71,9 @@ class HazardHandler:
     hazard datasets, and generating hazard GeoJSON files.
     """
 
-    def __init__(self):
+    def __init__(self, pipe):
         self.client = Client()
-        self.base_handler = BaseHandler()
+        self.base_handler = BaseHandler(pipe)
 
     # TODO: Needs to be refactored
     def get_hazard_time_horizon(self, hazard_type: str, scenario: str, time_horizon: str) -> str:

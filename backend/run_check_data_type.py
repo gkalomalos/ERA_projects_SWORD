@@ -34,10 +34,11 @@ class RunCheckDataType:
     valid or not.
     """
 
-    def __init__(self, request):
-        self.base_handler = BaseHandler()
+    def __init__(self, request, pipe):
+        self.base_handler = BaseHandler(pipe)
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
+        self.pipe = pipe
 
     def run_check_data_type(self) -> dict:
         """
@@ -113,6 +114,6 @@ class RunCheckDataType:
 
 if __name__ == "__main__":
     req = json.loads(sys.argv[1])
-    runner = RunCheckDataType(req)
+    pipe = None  # You need to pass the actual pipe handle here
+    runner = RunCheckDataType(req, pipe)
     resp = runner.run_check_data_type()
-    print(json.dumps(resp))

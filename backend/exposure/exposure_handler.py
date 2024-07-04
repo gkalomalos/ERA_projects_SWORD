@@ -45,9 +45,9 @@ class ExposureHandler:
     retrieving administrative data, and generating exposure GeoJSON files.
     """
 
-    def __init__(self):
+    def __init__(self, pipe):
         self.client = Client()
-        self.base_handler = BaseHandler()
+        self.base_handler = BaseHandler(pipe)
 
     def get_exposure_from_api(self, country: str) -> Exposures:
         """

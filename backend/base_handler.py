@@ -9,7 +9,6 @@ and updating progress for the frontend.
 
 import json
 from os import makedirs, path
-import sys
 
 import geopandas as gpd
 import pycountry
@@ -33,6 +32,9 @@ class BaseHandler:
     """
     Generic class for handling basic data and app operations.
     """
+
+    def __init__(self, pipe):
+        self.pipe = pipe
 
     def check_data_type(self, country_name: str, data_type: str) -> list:
         """
@@ -254,9 +256,8 @@ class BaseHandler:
         :return: None
         """
         progress_data = {"type": "progress", "progress": progress, "message": message}
-        print(json.dumps(progress_data))
+        win32file.WriteFile(self.pipe, json.dumps(progress_data).encode("utf-8"))
         logger.log("info", f"send progress {progress} to frontend.")
-        sys.stdout.flush()
 
     def get_admin_data(self, country_code: str, admin_level) -> gpd.GeoDataFrame:
         """

@@ -23,46 +23,44 @@ const LoadModal = () => {
       setModalMessage(data.message);
     };
     try {
-      window.electron.on("progress", progressListener);
+      window.electron.on("progress-update", progressListener); // Correct event name
       return () => {
-        window.electron.remove("progress", progressListener);
+        window.electron.removeListener("progress-update", progressListener); // Use removeListener instead of remove
       };
     } catch (e) {
       console.log("Not running in electron");
     }
-  }, []);
+  }, [setModalMessage]);
 
   return (
-    <>
-      <Dialog
-        open={isScenarioRunning}
-        TransitionComponent={Transition}
-        keepMounted
-        disableEscapeKeyDown={true}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle id="alert-dialog-title" textAlign="center">
-          {"Running scenario"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description" textAlign="center">
-            {modalMessage}
-          </DialogContentText>
-          <Box
-            component="img"
-            display="block"
-            marginLeft="auto"
-            marginRight="auto"
-            alt="loader"
-            src={GearLoader}
-          />
-        </DialogContent>
-        <Box textAlign="center" sx={{ display: "flex", alignItems: "center" }}>
-          <Loader />
-        </Box>
-      </Dialog>
-    </>
+    <Dialog
+      open={isScenarioRunning}
+      TransitionComponent={Transition}
+      keepMounted
+      disableEscapeKeyDown={true}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle id="alert-dialog-title" textAlign="center">
+        {"Running scenario"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description" textAlign="center">
+          {modalMessage}
+        </DialogContentText>
+        <Box
+          component="img"
+          display="block"
+          marginLeft="auto"
+          marginRight="auto"
+          alt="loader"
+          src={GearLoader}
+        />
+      </DialogContent>
+      <Box textAlign="center" sx={{ display: "flex", alignItems: "center" }}>
+        <Loader />
+      </Box>
+    </Dialog>
   );
 };
 
