@@ -27,6 +27,16 @@ const RiskMap = () => {
 
   const mapRef = useRef();
 
+  const updateLegendTitle = (unit) => {
+    return `Risk${unit ? ` (${unit})` : ""}`;
+  };
+
+  useEffect(() => {
+    if (selectedHazard) {
+      setLegendTitle(updateLegendTitle(unit));
+    }
+  }, [selectedHazard, unit]);
+
   const fetchGeoJson = async () => {
     try {
       const tempPath = await window.electron.fetchTempDir();
@@ -36,7 +46,6 @@ const RiskMap = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setLegendTitle(data._metadata.title);
       setRadius(data._metadata.radius);
       setUnit(data._metadata.unit);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);

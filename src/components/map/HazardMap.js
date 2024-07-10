@@ -27,6 +27,21 @@ const HazardMap = () => {
 
   const mapRef = useRef();
 
+  const updateLegendTitle = (hazard, unit) => {
+    const titles = {
+      flood: `Flood depth${unit ? ` (${unit})` : ""}`,
+      drought: `Standard Precipitation Index${unit ? ` (${unit})` : ""}`,
+      heatwaves: `Warm Spell Duration Index${unit ? ` (${unit})` : ""}`,
+    };
+    return titles[hazard] || `Hazard${unit ? ` (${unit})` : ""}`;
+  };
+
+  useEffect(() => {
+    if (selectedHazard) {
+      setLegendTitle(updateLegendTitle(selectedHazard, unit));
+    }
+  }, [selectedHazard, unit]);
+
   const fetchGeoJson = async () => {
     try {
       const tempPath = await window.electron.fetchTempDir();
@@ -36,7 +51,6 @@ const HazardMap = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setLegendTitle(data._metadata.title);
       setRadius(data._metadata.radius);
       setUnit(data._metadata.unit);
       const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);

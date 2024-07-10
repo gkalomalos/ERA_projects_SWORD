@@ -23,6 +23,16 @@ const ExposureMap = () => {
 
   const mapRef = useRef();
 
+  const updateLegendTitle = (unit) => {
+    return `Exposure${unit ? ` (${unit})` : ""}`;
+  };
+
+  useEffect(() => {
+    if (selectedHazard) {
+      setLegendTitle(updateLegendTitle(unit));
+    }
+  }, [selectedHazard, unit]);
+
   const fetchGeoJson = async (layer) => {
     try {
       const tempPath = await window.electron.fetchTempDir();
@@ -32,7 +42,6 @@ const ExposureMap = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setLegendTitle(data._metadata.title);
       setUnit(data._metadata.unit);
       const filteredFeatures = data.features.filter(
         (feature) => feature.properties.layer === layer
