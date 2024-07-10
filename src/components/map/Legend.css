@@ -1,4 +1,3 @@
-/* Legend.css */
 .legend-container {
   position: absolute;
   bottom: 25px;
@@ -11,7 +10,7 @@
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  pointer-events: none; /* Make sure the legend does not block map interaction */
+  pointer-events: none; /* Ensure the legend does not block map interaction */
 }
 
 .color-blocks {
@@ -22,18 +21,37 @@
 }
 
 .color-blocks div {
-  flex-grow: 1; /* Each block will take up equal space */
-  transition: background-color 0.3s; /* Smooth transitions on color change, if needed */
+  flex-grow: 1; /* Each block takes up equal space */
 }
 
-.legend-values {
+.value-labels {
+  display: flex;
+  justify-content: space-between; /* Ensures the labels are distributed evenly between the junctions */
+  position: relative;
+  top: 0; /* Adjust based on your layout */
+  left: 10%; /* Offset the labels to start from the right edge of the first block */
+  width: 80%; /* Adjust the width so the labels align with the junctions */
+}
+
+.value-label {
+  position: relative;
+  width: 20%; /* Adjust if necessary to ensure correct spacing */
+  text-align: center; /* Center each label in the assigned space */
+}
+
+.legend-labels {
   display: flex;
   justify-content: space-between;
-  pointer-events: all; /* Enable pointer events for the legend values */
+  margin-top: 5px;
+}
+
+.legend-label {
+  flex-grow: 1;
+  text-align: center; /* Center the text under each color block */
 }
 
 .legend-title {
   text-align: center;
   font-weight: bold;
-  margin-bottom: 5px; /* Add some spacing between the title and the color blocks */
+  margin-bottom: 5px; /* Space between the title and the color blocks */
 }
