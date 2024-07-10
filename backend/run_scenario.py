@@ -299,6 +299,10 @@ class RunScenario:
             )
             entity_present = self.entity_handler.get_entity_from_xlsx(entity_filename)
 
+            hazard_intensity_unit = self.hazard_handler.get_hazard_intensity_units_from_entity(
+                entity_present
+            )
+
             # Set static present year to 2024
             entity_present.exposures.ref_year = self.request_data.ref_year
 
@@ -334,6 +338,8 @@ class RunScenario:
             hazard_present = self.hazard_handler.get_hazard(
                 hazard_type=self.request_data.hazard_type, filepath=hazard_present_filename
             )
+            hazard_present.units = hazard_intensity_unit
+
             hazard_future = None
             if self.request_data.scenario != "historical":
                 hazard_future_filename = self.hazard_handler.get_hazard_filename(
@@ -344,6 +350,7 @@ class RunScenario:
                 hazard_future = self.hazard_handler.get_hazard(
                     hazard_type=self.request_data.hazard_type, filepath=hazard_future_filename
                 )
+                hazard_future.units = hazard_intensity_unit
 
             # Conduct cost-benefit analysis
             self.base_handler.update_progress(
@@ -454,6 +461,9 @@ class RunScenario:
                     self.request_data.entity_filename
                 )
                 exposure_present = entity_present.exposures
+                hazard_intensity_unit = self.hazard_handler.get_hazard_intensity_units_from_entity(
+                    entity_present
+                )
             # Case 2: User fetches exposure datasets from the CLIMADA API
             else:
                 exposure_present = self.exposure_handler.get_exposure_from_api(
@@ -497,6 +507,7 @@ class RunScenario:
                     hazard_type=self.request_data.hazard_type,
                     filepath=self.request_data.hazard_filename,
                 )
+                hazard_present.units = hazard_intensity_unit
             # Case 2: User fetches hazard datasets from the CLIMADA API
             else:
                 hazard_present = self.hazard_handler.get_hazard(
@@ -516,6 +527,7 @@ class RunScenario:
                         hazard_type=self.request_data.hazard_type,
                         filepath=self.request_data.hazard_filename,
                     )
+                    hazard_future.units = hazard_intensity_unit
                 # Case 2: User fetches hazard datasets from the CLIMADA API
                 else:
                     hazard_future = self.hazard_handler.get_hazard(

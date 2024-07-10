@@ -50,6 +50,7 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import Point
 
+from climada.entity import Entity
 from climada.hazard import Hazard
 from climada.util.api_client import Client
 
@@ -314,13 +315,8 @@ class HazardHandler:
 
             # Set the hazard code
             hazard.haz_type = hazard_code
-            # Set hazard units.
-            if hazard_code == "FL":
-                hazard.units = "m"
-            elif hazard_code == "HW":
-                hazard.units = ""
-            else:
-                hazard.units = "m"
+            # Hazard intensity units are set according to the selected Entity file.
+            hazard.units = "m"
 
             # This step is required to generate the lat/long columns and avoid issues
             # with array size mismatch
@@ -356,8 +352,7 @@ class HazardHandler:
             # Set intensity threshold according to hazard type
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
-            # Set hazard intensity unit in case it's not available in the matlab file
-            # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
+            # Hazard intensity units are set according to the selected Entity file.
             hazard.units = ""
 
             return hazard
@@ -389,6 +384,37 @@ class HazardHandler:
         if hazard_type == "D":
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
+
+    def get_hazard_intensity_units_from_entity(self, entity: Entity) -> str:
+        """
+        Retrieve the intensity unit associated from the Entity impact function.
+
+        This method extracts the unique category ID from an entity's exposures and uses it to
+        fetch the corresponding impact function. It then retrieves the intensity unit from this
+        impact function. If the entity's exposures have more than one unique category ID,
+        a ValueError is raised.
+
+        :param entity: The entity containing exposure data and impact functions.
+        :type entity: Entity
+        :return: The intensity unit associated with the entity's category ID.
+        :rtype: str
+        :raises ValueError: If there are multiple different category IDs in the impact functions.
+        """
+        # Extract unique category IDs from the entity's geodataframe
+        category_ids = entity.exposures.gdf["category_id"].unique()
+
+        # Check if all category IDs are identical (only one unique value)
+        if len(np.unique(category_ids)) != 1:
+            # If there are multiple unique category IDs, raise an error
+            raise ValueError(
+                "There are multiple different 'category_id' values in the entity's exposures."
+            )
+
+        # Retrieve the impact function associated with the first (and only) category ID
+        impf = entity.impact_funcs.get_func(fun_id=category_ids[0])[0]
+
+        # Return the intensity unit, default to an empty string if not present
+        return impf.intensity_unit or ""
 
     def get_circle_radius(self, hazard_type: str) -> int:
         """
@@ -633,4 +659,24 @@ class HazardHandler:
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
-        return hazard_filename
+        return hazard_filename  # TODO: Extract this to settings file
+
+    def get_hazard_intensity_thres(self, hazard_type: str) -> float:
+        """
+        Get the intensity threshold for a given hazard type.
+
+        This method returns the intensity threshold corresponding to the specified hazard type.
+
+        :param hazard_type: The type of hazard for which to retrieve the intensity threshold.
+        :type hazard_type: str
+        :return: The intensity threshold for the specified hazard type.
+        :rtype: float
+        """
+        intensity_thres = -100
+        if hazard_type == "RF":
+            intensity_thres = 1
+        elif hazard_type == "FL":
+            intensity_thres = 1
+        if hazard_type == "D":
+            intensity_thres = -4  # TODO: Test if this is correct
+        return intensity_thres
