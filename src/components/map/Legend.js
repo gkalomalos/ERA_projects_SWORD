@@ -4,39 +4,44 @@ import PropTypes from "prop-types";
 import "./Legend.css";
 
 const Legend = ({ colorScale, minValue, maxValue, title }) => {
-  // Generate the CSS for the gradient
-  const gradientCSS = `linear-gradient(to right, 
-    ${colorScale(minValue)} 0%, 
-    ${colorScale((minValue + maxValue) / 2)} 50%, 
-    ${colorScale(maxValue)} 100%)`;
+  const segmentCount = 5; // Assuming you always have 5 colors
+  const step = (maxValue - minValue) / (segmentCount - 1);
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num);
-  };
+  const colorBlocks = Array.from({ length: segmentCount }, (_, i) => {
+    const value = minValue + step * i;
+    return (
+      <div
+        key={i}
+        style={{
+          backgroundColor: colorScale(value),
+          width: "20%", // Makes each block take up 20% of the container
+          height: "20px", // Set a fixed height for each color block
+        }}
+      />
+    );
+  });
 
   return (
     <div className="legend-container">
       <div className="legend-title">{title}</div>
-      <div className="color-gradient" style={{ backgroundImage: gradientCSS }}>
-        <div className="gradient-line"></div>
+      <div className="color-blocks" style={{ display: "flex", width: "100%" }}>
+        {colorBlocks}
       </div>
       <div className="legend-values">
-        {minValue === maxValue ? (
-          <span>{formatNumber(minValue)}</span>
-        ) : (
-          <>
-            <span>{formatNumber(minValue)}</span>
-            <span>{formatNumber((minValue + maxValue) / 2)}</span>
-            <span>{formatNumber(maxValue)}</span>
-          </>
-        )}
+        <span>{minValue.toFixed(2)}</span>
+        {Array.from({ length: segmentCount - 2 }, (_, i) => (
+          <span key={i} style={{ flex: 1, textAlign: "center" }}>
+            {(minValue + step * (i + 1)).toFixed(2)}
+          </span>
+        ))}
+        <span>{maxValue.toFixed(2)}</span>
       </div>
     </div>
   );
 };
 
 Legend.propTypes = {
-  colorScale: PropTypes.any.isRequired,
+  colorScale: PropTypes.func.isRequired,
   minValue: PropTypes.number.isRequired,
   maxValue: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
