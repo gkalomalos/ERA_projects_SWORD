@@ -37,9 +37,7 @@ const HazardMap = () => {
   };
 
   useEffect(() => {
-    if (selectedHazard) {
-      setLegendTitle(updateLegendTitle(selectedHazard, unit));
-    }
+    setLegendTitle(updateLegendTitle(selectedHazard, unit));
   }, [selectedHazard, unit]);
 
   const fetchGeoJson = async () => {

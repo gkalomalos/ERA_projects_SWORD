@@ -28,10 +28,8 @@ const ExposureMap = () => {
   };
 
   useEffect(() => {
-    if (selectedHazard) {
-      setLegendTitle(updateLegendTitle(unit));
-    }
-  }, [selectedHazard, unit]);
+    setLegendTitle(updateLegendTitle(unit));
+  }, [unit]);
 
   const fetchGeoJson = async (layer) => {
     try {
