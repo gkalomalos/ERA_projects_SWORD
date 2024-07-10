@@ -73,9 +73,9 @@ const RiskMap = () => {
           radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t(
+            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>${t(
               "value"
-            )}: ${value} (${unit})`
+            )}: ${value} ${unit}`
           )
           .addTo(layerGroup);
       });
