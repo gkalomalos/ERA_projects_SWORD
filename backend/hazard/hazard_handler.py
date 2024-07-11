@@ -433,7 +433,7 @@ class HazardHandler:
         if hazard_type == "FL":
             radius = 2000
         if hazard_type == "HW":
-            radius = 10000
+            radius = 9000
         return radius
 
     def generate_hazard_geojson(
