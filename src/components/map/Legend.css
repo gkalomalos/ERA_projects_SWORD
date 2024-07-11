@@ -31,6 +31,7 @@
   top: 0; /* Adjust based on your layout */
   left: 10%; /* Offset the labels to start from the right edge of the first block */
   width: 80%; /* Adjust the width so the labels align with the junctions */
+  margin-top: 5px;
 }
 
 .value-label {
@@ -42,7 +43,7 @@
 .legend-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 
 .legend-label {

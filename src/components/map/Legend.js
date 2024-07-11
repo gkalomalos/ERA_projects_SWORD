@@ -32,7 +32,7 @@ const Legend = ({ colorScale, minValue, maxValue, title }) => {
           </span>
         ))}
       </div>
-      <div className="legend-labels" style={{ marginTop: '10px' }}> {/* Adjust margin to align with design needs */}
+      <div className="legend-labels">
         {levels.map((level, index) => (
           <div key={index} className="legend-label">
             {level}
