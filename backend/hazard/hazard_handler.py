@@ -468,27 +468,25 @@ class HazardHandler:
 
             # Round the hazard rp values to 2 decimal places. Update is vectorized and efficient
             # for large datasets
-            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(2))
+            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(1))
             geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
 
-            # TODO: Test efficiency and remove redundant code. Timings look similar
-            # hazard_gdf = gpd.GeoDataFrame(
-            #     pd.DataFrame(data, columns=columns),
-            #     geometry=gpd.points_from_xy(data[:, 1], data[:, 0], crs="EPSG:4326"),
-            # )
-
-            # hazard_gdf.set_crs("EPSG:4326", inplace=True)
             # Filter hazard_gdf to exclude rows where all return period values are zero
             hazard_gdf = hazard_gdf[
                 (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
             ]
 
+            # Calculate percentiles for each return period
+            percentile_values = {}
+            percentiles = (20, 40, 60, 80, 100)
+            for rp in return_periods:
+                rp_data = hazard_gdf[f"rp{rp}"]
+                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
+
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
-            # TODO: Test if this needs to be refined
-            # TODO: Comment out temporarily to resolve empty df issues
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
@@ -498,9 +496,10 @@ class HazardHandler:
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
-                "unit": hazard.units,
+                "percentile_values": percentile_values,
                 "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "radius": radius,
+                "unit": hazard.units,
             }
 
             # Save the combined GeoJSON file

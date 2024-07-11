@@ -22,7 +22,7 @@ const HazardMap = () => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
-  const [percentileValues, setPercentileValues] = useState([]);
+  const [percentileValues, setPercentileValues] = useState(null);
   const [radius, setRadius] = useState(0);
   const [unit, setUnit] = useState("");
 
@@ -189,7 +189,7 @@ const HazardMap = () => {
             colorScale={mapInfo.colorScale}
             maxValue={maxValue}
             minValue={minValue}
-            percentileValues={percentileValues}
+            percentileValues={percentileValues ? percentileValues[`rp${activeRPLayer}`] : []}
             title={legendTitle}
           />
         </>
