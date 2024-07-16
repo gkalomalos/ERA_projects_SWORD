@@ -1,10 +1,10 @@
 import { schemeReds, schemeBlues, schemeYlOrBr, schemeYlOrRd } from "d3-scale-chromatic";
 
 const getColorScale = (hazard) => {
-  const k = 9; // Index for accessing the largest set of colors, typically containing 9 colors
+  const k = 9; // Largest set of colors
   switch (hazard) {
     case "flood":
-      return schemeBlues[k].slice(-5); // Last 5 colors
+      return schemeBlues[k].slice(-5); // Get last 5 colors
     case "drought":
       return [...schemeYlOrBr[k]].slice(-5);
     case "heatwaves":
@@ -16,16 +16,15 @@ const getColorScale = (hazard) => {
 
 export const getScale = (hazard, percentileValues) => {
   const colors = getColorScale(hazard);
-  const minValue = Math.min(...percentileValues);
-  const maxValue = Math.max(...percentileValues);
-  const range = maxValue - minValue;
-  // Adding a very small value to range can help to include the maximum value in the calculations.
-  const segmentSize = range / (colors.length - 1); // Divide the range exactly by the number of colors minus one.
 
+  // Create boundary thresholds based on percentile values
   return (value) => {
-    if (value >= maxValue) return colors[colors.length - 1]; // Ensures the max value gets the last color.
-    const index = Math.min(Math.floor((value - minValue) / segmentSize), colors.length - 2);
-    return colors[index];
+    for (let i = 0; i < percentileValues.length - 1; i++) {
+      if (value >= percentileValues[i] && value < percentileValues[i + 1]) {
+        return colors[i];
+      }
+    }
+    // Handle the case where value is equal to or greater than the last threshold
+    return colors[colors.length - 1];
   };
 };
-
