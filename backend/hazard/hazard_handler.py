@@ -482,7 +482,7 @@ class HazardHandler:
             percentiles = (20, 40, 60, 80)
             for rp in return_periods:
                 rp_data = hazard_gdf[f"rp{rp}"]
-                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).tolist()
+                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
                 if hazard.haz_type == "D":
                     percentile_values[f"rp{rp}"].reverse()
                     percentile_values[f"rp{rp}"].append(-4)
