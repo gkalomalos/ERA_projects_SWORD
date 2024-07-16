@@ -489,8 +489,6 @@ class HazardHandler:
                 else:
                     percentile_values[f"rp{rp}"].insert(0, 0)
 
-            logger.log("info", f"percentile_values: {percentile_values}")
-
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
