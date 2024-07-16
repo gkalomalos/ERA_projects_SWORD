@@ -3,9 +3,12 @@ import PropTypes from "prop-types";
 
 import "./Legend.css";
 
-const Legend = ({ colorScale, minValue, maxValue, percentileValues, title }) => {
+const Legend = ({ colorScale, percentileValues, title }) => {
   const levels = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"];
   const segmentCount = 5; // Number of colored blocks
+  
+  const minValue = Math.min(...percentileValues);
+  const maxValue = Math.max(...percentileValues);
   const step = (maxValue - minValue) / (segmentCount - 1);
 
   const colorBlocks = Array.from({ length: segmentCount }, (_, i) => (

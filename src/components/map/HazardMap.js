@@ -20,8 +20,6 @@ const HazardMap = () => {
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [maxValue, setMaxValue] = useState(null);
-  const [minValue, setMinValue] = useState(null);
   const [percentileValues, setPercentileValues] = useState(null);
   const [radius, setRadius] = useState(0);
   const [unit, setUnit] = useState("");
@@ -53,13 +51,8 @@ const HazardMap = () => {
       setPercentileValues(data._metadata.percentile_values);
       setRadius(data._metadata.radius);
       setUnit(data._metadata.unit);
-      const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
-      const minValue = Math.min(...values);
-      setMinValue(minValue);
-      const maxValue = Math.max(...values);
-      setMaxValue(maxValue);
 
-      const scale = getScale(selectedHazard, maxValue, minValue);
+      const scale = getScale(selectedHazard, percentileValues[`rp${activeRPLayer}`]);
 
       setMapInfo({ geoJson: data, colorScale: scale });
     } catch (error) {
@@ -187,8 +180,6 @@ const HazardMap = () => {
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
           <Legend
             colorScale={mapInfo.colorScale}
-            maxValue={maxValue}
-            minValue={minValue}
             percentileValues={percentileValues ? percentileValues[`rp${activeRPLayer}`] : []}
             title={legendTitle}
           />

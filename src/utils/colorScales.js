@@ -6,7 +6,7 @@ const getColorScale = (hazard) => {
     case "flood":
       return schemeBlues[k].slice(-5); // Last 5 colors
     case "drought":
-      return [...schemeYlOrBr[k]].reverse().slice(-5); // Reverse and then take the last 5 colors
+      return [...schemeYlOrBr[k]].slice(-5);
     case "heatwaves":
       return schemeReds[k].slice(-5);
     default:
@@ -14,8 +14,10 @@ const getColorScale = (hazard) => {
   }
 };
 
-export const getScale = (hazard, maxValue, minValue) => {
+export const getScale = (hazard, percentileValues) => {
   const colors = getColorScale(hazard);
+  const minValue = Math.min(...percentileValues);
+  const maxValue = Math.max(...percentileValues);
   const range = maxValue - minValue;
   const segmentSize = range / colors.length; // Divide the range by the number of colors
 
