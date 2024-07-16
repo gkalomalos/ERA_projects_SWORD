@@ -19,11 +19,13 @@ export const getScale = (hazard, percentileValues) => {
   const minValue = Math.min(...percentileValues);
   const maxValue = Math.max(...percentileValues);
   const range = maxValue - minValue;
-  const segmentSize = range / colors.length; // Divide the range by the number of colors
+  // Adding a very small value to range can help to include the maximum value in the calculations.
+  const segmentSize = range / (colors.length - 1); // Divide the range exactly by the number of colors minus one.
 
   return (value) => {
-    if (value === maxValue) return colors[colors.length - 1]; // Handle edge case for max value
-    const index = Math.min(Math.floor((value - minValue) / segmentSize), colors.length - 1);
+    if (value >= maxValue) return colors[colors.length - 1]; // Ensures the max value gets the last color.
+    const index = Math.min(Math.floor((value - minValue) / segmentSize), colors.length - 2);
     return colors[index];
   };
 };
+

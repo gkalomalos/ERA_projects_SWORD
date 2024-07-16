@@ -5,18 +5,14 @@ import "./Legend.css";
 
 const Legend = ({ colorScale, percentileValues, title }) => {
   const levels = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"];
-  const segmentCount = 5; // Number of colored blocks
-  
-  const minValue = Math.min(...percentileValues);
-  const maxValue = Math.max(...percentileValues);
-  const step = (maxValue - minValue) / (segmentCount - 1);
 
-  const colorBlocks = Array.from({ length: segmentCount }, (_, i) => (
+  // Create a color block for each percentile value
+  const colorBlocks = percentileValues.map((value, index) => (
     <div
-      key={i}
+      key={index}
       style={{
-        backgroundColor: colorScale(minValue + step * i),
-        width: "20%",
+        backgroundColor: colorScale(value),
+        width: `${100 / percentileValues.length}%`,
         height: "20px",
       }}
     />
@@ -28,8 +24,7 @@ const Legend = ({ colorScale, percentileValues, title }) => {
       <div className="color-blocks" style={{ display: "flex", width: "100%" }}>
         {colorBlocks}
       </div>
-      <div className="value-labels" style={{ display: "flex", justifyContent: "space-between" }}>
-        {/* Map over the percentileValues to create labels directly from these values */}
+      <div className="value-labels" style={{ display: "flex", width: "100%" }}>
         {percentileValues.map((value, index) => (
           <span key={index} className="value-label">
             {value}
@@ -49,8 +44,6 @@ const Legend = ({ colorScale, percentileValues, title }) => {
 
 Legend.propTypes = {
   colorScale: PropTypes.func.isRequired,
-  minValue: PropTypes.number.isRequired,
-  maxValue: PropTypes.number.isRequired,
   percentileValues: PropTypes.arrayOf(PropTypes.number).isRequired,
   title: PropTypes.string.isRequired,
 };
