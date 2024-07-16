@@ -440,7 +440,7 @@ class HazardHandler:
         self,
         hazard: Hazard,
         country_name: str,
-        return_periods: tuple = (25, 20, 15, 10),
+        return_periods: tuple = (10, 15, 20, 25),
     ):
         """
         Generate GeoJSON data for hazard points.
@@ -452,7 +452,7 @@ class HazardHandler:
         :type hazard: Hazard
         :param country_name: The name of the country.
         :type country_name: str
-        :param return_periods: Tuple of return periods, defaults to (25, 20, 15, 10).
+        :param return_periods: Tuple of return periods, defaults to (10, 15, 20, 25).
         :type return_periods: tuple, optional
         """
         try:
@@ -479,10 +479,17 @@ class HazardHandler:
 
             # Calculate percentiles for each return period
             percentile_values = {}
-            percentiles = (20, 40, 60, 80, 100)
+            percentiles = (20, 40, 60, 80)
             for rp in return_periods:
                 rp_data = hazard_gdf[f"rp{rp}"]
-                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
+                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).tolist()
+                if hazard.haz_type == "D":
+                    percentile_values[f"rp{rp}"].reverse()
+                    percentile_values[f"rp{rp}"].append(-4)
+                else:
+                    percentile_values[f"rp{rp}"].insert(0, 0)
+
+            logger.log("info", f"percentile_values: {percentile_values}")
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
