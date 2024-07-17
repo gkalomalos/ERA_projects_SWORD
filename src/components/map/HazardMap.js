@@ -20,7 +20,7 @@ const HazardMap = () => {
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [percentileValues, setPercentileValues] = useState(null);
+  const [percentileValues, setPercentileValues] = useState({});
   const [radius, setRadius] = useState(0);
   const [unit, setUnit] = useState("");
 
@@ -52,9 +52,18 @@ const HazardMap = () => {
       setRadius(data._metadata.radius);
       setUnit(data._metadata.unit);
 
-      const scale = getScale(selectedHazard, percentileValues[`rp${activeRPLayer}`]);
-
-      setMapInfo({ geoJson: data, colorScale: scale });
+      if (
+        data._metadata.percentile_values &&
+        data._metadata.percentile_values[`rp${activeRPLayer}`]
+      ) {
+        const scale = getScale(
+          selectedHazard,
+          data._metadata.percentile_values[`rp${activeRPLayer}`]
+        );
+        setMapInfo({ geoJson: data, colorScale: scale });
+      } else {
+        throw new Error("Percentile values are missing or incomplete.");
+      }
     } catch (error) {
       console.error("Error fetching GeoJSON data:", error);
       setMapInfo({ geoJson: null, colorScale: null });
