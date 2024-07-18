@@ -91,8 +91,7 @@ const HazardMap = () => {
         })
           .bindPopup(
             `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>` +
-              `${t("value")}: ${value} ${unit}<br>` +
-              `${t("level")}: ${level}` // Display the level information in the popup
+              `${t("level")}: ${level}`
           )
           .addTo(layerGroup);
       });
