@@ -28,10 +28,16 @@
   width: 100%; /* Ensure labels align with blocks */
 }
 
-.value-label {
+.value-label-left {
   flex-grow: 1;
-  text-align: left; /* Place each label in the left */
+  text-align: left; /* Aligns text to the left */
   margin-left: -2px;
+}
+
+.value-label-right {
+  flex-grow: 1;
+  text-align: right; /* Aligns text to the right */
+  margin-right: -2px;
 }
 
 .legend-labels {

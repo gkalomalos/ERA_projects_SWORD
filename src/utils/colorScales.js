@@ -6,7 +6,7 @@ const getColorScale = (hazard) => {
     case "flood":
       return schemeBlues[k].slice(-5); // Get last 5 colors
     case "drought":
-      return [...schemeYlOrBr[k]].slice(-5).reverse();
+      return [...schemeYlOrBr[k]].slice(-5);
     case "heatwaves":
       return schemeReds[k].slice(-5);
     default:
@@ -16,28 +16,25 @@ const getColorScale = (hazard) => {
 
 export const getScale = (hazard, percentileValues) => {
   const colors = getColorScale(hazard);
-  // Ensure the percentileValues are sorted (important if values can be in any order)
-  percentileValues.sort((a, b) => a - b);
+  const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
 
   return (value) => {
-    // Determine if values are in ascending or descending order
-    const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
-
     if (isAscending) {
+      if (value < percentileValues[0]) return colors[0];
+      if (value >= percentileValues[percentileValues.length - 1]) return colors[colors.length - 1];
       for (let i = 0; i < percentileValues.length - 1; i++) {
         if (value >= percentileValues[i] && value < percentileValues[i + 1]) {
           return colors[i];
         }
       }
     } else {
-      // Handle descending order values
-      for (let i = percentileValues.length - 1; i > 0; i--) {
-        if (value <= percentileValues[i] && value > percentileValues[i - 1]) {
-          return colors[percentileValues.length - i - 1];
+      if (value > percentileValues[0]) return colors[0];
+      if (value <= percentileValues[percentileValues.length - 1]) return colors[colors.length - 1];
+      for (let i = 0; i < percentileValues.length - 1; i++) {
+        if (value <= percentileValues[i] && value > percentileValues[i + 1]) {
+          return colors[i];
         }
       }
     }
-    // Handle the edge case for the last segment
-    return colors[isAscending ? colors.length - 1 : 0];
   };
 };
