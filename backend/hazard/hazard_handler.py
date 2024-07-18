@@ -380,8 +380,10 @@ class HazardHandler:
         if hazard_type == "RF":
             intensity_thres = 1
         elif hazard_type == "FL":
-            intensity_thres = 1
-        if hazard_type == "D":
+            intensity_thres = 0
+        elif hazard_type == "HW":
+            intensity_thres = 0
+        elif hazard_type == "D":
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
 
