@@ -438,6 +438,46 @@ class HazardHandler:
             radius = 9000
         return radius
 
+    def assign_levels(self, hazard_gdf, percentile_values):
+        for rp, levels in percentile_values.items():
+            # Determine if the levels are ascending or descending
+            is_ascending = levels[0] < levels[-1]
+
+            # Initialize an empty list to store the levels
+            level_column = []
+
+            # Iterate through each row in the DataFrame
+            for index, row in hazard_gdf.iterrows():
+                value = row[rp]
+
+                # Determine the level based on the value
+                if is_ascending:
+                    if value < levels[0]:
+                        level_column.append(1)
+                    elif value >= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            if levels[i - 1] <= value < levels[i]:
+                                level_column.append(i)
+                                break
+                else:
+                    if value > levels[0]:
+                        level_column.append(1)
+                    elif value <= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            # Adjusted comparison to ensure correct level assignment
+                            if levels[i - 1] >= value > levels[i]:
+                                level_column.append(i)
+                                break
+
+            # Add the level column to the DataFrame
+            hazard_gdf[rp + "_level"] = level_column
+
+        return hazard_gdf
+
     def generate_hazard_geojson(
         self,
         hazard: Hazard,
@@ -490,6 +530,9 @@ class HazardHandler:
                     percentile_values[f"rp{rp}"].append(-4)
                 else:
                     percentile_values[f"rp{rp}"].insert(0, 0)
+
+            # Assign levels based on the percentile values
+            hazard_gdf = self.assign_levels(hazard_gdf, percentile_values)
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")

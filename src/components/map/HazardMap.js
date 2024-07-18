@@ -79,6 +79,7 @@ const HazardMap = () => {
       data.features.forEach((feature) => {
         const { coordinates } = feature.geometry;
         const value = feature.properties[`rp${activeRPLayer}`];
+        const level = feature.properties[`rp${activeRPLayer}_level`];
         const country = feature.properties["country"];
         const name = feature.properties["name"];
 
@@ -89,9 +90,9 @@ const HazardMap = () => {
           radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>${t(
-              "value"
-            )}: ${value} ${unit}`
+            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>` +
+              `${t("value")}: ${value} ${unit}<br>` +
+              `${t("level")}: ${level}` // Display the level information in the popup
           )
           .addTo(layerGroup);
       });
