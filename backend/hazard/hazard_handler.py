@@ -418,6 +418,22 @@ class HazardHandler:
         # Return the intensity unit, default to an empty string if not present
         return impf.intensity_unit or ""
 
+    def get_custom_rp_per_hazard(self, hazard_code: str) -> tuple:
+        """
+        This method returns the return periods in tuple form, from a UNU-EHS tailored
+        hazard file.
+
+        :param hazard_code: The hazard code.
+        :type hazard_code: str
+        :return: Return periods.
+        :rtype: tuple
+        """
+        if hazard_code in ["FL"]:
+            return (2, 5, 10, 25)
+        elif hazard_code in ["D", "HW"]:
+            return (10, 25, 50, 75, 100)
+        return (10, 25, 50, 100)
+
     def get_circle_radius(self, hazard_type: str) -> int:
         """
         Return the radius of a circle based on the hazard type.
@@ -501,8 +517,20 @@ class HazardHandler:
             country_iso3 = self.base_handler.get_iso3_country_code(country_name)
             admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
-            local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
-            local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+            # TODO: There's an issue with the UNU EHS hazard datasets. These datasets contain
+            # the RPL calculated values and not the absolute hazard intensity values.
+            # This means that calculating the local exceedance intensity values is wrong,
+            # as it's already pre-calculated. Each dataset contains bands that represent
+            # the separate return periods, so hazard.intensity can be used directly to
+            # get the return period losses, without using the local_exceedance_inten method.
+
+            # Local exceedance intensity calculation
+            # local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
+            # local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+
+            local_exceedance_inten = pd.DataFrame(
+                hazard.intensity.toarray().T, columns=[f"rp{year}" for year in return_periods]
+            )
             data = np.column_stack((coords, local_exceedance_inten))
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 

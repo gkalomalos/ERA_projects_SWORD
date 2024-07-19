@@ -303,6 +303,11 @@ class RunScenario:
                 entity_present
             )
 
+            # Calculate ERA scenario return periods per hazard type
+            return_periods = self.hazard_handler.get_custom_rp_per_hazard(
+                self.request_data.hazard_code
+            )
+
             # Set static present year to 2024
             entity_present.exposures.ref_year = self.request_data.ref_year
 
@@ -404,11 +409,13 @@ class RunScenario:
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_present,
                     self.request_data.country_name,
+                    return_periods,
                 )
             else:
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_future,
                     self.request_data.country_name,
+                    return_periods,
                 )
 
             # Calculate impact geojson data files
@@ -417,14 +424,14 @@ class RunScenario:
                 self.impact_handler.generate_impact_geojson(
                     impact_present,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                 )
             else:
                 self.impact_handler.generate_impact_geojson(
                     impact_future,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                 )
 
