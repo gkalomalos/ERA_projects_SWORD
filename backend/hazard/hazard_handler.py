@@ -577,6 +577,7 @@ class HazardHandler:
                 "percentile_values": percentile_values,
                 "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "radius": radius,
+                "return_periods": return_periods,
                 "unit": hazard.units,
             }
 

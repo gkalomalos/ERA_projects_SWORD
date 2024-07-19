@@ -11,8 +11,6 @@ import { getScale } from "../../utils/colorScales";
 import Legend from "./Legend";
 import useStore from "../../store";
 
-const returnPeriods = [10, 15, 20, 25];
-
 const HazardMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
@@ -22,6 +20,7 @@ const HazardMap = () => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [percentileValues, setPercentileValues] = useState({});
   const [radius, setRadius] = useState(0);
+  const [returnPeriods, setReturnPeriods] = useState([10, 15, 20, 25]);
   const [unit, setUnit] = useState("");
 
   const mapRef = useRef();
@@ -50,6 +49,7 @@ const HazardMap = () => {
       const data = await response.json();
       setPercentileValues(data._metadata.percentile_values);
       setRadius(data._metadata.radius);
+      setReturnPeriods(data._metadata.return_periods);
       setUnit(data._metadata.unit);
 
       if (
