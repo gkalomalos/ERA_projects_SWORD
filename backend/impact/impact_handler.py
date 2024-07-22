@@ -390,6 +390,46 @@ class ImpactHandler:
             radius = 11000
         return radius
 
+    def assign_levels(self, impact_gdf, percentile_values):
+        for rp, levels in percentile_values.items():
+            # Determine if the levels are ascending or descending
+            is_ascending = levels[0] < levels[-1]
+
+            # Initialize an empty list to store the levels
+            level_column = []
+
+            # Iterate through each row in the DataFrame
+            for index, row in impact_gdf.iterrows():
+                value = row[rp]
+
+                # Determine the level based on the value
+                if is_ascending:
+                    if value < levels[0]:
+                        level_column.append(1)
+                    elif value >= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            if levels[i - 1] <= value < levels[i]:
+                                level_column.append(i)
+                                break
+                else:
+                    if value > levels[0]:
+                        level_column.append(1)
+                    elif value <= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            # Adjusted comparison to ensure correct level assignment
+                            if levels[i - 1] >= value > levels[i]:
+                                level_column.append(i)
+                                break
+
+            # Add the level column to the DataFrame
+            impact_gdf[rp + "_level"] = level_column
+
+        return impact_gdf
+
     def generate_impact_geojson(
         self,
         impact: Impact,
@@ -435,19 +475,23 @@ class ImpactHandler:
             geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
             impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
 
-            # TODO: Test efficiency and remove redundant code. Timings look similar
-            # impact_gdf = gpd.GeoDataFrame(
-            #     pd.DataFrame(data, columns=columns),
-            #     geometry=gpd.points_from_xy(data[:, 0], data[:, 1]),
-            # )
-            # impact_gdf.set_crs("EPSG:4326", inplace=True)
-
-            # Filter hazard_gdf to exclude rows where all return period values are zero
+            # Filter impact_gdf to exclude rows where all return period values are zero
             impact_gdf = impact_gdf[
                 (impact_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
             ]
             impact_gdf = impact_gdf.drop(columns=["latitude", "longitude"])
             impact_gdf = impact_gdf.reset_index(drop=True)
+
+            # Calculate percentiles for each return period
+            percentile_values = {}
+            percentiles = (20, 40, 60, 80)
+            for rp in return_periods:
+                rp_data = impact_gdf[f"rp{rp}"]
+                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
+                percentile_values[f"rp{rp}"].insert(0, 0)
+
+            # Assign levels based on the percentile values
+            impact_gdf = self.assign_levels(impact_gdf, percentile_values)
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
@@ -458,9 +502,11 @@ class ImpactHandler:
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
             impact_geojson["_metadata"] = {
-                "unit": impact.unit,
-                "title": f"Risk ({impact.unit})",
+                "percentile_values": percentile_values,
                 "radius": radius,
+                "return_periods": return_periods,
+                "title": f"Risk ({impact.unit})",
+                "unit": impact.unit,
             }
 
             # Save the combined GeoJSON file

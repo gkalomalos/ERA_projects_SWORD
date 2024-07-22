@@ -11,8 +11,6 @@ import { getScale } from "../../utils/colorScales";
 import Legend from "./Legend";
 import useStore from "../../store";
 
-const returnPeriods = [10, 15, 20, 25];
-
 const RiskMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
@@ -20,9 +18,9 @@ const RiskMap = () => {
   const [activeRPLayer, setActiveRPLayer] = useState(10);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [maxValue, setMaxValue] = useState(null);
-  const [minValue, setMinValue] = useState(null);
+  const [percentileValues, setPercentileValues] = useState({});
   const [radius, setRadius] = useState(0);
+  const [returnPeriods, setReturnPeriods] = useState([10, 15, 20, 25]);
   const [unit, setUnit] = useState("");
 
   const mapRef = useRef();
@@ -44,17 +42,23 @@ const RiskMap = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      setPercentileValues(data._metadata.percentile_values);
       setRadius(data._metadata.radius);
+      setReturnPeriods(data._metadata.return_periods);
       setUnit(data._metadata.unit);
-      const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
-      const minValue = Math.min(...values);
-      setMinValue(minValue);
-      const maxValue = Math.max(...values);
-      setMaxValue(maxValue);
 
-      const scale = getScale(selectedHazard, maxValue, minValue);
-
-      setMapInfo({ geoJson: data, colorScale: scale });
+      if (
+        data._metadata.percentile_values &&
+        data._metadata.percentile_values[`rp${activeRPLayer}`]
+      ) {
+        const scale = getScale(
+          selectedHazard,
+          data._metadata.percentile_values[`rp${activeRPLayer}`]
+        );
+        setMapInfo({ geoJson: data, colorScale: scale });
+      } else {
+        throw new Error("Percentile values are missing or incomplete.");
+      }
     } catch (error) {
       console.error("Error fetching GeoJSON data:", error);
       setMapInfo({ geoJson: null, colorScale: null });
@@ -70,6 +74,7 @@ const RiskMap = () => {
       data.features.forEach((feature) => {
         const { coordinates } = feature.geometry;
         const value = feature.properties[`rp${activeRPLayer}`];
+        const level = feature.properties[`rp${activeRPLayer}_level`];
         const country = feature.properties["country"];
         const name = feature.properties["name"];
 
@@ -80,9 +85,8 @@ const RiskMap = () => {
           radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>${t(
-              "value"
-            )}: ${value} ${unit}`
+            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>` +
+              `${t("level")}: ${level}`
           )
           .addTo(layerGroup);
       });
@@ -180,8 +184,7 @@ const RiskMap = () => {
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
           <Legend
             colorScale={mapInfo.colorScale}
-            maxValue={maxValue}
-            minValue={minValue}
+            percentileValues={percentileValues ? percentileValues[`rp${activeRPLayer}`] : []}
             title={legendTitle}
           />
         </>

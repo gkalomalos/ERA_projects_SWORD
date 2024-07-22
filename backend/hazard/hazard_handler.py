@@ -562,7 +562,7 @@ class HazardHandler:
             # Assign levels based on the percentile values
             hazard_gdf = self.assign_levels(hazard_gdf, percentile_values)
 
-            # Spatial join with administrative areas
+            # Spatial join with administrative area
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
@@ -575,9 +575,9 @@ class HazardHandler:
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
                 "percentile_values": percentile_values,
-                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "radius": radius,
                 "return_periods": return_periods,
+                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
                 "unit": hazard.units,
             }
 
