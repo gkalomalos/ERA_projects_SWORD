@@ -5,8 +5,8 @@ import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
-import { getScale } from "../../utils/colorScales";
-import Legend from "./Legend";
+import { getScaleLegacy } from "../../utils/colorScalesLegacy";
+import LegendLegacy from "./LegendLegacy";
 import useStore from "../../store";
 
 const adminLayers = [0, 1, 2]; // Administrative layers
@@ -50,7 +50,7 @@ const ExposureMap = () => {
       setMinValue(minValue);
       const maxValue = Math.max(...values);
       setMaxValue(maxValue);
-      const scale = getScale(selectedHazard, maxValue, minValue);
+      const scale = getScaleLegacy(selectedHazard, maxValue, minValue);
 
       setMapInfo({ geoJson: filteredData, colorScale: scale });
     } catch (error) {
@@ -155,7 +155,7 @@ const ExposureMap = () => {
             style={style}
             onEachFeature={onEachFeature}
           />
-          <Legend
+          <LegendLegacy
             colorScale={mapInfo.colorScale}
             maxValue={maxValue}
             minValue={minValue}
