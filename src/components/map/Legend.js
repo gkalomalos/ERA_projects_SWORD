@@ -4,20 +4,11 @@ import PropTypes from "prop-types";
 import "./Legend.css";
 
 // Include the number formatting function
-function formatNumber(num) {
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(2).replace(/\.00$/, "") + "B";
-  }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(2).replace(/\.00$/, "") + "M";
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(2).replace(/\.00$/, "") + "K";
-  }
-  return num.toString();
+function formatNumber(num, divisor) {
+  return (num / divisor).toFixed(2).replace(/\.00$/, "");
 }
 
-const Legend = ({ colorScale, percentileValues, title }) => {
+const Legend = ({ colorScale, percentileValues, title, divisor }) => {
   const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
 
   // Create a color block for each percentile value
@@ -50,7 +41,7 @@ const Legend = ({ colorScale, percentileValues, title }) => {
       >
         {valueLabels.map((value, index) => (
           <span key={index} className={isAscending ? "value-label-left" : "value-label-right"}>
-            {formatNumber(value)}
+            {formatNumber(value, divisor)}
           </span>
         ))}
       </div>
@@ -71,6 +62,7 @@ Legend.propTypes = {
   colorScale: PropTypes.func.isRequired,
   percentileValues: PropTypes.arrayOf(PropTypes.number).isRequired,
   title: PropTypes.string.isRequired,
+  divisor: PropTypes.number,
 };
 
 export default Legend;

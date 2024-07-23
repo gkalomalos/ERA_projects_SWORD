@@ -9,13 +9,14 @@ import { scaleSequential } from "d3-scale";
 const interpolateRdYlGnReversed = (t) => interpolateRdYlGn(1 - t);
 const interpolateBluesReversed = (t) => interpolateBlues(1 - t);
 const interpolateRedsReversed = (t) => interpolateReds(1 - t);
+const interpolateYlOrBrReversed = (t) => interpolateYlOrBr(1 - t);
 
 export const getColorScale = (hazard) => {
   switch (hazard) {
     case "flood":
       return interpolateBluesReversed;
     case "drought":
-      return interpolateYlOrBr;
+      return interpolateYlOrBrReversed;
     case "heatwaves":
       return interpolateRedsReversed;
     default:
