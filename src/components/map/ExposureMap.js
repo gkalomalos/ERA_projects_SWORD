@@ -15,7 +15,7 @@ const ExposureMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
-  const [legendTitle, setLegendTitle] = useState("");
+  // const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
@@ -23,13 +23,13 @@ const ExposureMap = () => {
 
   const mapRef = useRef();
 
-  const updateLegendTitle = (unit) => {
-    return `Exposure${unit ? ` (${unit})` : ""}`;
-  };
+  // const updateLegendTitle = (unit) => {
+  //   return `Exposure${unit ? ` (${unit})` : ""}`;
+  // };
 
-  useEffect(() => {
-    setLegendTitle(updateLegendTitle(unit));
-  }, [unit]);
+  // useEffect(() => {
+  //   setLegendTitle(updateLegendTitle(unit));
+  // }, [unit]);
 
   const fetchGeoJson = async (layer) => {
     try {
@@ -159,7 +159,7 @@ const ExposureMap = () => {
             colorScale={mapInfo.colorScale}
             maxValue={maxValue}
             minValue={minValue}
-            title={legendTitle}
+            unit={unit}
           />
         </>
       )}

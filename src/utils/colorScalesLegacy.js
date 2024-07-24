@@ -25,6 +25,5 @@ export const getColorScale = (hazard) => {
 };
 
 export const getScaleLegacy = (hazard, maxValue, minValue) => {
-  const colorScale = getColorScale(hazard);
-  return scaleSequential(colorScale).domain([maxValue, minValue]);
+  return scaleSequential(interpolateRdYlGn).domain([maxValue, minValue]);
 };
