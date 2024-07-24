@@ -123,8 +123,7 @@
   "card_scenario_scenarios_rcp26": "SSP1 – RCP 2.6",
   "card_scenario_scenarios_rcp45": "SSP2 – RCP 4.5",
   "card_scenario_scenarios_rcp85": "SSP5 – RCP 8.5",
-  "card_scenario_remarks_rcp26": "Remarks: SPP1 – RCP 2.6 bases future estimations on a low greenhouse gas emissions scenario while the SSP5 – RCP 8.5 estimates future impacts assuming high greenhouse gas emissions.",
-  "card_scenario_remarks_rcp45": "Remarks: SPP2 – RCP 4.5 bases future estimations on a medium greenhouse gas emissions scenario while the SSP5 – RCP 8.5 estimates future impacts assuming high greenhouse gas emissions.",
+  "card_scenario_remarks": "Remarks: SSP1-RCP 2.6 bases future estimations on a low greenhouse gas emissions scenario, SSP2 – RCP 4.5 bases future estimations on a medium greenhouse gas emissions scenario, and SSP5 – RCP 8.5 estimates future impacts assuming high greenhouse gas emissions.",
   "card_timehorizon_title": "Time Horizon",
   "card_timehorizon_subtitle": "Choose Start and End Date",
   "card_timehorison_remarks": "Remarks: Due to the nature of CLIMADA, projections further than 2050 may result in ill calibration of the model and thus in inconsistent results. If long term projections want to be executed a recalibration of the model would be required.",
@@ -165,7 +164,7 @@
   "card_option_explore": "Explore",
   "card_option_remarks": "Remarks: Selecting 'ERA Project Result' will only show you the result based on pre-defined data and information. If you select 'Explore', you can upload your own file or fetch data from CLIMADA API.",
   "results_eco_button_hazard": "Hazard",
-  "results_eco_button_exposure": "Exposure",
+  "results_eco_button_exposure": "Values",
   "results_eco_button_impact": "Impact",
   "results_eco_details": "Result Details",
   "results_report_card_data": "Data:",
@@ -185,6 +184,6 @@
   "adaptation_input_no_measures": "No adaptation measures available for selected Hazard",
   "adaptation_input_no_hazard": "No hazard selected",
   "economic_non_economic_risk_display_chart_title": "Impact of ",
-  "economic_non_economic_risk_display_chart_loading_error": "An error has occured while loading this chart. Please run a new scenario and try again.",
-  "economic_non_economic_adaptation_display_chart_loading_error": "An error has occured while loading this chart. Please run a new scenario and try again."
+  "economic_non_economic_risk_display_chart_loading_error": "An error has occured while loading this chart. Chart will only be shown when future climate scenario is selected.",
+  "economic_non_economic_adaptation_display_chart_loading_error": "An error has occured while loading this chart. Chart will only be shown when future climate scenario is selected."
 }
