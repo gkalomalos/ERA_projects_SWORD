@@ -74,7 +74,9 @@ const ScenarioCard = () => {
         ))}
         <Box sx={{ padding: 2, backgroundColor: "#F2F2F2", borderRadius: "8px" }}>
           <Typography variant="body2" color="text.primary">
-            {t("card_scenario_remarks")}
+            {selectedScenario === "rcp26"
+              ? t("card_scenario_remarks_rcp26")
+              : t("card_scenario_remarks_rcp45")}
           </Typography>
         </Box>
       </CardContent>
