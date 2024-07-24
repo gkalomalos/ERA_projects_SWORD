@@ -242,7 +242,7 @@ class RunScenario:
                     "livestock": 0.04,
                     "power_plants": 0.04,
                     "hotels": 0.04,
-                    "hospitalized_people": 0.0129,
+                    "hospitalised_people": 0.0129,
                     "students": 0.0129,
                     "diarrhea_patients": 0.0129,
                     "roads": 0.0129,
