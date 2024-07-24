@@ -20,27 +20,36 @@ const ResultsTypography = () => {
   const { t } = useTranslation();
 
   const getText = () => {
-    if (
-      !selectedAppOption ||
-      !selectedCountry ||
-      !selectedHazard ||
-      (!selectedExposureEconomic && !selectedExposureNonEconomic)
-    ) {
-      return "";
+    if (selectedAppOption === "era") {
+      const selectedExposure = selectedExposureEconomic || selectedExposureNonEconomic;
+      if (
+        !selectedAppOption ||
+        !selectedCountry ||
+        !selectedHazard ||
+        (!selectedExposureEconomic && !selectedExposureNonEconomic)
+      ) {
+        return "";
+      } else {
+        return t(
+          `results_${selectedAppOption}_` +
+            `${selectedCountry}_` +
+            `${selectedHazard}_` +
+            `${selectedExposure}_` +
+            `${selectedTab}_` +
+            `${selectedSubTab}_` +
+            `${viewControl}_` +
+            `${activeMap}`
+        );
+      }
+    } else {
+      return t(
+        `results_${selectedAppOption}_` +
+          `${selectedTab}_` +
+          `${selectedSubTab}_` +
+          `${viewControl}_` +
+          `${activeMap}`
+      );
     }
-
-    const selectedExposure = selectedExposureEconomic || selectedExposureNonEconomic;
-
-    return t(
-      `results_${selectedAppOption}_` +
-        `${selectedCountry}_` +
-        `${selectedHazard}_` +
-        `${selectedExposure}_` +
-        `${selectedTab}_` +
-        `${selectedSubTab}_` +
-        `${viewControl}_` +
-        `${activeMap}`
-    );
   };
 
   return (

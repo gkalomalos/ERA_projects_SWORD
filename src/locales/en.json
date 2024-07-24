@@ -377,6 +377,13 @@
   "results_era_thailand_heatwaves_students_1_0_display_chart_exposure": "The chart shows the country level Expected Annual Impact (in millions of people) in 2024 and 2050 due to Floods for non-economic assets which are Buddhist monks, students, tree crops and grass crops farmers. It considers the population growth of the country and the climate change impact using two future climate scenarios i.e. RCP 4.5 and RCP 8.5.",
   "results_era_thailand_heatwaves_students_1_0_display_chart_impact": "The chart shows the country level Expected Annual Impact (in millions of people) in 2024 and 2050 due to Floods for non-economic assets which are Buddhist monks, students, tree crops and grass crops farmers. It considers the population growth of the country and the climate change impact using two future climate scenarios i.e. RCP 4.5 and RCP 8.5.",
 
+  "results_explore_1_0_display_map_hazard": "The hazard map should show the distribution of hazard intensity accross the country area in different return periods.",
+  "results_explore_1_0_display_map_exposure": "This should show the distribution of assets across the country area in different values, USD for economic assets and people for non-economic assets.",
+  "results_explore_1_0_display_map_impact": "These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_explore_1_0_display_chart_hazard": "",
+  "results_explore_1_0_display_chart_exposure": "",
+  "results_explore_1_0_display_chart_impact": "",
+
   "dialog_settings_title": "Settings",
   "general_main_view_progress_dev_title": "Under Construction",
   "general_main_view_progress_dev_subtitle": "This view is currently under development.",
