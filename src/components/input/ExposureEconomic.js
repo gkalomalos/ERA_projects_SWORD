@@ -9,8 +9,10 @@ const ExposureEconomic = () => {
     isValidExposureEconomic,
     setSelectedCard,
     setSelectedTab,
+    selectedCountry,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
+    selectedHazard,
   } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
@@ -20,24 +22,33 @@ const ExposureEconomic = () => {
     // Deactivate input card click in case non-economic exposure is selected
     if (selectedExposureNonEconomic) {
       return;
+    } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      return;
+    } else {
+      setClicked(true); // Trigger animation
     }
-    setClicked(true); // Trigger animation
   };
 
   const handleMouseUp = () => {
     // Deactivate input card click in case non-economic exposure is selected
     if (selectedExposureNonEconomic) {
       return;
+    } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      return;
+    } else {
+      setClicked(false); // Reset animation
     }
-    setClicked(false); // Reset animation
   };
 
   const handleClick = () => {
     if (selectedExposureNonEconomic) {
       return;
+    } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      return;
+    } else {
+      setSelectedCard("exposureEconomic");
+      setSelectedTab(0);
     }
-    setSelectedCard("exposureEconomic");
-    setSelectedTab(0);
   };
 
   const handleBgColor = () => {
@@ -47,6 +58,9 @@ const ExposureEconomic = () => {
       setBgColor("#FFCCCC"); //red
     } else if (selectedExposureNonEconomic) {
       setBgColor("#E6E6E6"); //grey
+      // Added to handle missing asset datasets for heatwaves in Thailand
+    } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      setBgColor("#E6E6E6"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }
@@ -54,7 +68,13 @@ const ExposureEconomic = () => {
 
   useEffect(() => {
     handleBgColor();
-  }, [isValidExposureEconomic, selectedExposureEconomic, selectedExposureNonEconomic]);
+  }, [
+    isValidExposureEconomic,
+    selectedExposureEconomic,
+    selectedCountry,
+    selectedExposureNonEconomic,
+    selectedHazard,
+  ]);
 
   return (
     <Card
