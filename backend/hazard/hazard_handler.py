@@ -498,7 +498,7 @@ class HazardHandler:
         self,
         hazard: Hazard,
         country_name: str,
-        return_periods: tuple = (10, 15, 20, 25),
+        return_periods: tuple,
     ):
         """
         Generate GeoJSON data for hazard points.

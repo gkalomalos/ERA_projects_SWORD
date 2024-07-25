@@ -21,7 +21,7 @@ const exposureNonEconomicDict = {
     flood: [
       "tree_crops_farmers",
       "grass_crops_farmers",
-      "water_users",
+      "diarrhea_patients",
       "buddhist_monks",
       "roads",
       "students",

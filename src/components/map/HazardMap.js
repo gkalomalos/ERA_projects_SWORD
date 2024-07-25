@@ -20,7 +20,7 @@ const HazardMap = () => {
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [percentileValues, setPercentileValues] = useState({});
   const [radius, setRadius] = useState(0);
-  const [returnPeriods, setReturnPeriods] = useState([10, 15, 20, 25]);
+  const [returnPeriods, setReturnPeriods] = useState([]);
   const [unit, setUnit] = useState("");
   const [suffix, setSuffix] = useState("");
   const [divisor, setDivisor] = useState(1);

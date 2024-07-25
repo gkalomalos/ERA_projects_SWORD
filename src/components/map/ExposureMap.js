@@ -15,21 +15,12 @@ const ExposureMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
-  // const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
   const [unit, setUnit] = useState("");
 
   const mapRef = useRef();
-
-  // const updateLegendTitle = (unit) => {
-  //   return `Exposure${unit ? ` (${unit})` : ""}`;
-  // };
-
-  // useEffect(() => {
-  //   setLegendTitle(updateLegendTitle(unit));
-  // }, [unit]);
 
   const fetchGeoJson = async (layer) => {
     try {
