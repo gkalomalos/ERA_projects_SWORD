@@ -17,15 +17,22 @@ import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const exposureNonEconomicDict = {
-  thailand: [
-    "tree_crops_farmers",
-    "grass_crops_farmers",
-    "buddhist_monks",
-    "water_users",
-    "roads",
-    "students",
-  ],
-  egypt: ["hospitalised_people", "students", "diarrhea_patients", "roads"],
+  thailand: {
+    flood: [
+      "tree_crops_farmers",
+      "grass_crops_farmers",
+      "water_users",
+      "buddhist_monks",
+      "roads",
+      "students",
+    ],
+    drought: ["tree_crops_farmers", "grass_crops_farmers", "water_users"],
+    heatwaves: ["buddhist_monks", "students"],
+  },
+  egypt: {
+    flood: ["students", "diarrhea_patients", "roads"],
+    heatwaves: ["hospitalised_people", "students"],
+  },
 };
 
 const ExposureNonEconomicCard = () => {
@@ -46,16 +53,7 @@ const ExposureNonEconomicCard = () => {
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
 
-  // Create a copy of the exposureNonEconomicDict to handle different assets per hazard
-  let exposuresNonEconomic = [...(exposureNonEconomicDict[selectedCountry] || [])];
-
-  if (selectedCountry === "egypt") {
-    if (selectedHazard === "flood") {
-      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "hospitalised_people");
-    } else if (selectedHazard === "heatwaves") {
-      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "diarrhea_patients");
-    }
-  }
+  const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry][selectedHazard] || [];
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {

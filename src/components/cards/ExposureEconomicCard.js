@@ -17,8 +17,15 @@ import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const exposureEconomicDict = {
-  thailand: ["tree_crops", "grass_crops", "wet_markets"],
-  egypt: ["crops", "livestock", "power_plants", "hotels"],
+  thailand: {
+    flood: ["tree_crops", "grass_crops", "wet_markets"],
+    drought: ["tree_crops", "grass_crops", "wet_markets"],
+    heatwaves: [],
+  },
+  egypt: {
+    flood: ["crops", "livestock", "power_plants", "hotels"],
+    heatwaves: ["crops", "livestock", "hotels"],
+  },
 };
 
 const ExposureEconomicCard = () => {
@@ -27,6 +34,7 @@ const ExposureEconomicCard = () => {
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureFile,
+    selectedHazard,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
@@ -38,7 +46,7 @@ const ExposureEconomicCard = () => {
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
 
-  const exposuresEconomic = exposureEconomicDict[selectedCountry] || [];
+  const exposuresEconomic = exposureEconomicDict[selectedCountry][selectedHazard] || [];
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureEconomic === exposure) {
@@ -56,17 +64,17 @@ const ExposureEconomicCard = () => {
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setIsValidExposureEconomic(false);
     const file = event.target.files[0];
     if (file) {
-      selectedExposureFile(file.name);
+      setSelectedExposureFile(file.name);
       setIsValidExposureEconomic(true);
     }
   };
 
   const clearUploadedFile = () => {
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setIsValidExposureEconomic(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-economic-contained-button-file").value = "";
@@ -79,7 +87,7 @@ const ExposureEconomicCard = () => {
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setFetchExposureMessage("");
     setIsValidExposureEconomic(false);
     const body = {
