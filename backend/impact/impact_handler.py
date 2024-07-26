@@ -402,25 +402,17 @@ class ImpactHandler:
                 elif exposure_type in ["water_users", "wet_markets"]:
                     return 100
             elif hazard_type == "FL":
-                if exposure_type in [
-                    "tree_crops",
-                    "grass_crops",
-                    "buddhist_monks",
-                    "tree_crops_farmers",
-                    "grass_crops_farmers",
-                ]:
-                    return 2000
-                elif exposure_type in ["wet_markets", "students", "water_users"]:
-                    return 100
+                # All economic and non economic assets appear better on map with 100m radius
+                # due to the high density of assets in the area.
+                return 100
 
         if country_iso3 == "EGY":
             if hazard_type == "HW":
-                if exposure_type in ["students"]:
-                    return 11000
-                elif exposure_type in ["hospitalised_people", "crops", "livestock", "hotels"]:
-                    return 100
+                # All economic and non economic assets appear better on map with 100m radius
+                # due to the high density of assets in the area.
+                return 100
             if hazard_type == "FL":
-                if exposure_type in ["students", "roads"]:
+                if exposure_type in ["students"]:
                     return 2000
                 elif exposure_type in [
                     "diarrhea_patients",
@@ -428,6 +420,7 @@ class ImpactHandler:
                     "livestock",
                     "hotels",
                     "power_plants",
+                    "roads",
                 ]:
                     return 10
 

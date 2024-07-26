@@ -298,15 +298,21 @@ class HazardHandler:
     def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
         try:
             hazard_code = self.get_hazard_code(hazard_type)
+            frequency = [0.1, 0.04, 0.02, 0.01]
+            if hazard_code == "HW":
+                frequency = [0.1, 0.04, 0.02, 0.01333, 0.01]
+            elif hazard_code == "FL":
+                frequency = [0.5, 0.2, 0.1, 0.04]
+            events = [i for i in range(1, len(frequency) + 1)]
             hazard = Hazard.from_raster(
                 DATA_HAZARDS_DIR / filepath,
                 attrs={
-                    "frequency": np.array([0.5, 0.2, 0.1, 0.04]),
-                    "event_id": np.array([1, 2, 3, 4]),
+                    "frequency": np.array(frequency),
+                    "event_id": np.array(events),
                     "units": "m",
                 },
                 haz_type=hazard_code,
-                band=[1, 2, 3, 4],
+                band=events,
             )
             # TODO: Set intensity threshold. This step is required to generate meaningful maps
             # as CLIMADA sets intensity_thres = 10 and in certain hazards this excludes all values.
