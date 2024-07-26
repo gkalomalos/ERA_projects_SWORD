@@ -426,6 +426,7 @@ class RunScenario:
                     self.request_data.country_name,
                     return_periods,
                     self.request_data.asset_type,
+                    self.request_data.exposure_type,
                 )
             else:
                 self.impact_handler.generate_impact_geojson(
@@ -433,6 +434,7 @@ class RunScenario:
                     self.request_data.country_name,
                     return_periods,
                     self.request_data.asset_type,
+                    self.request_data.exposure_type,
                 )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")
@@ -613,6 +615,7 @@ class RunScenario:
                     self.request_data.country_name,
                     (25, 20, 15, 10),
                     self.request_data.asset_type,
+                    self.request_data.exposure_type,
                 )
             else:
                 self.impact_handler.generate_impact_geojson(
@@ -620,6 +623,7 @@ class RunScenario:
                     self.request_data.country_name,
                     (25, 20, 15, 10),
                     self.request_data.asset_type,
+                    self.request_data.exposure_type,
                 )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")

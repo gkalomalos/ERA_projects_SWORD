@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-import L from "leaflet";
 import Button from "@mui/material/Button";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
 import { getScale } from "../../utils/colorScales";
+import CircleLayer from "./CircleLayer";
 import Legend from "./Legend";
 import useStore from "../../store";
 
@@ -78,56 +77,6 @@ const RiskMap = () => {
     setLegendTitle(updateLegendTitle(unit, suffix));
   }, [unit, suffix]); // Update the legend title when unit or suffix changes
 
-  const CircleLayer = ({ data, colorScale }) => {
-    const map = useMap();
-
-    useEffect(() => {
-      const layerGroup = L.layerGroup().addTo(map);
-
-      data.features.forEach((feature) => {
-        const { coordinates } = feature.geometry;
-        const value = feature.properties[`rp${activeRPLayer}`];
-        const level = feature.properties[`rp${activeRPLayer}_level`];
-        const country = feature.properties["country"];
-        const name = feature.properties["name"];
-
-        L.circle([coordinates[1], coordinates[0]], {
-          color: colorScale(value),
-          fillColor: colorScale(value),
-          fillOpacity: 0.3,
-          radius: radius,
-        })
-          .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>` +
-              `${t("level")}: ${level}`
-          )
-          .addTo(layerGroup);
-      });
-
-      return () => layerGroup.clearLayers();
-    }, [data, colorScale, map]);
-
-    return null;
-  };
-
-  CircleLayer.propTypes = {
-    data: PropTypes.shape({
-      features: PropTypes.arrayOf(
-        PropTypes.shape({
-          geometry: PropTypes.shape({
-            coordinates: PropTypes.arrayOf(PropTypes.number).isRequired,
-          }).isRequired,
-          properties: PropTypes.shape({
-            [`rp${activeRPLayer}`]: PropTypes.number.isRequired,
-            country: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-          }).isRequired,
-        }).isRequired
-      ).isRequired,
-    }).isRequired,
-    colorScale: PropTypes.func.isRequired,
-  };
-
   const handleRPLayerChange = async (rp) => {
     setActiveRPLayer(rp);
     await fetchGeoJson(rp);
@@ -192,7 +141,12 @@ const RiskMap = () => {
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>
-          <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
+          <CircleLayer
+            data={mapInfo.geoJson}
+            colorScale={mapInfo.colorScale}
+            radius={radius}
+            activeRPLayer={activeRPLayer}
+          />
           <Legend
             colorScale={mapInfo.colorScale}
             percentileValues={percentileValues ? percentileValues[`rp${activeRPLayer}`] : []}

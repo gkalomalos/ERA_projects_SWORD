@@ -372,7 +372,7 @@ class ImpactHandler:
             logger.log("error", status_message)
             return None
 
-    def get_circle_radius(self, hazard_type: str) -> int:
+    def get_circle_radius(self, hazard_type: str, country_iso3: str, exposure_type: str) -> int:
         """
         Get the radius for a circle based on the specified hazard type.
 
@@ -385,10 +385,53 @@ class ImpactHandler:
         :return: The radius of the circle.
         :rtype: int
         """
-        radius = 2000
-        if hazard_type == "D":
-            radius = 11000
-        return radius
+        if country_iso3 == "THA":
+            if hazard_type == "HW":
+                if exposure_type in ["buddhist_monks"]:
+                    return 11000
+                elif exposure_type in ["students"]:
+                    return 100
+            elif hazard_type == "D":
+                if exposure_type in [
+                    "tree_crops_farmers",
+                    "grass_crops_farmers",
+                    "tree_crops",
+                    "grass_crops",
+                ]:
+                    return 11000
+                elif exposure_type in ["water_users", "wet_markets"]:
+                    return 100
+            elif hazard_type == "FL":
+                if exposure_type in [
+                    "tree_crops",
+                    "grass_crops",
+                    "buddhist_monks",
+                    "tree_crops_farmers",
+                    "grass_crops_farmers",
+                ]:
+                    return 2000
+                elif exposure_type in ["wet_markets", "students", "water_users"]:
+                    return 100
+
+        if country_iso3 == "EGY":
+            if hazard_type == "HW":
+                if exposure_type in ["students"]:
+                    return 11000
+                elif exposure_type in ["hospitalised_people", "crops", "livestock", "hotels"]:
+                    return 100
+            if hazard_type == "FL":
+                if exposure_type in ["students", "roads"]:
+                    return 2000
+                elif exposure_type in [
+                    "diarrhea_patients",
+                    "crops",
+                    "livestock",
+                    "hotels",
+                    "power_plants",
+                ]:
+                    return 10
+
+        return 2000
 
     def assign_levels(self, impact_gdf, percentile_values):
         for rp, levels in percentile_values.items():
@@ -436,6 +479,7 @@ class ImpactHandler:
         country_name: str,
         return_periods: tuple = (25, 20, 15, 10),
         asset_type: str = "economic",
+        exposure_type: str = None,
     ):
         """
         Generate a GeoJSON file representing impact data.
@@ -498,7 +542,7 @@ class ImpactHandler:
             # TODO: Test if this needs to be refined
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
 
-            radius = self.get_circle_radius(impact.haz_type)
+            radius = self.get_circle_radius(impact.haz_type, country_iso3, exposure_type)
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             impact_geojson = joined_gdf.__geo_interface__
             impact_geojson["_metadata"] = {
