@@ -12,7 +12,7 @@ import useStore from "../../store";
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = () => {
-  const { selectedCountry, selectedHazard } = useStore();
+  const { selectedCountry, selectedExposureEconomic, selectedHazard } = useStore();
   const { t } = useTranslation();
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
@@ -151,6 +151,7 @@ const ExposureMap = () => {
             maxValue={maxValue}
             minValue={minValue}
             unit={unit}
+            type={selectedExposureEconomic ? "economic" : "non-economic"}
           />
         </>
       )}

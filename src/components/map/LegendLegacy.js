@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import "./LegendLegacy.css";
 
-const LegendLegacy = ({ colorScale, minValue, maxValue, unit }) => {
+const LegendLegacy = ({ colorScale, minValue, maxValue, type, unit }) => {
   const getSuffixAndDivisor = (value) => {
     if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
     if (value >= 1e6) return { suffix: "Millions", divisor: 1e6 };
@@ -12,7 +12,9 @@ const LegendLegacy = ({ colorScale, minValue, maxValue, unit }) => {
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    return `Exposure${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    return `${type === "economic" ? "Asset Value" : "Number of People"} ${
+      unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""
+    }`;
   };
 
   const { suffix, divisor } = getSuffixAndDivisor(Math.max(Math.abs(minValue), Math.abs(maxValue)));
@@ -53,6 +55,7 @@ LegendLegacy.propTypes = {
   colorScale: PropTypes.func.isRequired,
   minValue: PropTypes.number.isRequired,
   maxValue: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
   unit: PropTypes.string.isRequired,
 };
 
