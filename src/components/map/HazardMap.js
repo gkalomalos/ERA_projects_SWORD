@@ -35,7 +35,15 @@ const HazardMap = () => {
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    return `Hazard${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    let prefix = "Hazard";
+    if (selectedHazard === "flood") {
+      prefix = "Flood depth";
+    } else if (selectedHazard === "drought") {
+      prefix = "Standard Precipitation Index";
+    } else if (selectedHazard === "heatwaves") {
+      prefix = "Warm Spell Duration Index";
+    }
+    return `${prefix}${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
   };
 
   const fetchGeoJson = useCallback(
