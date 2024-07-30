@@ -238,7 +238,7 @@ class HazardHandler:
             raise ValueError(status_message)
         if not source:
             if hazard_type == "drought":
-                source = "mat"
+                source = "hdf5"
             if hazard_type == "flood":
                 source = "raster"
             if hazard_type == "heatwaves":
@@ -250,7 +250,7 @@ class HazardHandler:
         if source == "mat":
             hazard = self._get_hazard_from_mat(filepath)
         if source == "hdf5":
-            hazard = self._get_hazard_from_hdf5(filepath)
+            hazard = self._get_hazard_from_h5(filepath)
 
         return hazard
 
@@ -298,10 +298,13 @@ class HazardHandler:
     def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
         try:
             hazard_code = self.get_hazard_code(hazard_type)
+            # Fallback return periods scenario 10, 25, 50, 100 years
             frequency = [0.1, 0.04, 0.02, 0.01]
             if hazard_code == "HW":
+                # Return periods for heatwaves are 10, 25, 50, 75, 100 years
                 frequency = [0.1, 0.04, 0.02, 0.01333, 0.01]
             elif hazard_code == "FL":
+                # Return periods for floods are 2, 5, 10, 25 years
                 frequency = [0.5, 0.2, 0.1, 0.04]
             events = [i for i in range(1, len(frequency) + 1)]
             hazard = Hazard.from_raster(
@@ -334,6 +337,25 @@ class HazardHandler:
             logger.log(
                 "error",
                 "An unexpected error occurred while trying to create hazard object from mat file."
+                f"More info: {exception}",
+            )
+            return None
+
+    def _get_hazard_from_h5(self, filepath: Path) -> Hazard:
+        """
+        """
+        try:
+            hazard = Hazard().from_hdf5(DATA_HAZARDS_DIR / filepath)
+            hazard_type = hazard.haz_type
+            # Set intensity threshold according to hazard type
+            intensity_thres = self.get_hazard_intensity_thres(hazard_type)
+            hazard.intensity_thres = intensity_thres
+            # Hazard intensity units are set according to the selected Entity file.
+            hazard.units = ""            
+        except Exception as exception:
+            logger.log(
+                "error",
+                "An unexpected error occurred while trying to create hazard object from h5 file."
                 f"More info: {exception}",
             )
             return None
@@ -738,7 +760,7 @@ class HazardHandler:
         :rtype: str
         """
         if hazard_code == "D":
-            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.mat"
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.h5"
         elif hazard_code == "FL":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
