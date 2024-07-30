@@ -243,6 +243,7 @@ class HazardHandler:
                 source = "raster"
             if hazard_type == "heatwaves":
                 source = "raster"
+
         if source == "climada_api":
             hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
         if source == "raster":
@@ -251,6 +252,9 @@ class HazardHandler:
             hazard = self._get_hazard_from_mat(filepath)
         if source == "hdf5":
             hazard = self._get_hazard_from_h5(filepath)
+            # Quick fix to change the hazard type from DR to D for droughts
+            if hazard_type == "drought":
+                hazard.haz_type = "D"
 
         return hazard
 
@@ -343,6 +347,15 @@ class HazardHandler:
 
     def _get_hazard_from_h5(self, filepath: Path) -> Hazard:
         """
+        Retrieve a hazard dataset from an HDF5 file.
+
+        This method retrieves a hazard dataset from an HDF5 file located at the specified
+        filepath. It returns a Hazard object representing the retrieved dataset.
+
+        :param filepath: The filepath to the HDF5 file containing the hazard dataset.
+        :type filepath: Path
+        :return: A Hazard object representing the retrieved hazard dataset.
+        :rtype: Hazard
         """
         try:
             hazard = Hazard().from_hdf5(DATA_HAZARDS_DIR / filepath)
@@ -350,8 +363,9 @@ class HazardHandler:
             # Set intensity threshold according to hazard type
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
-            # Hazard intensity units are set according to the selected Entity file.
-            hazard.units = ""            
+            hazard.check()
+
+            return hazard
         except Exception as exception:
             logger.log(
                 "error",
@@ -411,7 +425,7 @@ class HazardHandler:
             intensity_thres = 0
         elif hazard_type == "HW":
             intensity_thres = 0
-        elif hazard_type == "D":
+        elif hazard_type in ["D", "DR"]:
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
 
@@ -616,61 +630,6 @@ class HazardHandler:
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
 
-    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
-        """
-        Read the selected .hdf5 input file and build the necessary hazard data to
-        create a Hazard object.
-
-        Parameters
-        ----------
-        filepath : str, required
-            File path of the .hdf5 input file. The file must be placed in the data/hazards folder.
-
-        Returns
-        -------
-        hazard : climada.hazard.Hazard
-            The combined hazard object if the file exists. None if the file does not exist.
-        """
-        try:
-            filepath = DATA_HAZARDS_DIR / filepath
-            if filepath.exists():
-                logger.log(
-                    "info",
-                    f"File {filepath} already exists and will be used to create Hazard object.",
-                )
-                hazard = Hazard.from_hdf5(filepath)
-                return hazard
-            raise FileExistsError("Hazard file not found")
-        except FileExistsError as e:
-            logger.log("error", f"File not found: {e}")
-            return None
-        except Exception as e:
-            logger.log("error", f"An unexpected error occurred. More info: {e}")
-            return None
-
-    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
-        """
-        Read the selected .hdf5 input file and build the necessary hazard data to
-        create a Hazard object.
-
-        :param filepath: File path of the .hdf5 input file. The file must be placed in
-        the data/hazards folder.
-        :type filepath: Path
-        :return: The combined hazard object if the file exists. None if the file does not exist.
-        :rtype: climada.hazard.Hazard
-        """
-        try:
-            hazard_filepath = DATA_HAZARDS_DIR / filepath
-            hazard = Hazard().from_excel(hazard_filepath)
-            return hazard
-        except Exception as exception:
-            logger.log(
-                "error",
-                "An unexpected error occurred while trying to create hazard object from xlsx file."
-                f"More info: {exception}",
-            )
-            return None
-
     def get_hazard_code(self, hazard_type: str) -> str:
         """
         Retrieve the code corresponding to a given hazard type.
@@ -710,44 +669,6 @@ class HazardHandler:
 
         return code
 
-    def get_hazard_type(self, hazard_code: str) -> str:
-        """
-        Retrieve the hazard type corresponding to a given hazard code.
-
-        This function maps a hazard code to its corresponding hazard type. If the hazard code
-        is not recognized, it raises a ValueError.
-
-        :param hazard_code: The hazard code as a string.
-        :type hazard_code: str
-        :return: The hazard type corresponding to the provided hazard code.
-        :rtype: str
-        :raises ValueError: If the hazard code is not recognized.
-        """
-        # Reverse mapping of hazard codes to hazard types
-        hazard_types = {
-            "TC": "tropical_cyclone",
-            "RF": "river_flood",
-            "WS": "storm_europe",
-            "BF": "wildfire",
-            "EQ": "earthquake",
-            "FL": "flood",
-            "D": "drought",
-            "HW": "heatwaves",
-        }
-
-        # Retrieve the hazard type for the given hazard code
-        hazard_type = hazard_types.get(hazard_code, None)
-
-        # Raise an exception if the hazard code is not found
-        if hazard_type is None:
-            # raise ValueError(f"Hazard code '{hazard_code}' is not recognized.")
-            logger.log(
-                "error",
-                f"Hazard code '{hazard_code}' is not recognized.",
-            )
-
-        return hazard_type
-
     def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
         """
         Get the hazard filename based on the request parameters.
@@ -766,23 +687,3 @@ class HazardHandler:
         elif hazard_code == "HW":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         return hazard_filename  # TODO: Extract this to settings file
-
-    def get_hazard_intensity_thres(self, hazard_type: str) -> float:
-        """
-        Get the intensity threshold for a given hazard type.
-
-        This method returns the intensity threshold corresponding to the specified hazard type.
-
-        :param hazard_type: The type of hazard for which to retrieve the intensity threshold.
-        :type hazard_type: str
-        :return: The intensity threshold for the specified hazard type.
-        :rtype: float
-        """
-        intensity_thres = -100
-        if hazard_type == "RF":
-            intensity_thres = 1
-        elif hazard_type == "FL":
-            intensity_thres = 1
-        if hazard_type == "D":
-            intensity_thres = -4  # TODO: Test if this is correct
-        return intensity_thres
