@@ -15,7 +15,7 @@ const HazardMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
 
-  const [activeRPLayer, setActiveRPLayer] = useState(10);
+  const [activeRPLayer, setActiveRPLayer] = useState(null);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [percentileValues, setPercentileValues] = useState({});
@@ -56,9 +56,16 @@ const HazardMap = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
+        // Set return periods and initially set activeRPLayer
+        const returnPeriods = data._metadata.return_periods;
+        setReturnPeriods(returnPeriods);
+        if (activeRPLayer === null && returnPeriods.length > 0) {
+          // Only set if not already set
+          setActiveRPLayer(returnPeriods[0]);
+        }
         setPercentileValues(data._metadata.percentile_values);
         setRadius(data._metadata.radius);
-        setReturnPeriods(data._metadata.return_periods);
         setUnit(data._metadata.unit);
 
         if (data._metadata.percentile_values && data._metadata.percentile_values[`rp${rpLayer}`]) {
@@ -70,7 +77,7 @@ const HazardMap = () => {
           const minAbsValue = Math.min(...values.filter((v) => v !== 0).map(Math.abs));
           const { suffix, divisor } = getSuffixAndDivisor(minAbsValue);
           setDivisor(divisor);
-          setSuffix(suffix); // Set the suffix state
+          setSuffix(suffix);
         } else {
           throw new Error("Percentile values are missing or incomplete.");
         }
@@ -79,7 +86,7 @@ const HazardMap = () => {
         setMapInfo({ geoJson: null, colorScale: null });
       }
     },
-    [selectedHazard]
+    [selectedHazard, activeRPLayer]
   );
 
   useEffect(() => {

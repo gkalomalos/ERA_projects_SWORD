@@ -85,7 +85,17 @@ const useStore = create((set, get) => ({
     set({ selectedExposureNonEconomic: exposureNonEconomic, selectedAnnualGrowth: 0 });
   },
   setSelectedHazard: (hazard) => {
-    set({ selectedHazard: hazard, selectedScenario: "" });
+    set({
+      selectedAnnualGrowth: 0,
+      selectedExposureEconomic: "",
+      selectedExposureFile: "",
+      selectedExposureNonEconomic: "",
+      selectedHazard: hazard,
+      selectedScenario: "",
+      selectedTimeHorizon: [2024, 2050],
+      isValidExposureEconomic: false,
+      isValidExposureNonEconomic: false,
+    });
   },
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
