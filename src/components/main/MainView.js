@@ -14,7 +14,7 @@ import ReportsView from "../reports/ReportsView";
 import useStore from "../../store";
 
 const MainView = () => {
-  const { selectedSubTab, selectedTab, viewControl } = useStore();
+  const { activeViewControl, selectedSubTab, selectedTab } = useStore();
 
   return (
     <>
@@ -22,19 +22,19 @@ const MainView = () => {
       {selectedTab === 0 && <ViewCard />}
       {selectedTab === 1 && selectedSubTab === 0 && (
         <>
-          {viewControl === "display_map" && <MapLayout />}
-          {viewControl === "display_chart" && <RiskChartLayout />}
-          {viewControl === "settings" && <SettingsView />}
-          {viewControl === "progress" && <ProgressView />}
+          {activeViewControl === "display_map" && <MapLayout />}
+          {activeViewControl === "display_chart" && <RiskChartLayout />}
+          {activeViewControl === "settings" && <SettingsView />}
+          {activeViewControl === "progress" && <ProgressView />}
           <MainViewControls />
         </>
       )}
       {selectedTab === 1 && selectedSubTab === 1 && (
         <>
-          {viewControl === "display_map" && <AdaptationMap />}
-          {viewControl === "display_chart" && <AdaptationChartLayout />}
-          {viewControl === "settings" && <SettingsView />}
-          {viewControl === "progress" && <ProgressView />}
+          {activeViewControl === "display_map" && <AdaptationMap />}
+          {activeViewControl === "display_chart" && <AdaptationChartLayout />}
+          {activeViewControl === "settings" && <SettingsView />}
+          {activeViewControl === "progress" && <ProgressView />}
           <MainViewControls />
         </>
       )}

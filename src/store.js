@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 const useStore = create((set, get) => ({
   activeMap: "hazard",
+  activeViewControl: "display_map",
   alertMessage: "",
   alertSeverity: "info",
   alertShowMessage: false,
@@ -25,7 +26,6 @@ const useStore = create((set, get) => ({
   selectedTab: 0,
   selectedSubTab: 0,
   selectedTimeHorizon: [2024, 2050],
-  viewControl: "display_map",
 
   setActiveMap: (map) => set({ activeMap: map }),
   setAlertMessage: (message) => set({ alertMessage: message }),
@@ -103,7 +103,7 @@ const useStore = create((set, get) => ({
   setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
   setSelectedTimeHorizon: (timeHorizon) => set({ selectedTimeHorizon: timeHorizon }),
-  setViewControl: (control) => set({ viewControl: control }),
+  setActiveViewControl: (control) => set({ activeViewControl: control }),
 }));
 
 export default useStore;

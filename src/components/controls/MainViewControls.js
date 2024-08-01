@@ -17,11 +17,11 @@ const controls = [
 ];
 
 const MainViewControls = () => {
-  const { setViewControl, viewControl } = useStore();
+  const { activeViewControl, setActiveViewControl } = useStore();
   const { t } = useTranslation();
 
   const handleSelect = (control) => {
-    setViewControl(control);
+    setActiveViewControl(control);
   };
 
   return (
@@ -61,7 +61,7 @@ const MainViewControls = () => {
                 {control.icon}
                 <Typography
                   variant="body1"
-                  sx={{ ml: 1, fontWeight: control.id === viewControl ? "bold" : "normal" }}
+                  sx={{ ml: 1, fontWeight: control.id === activeViewControl ? "bold" : "normal" }}
                 >
                   {t(`main_view_controls_${control.id}`)}
                 </Typography>
