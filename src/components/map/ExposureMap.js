@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
+import { formatNumber } from "../../utils/formatters";
 import { getScaleLegacy } from "../../utils/colorScalesLegacy";
 import LegendLegacy from "./LegendLegacy";
 import useStore from "../../store";
@@ -98,7 +99,7 @@ const ExposureMap = () => {
       layer.bindPopup(
         `${t("map_exposure_popup_country")}: ${country}<br>${t(
           "map_exposure_button_admin"
-        )}: ${name}<br>${t("map_exposure_popup_value")}: ${value} ${unit}`
+        )}: ${name}<br>${t("map_exposure_popup_value")}: ${formatNumber(value)} ${unit}`
       );
     }
   };
