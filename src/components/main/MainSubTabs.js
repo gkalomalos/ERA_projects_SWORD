@@ -4,18 +4,19 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
 
+import image1 from "../../assets/hazard_map_1.png";
+// import image2 from "./risks_waterfall_plot_1.png";
+
 const MainSubTabs = () => {
   const {
     addReport,
     isScenarioRunCompleted,
-    selectedAnnualGrowth,
-    selectedAppOption,
+    // selectedAnnualGrowth,
+    // selectedAppOption,
     selectedCountry,
     selectedExposureEconomic,
-    selectedExposureFile,
     selectedExposureNonEconomic,
     selectedHazard,
-    selectedHazardFile,
     selectedScenario,
     selectedTimeHorizon,
     selectedSubTab,
@@ -33,19 +34,20 @@ const MainSubTabs = () => {
     if (isScenarioRunCompleted) {
       const outputData = {
         id: new Date().getTime().toString(),
-        data: JSON.stringify({
-          selectedAnnualGrowth: selectedAnnualGrowth,
-          selectedAppOption: selectedAppOption,
-          selectedCountry: selectedCountry,
-          selectedExposureEconomic: selectedExposureEconomic,
-          selectedExposureFile: selectedExposureFile,
-          selectedExposureNonEconomic: selectedExposureNonEconomic,
-          selectedHazard: selectedHazard,
-          selectedHazardFile: selectedHazardFile,
-          selectedScenario: selectedScenario,
-          selectedTimeHorizon: selectedTimeHorizon,
-        }),
-        image: null,
+        // data: JSON.stringify({
+        //   selectedAnnualGrowth: selectedAnnualGrowth,
+        //   selectedAppOption: selectedAppOption,
+        //   selectedCountry: selectedCountry,
+        //   selectedExposureEconomic: selectedExposureEconomic,
+        //   selectedExposureNonEconomic: selectedExposureNonEconomic,
+        //   selectedHazard: selectedHazard,
+        //   selectedScenario: selectedScenario,
+        //   selectedTimeHorizon: selectedTimeHorizon,
+        // }),
+        data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
+          selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+        } - ${selectedTimeHorizon}`,
+        image: image1,
         title: `Run Scenario results for ${selectedHazard} affecting ${
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
         } in ${selectedCountry} with climate scenario ${selectedScenario} in ${
