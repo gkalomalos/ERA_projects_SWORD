@@ -5,7 +5,13 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 import useStore from "../../store";
 
 const MainSubTabs = () => {
-  const { selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
+  const {
+    activeScenarioData,
+    isScenarioRunCompleted,
+    selectedSubTab,
+    selectedTab,
+    setSelectedSubTab,
+  } = useStore();
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
     1: ["Risk", "Adaptation", "+ Add to Output"], // Subtabs for "Economic & Non-Economic section"
@@ -14,7 +20,10 @@ const MainSubTabs = () => {
   };
 
   const handleAddToOutput = () => {
-    console.log("add to output");
+    console.log('isScenarioRunCompleted:', isScenarioRunCompleted);
+    if (isScenarioRunCompleted) {
+      console.log('activeScenarioData:', activeScenarioData);
+    }
   };
 
   const handleSubTabChange = (event, newValue) => {

@@ -1,11 +1,25 @@
 import { create } from "zustand";
 
 const useStore = create((set, get) => ({
+  activeScenarioData: {
+    selectedAnnualGrowth: 0,
+    selectedAppOption: "",
+    selectedCard: "country",
+    selectedCountry: "",
+    selectedExposureEconomic: "",
+    selectedExposureFile: "",
+    selectedExposureNonEconomic: "",
+    selectedHazard: "",
+    selectedHazardFile: "",
+    selectedScenario: "",
+    selectedTimeHorizon: [2024, 2050],
+  },
   activeMap: "hazard",
   activeViewControl: "display_map",
   alertMessage: "",
   alertSeverity: "info",
   alertShowMessage: false,
+  isScenarioRunCompleted: false,
   isScenarioRunning: false,
   isValidExposureEconomic: false,
   isValidExposureNonEconomic: false,
@@ -27,10 +41,15 @@ const useStore = create((set, get) => ({
   selectedSubTab: 0,
   selectedTimeHorizon: [2024, 2050],
 
+  setActiveScenarioData: (data) =>
+    set((state) => ({
+      activeScenarioData: { ...state.activeScenarioData, ...data },
+    })),
   setActiveMap: (map) => set({ activeMap: map }),
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),
+  setIsScenarioRunCompleted: (data) => set({ isScenarioRunCompleted: data }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
   setIsValidExposureEconomic: (isValid) => {
     const { selectedAppOption } = get();
