@@ -190,7 +190,11 @@ const HazardMap = () => {
       style={{ position: "relative", height: "100%", width: "100%" }}
       whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        maxZoom={12}
+        minZoom={5}
+      />
       <div style={buttonContainerStyle}>
         {returnPeriods.map((rp) => (
           <Button
