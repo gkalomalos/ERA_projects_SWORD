@@ -50,6 +50,7 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import Point
 
+from climada.entity import Entity
 from climada.hazard import Hazard
 from climada.util.api_client import Client
 
@@ -237,7 +238,7 @@ class HazardHandler:
             raise ValueError(status_message)
         if not source:
             if hazard_type == "drought":
-                source = "mat"
+                source = "hdf5"
             if hazard_type == "flood":
                 source = "raster"
             if hazard_type == "heatwaves":
@@ -249,7 +250,10 @@ class HazardHandler:
         if source == "mat":
             hazard = self._get_hazard_from_mat(filepath)
         if source == "hdf5":
-            hazard = self._get_hazard_from_hdf5(filepath)
+            hazard = self._get_hazard_from_h5(filepath)
+            # Quick fix to change the hazard type from DR to D for droughts
+            if hazard_type == "drought":
+                hazard.haz_type = "D"
 
         return hazard
 
@@ -297,15 +301,24 @@ class HazardHandler:
     def _get_hazard_from_raster(self, filepath: Path, hazard_type: str) -> Hazard:
         try:
             hazard_code = self.get_hazard_code(hazard_type)
+            # Fallback return periods scenario 10, 25, 50, 100 years
+            frequency = [0.1, 0.04, 0.02, 0.01]
+            if hazard_code == "HW":
+                # Return periods for heatwaves are 10, 25, 50, 75, 100 years
+                frequency = [0.1, 0.04, 0.02, 0.01333, 0.01]
+            elif hazard_code == "FL":
+                # Return periods for floods are 2, 5, 10, 25 years
+                frequency = [0.5, 0.2, 0.1, 0.04]
+            events = [i for i in range(1, len(frequency) + 1)]
             hazard = Hazard.from_raster(
                 DATA_HAZARDS_DIR / filepath,
                 attrs={
-                    "frequency": np.array([0.5, 0.2, 0.1, 0.04]),
-                    "event_id": np.array([1, 2, 3, 4]),
+                    "frequency": np.array(frequency),
+                    "event_id": np.array(events),
                     "units": "m",
                 },
                 haz_type=hazard_code,
-                band=[1, 2, 3, 4],
+                band=events,
             )
             # TODO: Set intensity threshold. This step is required to generate meaningful maps
             # as CLIMADA sets intensity_thres = 10 and in certain hazards this excludes all values.
@@ -314,13 +327,8 @@ class HazardHandler:
 
             # Set the hazard code
             hazard.haz_type = hazard_code
-            # Set hazard units.
-            if hazard_code == "FL":
-                hazard.units = "m"
-            elif hazard_code == "HW":
-                hazard.units = ""
-            else:
-                hazard.units = "m"
+            # Hazard intensity units are set according to the selected Entity file.
+            hazard.units = "m"
 
             # This step is required to generate the lat/long columns and avoid issues
             # with array size mismatch
@@ -332,6 +340,35 @@ class HazardHandler:
             logger.log(
                 "error",
                 "An unexpected error occurred while trying to create hazard object from mat file."
+                f"More info: {exception}",
+            )
+            return None
+
+    def _get_hazard_from_h5(self, filepath: Path) -> Hazard:
+        """
+        Retrieve a hazard dataset from an HDF5 file.
+
+        This method retrieves a hazard dataset from an HDF5 file located at the specified
+        filepath. It returns a Hazard object representing the retrieved dataset.
+
+        :param filepath: The filepath to the HDF5 file containing the hazard dataset.
+        :type filepath: Path
+        :return: A Hazard object representing the retrieved hazard dataset.
+        :rtype: Hazard
+        """
+        try:
+            hazard = Hazard().from_hdf5(DATA_HAZARDS_DIR / filepath)
+            hazard_type = hazard.haz_type
+            # Set intensity threshold according to hazard type
+            intensity_thres = self.get_hazard_intensity_thres(hazard_type)
+            hazard.intensity_thres = intensity_thres
+            hazard.check()
+
+            return hazard
+        except Exception as exception:
+            logger.log(
+                "error",
+                "An unexpected error occurred while trying to create hazard object from h5 file."
                 f"More info: {exception}",
             )
             return None
@@ -356,8 +393,7 @@ class HazardHandler:
             # Set intensity threshold according to hazard type
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
-            # Set hazard intensity unit in case it's not available in the matlab file
-            # TODO: In drought we have no units. Change IT to be dynamic according to hazard_type.
+            # Hazard intensity units are set according to the selected Entity file.
             hazard.units = ""
 
             return hazard
@@ -385,10 +421,59 @@ class HazardHandler:
         if hazard_type == "RF":
             intensity_thres = 1
         elif hazard_type == "FL":
-            intensity_thres = 1
-        if hazard_type == "D":
+            intensity_thres = 0
+        elif hazard_type == "HW":
+            intensity_thres = 0
+        elif hazard_type in ["D", "DR"]:
             intensity_thres = -4  # TODO: Test if this is correct
         return intensity_thres
+
+    def get_hazard_intensity_units_from_entity(self, entity: Entity) -> str:
+        """
+        Retrieve the intensity unit associated from the Entity impact function.
+
+        This method extracts the unique category ID from an entity's exposures and uses it to
+        fetch the corresponding impact function. It then retrieves the intensity unit from this
+        impact function. If the entity's exposures have more than one unique category ID,
+        a ValueError is raised.
+
+        :param entity: The entity containing exposure data and impact functions.
+        :type entity: Entity
+        :return: The intensity unit associated with the entity's category ID.
+        :rtype: str
+        :raises ValueError: If there are multiple different category IDs in the impact functions.
+        """
+        # Extract unique category IDs from the entity's geodataframe
+        category_ids = entity.exposures.gdf["category_id"].unique()
+
+        # Check if all category IDs are identical (only one unique value)
+        if len(np.unique(category_ids)) != 1:
+            # If there are multiple unique category IDs, raise an error
+            raise ValueError(
+                "There are multiple different 'category_id' values in the entity's exposures."
+            )
+
+        # Retrieve the impact function associated with the first (and only) category ID
+        impf = entity.impact_funcs.get_func(fun_id=category_ids[0])[0]
+
+        # Return the intensity unit, default to an empty string if not present
+        return impf.intensity_unit or ""
+
+    def get_custom_rp_per_hazard(self, hazard_code: str) -> tuple:
+        """
+        This method returns the return periods in tuple form, from a UNU-EHS tailored
+        hazard file.
+
+        :param hazard_code: The hazard code.
+        :type hazard_code: str
+        :return: Return periods.
+        :rtype: tuple
+        """
+        if hazard_code in ["FL"]:
+            return (2, 5, 10, 25)
+        elif hazard_code in ["D", "HW"]:
+            return (10, 25, 50, 75, 100)
+        return (10, 25, 50, 100)
 
     def get_circle_radius(self, hazard_type: str) -> int:
         """
@@ -406,13 +491,55 @@ class HazardHandler:
             radius = 11000
         if hazard_type == "FL":
             radius = 2000
+        if hazard_type == "HW":
+            radius = 9000
         return radius
+
+    def assign_levels(self, hazard_gdf, percentile_values):
+        for rp, levels in percentile_values.items():
+            # Determine if the levels are ascending or descending
+            is_ascending = levels[0] < levels[-1]
+
+            # Initialize an empty list to store the levels
+            level_column = []
+
+            # Iterate through each row in the DataFrame
+            for index, row in hazard_gdf.iterrows():
+                value = row[rp]
+
+                # Determine the level based on the value
+                if is_ascending:
+                    if value < levels[0]:
+                        level_column.append(1)
+                    elif value >= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            if levels[i - 1] <= value < levels[i]:
+                                level_column.append(i)
+                                break
+                else:
+                    if value > levels[0]:
+                        level_column.append(1)
+                    elif value <= levels[-1]:
+                        level_column.append(len(levels))
+                    else:
+                        for i in range(1, len(levels)):
+                            # Adjusted comparison to ensure correct level assignment
+                            if levels[i - 1] >= value > levels[i]:
+                                level_column.append(i)
+                                break
+
+            # Add the level column to the DataFrame
+            hazard_gdf[rp + "_level"] = level_column
+
+        return hazard_gdf
 
     def generate_hazard_geojson(
         self,
         hazard: Hazard,
         country_name: str,
-        return_periods: tuple = (25, 20, 15, 10),
+        return_periods: tuple,
     ):
         """
         Generate GeoJSON data for hazard points.
@@ -424,15 +551,27 @@ class HazardHandler:
         :type hazard: Hazard
         :param country_name: The name of the country.
         :type country_name: str
-        :param return_periods: Tuple of return periods, defaults to (25, 20, 15, 10).
+        :param return_periods: Tuple of return periods, defaults to (10, 15, 20, 25).
         :type return_periods: tuple, optional
         """
         try:
             country_iso3 = self.base_handler.get_iso3_country_code(country_name)
             admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
             coords = np.array(hazard.centroids.coord)
-            local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
-            local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+            # TODO: There's an issue with the UNU EHS hazard datasets. These datasets contain
+            # the RPL calculated values and not the absolute hazard intensity values.
+            # This means that calculating the local exceedance intensity values is wrong,
+            # as it's already pre-calculated. Each dataset contains bands that represent
+            # the separate return periods, so hazard.intensity can be used directly to
+            # get the return period losses, without using the local_exceedance_inten method.
+
+            # Local exceedance intensity calculation
+            # local_exceedance_inten = hazard.local_exceedance_inten(return_periods)
+            # local_exceedance_inten = pd.DataFrame(local_exceedance_inten).T
+
+            local_exceedance_inten = pd.DataFrame(
+                hazard.intensity.toarray().T, columns=[f"rp{year}" for year in return_periods]
+            )
             data = np.column_stack((coords, local_exceedance_inten))
             columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
 
@@ -440,27 +579,33 @@ class HazardHandler:
 
             # Round the hazard rp values to 2 decimal places. Update is vectorized and efficient
             # for large datasets
-            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(2))
+            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(1))
             geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
             hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
 
-            # TODO: Test efficiency and remove redundant code. Timings look similar
-            # hazard_gdf = gpd.GeoDataFrame(
-            #     pd.DataFrame(data, columns=columns),
-            #     geometry=gpd.points_from_xy(data[:, 1], data[:, 0], crs="EPSG:4326"),
-            # )
-
-            # hazard_gdf.set_crs("EPSG:4326", inplace=True)
             # Filter hazard_gdf to exclude rows where all return period values are zero
             hazard_gdf = hazard_gdf[
                 (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
             ]
 
-            # Spatial join with administrative areas
+            # Calculate percentiles for each return period
+            percentile_values = {}
+            percentiles = (20, 40, 60, 80)
+            for rp in return_periods:
+                rp_data = hazard_gdf[f"rp{rp}"]
+                percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
+                if hazard.haz_type == "D":
+                    percentile_values[f"rp{rp}"].reverse()
+                    percentile_values[f"rp{rp}"].append(-4)
+                else:
+                    percentile_values[f"rp{rp}"].insert(0, 0)
+
+            # Assign levels based on the percentile values
+            hazard_gdf = self.assign_levels(hazard_gdf, percentile_values)
+
+            # Spatial join with administrative area
             joined_gdf = gpd.sjoin(hazard_gdf, admin_gdf, how="left", predicate="within")
             # Remove points outside of the country
-            # TODO: Test if this needs to be refined
-            # TODO: Comment out temporarily to resolve empty df issues
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
             joined_gdf = joined_gdf.drop(columns=["latitude", "longitude", "index_right"])
             joined_gdf = joined_gdf.reset_index(drop=True)
@@ -470,9 +615,11 @@ class HazardHandler:
             # Convert to GeoJSON for this layer and add to all_layers_geojson
             hazard_geojson = joined_gdf.__geo_interface__
             hazard_geojson["_metadata"] = {
-                "unit": hazard.units,
-                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
+                "percentile_values": percentile_values,
                 "radius": radius,
+                "return_periods": return_periods,
+                "title": f"Hazard ({hazard.units})" if hazard.units else "Hazard",
+                "unit": hazard.units,
             }
 
             # Save the combined GeoJSON file
@@ -481,61 +628,6 @@ class HazardHandler:
                 json.dump(hazard_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
-
-    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
-        """
-        Read the selected .hdf5 input file and build the necessary hazard data to
-        create a Hazard object.
-
-        Parameters
-        ----------
-        filepath : str, required
-            File path of the .hdf5 input file. The file must be placed in the data/hazards folder.
-
-        Returns
-        -------
-        hazard : climada.hazard.Hazard
-            The combined hazard object if the file exists. None if the file does not exist.
-        """
-        try:
-            filepath = DATA_HAZARDS_DIR / filepath
-            if filepath.exists():
-                logger.log(
-                    "info",
-                    f"File {filepath} already exists and will be used to create Hazard object.",
-                )
-                hazard = Hazard.from_hdf5(filepath)
-                return hazard
-            raise FileExistsError("Hazard file not found")
-        except FileExistsError as e:
-            logger.log("error", f"File not found: {e}")
-            return None
-        except Exception as e:
-            logger.log("error", f"An unexpected error occurred. More info: {e}")
-            return None
-
-    def _get_hazard_from_hdf5(self, filepath: Path) -> Hazard:
-        """
-        Read the selected .hdf5 input file and build the necessary hazard data to
-        create a Hazard object.
-
-        :param filepath: File path of the .hdf5 input file. The file must be placed in
-        the data/hazards folder.
-        :type filepath: Path
-        :return: The combined hazard object if the file exists. None if the file does not exist.
-        :rtype: climada.hazard.Hazard
-        """
-        try:
-            hazard_filepath = DATA_HAZARDS_DIR / filepath
-            hazard = Hazard().from_excel(hazard_filepath)
-            return hazard
-        except Exception as exception:
-            logger.log(
-                "error",
-                "An unexpected error occurred while trying to create hazard object from xlsx file."
-                f"More info: {exception}",
-            )
-            return None
 
     def get_hazard_code(self, hazard_type: str) -> str:
         """
@@ -576,44 +668,6 @@ class HazardHandler:
 
         return code
 
-    def get_hazard_type(self, hazard_code: str) -> str:
-        """
-        Retrieve the hazard type corresponding to a given hazard code.
-
-        This function maps a hazard code to its corresponding hazard type. If the hazard code
-        is not recognized, it raises a ValueError.
-
-        :param hazard_code: The hazard code as a string.
-        :type hazard_code: str
-        :return: The hazard type corresponding to the provided hazard code.
-        :rtype: str
-        :raises ValueError: If the hazard code is not recognized.
-        """
-        # Reverse mapping of hazard codes to hazard types
-        hazard_types = {
-            "TC": "tropical_cyclone",
-            "RF": "river_flood",
-            "WS": "storm_europe",
-            "BF": "wildfire",
-            "EQ": "earthquake",
-            "FL": "flood",
-            "D": "drought",
-            "HW": "heatwaves",
-        }
-
-        # Retrieve the hazard type for the given hazard code
-        hazard_type = hazard_types.get(hazard_code, None)
-
-        # Raise an exception if the hazard code is not found
-        if hazard_type is None:
-            # raise ValueError(f"Hazard code '{hazard_code}' is not recognized.")
-            logger.log(
-                "error",
-                f"Hazard code '{hazard_code}' is not recognized.",
-            )
-
-        return hazard_type
-
     def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
         """
         Get the hazard filename based on the request parameters.
@@ -626,9 +680,9 @@ class HazardHandler:
         :rtype: str
         """
         if hazard_code == "D":
-            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.mat"
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.h5"
         elif hazard_code == "FL":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
-        return hazard_filename
+        return hazard_filename  # TODO: Extract this to settings file

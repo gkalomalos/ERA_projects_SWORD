@@ -28,7 +28,7 @@ const PageUnderConstructionView = () => {
             {t("general_main_view_progress_dev_title")}
           </Typography>
           <Typography variant="subtitle1">
-            {t("general_main_view_progress_dev_subtitle")}.
+            {t("general_main_view_progress_dev_subtitle")}
           </Typography>
         </Box>
       </Paper>

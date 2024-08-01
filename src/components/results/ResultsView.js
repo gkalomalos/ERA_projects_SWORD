@@ -11,6 +11,10 @@ import useStore from "../../store";
 const ResultsView = () => {
   const { selectedTab } = useStore();
 
+  if (selectedTab === 0){
+    return null
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

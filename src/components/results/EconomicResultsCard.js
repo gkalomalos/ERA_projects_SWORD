@@ -1,24 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
 
+import ResultsTypography from "./ResultsTypography";
 import useStore from "../../store";
 
 const EconomicResultsCard = () => {
-  const { setActiveMap } = useStore();
+  const { activeMap, setActiveMap } = useStore();
   const { t } = useTranslation();
-  const [selectedButton, setSelectedButton] = useState("hazard");
 
   const handleButtonClick = (type) => {
-    setSelectedButton(type);
     setActiveMap(type);
   };
 
-  const isButtonSelected = (type) => selectedButton === type;
+  const isButtonSelected = (type) => activeMap === type;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "85vh" }}>
       {/* Button Section with flex column direction */}
       <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
         {["hazard", "exposure", "impact"].map((type) => (
@@ -60,14 +59,8 @@ const EconomicResultsCard = () => {
           {t("results_eco_details")}
         </Typography>
         {/* Content here will grow to fill available space */}
-        <Typography variant="body1" sx={{ marginTop: 2, flexGrow: 1, color: "#6F6F6F" }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-          est laborum.
-        </Typography>
+
+        <ResultsTypography />
       </Box>
     </Box>
   );

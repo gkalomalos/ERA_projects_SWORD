@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
@@ -17,12 +17,10 @@ const controls = [
 ];
 
 const MainViewControls = () => {
-  const { setViewControl } = useStore();
+  const { setViewControl, viewControl } = useStore();
   const { t } = useTranslation();
-  const [activeControl, setActiveControl] = useState("display_map");
 
   const handleSelect = (control) => {
-    setActiveControl(control);
     setViewControl(control);
   };
 
@@ -63,7 +61,7 @@ const MainViewControls = () => {
                 {control.icon}
                 <Typography
                   variant="body1"
-                  sx={{ ml: 1, fontWeight: control.id === activeControl ? "bold" : "normal" }}
+                  sx={{ ml: 1, fontWeight: control.id === viewControl ? "bold" : "normal" }}
                 >
                   {t(`main_view_controls_${control.id}`)}
                 </Typography>

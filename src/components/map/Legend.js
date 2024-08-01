@@ -3,32 +3,55 @@ import PropTypes from "prop-types";
 
 import "./Legend.css";
 
-const Legend = ({ colorScale, minValue, maxValue, title }) => {
-  // Generate the CSS for the gradient
-  const gradientCSS = `linear-gradient(to right, 
-    ${colorScale(minValue)} 0%, 
-    ${colorScale((minValue + maxValue) / 2)} 50%, 
-    ${colorScale(maxValue)} 100%)`;
+// Include the number formatting function
+function formatNumber(num, divisor) {
+  return (num / divisor).toFixed(2).replace(/\.00$/, "");
+}
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num);
-  };
+const Legend = ({ colorScale, percentileValues, title, divisor }) => {
+  const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
+
+  // Create a color block for each percentile value
+  const colorBlocks = percentileValues.map((value, index) => (
+    <div
+      key={index}
+      style={{
+        backgroundColor: colorScale(value),
+        width: `${100 / percentileValues.length}%`,
+        height: "20px",
+      }}
+    />
+  ));
+
+  const valueLabels = isAscending ? percentileValues : [...percentileValues].reverse();
 
   return (
     <div className="legend-container">
       <div className="legend-title">{title}</div>
-      <div className="color-gradient" style={{ backgroundImage: gradientCSS }}>
-        <div className="gradient-line"></div>
+      <div className="color-blocks" style={{ display: "flex", width: "100%" }}>
+        {colorBlocks}
       </div>
-      <div className="legend-values">
-        {minValue === maxValue ? (
-          <span>{formatNumber(minValue)}</span>
-        ) : (
-          <>
-            <span>{formatNumber(minValue)}</span>
-            <span>{formatNumber((minValue + maxValue) / 2)}</span>
-            <span>{formatNumber(maxValue)}</span>
-          </>
+      <div
+        className="value-labels"
+        style={{
+          display: "flex",
+          width: "100%",
+          flexDirection: isAscending ? "row" : "row-reverse",
+        }}
+      >
+        {valueLabels.map((value, index) => (
+          <span key={index} className={isAscending ? "value-label-left" : "value-label-right"}>
+            {formatNumber(value, divisor)}
+          </span>
+        ))}
+      </div>
+      <div className="legend-labels">
+        {Array.from({ length: percentileValues.length }, (_, i) => `Level ${i + 1}`).map(
+          (level, index) => (
+            <div key={index} className="legend-label">
+              {level}
+            </div>
+          )
         )}
       </div>
     </div>
@@ -36,10 +59,10 @@ const Legend = ({ colorScale, minValue, maxValue, title }) => {
 };
 
 Legend.propTypes = {
-  colorScale: PropTypes.any.isRequired,
-  minValue: PropTypes.number.isRequired,
-  maxValue: PropTypes.number.isRequired,
+  colorScale: PropTypes.func.isRequired,
+  percentileValues: PropTypes.arrayOf(PropTypes.number).isRequired,
   title: PropTypes.string.isRequired,
+  divisor: PropTypes.number,
 };
 
 export default Legend;

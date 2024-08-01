@@ -3,13 +3,13 @@ import React from "react";
 import AdaptationMap from "../map/AdaptationMap";
 import AdaptationChartLayout from "../controls/AdaptationChartLayout";
 import RiskChartLayout from "../controls/RiskChartLayout";
+import MacroEconomicView from "../main/MacroEconomicView";
 import MainViewControls from "../controls/MainViewControls";
 import MainViewTitle from "../title/MainViewTitle";
 import MapLayout from "../map/MapLayout";
 import ProgressView from "../controls/ProgressView";
 import SettingsView from "../controls/SettingsView";
 import ViewCard from "../cards/ViewCard";
-import PageUnderConstructionView from "../misc/PageUnderConstructionView";
 import ReportsView from "../reports/ReportsView";
 import useStore from "../../store";
 
@@ -40,7 +40,7 @@ const MainView = () => {
       )}
       {selectedTab === 2 && (
         <>
-          <PageUnderConstructionView />
+          <MacroEconomicView />
         </>
       )}
       {selectedTab === 3 && (

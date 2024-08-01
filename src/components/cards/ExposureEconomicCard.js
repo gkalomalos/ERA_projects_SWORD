@@ -17,8 +17,15 @@ import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const exposureEconomicDict = {
-  thailand: ["tree_crops", "grass_crops", "wet_markets"],
-  egypt: ["crops", "livestock", "power_plants", "hotels"],
+  thailand: {
+    flood: ["tree_crops", "grass_crops", "wet_markets"],
+    drought: ["tree_crops", "grass_crops", "wet_markets"],
+    heatwaves: [],
+  },
+  egypt: {
+    flood: ["crops", "livestock", "power_plants", "hotels"],
+    heatwaves: ["crops", "livestock", "hotels"],
+  },
 };
 
 const ExposureEconomicCard = () => {
@@ -27,6 +34,10 @@ const ExposureEconomicCard = () => {
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureFile,
+    selectedHazard,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setIsValidExposureEconomic,
     setSelectedExposureEconomic,
     setSelectedExposureFile,
@@ -34,11 +45,8 @@ const ExposureEconomicCard = () => {
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
-  const exposuresEconomic = exposureEconomicDict[selectedCountry] || [];
+  const exposuresEconomic = exposureEconomicDict[selectedCountry][selectedHazard] || [];
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureEconomic === exposure) {
@@ -56,21 +64,17 @@ const ExposureEconomicCard = () => {
   const handleLoadButtonClick = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setIsValidExposureEconomic(false);
     const file = event.target.files[0];
     if (file) {
-      selectedExposureFile(file.name);
+      setSelectedExposureFile(file.name);
       setIsValidExposureEconomic(true);
     }
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const clearUploadedFile = () => {
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setIsValidExposureEconomic(false);
     // Reset the value of the file input to avoid issues when trying to upload the same file
     document.getElementById("exposure-economic-contained-button-file").value = "";
@@ -83,7 +87,7 @@ const ExposureEconomicCard = () => {
 
   const handleFetchButtonClick = (event) => {
     // Reset the value of the file input if already selected
-    selectedExposureFile("");
+    setSelectedExposureFile("");
     setFetchExposureMessage("");
     setIsValidExposureEconomic(false);
     const body = {
@@ -92,9 +96,11 @@ const ExposureEconomicCard = () => {
     };
     APIService.CheckDataType(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
         setIsValidExposureEconomic(response.result.status.code === 2000);
       })
@@ -260,14 +266,7 @@ const ExposureEconomicCard = () => {
       </CardContent>
 
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </Card>
   );
 };

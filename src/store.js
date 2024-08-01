@@ -2,6 +2,9 @@ import { create } from "zustand";
 
 const useStore = create((set, get) => ({
   activeMap: "hazard",
+  alertMessage: "",
+  alertSeverity: "info",
+  alertShowMessage: false,
   isScenarioRunning: false,
   isValidExposureEconomic: false,
   isValidExposureNonEconomic: false,
@@ -25,6 +28,9 @@ const useStore = create((set, get) => ({
   viewControl: "display_map",
 
   setActiveMap: (map) => set({ activeMap: map }),
+  setAlertMessage: (message) => set({ alertMessage: message }),
+  setAlertSeverity: (severity) => set({ alertSeverity: severity }),
+  setAlertShowMessage: (show) => set({ alertShowMessage: show }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
   setIsValidExposureEconomic: (isValid) => {
     const { selectedAppOption } = get();
@@ -79,7 +85,17 @@ const useStore = create((set, get) => ({
     set({ selectedExposureNonEconomic: exposureNonEconomic, selectedAnnualGrowth: 0 });
   },
   setSelectedHazard: (hazard) => {
-    set({ selectedHazard: hazard, selectedScenario: "" });
+    set({
+      selectedAnnualGrowth: 0,
+      selectedExposureEconomic: "",
+      selectedExposureFile: "",
+      selectedExposureNonEconomic: "",
+      selectedHazard: hazard,
+      selectedScenario: "",
+      selectedTimeHorizon: [2024, 2050],
+      isValidExposureEconomic: false,
+      isValidExposureNonEconomic: false,
+    });
   },
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),

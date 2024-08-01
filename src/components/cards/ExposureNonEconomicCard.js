@@ -17,15 +17,22 @@ import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const exposureNonEconomicDict = {
-  thailand: [
-    "tree_crops_farmers",
-    "grass_crops_farmers",
-    "buddhist_monks",
-    "water_users",
-    "roads",
-    "students",
-  ],
-  egypt: ["hospitalised_people", "students", "diarrhea_patients", "roads"],
+  thailand: {
+    flood: [
+      "tree_crops_farmers",
+      "grass_crops_farmers",
+      "diarrhea_patients",
+      "buddhist_monks",
+      "roads",
+      "students",
+    ],
+    drought: ["tree_crops_farmers", "grass_crops_farmers", "water_users"],
+    heatwaves: ["buddhist_monks", "students"],
+  },
+  egypt: {
+    flood: ["students", "diarrhea_patients", "roads"],
+    heatwaves: ["hospitalised_people", "students"],
+  },
 };
 
 const ExposureNonEconomicCard = () => {
@@ -35,6 +42,9 @@ const ExposureNonEconomicCard = () => {
     selectedExposureNonEconomic,
     selectedExposureFile,
     selectedHazard,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setIsValidExposureNonEconomic,
     setSelectedExposureFile,
     setSelectedExposureNonEconomic,
@@ -42,20 +52,8 @@ const ExposureNonEconomicCard = () => {
   const { t } = useTranslation();
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
-  const [showMessage, setShowMessage] = useState(true);
 
-  // Create a copy of the exposureNonEconomicDict to handle different assets per hazard
-  let exposuresNonEconomic = [...(exposureNonEconomicDict[selectedCountry] || [])];
-
-  if (selectedCountry === "egypt") {
-    if (selectedHazard === "flood") {
-      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "hospitalised_people");
-    } else if (selectedHazard === "heatwaves") {
-      exposuresNonEconomic = exposuresNonEconomic.filter((item) => item !== "diarrhea_patients");
-    }
-  }
+  const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry][selectedHazard] || [];
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {
@@ -82,10 +80,6 @@ const ExposureNonEconomicCard = () => {
     }
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
   const clearUploadedFile = () => {
     setSelectedExposureFile("");
     setIsValidExposureNonEconomic(false);
@@ -109,9 +103,11 @@ const ExposureNonEconomicCard = () => {
     };
     APIService.CheckDataType(body)
       .then((response) => {
-        setMessage(response.result.status.message);
-        response.result.status.code === 2000 ? setSeverity("success") : setSeverity("error");
-        setShowMessage(true);
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
         setFetchExposureMessage(response.result.status.message);
         setIsValidExposureNonEconomic(response.result.status.code === 2000);
       })
@@ -277,14 +273,7 @@ const ExposureNonEconomicCard = () => {
       </CardContent>
 
       {/* Alert message section */}
-      {message && showMessage && (
-        <AlertMessage
-          handleCloseMessage={handleCloseMessage}
-          message={message}
-          severity={severity}
-          showMessage={showMessage}
-        />
-      )}
+      <AlertMessage />
     </Card>
   );
 };

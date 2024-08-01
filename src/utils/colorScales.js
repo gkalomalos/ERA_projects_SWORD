@@ -1,30 +1,40 @@
-import {
-  interpolateRdYlGn,
-  interpolateBlues,
-  interpolateYlOrBr,
-  interpolateReds,
-} from "d3-scale-chromatic";
-import { scaleSequential } from "d3-scale";
+import { schemeReds, schemeBlues, schemeYlOrBr, schemeYlOrRd } from "d3-scale-chromatic";
 
-const interpolateRdYlGnReversed = (t) => interpolateRdYlGn(1 - t);
-const interpolateBluesReversed = (t) => interpolateBlues(1 - t);
-const interpolateRedsReversed = (t) => interpolateReds(1 - t);
-// const interpolateYlOrBrReversed = (t) => interpolateYlOrBr(1 - t);
-
-export const getColorScale = (hazard) => {
+const getColorScale = (hazard) => {
+  const k = 9; // Largest set of colors
   switch (hazard) {
     case "flood":
-      return interpolateBluesReversed;
+      return schemeBlues[k].slice(-5); // Get last 5 colors
     case "drought":
-      return interpolateYlOrBr;
+      return [...schemeYlOrBr[k]].slice(-5);
     case "heatwaves":
-      return interpolateRedsReversed;
+      return schemeReds[k].slice(-5);
     default:
-      return interpolateRdYlGnReversed;
+      return schemeYlOrRd[k].slice(-5);
   }
 };
 
-export const getScale = (hazard, maxValue, minValue) => {
-  const colorScale = getColorScale(hazard);
-  return scaleSequential(colorScale).domain([maxValue, minValue]);
+export const getScale = (hazard, percentileValues) => {
+  const colors = getColorScale(hazard);
+  const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
+
+  return (value) => {
+    if (isAscending) {
+      if (value < percentileValues[0]) return colors[0];
+      if (value >= percentileValues[percentileValues.length - 1]) return colors[colors.length - 1];
+      for (let i = 0; i < percentileValues.length - 1; i++) {
+        if (value >= percentileValues[i] && value < percentileValues[i + 1]) {
+          return colors[i];
+        }
+      }
+    } else {
+      if (value > percentileValues[0]) return colors[0];
+      if (value <= percentileValues[percentileValues.length - 1]) return colors[colors.length - 1];
+      for (let i = 0; i < percentileValues.length - 1; i++) {
+        if (value <= percentileValues[i] && value > percentileValues[i + 1]) {
+          return colors[i];
+        }
+      }
+    }
+  };
 };

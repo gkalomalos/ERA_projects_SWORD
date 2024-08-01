@@ -32,6 +32,12 @@ app.whenReady().then(async () => {
   createLoaderWindow(); // Create the loader window
   global.pythonProcess = createPythonProcess();
   await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
+  try {
+    const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
+    console.log("Result of clearing temp directory:", result);
+  } catch (error) {
+    console.error("Error clearing temp directory:", error);
+  }
   loaderWindow.close(); // Close the loader window
   loaderWindow = null; // Clear the loader window reference
   createMainWindow(); // Create the main application window
@@ -197,6 +203,19 @@ ipcMain.handle("is-development-env", () => {
 ipcMain.handle("fetch-temp-dir", () => {
   const tempFolderPath = path.join(app.getAppPath(), "data", "temp");
   return tempFolderPath;
+});
+
+ipcMain.handle("clearTempDir", async () => {
+  try {
+    const scriptName = "run_clear_temp_dir.py";
+    const data = {}; // assuming no additional data is required
+    const result = await runPythonScript(mainWindow, scriptName, data);
+    console.log("Temporary directory cleared:", result);
+    return { success: true, result };
+  } catch (error) {
+    console.error("Failed to clear temporary directory:", error);
+    return { success: false, error: error.message };
+  }
 });
 
 app.on("window-all-closed", () => {

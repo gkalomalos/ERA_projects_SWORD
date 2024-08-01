@@ -1,6 +1,5 @@
 import React from "react";
-
-import { Grid } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 
 import AdaptationMeasuresInput from "./components/input/AdaptationMeasuresInput";
 import DataInput from "./components/input/DataInput";
@@ -12,41 +11,48 @@ import NavigateAlert from "./components/alerts/NavigateAlert";
 import ResultsView from "./components/results/ResultsView";
 import useStore from "./store";
 
+import "./App.css";
+
 const App = () => {
-  const { selectedAppOption, selectedTab, selectedSubTab } = useStore();
+  const { selectedAppOption, selectedTab } = useStore();
 
   return (
     <>
       {selectedAppOption === "" ? (
         <NavigateAlert />
       ) : (
-        <>
+        <Box display="flex" flexDirection="column" minHeight="100vh">
           <Header />
           <MainTabs />
-          <Grid
-            container
-            spacing={2}
-            style={{
-              padding: "16px",
-              paddingTop: "174px",
-              overflow: "auto",
-            }}
+          <Box
+            display="flex"
+            flexDirection="column"
+            flexGrow={1}
+            overflow="auto"
+            className="main-content"
           >
-            <Grid item xs={12} md={2}>
-              {(selectedTab === 0 || (selectedTab === 1 && selectedSubTab === 0)) && <DataInput />}
-              {selectedTab === 1 && selectedSubTab === 1 && <AdaptationMeasuresInput />}
-            </Grid>
-            <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
-              <MainView />
-            </Grid>
-            {selectedTab !== 0 && (
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                padding: 2,
+                flexGrow: 1,
+              }}
+            >
+              <Grid item xs={12} md={2}>
+                <DataInput />
+                <AdaptationMeasuresInput />
+              </Grid>
+              <Grid item xs={12} md={selectedTab !== 0 ? 8 : 10}>
+                <MainView />
+              </Grid>
               <Grid item xs={12} md={2}>
                 <ResultsView />
               </Grid>
-            )}
-          </Grid>
+            </Grid>
+          </Box>
           <LoadModal />
-        </>
+        </Box>
       )}
     </>
   );

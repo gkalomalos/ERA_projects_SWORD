@@ -5,17 +5,16 @@ import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
-import { getScale } from "../../utils/colorScales";
-import Legend from "./Legend";
+import { getScaleLegacy } from "../../utils/colorScalesLegacy";
+import LegendLegacy from "./LegendLegacy";
 import useStore from "../../store";
 
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = () => {
-  const { selectedCountry, selectedHazard } = useStore();
+  const { selectedCountry, selectedExposureEconomic, selectedHazard } = useStore();
   const { t } = useTranslation();
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
-  const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
@@ -32,7 +31,6 @@ const ExposureMap = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setLegendTitle(data._metadata.title);
       setUnit(data._metadata.unit);
       const filteredFeatures = data.features.filter(
         (feature) => feature.properties.layer === layer
@@ -43,7 +41,7 @@ const ExposureMap = () => {
       setMinValue(minValue);
       const maxValue = Math.max(...values);
       setMaxValue(maxValue);
-      const scale = getScale(selectedHazard, maxValue, minValue);
+      const scale = getScaleLegacy(selectedHazard, maxValue, minValue);
 
       setMapInfo({ geoJson: filteredData, colorScale: scale });
     } catch (error) {
@@ -125,7 +123,11 @@ const ExposureMap = () => {
       style={{ height: "100%", width: "100%" }}
       whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        maxZoom={12}
+        minZoom={5}
+      />
       <div style={buttonContainerStyle}>
         {adminLayers.map((layer) => (
           <Button
@@ -148,11 +150,12 @@ const ExposureMap = () => {
             style={style}
             onEachFeature={onEachFeature}
           />
-          <Legend
+          <LegendLegacy
             colorScale={mapInfo.colorScale}
             maxValue={maxValue}
             minValue={minValue}
-            title={legendTitle}
+            unit={unit}
+            type={selectedExposureEconomic ? "economic" : "non-economic"}
           />
         </>
       )}

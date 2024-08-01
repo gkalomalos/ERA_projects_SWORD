@@ -170,14 +170,18 @@ class BaseHandler:
         _hazard_type = ""
         if hazard_type == "tropical_cyclone":
             _hazard_type = "Tropical cyclone"
-        if hazard_type == "storm_europe":
+        elif hazard_type == "storm_europe":
             _hazard_type = "Storm Europe"
-        if hazard_type == "river_flood":
+        elif hazard_type == "river_flood":
             _hazard_type = "River flood"
-        if hazard_type == "drought":
+        elif hazard_type == "drought":
             _hazard_type = "Drought"
-        if hazard_type == "flood":
+        elif hazard_type == "flood":
             _hazard_type = "Flood"
+        elif hazard_type == "heatwaves":
+            _hazard_type = "Heatwaves"
+        else:
+            _hazard_type = "Hazard"
 
         return _hazard_type
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
@@ -11,48 +11,87 @@ import { getScale } from "../../utils/colorScales";
 import Legend from "./Legend";
 import useStore from "../../store";
 
-const returnPeriods = [10, 15, 20, 25];
-
 const HazardMap = () => {
   const { selectedCountry, selectedHazard } = useStore();
   const { t } = useTranslation();
 
-  const [activeRPLayer, setActiveRPLayer] = useState(10);
+  const [activeRPLayer, setActiveRPLayer] = useState(null);
   const [legendTitle, setLegendTitle] = useState("");
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
-  const [maxValue, setMaxValue] = useState(null);
-  const [minValue, setMinValue] = useState(null);
+  const [percentileValues, setPercentileValues] = useState({});
   const [radius, setRadius] = useState(0);
+  const [returnPeriods, setReturnPeriods] = useState([]);
   const [unit, setUnit] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const [divisor, setDivisor] = useState(1);
 
   const mapRef = useRef();
 
-  const fetchGeoJson = async () => {
-    try {
-      const tempPath = await window.electron.fetchTempDir();
-      const response = await fetch(`${tempPath}/hazards_geodata.json`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setLegendTitle(data._metadata.title);
-      setRadius(data._metadata.radius);
-      setUnit(data._metadata.unit);
-      const values = data.features.map((f) => f.properties[`rp${activeRPLayer}`]);
-      const minValue = Math.min(...values);
-      setMinValue(minValue);
-      const maxValue = Math.max(...values);
-      setMaxValue(maxValue);
-
-      const scale = getScale(selectedHazard, maxValue, minValue);
-
-      setMapInfo({ geoJson: data, colorScale: scale });
-    } catch (error) {
-      console.error("Error fetching GeoJSON data:", error);
-      setMapInfo({ geoJson: null, colorScale: null });
-    }
+  const getSuffixAndDivisor = (value) => {
+    if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
+    if (value >= 1e6) return { suffix: "Millions", divisor: 1e6 };
+    if (value >= 1e3) return { suffix: "Thousands", divisor: 1e3 };
+    return { suffix: "", divisor: 1 };
   };
+
+  const updateLegendTitle = (unit, suffix) => {
+    let prefix = "Hazard";
+    if (selectedHazard === "flood") {
+      prefix = "Flood depth";
+    } else if (selectedHazard === "drought") {
+      prefix = "Standard Precipitation Index";
+    } else if (selectedHazard === "heatwaves") {
+      prefix = "Warm Spell Duration Index";
+    }
+    return `${prefix}${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+  };
+
+  const fetchGeoJson = useCallback(
+    async (rpLayer) => {
+      try {
+        const tempPath = await window.electron.fetchTempDir();
+        const response = await fetch(`${tempPath}/hazards_geodata.json`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Set return periods and initially set activeRPLayer
+        const returnPeriods = data._metadata.return_periods;
+        setReturnPeriods(returnPeriods);
+        if (activeRPLayer === null && returnPeriods.length > 0) {
+          // Only set if not already set
+          setActiveRPLayer(returnPeriods[0]);
+        }
+        setPercentileValues(data._metadata.percentile_values);
+        setRadius(data._metadata.radius);
+        setUnit(data._metadata.unit);
+
+        if (data._metadata.percentile_values && data._metadata.percentile_values[`rp${rpLayer}`]) {
+          const scale = getScale(selectedHazard, data._metadata.percentile_values[`rp${rpLayer}`]);
+          setMapInfo({ geoJson: data, colorScale: scale });
+
+          // Calculate minimum non-zero value
+          const values = data._metadata.percentile_values[`rp${rpLayer}`];
+          const minAbsValue = Math.min(...values.filter((v) => v !== 0).map(Math.abs));
+          const { suffix, divisor } = getSuffixAndDivisor(minAbsValue);
+          setDivisor(divisor);
+          setSuffix(suffix);
+        } else {
+          throw new Error("Percentile values are missing or incomplete.");
+        }
+      } catch (error) {
+        console.error("Error fetching GeoJSON data:", error);
+        setMapInfo({ geoJson: null, colorScale: null });
+      }
+    },
+    [selectedHazard, activeRPLayer]
+  );
+
+  useEffect(() => {
+    setLegendTitle(updateLegendTitle(unit, suffix));
+  }, [unit, suffix]); // Update the legend title when unit or suffix changes
 
   const CircleLayer = ({ data, colorScale }) => {
     const map = useMap();
@@ -63,6 +102,7 @@ const HazardMap = () => {
       data.features.forEach((feature) => {
         const { coordinates } = feature.geometry;
         const value = feature.properties[`rp${activeRPLayer}`];
+        const level = feature.properties[`rp${activeRPLayer}_level`];
         const country = feature.properties["country"];
         const name = feature.properties["name"];
 
@@ -73,9 +113,8 @@ const HazardMap = () => {
           radius: radius,
         })
           .bindPopup(
-            `${t("country")}: ${country}<br>${t("admin")}: ${name}<br>${t(
-              "value"
-            )}: ${value} ${unit}`
+            `${t("country")}: ${country}<br>${t("admin")} 2: ${name}<br>` +
+              `${t("level")}: ${level}`
           )
           .addTo(layerGroup);
       });
@@ -105,8 +144,8 @@ const HazardMap = () => {
   };
 
   const handleRPLayerChange = async (rp) => {
-    await fetchGeoJson();
     setActiveRPLayer(rp);
+    await fetchGeoJson(rp);
   };
 
   const RPButtonStyle = (rp) => ({
@@ -134,10 +173,8 @@ const HazardMap = () => {
   };
 
   useEffect(() => {
-    if (activeRPLayer !== null) {
-      fetchGeoJson(activeRPLayer);
-    }
-  }, [activeRPLayer]);
+    fetchGeoJson(activeRPLayer);
+  }, [activeRPLayer, fetchGeoJson]);
 
   useEffect(() => {
     if (mapRef.current && selectedCountry in countryCoordinates) {
@@ -150,10 +187,14 @@ const HazardMap = () => {
       key={selectedCountry}
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
-      style={{ height: "100%", width: "100%" }}
+      style={{ position: "relative", height: "100%", width: "100%" }}
       whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        maxZoom={12}
+        minZoom={5}
+      />
       <div style={buttonContainerStyle}>
         {returnPeriods.map((rp) => (
           <Button
@@ -173,9 +214,9 @@ const HazardMap = () => {
           <CircleLayer data={mapInfo.geoJson} colorScale={mapInfo.colorScale} />
           <Legend
             colorScale={mapInfo.colorScale}
-            maxValue={maxValue}
-            minValue={minValue}
+            percentileValues={percentileValues ? percentileValues[`rp${activeRPLayer}`] : []}
             title={legendTitle}
+            divisor={divisor}
           />
         </>
       )}
