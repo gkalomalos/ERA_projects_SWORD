@@ -1,70 +1,39 @@
 import React, { useState } from "react";
 
-import image1 from "./cost_benefit_plot.png";
-import image2 from "./risks_waterfall_plot_1.png";
-import image3 from "./risks_waterfall_plot_2.png";
-
 import ReportCard from "./ReportCard";
-
-// Test report data
-const demoReportData = [
-  {
-    id: "1",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
-    image: image2,
-    title: "Flood Expansion – return period 1 in 100 years",
-    type: "Economic – Risk – Hazard – Map",
-  },
-  {
-    id: "2",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/…",
-    image: image3,
-    title: "Exposure of Markets",
-    type: "Economic – Risk – Exposure – Map",
-  },
-  {
-    id: "3",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
-    image: image1,
-    title: "Cost-Benefit Analysis of Adaptation Measures",
-    type: "Economic – Adaptation – Cost-Benefit – Chart",
-  },
-];
+import useStore from "../../store";
 
 const ReportsView = () => {
+  const { reports, removeReport, updateReports } = useStore();
+
   const [selectedReport, setSelectedReport] = useState(null);
-  const [reportData, setReportData] = useState(demoReportData);
 
   const onCardClickHandler = (id) => {
     setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
   };
 
   const onActionReportHandler = (id, action) => {
-    const index = reportData.findIndex((report) => report.id === id);
-    const newReportData = [...reportData];
-
+    const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
-      newReportData.splice(index, 1);
+      removeReport(id);
     } else {
-      const lastIndex = reportData.length - 1;
-      const [movedReport] = newReportData.splice(index, 1);
-
+      const lastIndex = reports.length - 1;
+      const [movedReport] = reports.splice(index, 1);
       let newIndex;
       if (action === "up") {
         newIndex = index === 0 ? lastIndex : index - 1;
       } else if (action === "down") {
         newIndex = index === lastIndex ? 0 : index + 1;
       }
-
+      const newReportData = [...reports];
       newReportData.splice(newIndex, 0, movedReport);
+      updateReports(newReportData);
     }
-
-    setReportData(newReportData);
   };
 
   return (
     <>
-      {reportData.map((report) => (
+      {reports.map((report) => (
         <ReportCard
           key={report.id}
           data={report.data}

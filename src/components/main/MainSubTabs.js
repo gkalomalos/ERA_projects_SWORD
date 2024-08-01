@@ -6,8 +6,18 @@ import useStore from "../../store";
 
 const MainSubTabs = () => {
   const {
-    activeScenarioData,
+    addReport,
     isScenarioRunCompleted,
+    selectedAnnualGrowth,
+    selectedAppOption,
+    selectedCountry,
+    selectedExposureEconomic,
+    selectedExposureFile,
+    selectedExposureNonEconomic,
+    selectedHazard,
+    selectedHazardFile,
+    selectedScenario,
+    selectedTimeHorizon,
     selectedSubTab,
     selectedTab,
     setSelectedSubTab,
@@ -20,9 +30,30 @@ const MainSubTabs = () => {
   };
 
   const handleAddToOutput = () => {
-    console.log('isScenarioRunCompleted:', isScenarioRunCompleted);
     if (isScenarioRunCompleted) {
-      console.log('activeScenarioData:', activeScenarioData);
+      const outputData = {
+        id: new Date().getTime().toString(),
+        data: JSON.stringify({
+          selectedAnnualGrowth: selectedAnnualGrowth,
+          selectedAppOption: selectedAppOption,
+          selectedCountry: selectedCountry,
+          selectedExposureEconomic: selectedExposureEconomic,
+          selectedExposureFile: selectedExposureFile,
+          selectedExposureNonEconomic: selectedExposureNonEconomic,
+          selectedHazard: selectedHazard,
+          selectedHazardFile: selectedHazardFile,
+          selectedScenario: selectedScenario,
+          selectedTimeHorizon: selectedTimeHorizon,
+        }),
+        image: null,
+        title: `Run Scenario results for ${selectedHazard} affecting ${
+          selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+        } in ${selectedCountry} with climate scenario ${selectedScenario} in ${
+          selectedTimeHorizon[1]
+        }`,
+        type: "outputData",
+      };
+      addReport(outputData);
     }
   };
 

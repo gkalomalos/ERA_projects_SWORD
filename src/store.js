@@ -1,19 +1,6 @@
 import { create } from "zustand";
 
 const useStore = create((set, get) => ({
-  activeScenarioData: {
-    selectedAnnualGrowth: 0,
-    selectedAppOption: "",
-    selectedCard: "country",
-    selectedCountry: "",
-    selectedExposureEconomic: "",
-    selectedExposureFile: "",
-    selectedExposureNonEconomic: "",
-    selectedHazard: "",
-    selectedHazardFile: "",
-    selectedScenario: "",
-    selectedTimeHorizon: [2024, 2050],
-  },
   activeMap: "hazard",
   activeViewControl: "display_map",
   alertMessage: "",
@@ -27,6 +14,7 @@ const useStore = create((set, get) => ({
   mapTitle: "",
   modalMessage: "",
   progress: 0,
+  reports: [],
   selectedAnnualGrowth: 0,
   selectedAppOption: "",
   selectedCard: "country",
@@ -41,10 +29,24 @@ const useStore = create((set, get) => ({
   selectedSubTab: 0,
   selectedTimeHorizon: [2024, 2050],
 
-  setActiveScenarioData: (data) =>
+  // Method to add a new report
+  addReport: (newReport) =>
     set((state) => ({
-      activeScenarioData: { ...state.activeScenarioData, ...data },
+      reports: [...state.reports, newReport],
     })),
+
+  // Method to remove a report by id
+  removeReport: (reportId) =>
+    set((state) => ({
+      reports: state.reports.filter((report) => report.id !== reportId),
+    })),
+    
+  // Method to update reports
+  updateReports: (newReports) =>
+    set(() => ({
+      reports: newReports,
+    })),
+
   setActiveMap: (map) => set({ activeMap: map }),
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
