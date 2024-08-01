@@ -2,11 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import "./Legend.css";
-
-// Include the number formatting function
-function formatNumber(num, divisor) {
-  return (num / divisor).toFixed(2).replace(/\.00$/, "");
-}
+import { formatNumberDivisor } from "../../utils/formatters";
 
 const Legend = ({ colorScale, percentileValues, title, divisor }) => {
   const isAscending = percentileValues[0] < percentileValues[percentileValues.length - 1];
@@ -41,7 +37,7 @@ const Legend = ({ colorScale, percentileValues, title, divisor }) => {
       >
         {valueLabels.map((value, index) => (
           <span key={index} className={isAscending ? "value-label-left" : "value-label-right"}>
-            {formatNumber(value, divisor)}
+            {formatNumberDivisor(value, divisor)}
           </span>
         ))}
       </div>
