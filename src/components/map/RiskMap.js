@@ -77,7 +77,7 @@ const RiskMap = () => {
         setMapInfo({ geoJson: null, colorScale: null });
       }
     },
-    [selectedHazard]
+    [selectedHazard, activeRPLayer]
   );
 
   useEffect(() => {

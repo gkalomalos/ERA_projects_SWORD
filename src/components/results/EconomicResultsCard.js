@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
@@ -7,16 +7,14 @@ import ResultsTypography from "./ResultsTypography";
 import useStore from "../../store";
 
 const EconomicResultsCard = () => {
-  const { setActiveMap } = useStore();
+  const { activeMap, setActiveMap } = useStore();
   const { t } = useTranslation();
-  const [selectedButton, setSelectedButton] = useState("hazard");
 
   const handleButtonClick = (type) => {
-    setSelectedButton(type);
     setActiveMap(type);
   };
 
-  const isButtonSelected = (type) => selectedButton === type;
+  const isButtonSelected = (type) => activeMap === type;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "85vh" }}>
