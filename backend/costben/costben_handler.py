@@ -225,4 +225,4 @@ class CostBenefitHandler:
             return axis
         except Exception as e:
             logger.log("error", f"Failed to plot cost-benefit chart. More info: {e}")
-            raise Exception(f"Failed to plot cost-benefit chart: {e}") from e
+            return None
