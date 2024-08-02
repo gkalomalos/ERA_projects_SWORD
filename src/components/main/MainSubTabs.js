@@ -48,10 +48,8 @@ const MainSubTabs = () => {
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
         } - ${selectedTimeHorizon}`,
         image: image1,
-        title: `Run Scenario results for ${selectedHazard} affecting ${
+        title: `Impact of ${selectedHazard} on ${
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-        } in ${selectedCountry} with climate scenario ${selectedScenario} in ${
-          selectedTimeHorizon[1]
         }`,
         type: "outputData",
       };
