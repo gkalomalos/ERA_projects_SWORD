@@ -563,6 +563,10 @@ class RunScenario:
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
             self.costben_handler.plot_cost_benefit(cost_benefit)
+            if not self.costben_handler.plot_cost_benefit(cost_benefit):
+                self.logger.log("error", "Cost-benefit chart plotting failed or was skipped.")
+
+            # Plot waterfall graph
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."
