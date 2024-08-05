@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,7 @@ import useStore from "../../store";
 const HazardMap = () => {
   const { selectedCountry, selectedHazard, setActiveMapRef } = useStore();
   const { t } = useTranslation();
+  const mapRefSet = useRef(false);
 
   const [activeRPLayer, setActiveRPLayer] = useState(null);
   const [legendTitle, setLegendTitle] = useState("");
@@ -96,10 +97,6 @@ const HazardMap = () => {
     const map = useMap();
 
     useEffect(() => {
-      setActiveMapRef(map);
-    }, [map, setActiveMapRef]);
-
-    useEffect(() => {
       const layerGroup = L.layerGroup().addTo(map);
 
       data.features.forEach((feature) => {
@@ -175,6 +172,19 @@ const HazardMap = () => {
     thailand: [15.87, 100.9925],
   };
 
+  const MapEvents = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!mapRefSet.current) {
+        setActiveMapRef(map);
+        mapRefSet.current = true; // Update the ref to indicate that setActiveMapRef has been called
+      }
+    }, [map, setActiveMapRef]);
+
+    return null;
+  };
+
   useEffect(() => {
     fetchGeoJson(activeRPLayer);
   }, [activeRPLayer, fetchGeoJson]);
@@ -191,6 +201,7 @@ const HazardMap = () => {
         maxZoom={12}
         minZoom={5}
       />
+      <MapEvents />
       <div style={buttonContainerStyle}>
         {returnPeriods.map((rp) => (
           <Button

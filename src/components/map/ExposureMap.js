@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
 import { formatNumber } from "../../utils/formatters";
@@ -13,8 +13,10 @@ import useStore from "../../store";
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = () => {
-  const { selectedCountry, selectedExposureEconomic, selectedHazard } = useStore();
+  const { selectedCountry, selectedExposureEconomic, selectedHazard, setActiveMapRef } = useStore();
   const { t } = useTranslation();
+  const mapRefSet = useRef(false);
+
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
@@ -108,6 +110,19 @@ const ExposureMap = () => {
     }
   }, [activeAdminLayer]);
 
+  const MapEvents = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!mapRefSet.current) {
+        setActiveMapRef(map);
+        mapRefSet.current = true; // Update the ref to indicate that setActiveMapRef has been called
+      }
+    }, [map, setActiveMapRef]);
+
+    return null;
+  };
+
   return (
     <MapContainer
       key={selectedCountry}
@@ -120,6 +135,7 @@ const ExposureMap = () => {
         maxZoom={12}
         minZoom={5}
       />
+      <MapEvents />
       <div style={buttonContainerStyle}>
         {adminLayers.map((layer) => (
           <Button

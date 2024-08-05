@@ -48,9 +48,7 @@ const MainSubTabs = () => {
   };
 
   const handleSaveToMap = () => {
-    console.log("before takeScreenshot");
     if (isScenarioRunCompleted && activeMapRef) {
-      console.log("inside takeScreenshot");
       takeScreenshot(activeMapRef);
     }
   };
