@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
@@ -24,8 +24,6 @@ const HazardMap = () => {
   const [unit, setUnit] = useState("");
   const [suffix, setSuffix] = useState("");
   const [divisor, setDivisor] = useState(1);
-
-  const mapRef = useRef();
 
   const getSuffixAndDivisor = (value) => {
     if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
@@ -176,11 +174,6 @@ const HazardMap = () => {
     fetchGeoJson(activeRPLayer);
   }, [activeRPLayer, fetchGeoJson]);
 
-  useEffect(() => {
-    if (mapRef.current && selectedCountry in countryCoordinates) {
-      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
-    }
-  }, [selectedCountry]);
 
   return (
     <MapContainer
@@ -188,7 +181,6 @@ const HazardMap = () => {
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
       style={{ position: "relative", height: "100%", width: "100%" }}
-      whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

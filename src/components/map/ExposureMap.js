@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
@@ -20,8 +20,6 @@ const ExposureMap = () => {
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
   const [unit, setUnit] = useState("");
-
-  const mapRef = useRef();
 
   const fetchGeoJson = async (layer) => {
     try {
@@ -110,19 +108,12 @@ const ExposureMap = () => {
     }
   }, [activeAdminLayer]);
 
-  useEffect(() => {
-    if (mapRef.current && selectedCountry in countryCoordinates) {
-      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
-    }
-  }, [selectedCountry]);
-
   return (
     <MapContainer
       key={selectedCountry}
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
       style={{ height: "100%", width: "100%" }}
-      whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
