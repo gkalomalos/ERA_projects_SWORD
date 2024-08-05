@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import L from "leaflet";
+import "leaflet-simple-map-screenshoter";
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 
@@ -174,6 +175,37 @@ const HazardMap = () => {
     fetchGeoJson(activeRPLayer);
   }, [activeRPLayer, fetchGeoJson]);
 
+  const ScreenshotButton = () => {
+    const map = useMap();
+
+    const handleScreenshot = () => {
+      const screenshoter = L.simpleMapScreenshoter().addTo(map);
+      screenshoter
+        .takeScreen("blob")
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "map_screenshot.png";
+          a.click();
+          URL.revokeObjectURL(url);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+    };
+
+    return (
+      <Button
+        size="small"
+        sx={{ flexGrow: 0, margin: 1, minWidth: "60px", maxWidth: "60px", fontSize: "0.75rem" }}
+        onClick={handleScreenshot}
+        variant="contained"
+      >
+        {t("Take Screenshot")}
+      </Button>
+    );
+  };
 
   return (
     <MapContainer
@@ -200,6 +232,7 @@ const HazardMap = () => {
             {rp}
           </Button>
         ))}
+        <ScreenshotButton />
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>

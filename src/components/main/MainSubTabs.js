@@ -4,8 +4,9 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
 
+// import takeScreenshot from "../../utils/takeScreenshot";
 import image1 from "../../assets/hazard_map_1.png";
-// import image2 from "./risks_waterfall_plot_1.png";
+
 
 const MainSubTabs = () => {
   const {
@@ -23,9 +24,10 @@ const MainSubTabs = () => {
     selectedTab,
     setSelectedSubTab,
   } = useStore();
+
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
-    1: ["Risk", "Adaptation", "+ Add to Output"], // Subtabs for "Economic & Non-Economic section"
+    1: ["Risk", "Adaptation", "+ Add to Output", "Save to Map"], // Added "Save to Map" button
     2: ["Risk", "Adaptation"], // Subtabs for "Macroeconomic (in dev) section"
     3: [], // Subtabs for "Outputs (reporting) section"
   };
@@ -34,16 +36,6 @@ const MainSubTabs = () => {
     if (isScenarioRunCompleted) {
       const outputData = {
         id: new Date().getTime().toString(),
-        // data: JSON.stringify({
-        //   selectedAnnualGrowth: selectedAnnualGrowth,
-        //   selectedAppOption: selectedAppOption,
-        //   selectedCountry: selectedCountry,
-        //   selectedExposureEconomic: selectedExposureEconomic,
-        //   selectedExposureNonEconomic: selectedExposureNonEconomic,
-        //   selectedHazard: selectedHazard,
-        //   selectedScenario: selectedScenario,
-        //   selectedTimeHorizon: selectedTimeHorizon,
-        // }),
         data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
         } - ${selectedTimeHorizon}`,
@@ -54,6 +46,12 @@ const MainSubTabs = () => {
         type: "outputData",
       };
       addReport(outputData);
+    }
+  };
+
+  const handleSaveToMap = () => {
+    if (isScenarioRunCompleted) {
+      console.log("Save to Map clicked");
     }
   };
 
@@ -101,9 +99,9 @@ const MainSubTabs = () => {
         }}
       >
         {subTabs.map((label, index) =>
-          // Conditionally render a button instead of a tab for "+ Add to Output"
-          index === 2 ? (
-            <Box key={index} sx={{ position: "absolute", top: 0, right: 8 }}>
+          // Conditionally render a button instead of a tab for "+ Add to Output" and "Save to Map"
+          index === 2 || index === 3 ? (
+            <Box key={index} sx={{ position: "absolute", top: 0, right: index === 2 ? 80 : 8 }}>
               <Button
                 variant="contained"
                 size="small"
@@ -116,7 +114,7 @@ const MainSubTabs = () => {
                   "&:hover": { bgcolor: "#F79191" },
                   textTransform: "none",
                 }}
-                onClick={() => handleAddToOutput()}
+                onClick={index === 2 ? handleAddToOutput : handleSaveToMap}
               >
                 {label}
               </Button>
