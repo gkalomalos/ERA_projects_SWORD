@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 const useStore = create((set, get) => ({
   activeMap: "hazard",
+  activeMapRef: null,
   activeViewControl: "display_map",
   alertMessage: "",
   alertSeverity: "info",
@@ -48,6 +49,7 @@ const useStore = create((set, get) => ({
     })),
 
   setActiveMap: (map) => set({ activeMap: map }),
+  setActiveMapRef: (mapRef) => set({ activeMapRef: mapRef }),
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),

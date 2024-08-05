@@ -13,7 +13,7 @@ import Legend from "./Legend";
 import useStore from "../../store";
 
 const HazardMap = () => {
-  const { selectedCountry, selectedHazard } = useStore();
+  const { selectedCountry, selectedHazard, setActiveMapRef } = useStore();
   const { t } = useTranslation();
 
   const [activeRPLayer, setActiveRPLayer] = useState(null);
@@ -96,6 +96,10 @@ const HazardMap = () => {
     const map = useMap();
 
     useEffect(() => {
+      setActiveMapRef(map);
+    }, [map, setActiveMapRef]);
+
+    useEffect(() => {
       const layerGroup = L.layerGroup().addTo(map);
 
       data.features.forEach((feature) => {
@@ -175,38 +179,6 @@ const HazardMap = () => {
     fetchGeoJson(activeRPLayer);
   }, [activeRPLayer, fetchGeoJson]);
 
-  const ScreenshotButton = () => {
-    const map = useMap();
-
-    const handleScreenshot = () => {
-      const screenshoter = L.simpleMapScreenshoter().addTo(map);
-      screenshoter
-        .takeScreen("blob")
-        .then((blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "map_screenshot.png";
-          a.click();
-          URL.revokeObjectURL(url);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    };
-
-    return (
-      <Button
-        size="small"
-        sx={{ flexGrow: 0, margin: 1, minWidth: "60px", maxWidth: "60px", fontSize: "0.75rem" }}
-        onClick={handleScreenshot}
-        variant="contained"
-      >
-        {t("Take Screenshot")}
-      </Button>
-    );
-  };
-
   return (
     <MapContainer
       key={selectedCountry}
@@ -232,7 +204,6 @@ const HazardMap = () => {
             {rp}
           </Button>
         ))}
-        <ScreenshotButton />
       </div>
       {mapInfo.geoJson && mapInfo.colorScale && (
         <>

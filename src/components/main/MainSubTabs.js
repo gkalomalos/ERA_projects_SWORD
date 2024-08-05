@@ -4,16 +4,14 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
 
-// import takeScreenshot from "../../utils/takeScreenshot";
+import { takeScreenshot } from "../../utils/mapTools";
 import image1 from "../../assets/hazard_map_1.png";
-
 
 const MainSubTabs = () => {
   const {
+    activeMapRef,
     addReport,
     isScenarioRunCompleted,
-    // selectedAnnualGrowth,
-    // selectedAppOption,
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
@@ -27,7 +25,7 @@ const MainSubTabs = () => {
 
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
-    1: ["Risk", "Adaptation", "+ Add to Output", "Save to Map"], // Added "Save to Map" button
+    1: ["Risk", "Adaptation", "+ Add to Output", "+ Save Map"], // Added "Save to Map" button
     2: ["Risk", "Adaptation"], // Subtabs for "Macroeconomic (in dev) section"
     3: [], // Subtabs for "Outputs (reporting) section"
   };
@@ -50,8 +48,10 @@ const MainSubTabs = () => {
   };
 
   const handleSaveToMap = () => {
-    if (isScenarioRunCompleted) {
-      console.log("Save to Map clicked");
+    console.log("before takeScreenshot");
+    if (isScenarioRunCompleted && activeMapRef) {
+      console.log("inside takeScreenshot");
+      takeScreenshot(activeMapRef);
     }
   };
 
@@ -101,7 +101,10 @@ const MainSubTabs = () => {
         {subTabs.map((label, index) =>
           // Conditionally render a button instead of a tab for "+ Add to Output" and "Save to Map"
           index === 2 || index === 3 ? (
-            <Box key={index} sx={{ position: "absolute", top: 0, right: index === 2 ? 80 : 8 }}>
+            <Box
+              key={index}
+              sx={{ position: "absolute", top: 0, right: index === 2 ? 100 : index === 3 ? 0 : 8 }}
+            >
               <Button
                 variant="contained"
                 size="small"
