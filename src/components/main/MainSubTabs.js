@@ -52,7 +52,22 @@ const MainSubTabs = () => {
   const handleSaveToMap = () => {
     if (isScenarioRunCompleted && activeMapRef) {
       const filepath = `data\\reports\\${scenarioRunCode}\\${activeMap}.png`;
-      takeScreenshot(activeMapRef, filepath);
+      takeScreenshot(activeMapRef, filepath)
+        .then(() => {
+          const outputData = {
+            id: new Date().getTime().toString(),
+            data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
+              selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+            } - ${selectedTimeHorizon}`,
+            image: filepath,
+            title: `${activeMap} map of ${selectedHazard}`,
+            type: "mapData",
+          };
+          addReport(outputData);
+        })
+        .catch((error) => {
+          console.error("Error in taking screenshot or saving it:", error);
+        });
     }
   };
 
