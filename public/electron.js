@@ -223,12 +223,23 @@ ipcMain.handle("clearTempDir", async () => {
 // Handle save screenshot request
 ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
   const buffer = Buffer.from(blob, "base64");
-  fs.writeFile(filePath, buffer, (err) => {
+
+  // Ensure the directory exists
+  const dir = path.dirname(filePath);
+  fs.mkdir(dir, { recursive: true }, (err) => {
     if (err) {
       event.sender.send("save-screenshot-reply", { success: false, error: err.message });
-    } else {
-      event.sender.send("save-screenshot-reply", { success: true });
+      return;
     }
+
+    // Write the file
+    fs.writeFile(filePath, buffer, (err) => {
+      if (err) {
+        event.sender.send("save-screenshot-reply", { success: false, error: err.message });
+      } else {
+        event.sender.send("save-screenshot-reply", { success: true });
+      }
+    });
   });
 });
 

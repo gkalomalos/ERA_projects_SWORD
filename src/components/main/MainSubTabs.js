@@ -9,6 +9,7 @@ import image1 from "../../assets/hazard_map_1.png";
 
 const MainSubTabs = () => {
   const {
+    activeMap,
     activeMapRef,
     addReport,
     isScenarioRunCompleted,
@@ -50,7 +51,7 @@ const MainSubTabs = () => {
 
   const handleSaveToMap = () => {
     if (isScenarioRunCompleted && activeMapRef) {
-      const filepath = `${scenarioRunCode}_hazardmap.png`
+      const filepath = `data\\reports\\${scenarioRunCode}\\${activeMap}.png`
       takeScreenshot(activeMapRef, filepath);
     }
   };
