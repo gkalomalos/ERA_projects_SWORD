@@ -3,7 +3,7 @@ import React from "react";
 import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
-
+import AlertMessage from "../alerts/AlertMessage";
 import { takeScreenshot } from "../../utils/mapTools";
 import image1 from "../../assets/hazard_map_1.png";
 
@@ -51,7 +51,7 @@ const MainSubTabs = () => {
 
   const handleSaveToMap = () => {
     if (isScenarioRunCompleted && activeMapRef) {
-      const filepath = `data\\reports\\${scenarioRunCode}\\${activeMap}.png`
+      const filepath = `data\\reports\\${scenarioRunCode}\\${activeMap}.png`;
       takeScreenshot(activeMapRef, filepath);
     }
   };
@@ -128,6 +128,7 @@ const MainSubTabs = () => {
           )
         )}
       </Tabs>
+      <AlertMessage />
     </Paper>
   );
 };
