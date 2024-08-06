@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import { generateNumericCode } from "./utils/misc";
+
 const useStore = create((set, get) => ({
   activeMap: "hazard",
   activeMapRef: null,
@@ -16,6 +18,7 @@ const useStore = create((set, get) => ({
   modalMessage: "",
   progress: 0,
   reports: [],
+  scenarioRunCode: "",
   selectedAnnualGrowth: 0,
   selectedAppOption: "",
   selectedCard: "country",
@@ -41,7 +44,7 @@ const useStore = create((set, get) => ({
     set((state) => ({
       reports: state.reports.filter((report) => report.id !== reportId),
     })),
-    
+
   // Method to update reports
   updateReports: (newReports) =>
     set(() => ({
@@ -82,6 +85,7 @@ const useStore = create((set, get) => ({
   setMapTitle: (data) => set({ mapTitle: data }),
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
+  setScenarioRunCode: () => set({ scenarioRunCode: generateNumericCode() }),
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),
   setSelectedCard: (card) => set({ selectedCard: card }),

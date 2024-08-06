@@ -12,6 +12,7 @@ const MainSubTabs = () => {
     activeMapRef,
     addReport,
     isScenarioRunCompleted,
+    scenarioRunCode,
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
@@ -49,7 +50,8 @@ const MainSubTabs = () => {
 
   const handleSaveToMap = () => {
     if (isScenarioRunCompleted && activeMapRef) {
-      takeScreenshot(activeMapRef);
+      const filepath = `${scenarioRunCode}_hazardmap.png`
+      takeScreenshot(activeMapRef, filepath);
     }
   };
 

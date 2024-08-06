@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 global.pythonProcess = null;
 
@@ -205,6 +206,7 @@ ipcMain.handle("fetch-temp-dir", () => {
   return tempFolderPath;
 });
 
+// Handle clear temporary directory request
 ipcMain.handle("clearTempDir", async () => {
   try {
     const scriptName = "run_clear_temp_dir.py";
@@ -218,10 +220,16 @@ ipcMain.handle("clearTempDir", async () => {
   }
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+// Handle save screenshot request
+ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
+  const buffer = Buffer.from(blob, "base64");
+  fs.writeFile(filePath, buffer, (err) => {
+    if (err) {
+      event.sender.send("save-screenshot-reply", { success: false, error: err.message });
+    } else {
+      event.sender.send("save-screenshot-reply", { success: true });
+    }
+  });
 });
 
 ipcMain.on("minimize", () => {
@@ -243,10 +251,6 @@ ipcMain.on("reload", () => {
   mainWindow.webContents.reloadIgnoringCache();
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
@@ -260,5 +264,11 @@ app.on("before-quit", () => {
 
   if (global.pythonProcess && !global.pythonProcess.killed) {
     global.pythonProcess.kill();
+  }
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
   }
 });
