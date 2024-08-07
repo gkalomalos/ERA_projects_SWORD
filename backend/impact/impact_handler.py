@@ -387,10 +387,9 @@ class ImpactHandler:
         """
         if country_iso3 == "THA":
             if hazard_type == "HW":
-                if exposure_type in ["buddhist_monks"]:
-                    return 11000
-                elif exposure_type in ["students"]:
-                    return 100
+                # All non economic assets appear better on map with 100m radius
+                # due to the high density of assets in the area.                
+                return 100
             elif hazard_type == "D":
                 if exposure_type in [
                     "tree_crops_farmers",
@@ -408,7 +407,10 @@ class ImpactHandler:
 
         if country_iso3 == "EGY":
             if hazard_type == "HW":
-                # All economic and non economic assets appear better on map with 100m radius
+                # Hotels have extremely high density so an extra small radius is required
+                if exposure_type in ["hotels"]:
+                    return 10
+                # All other economic and non economic assets appear better on map with 100m radius
                 # due to the high density of assets in the area.
                 return 100
             if hazard_type == "FL":
