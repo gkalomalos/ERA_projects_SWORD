@@ -194,7 +194,7 @@ const RiskMap = () => {
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={12}
+        maxZoom={15}
         minZoom={5}
       />
       <MapEvents />
