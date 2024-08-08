@@ -10,6 +10,7 @@ and updating progress for the frontend.
 import json
 from os import makedirs, path
 import sys
+from typing import Any, Dict
 
 import geopandas as gpd
 import pycountry
@@ -299,3 +300,99 @@ class BaseHandler:
                 f" More info: {exception}",
             )
             return None
+
+    def create_results_metadata_file(self, metadata: Dict[str, str]) -> None:
+        """
+        Create a metadata file with column names in the first line and values in the second line.
+
+        This method writes the provided metadata dictionary to a text file. The first line
+        of the file contains the dictionary keys as column names, and the second line
+        contains the corresponding values.
+
+        :param metadata: A dictionary containing metadata where keys are the column names and values are the data entries.
+        :type metadata: dict
+        :return: None
+        :rtype: None
+
+        Example of metadata input dictionary:
+
+        .. code-block:: python
+
+            metadata = {
+                "asset_type": "economic",
+                "annual_growth": 2.5,
+                "country_name": "thailand",
+                "exposure_economic": "crops",
+                "exposure_non_economic": "",
+                "hazard_type": "heatwaves",
+                "is_era": True,
+                "scenario": "rcp45",
+                "ref_year": 2024,
+                "future_year": 2050,
+            }
+        """
+        filepath = DATA_TEMP_DIR / "_metadata.txt"
+        try:
+            with open(filepath, "w") as file:
+                # Write the column names
+                file.write("\t".join(metadata.keys()) + "\n")
+                # Write the values
+                file.write("\t".join(map(str, metadata.values())) + "\n")
+        except IOError as e:
+            logger.log("error", (f"An I/O error occurred: {e.strerror}"))
+        except Exception as e:
+            logger.log("error", (f"An unexpected error occurred: {str(e)}"))
+
+    def read_results_metadata_file(self) -> Dict[str, Any]:
+        """
+        Read the metadata file and return the metadata as a dictionary.
+
+        This method reads a text file containing metadata where the first line contains the
+        column names and the second line contains the corresponding values. The data is
+        returned as a dictionary with appropriate type conversions.
+
+        :return: A dictionary containing the metadata read from the file.
+        :rtype: dict
+
+        Example of returned metadata dictionary:
+
+        .. code-block:: python
+
+            {
+                "asset_type": "economic",
+                "annual_growth": 2.5,
+                "country_name": "thailand",
+                "exposure_economic": "crops",
+                "exposure_non_economic": "",
+                "hazard_type": "heatwaves",
+                "is_era": True,
+                "scenario": "rcp45",
+                "ref_year": 2024,
+                "future_year": 2050,
+            }
+        """
+        filepath = DATA_TEMP_DIR / "_metadata.txt"
+        metadata = {}
+
+        try:
+            with open(filepath, "r") as file:
+                # Read the column names
+                keys = file.readline().strip().split("\t")
+                # Read the values
+                values = file.readline().strip().split("\t")
+
+                # Convert to dictionary
+                metadata = dict(zip(keys, values))
+
+                # Convert appropriate fields to their correct types
+                metadata["annual_growth"] = float(metadata["annual_growth"])
+                metadata["is_era"] = metadata["is_era"].lower() == "true"
+                metadata["ref_year"] = int(metadata["ref_year"])
+                metadata["future_year"] = int(metadata["future_year"])
+
+        except IOError as e:
+            self.logger.log("error", f"An I/O error occurred: {e.strerror}")
+        except Exception as e:
+            self.logger.log("error", f"An unexpected error occurred: {str(e)}")
+
+        return metadata

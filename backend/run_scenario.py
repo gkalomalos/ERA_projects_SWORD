@@ -672,6 +672,22 @@ class RunScenario:
             self.request_data.future_year,
             self.request_data.scenario,
         )
+
+        # Create metadata file
+        metadata = {
+            "asset_type": self.request_data.asset_type,
+            "annual_growth": self.request_data.annual_growth,
+            "country_name": self.request_data.country_name,
+            "exposure_economic": self.request_data.exposure_economic,
+            "exposure_non_economic": self.request_data.exposure_non_economic,
+            "hazard_type": self.request_data.hazard_type,
+            "is_era": self.request_data.is_era,
+            "scenario": self.request_data.scenario,
+            "ref_year": self.request_data.ref_year,
+            "future_year": self.request_data.future_year,
+        }
+        self.base_handler.create_results_metadata_file(metadata)
+
         response = {
             "data": {"mapTitle": map_title},
             "status": self.status.get_status(),
