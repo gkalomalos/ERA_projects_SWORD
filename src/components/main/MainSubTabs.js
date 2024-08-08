@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
@@ -10,6 +11,8 @@ import outputIconTha from "../../assets/folder_grey_network_icon_512.png";
 import outputIconEgy from "../../assets/folder_grey_cloud_icon_512.png";
 
 const MainSubTabs = () => {
+  const { t } = useTranslation();
+
   const {
     activeMap,
     activeMapRef,
@@ -19,6 +22,7 @@ const MainSubTabs = () => {
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
+    selectedAnnualGrowth,
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
@@ -51,12 +55,14 @@ const MainSubTabs = () => {
               id: `${scenarioRunCode}_${new Date().getTime().toString()}`,
               data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
                 selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-              } - ${selectedTimeHorizon}`,
+              } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
               image: selectedCountry === "thailand" ? outputIconTha : outputIconEgy,
-              title: `Impact of ${selectedHazard} on ${
-                selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-              }`,
-              type: "outputData",
+              title: `Impact data of ${t(`results_report_card_hazard_${selectedHazard}`)} on ${
+                selectedExposureEconomic
+                  ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
+                  : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
+              } in ${t(`results_report_card_country_${selectedCountry}`)}`,
+              type: t("results_report_card_output_data"),
             };
             addReport(outputData);
           } else {
@@ -68,6 +74,31 @@ const MainSubTabs = () => {
           console.log(error);
         });
     }
+  };
+
+  const getSaveMapTitle = () => {
+    let title = "";
+    if (activeMap === "hazard") {
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+        `results_report_card_hazard_${selectedHazard}`
+      )} in ${t(`results_report_card_country_${selectedCountry}`)}`;
+    } else if (activeMap === "exposure") {
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${
+        selectedExposureEconomic
+          ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
+          : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
+      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+    } else {
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+        `results_report_card_hazard_${selectedHazard}`
+      )} on ${
+        selectedExposureEconomic
+          ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
+          : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
+      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+    }
+
+    return title;
   };
 
   const handleSaveMap = async () => {
@@ -82,10 +113,10 @@ const MainSubTabs = () => {
             id: id,
             data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
               selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-            } - ${selectedTimeHorizon}`,
+            } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
             image: filepath,
-            title: `${activeMap} map of ${selectedHazard}`,
-            type: "mapData",
+            title: getSaveMapTitle(),
+            type: t("results_report_card_map_data"),
           };
           addReport(outputData);
         })
