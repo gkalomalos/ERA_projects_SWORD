@@ -24,6 +24,7 @@ from constants import (
     DATA_TEMP_DIR,
     LOG_DIR,
     REQUIREMENTS_DIR,
+    REPORTS_DIR,
 )
 from logger_config import LoggerConfig
 
@@ -249,6 +250,8 @@ class BaseHandler:
             makedirs(LOG_DIR)
         if not path.exists(DATA_TEMP_DIR):
             makedirs(DATA_TEMP_DIR)
+        if not path.exists(REPORTS_DIR):
+            makedirs(REPORTS_DIR)
 
     def update_progress(self, progress: int, message: str) -> None:
         """

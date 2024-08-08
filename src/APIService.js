@@ -64,4 +64,17 @@ export default class APIService {
       console.log(error);
     }
   }
+
+  static async AddToOutput(body) {
+    try {
+      const scriptName = "run_add_to_ouput.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

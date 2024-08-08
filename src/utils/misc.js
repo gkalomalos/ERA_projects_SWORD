@@ -7,7 +7,7 @@ const countryCodes = {
 
 const hazardCodes = {
   heatwaves: "HW",
-  floods: "FL",
+  flood: "FL",
   drought: "D",
 };
 

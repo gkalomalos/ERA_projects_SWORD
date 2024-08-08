@@ -4,6 +4,7 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
 import AlertMessage from "../alerts/AlertMessage";
+import APIService from "../../APIService";
 import { takeScreenshot } from "../../utils/mapTools";
 import outputIconTha from "../../assets/folder_grey_network_icon_512.png";
 import outputIconEgy from "../../assets/folder_grey_cloud_icon_512.png";
@@ -15,6 +16,9 @@ const MainSubTabs = () => {
     addReport,
     isScenarioRunCompleted,
     scenarioRunCode,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     selectedCountry,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
@@ -35,20 +39,37 @@ const MainSubTabs = () => {
 
   const handleAddToOutput = () => {
     if (isScenarioRunCompleted) {
-      const outputData = {
-        id: new Date().getTime().toString(),
-        data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
-          selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-        } - ${selectedTimeHorizon}`,
-        image: selectedCountry === "thailand" ? outputIconTha : outputIconEgy,
-        title: `Impact of ${selectedHazard} on ${
-          selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-        }`,
-        type: "outputData",
-      };
-      addReport(outputData);
+      APIService.AddToOutput(scenarioRunCode)
+        .then((response) => {
+          // Handle the response and set alert messages
+          setAlertMessage(response.result.status.message);
+          if (response.result.status.code === 2000) {
+            setAlertSeverity("success");
+
+            // Create output data and add report
+            const outputData = {
+              id: new Date().getTime().toString(),
+              data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
+                selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+              } - ${selectedTimeHorizon}`,
+              image: selectedCountry === "thailand" ? outputIconTha : outputIconEgy,
+              title: `Impact of ${selectedHazard} on ${
+                selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+              }`,
+              type: "outputData",
+            };
+            addReport(outputData);
+          } else {
+            setAlertSeverity("error");
+          }
+          setAlertShowMessage(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
+
   const handleSaveToMap = async () => {
     const reportPath = await window.electron.fetchReportDir();
 
