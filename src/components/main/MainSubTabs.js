@@ -5,7 +5,8 @@ import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 import useStore from "../../store";
 import AlertMessage from "../alerts/AlertMessage";
 import { takeScreenshot } from "../../utils/mapTools";
-import image1 from "../../assets/hazard_map_1.png";
+import outputIconTha from "../../assets/folder_grey_network_icon_512.png";
+import outputIconEgy from "../../assets/folder_grey_cloud_icon_512.png";
 
 const MainSubTabs = () => {
   const {
@@ -39,7 +40,7 @@ const MainSubTabs = () => {
         data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
         } - ${selectedTimeHorizon}`,
-        image: image1,
+        image: selectedCountry === "thailand" ? outputIconTha : outputIconEgy,
         title: `Impact of ${selectedHazard} on ${
           selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
         }`,
@@ -48,10 +49,11 @@ const MainSubTabs = () => {
       addReport(outputData);
     }
   };
+  const handleSaveToMap = async () => {
+    const reportPath = await window.electron.fetchReportDir();
 
-  const handleSaveToMap = () => {
     if (isScenarioRunCompleted && activeMapRef) {
-      const filepath = `data\\reports\\${scenarioRunCode}\\${activeMap}.png`;
+      const filepath = `${reportPath}\\${scenarioRunCode}\\${activeMap}.png`;
       takeScreenshot(activeMapRef, filepath)
         .then(() => {
           const outputData = {
