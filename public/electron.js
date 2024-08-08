@@ -206,6 +206,12 @@ ipcMain.handle("fetch-temp-dir", () => {
   return tempFolderPath;
 });
 
+ipcMain.handle("fetch-report-dir", () => {
+  const reportFolderPath = path.join(app.getAppPath(), "data", "reports");
+  console.log("Report folder path:", reportFolderPath);
+  return reportFolderPath;
+});
+
 // Handle clear temporary directory request
 ipcMain.handle("clearTempDir", async () => {
   try {
@@ -237,7 +243,7 @@ ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
       if (err) {
         event.sender.send("save-screenshot-reply", { success: false, error: err.message });
       } else {
-        event.sender.send("save-screenshot-reply", { success: true });
+        event.sender.send("save-screenshot-reply", { success: true, filePath });
       }
     });
   });

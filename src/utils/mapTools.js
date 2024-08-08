@@ -21,19 +21,20 @@ export const takeScreenshot = (map, filePath) => {
       });
 
     // Listen for the save screenshot response
-    window.electron.onSaveScreenshotReply((event, { success, error }) => {
+    window.electron.onSaveScreenshotReply((event, { success, error, filePath }) => {
       const { setAlertMessage, setAlertSeverity, setAlertShowMessage } = useStore.getState();
 
       if (success) {
         setAlertMessage("Screenshot saved successfully!");
         setAlertSeverity("success");
-        resolve(); // Resolve the promise on success
+        setAlertShowMessage(true);
+        resolve(filePath); // Resolve the promise with the file path on success
       } else {
         setAlertMessage(`Failed to save screenshot: ${error}`);
         setAlertSeverity("error");
+        setAlertShowMessage(true);
         reject(new Error(error)); // Reject the promise on error
       }
-      setAlertShowMessage(true);
     });
   });
 };
