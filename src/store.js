@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { generateNumericCode } from "./utils/misc";
+import { generateRunCode } from "./utils/misc";
 
 const useStore = create((set, get) => ({
   activeMap: "hazard",
@@ -85,7 +85,7 @@ const useStore = create((set, get) => ({
   setMapTitle: (data) => set({ mapTitle: data }),
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
-  setScenarioRunCode: () => set({ scenarioRunCode: generateNumericCode() }),
+  setScenarioRunCode: () => set({ scenarioRunCode: generateRunCode() }),
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),
   setSelectedCard: (card) => set({ selectedCard: card }),

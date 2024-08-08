@@ -208,7 +208,6 @@ ipcMain.handle("fetch-temp-dir", () => {
 
 ipcMain.handle("fetch-report-dir", () => {
   const reportFolderPath = path.join(app.getAppPath(), "data", "reports");
-  console.log("Report folder path:", reportFolderPath);
   return reportFolderPath;
 });
 
