@@ -48,7 +48,7 @@ const MainSubTabs = () => {
 
             // Create output data and add report
             const outputData = {
-              id: new Date().getTime().toString(),
+              id: `${scenarioRunCode}_${new Date().getTime().toString()}`,
               data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
                 selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
               } - ${selectedTimeHorizon}`,
@@ -70,15 +70,16 @@ const MainSubTabs = () => {
     }
   };
 
-  const handleSaveToMap = async () => {
+  const handleSaveMap = async () => {
     const reportPath = await window.electron.fetchReportDir();
 
     if (isScenarioRunCompleted && activeMapRef) {
-      const filepath = `${reportPath}\\${scenarioRunCode}\\${activeMap}.png`;
+      const id = new Date().getTime().toString();
+      const filepath = `${reportPath}\\${scenarioRunCode}\\${activeMap}_${id}.png`;
       takeScreenshot(activeMapRef, filepath)
         .then(() => {
           const outputData = {
-            id: new Date().getTime().toString(),
+            id: id,
             data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
               selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
             } - ${selectedTimeHorizon}`,
@@ -156,7 +157,7 @@ const MainSubTabs = () => {
                   "&:hover": { bgcolor: "#F79191" },
                   textTransform: "none",
                 }}
-                onClick={index === 2 ? handleAddToOutput : handleSaveToMap}
+                onClick={index === 2 ? handleAddToOutput : handleSaveMap}
               >
                 {label}
               </Button>
