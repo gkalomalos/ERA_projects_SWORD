@@ -7,8 +7,8 @@ import AlertMessage from "../alerts/AlertMessage";
 import { useMapTools } from "../../utils/mapTools";
 
 const MainSubTabs = () => {
-  const { selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
-  const { handleSaveMap, handleAddToOutput } = useMapTools();
+  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
+  const { handleSaveImage, handleSaveMap, handleAddToOutput } = useMapTools();
 
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
@@ -19,6 +19,15 @@ const MainSubTabs = () => {
 
   const handleSubTabChange = (event, newValue) => {
     setSelectedSubTab(newValue);
+  };
+
+  const handleButtonClick = (index) => {
+    if (activeViewControl === "display_map") {
+      return index === 2 ? handleAddToOutput() : handleSaveMap();
+    } else if (activeViewControl === "display_chart") {
+      return handleSaveImage();
+    }
+    // Do nothing if activeViewControl is not "display_map" or "display_chart"
   };
 
   const subTabs = subTabsMap[selectedTab];
@@ -79,7 +88,7 @@ const MainSubTabs = () => {
                   "&:hover": { bgcolor: "#F79191" },
                   textTransform: "none",
                 }}
-                onClick={index === 2 ? handleAddToOutput : handleSaveMap}
+                onClick={() => handleButtonClick(index)}
               >
                 {label}
               </Button>

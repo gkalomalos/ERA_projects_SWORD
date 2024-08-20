@@ -13,6 +13,7 @@ export const useMapTools = () => {
   const {
     activeMap,
     activeMapRef,
+    activeViewControl,
     addReport,
     isScenarioRunCompleted,
     scenarioRunCode,
@@ -25,6 +26,7 @@ export const useMapTools = () => {
     selectedExposureNonEconomic,
     selectedHazard,
     selectedScenario,
+    selectedSubTab,
     selectedTimeHorizon,
   } = useStore();
 
@@ -146,9 +148,95 @@ export const useMapTools = () => {
     }
   };
 
+  const copyFileToReports = (sourcePath, destinationPath) => {
+    return new Promise((resolve, reject) => {
+      window.electron.copyFile(sourcePath, destinationPath);
+
+      // Listen for the copy file response
+      window.electron.onCopyFileReply((event, { success, error, destinationPath }) => {
+        if (success) {
+          setAlertMessage("File copied successfully!");
+          setAlertSeverity("success");
+          setAlertShowMessage(true);
+          resolve(destinationPath); // Resolve the promise with the destination path on success
+        } else {
+          setAlertMessage(`Failed to copy file: ${error}`);
+          setAlertSeverity("error");
+          setAlertShowMessage(true);
+          reject(new Error(error)); // Reject the promise on error
+        }
+      });
+    });
+  };
+
+  const handleSaveImage = async () => {
+    const tempPath = await window.electron.fetchTempDir();
+    const reportPath = await window.electron.fetchReportDir();
+
+    // Checks if the scenario has finished running, the selected sub tab is Risk
+    // and the selected view control is the display chart
+    if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 0) {
+      const id = new Date().getTime().toString();
+      const sourceFile = `${tempPath}\\risks_waterfall_plot.png`;
+      const destinationFile = `${reportPath}\\${scenarioRunCode}\\risks_waterfall_plot_${id}.png`;
+
+      copyFileToReports(sourceFile, destinationFile)
+        .then(() => {
+          const outputData = {
+            id: id,
+            data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
+              selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+            } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
+            image: destinationFile,
+            title: `${t("results_report_card_risk_plot_title")} ${t(
+              `results_report_card_hazard_${selectedHazard}`
+            )} on ${
+              selectedExposureEconomic
+                ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
+                : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
+            } - ${t(`results_report_card_country_${selectedCountry}`)}`,
+          };
+          addReport(outputData);
+        })
+        .catch((error) => {
+          console.error("Error while trying to save the Risk plot. More info:", error);
+        });
+    }
+
+    // Checks if the scenario has finished running, the selected sub tab is Adaptation
+    // and the selected view control is the display chart
+    if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 1) {
+      const id = new Date().getTime().toString();
+      const sourceFile = `${tempPath}\\cost_benefit_plot.png`;
+      const destinationFile = `${reportPath}\\${scenarioRunCode}\\cost_benefit_plot_${id}.png`;
+
+      copyFileToReports(sourceFile, destinationFile)
+        .then(() => {
+          const outputData = {
+            id: id,
+            data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
+              selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
+            } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
+            image: destinationFile,
+            title: `${t("results_report_card_adaptation_plot_title")} ${t(
+              `results_report_card_hazard_${selectedHazard}`
+            )} - ${t(`results_report_card_country_${selectedCountry}`)}`,
+            type: t("results_report_card_adaptation_plot_data"),
+          };
+          addReport(outputData);
+        })
+        .catch((error) => {
+          console.error(
+            "Error while trying to save the Adaptation measures plot. More info:",
+            error
+          );
+        });
+    }
+  };
+
   return {
-    takeScreenshot,
     handleAddToOutput,
+    handleSaveImage,
     handleSaveMap,
   };
 };

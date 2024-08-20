@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld("electron", {
   send: (channel, data) => ipcRenderer.send(channel, data),
   saveScreenshot: (blob, filePath) => ipcRenderer.invoke("save-screenshot", { blob, filePath }),
   onSaveScreenshotReply: (callback) => ipcRenderer.on("save-screenshot-reply", callback),
+  copyFile: (sourcePath, destinationPath) =>
+    ipcRenderer.invoke("copy-file", { sourcePath, destinationPath }),
+  onCopyFileReply: (callback) => ipcRenderer.on("copy-file-reply", callback),
 });
 
 contextBridge.exposeInMainWorld("api", {

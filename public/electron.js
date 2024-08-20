@@ -248,6 +248,22 @@ ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
   });
 });
 
+// Handle copy file from temp folder request
+ipcMain.handle("copy-file", async (event, { sourcePath, destinationPath }) => {
+  try {
+    // Ensure the destination directory exists
+    const dir = path.dirname(destinationPath);
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Copy the file
+    fs.copyFileSync(sourcePath, destinationPath);
+
+    event.sender.send("copy-file-reply", { success: true, destinationPath });
+  } catch (error) {
+    event.sender.send("copy-file-reply", { success: false, error: error.message });
+  }
+});
+
 ipcMain.on("minimize", () => {
   mainWindow.minimize();
 });
