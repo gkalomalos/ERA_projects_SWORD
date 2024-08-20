@@ -195,6 +195,7 @@ export const useMapTools = () => {
                 ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
                 : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
             } - ${t(`results_report_card_country_${selectedCountry}`)}`,
+            type: t("results_report_card_risk_plot_data"),
           };
           addReport(outputData);
         })

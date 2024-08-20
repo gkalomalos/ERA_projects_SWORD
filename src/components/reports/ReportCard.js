@@ -103,12 +103,14 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
           </List>
         </Box>
 
-        <Box sx={{ flex: 3, maxWidth: "25%" }}>
+        <Box sx={{ flex: 3, maxWidth: "25%", display: "flex", alignItems: "center" }}>
           <Box
             component="img"
             sx={{
-              width: "128px",
-              height: "100%",
+              width: "auto",
+              height: "100%", // Take full height of the parent box
+              maxHeight: "128px", // Set a max height to prevent the image from becoming too large
+              objectFit: "contain", // Ensure the image fits within the bounds without being distorted
             }}
             alt="report_image"
             src={image}
