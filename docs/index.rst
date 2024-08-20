@@ -20,7 +20,7 @@ Welcome to docs's documentation!
 
 Overview
 --------
-CLIMADERA is an Electron desktop application, featuring a Python-based backend to analyze climate data and calculate risks and a ReactJS frontend to provide a modern and intuitive user GUI.
+RISK WISE is an Electron desktop application, featuring a Python-based backend to analyze climate data and calculate risks and a ReactJS frontend to provide a modern and intuitive user GUI.
 
 Dependencies
 ------------

@@ -1,4 +1,4 @@
-name: climadera
+name: riskwise
 channels:
   - conda-forge
   - defaults
