@@ -3,8 +3,11 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
 
+import useStore from "../../store";
+
 const OutputResultsCard = () => {
   const { t } = useTranslation();
+  const { selectedReportType } = useStore();
 
   const handleButtonClick = (type) => {
     console.log(type);
@@ -33,6 +36,7 @@ const OutputResultsCard = () => {
                   textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
+                disabled={selectedReportType === "output_data" || selectedReportType === ""}
               >
                 {t(`results_export_button_${type}`)}
               </Button>
@@ -57,6 +61,12 @@ const OutputResultsCard = () => {
                   textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
+                disabled={
+                  selectedReportType === "map_data" ||
+                  selectedReportType === "risk_plot_data" ||
+                  selectedReportType === "adaptation_plot_data" ||
+                  selectedReportType === ""
+                }
               >
                 {t(`results_export_button_${type}`)}
               </Button>

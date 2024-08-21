@@ -28,9 +28,10 @@ const useStore = create((set, get) => ({
   selectedExposureNonEconomic: "",
   selectedHazard: "",
   selectedHazardFile: "",
+  selectedReportType: "",
   selectedScenario: "",
-  selectedTab: 0,
   selectedSubTab: 0,
+  selectedTab: 0,
   selectedTimeHorizon: [2024, 2050],
 
   // Method to add a new report
@@ -126,9 +127,10 @@ const useStore = create((set, get) => ({
   },
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
+  setSelectedReportType: (reportType) => set({ selectedReportType: reportType }),
   setSelectedScenario: (scenario) => set({ selectedScenario: scenario }),
-  setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
+  setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
   setSelectedTimeHorizon: (timeHorizon) => set({ selectedTimeHorizon: timeHorizon }),
   setActiveViewControl: (control) => set({ activeViewControl: control }),
 }));

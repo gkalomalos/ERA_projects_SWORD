@@ -8,12 +8,12 @@ import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
-const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
+const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
-  const { setAlertMessage, setAlertSeverity, setAlertShowMessage } = useStore();
+  const { setAlertMessage, setAlertSeverity, setAlertShowMessage, setSelectedReportType } =
+    useStore();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
-
   const handleMouseDown = () => {
     setClicked(true); // Trigger animation
   };
@@ -24,6 +24,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
 
   const handleClick = () => {
     onCardClick(id);
+    setSelectedReportType(type);
   };
 
   const handleDeleteButtonClick = () => {
@@ -95,7 +96,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
               <ListItemText primary={title} />
             </ListItem>
             <ListItem>
-              <ListItemText secondary={type} />
+              <ListItemText secondary={t(`results_report_card_${type}`)} />
             </ListItem>
             <ListItem>
               <ListItemText secondary={data} />
@@ -142,7 +143,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
   );
 };
 
-ReportsCard.propTypes = {
+ReportCard.propTypes = {
   data: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   image: PropTypes.any.isRequired,
@@ -153,4 +154,4 @@ ReportsCard.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
-export default ReportsCard;
+export default ReportCard;

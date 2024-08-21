@@ -84,7 +84,7 @@ export const useMapTools = () => {
                   ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
                   : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
               } in ${t(`results_report_card_country_${selectedCountry}`)}`,
-              type: t("results_report_card_output_data"),
+              type: "output_data",
             };
             addReport(outputData);
           } else {
@@ -138,7 +138,7 @@ export const useMapTools = () => {
             } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
             image: filepath,
             title: getSaveMapTitle(),
-            type: t("results_report_card_map_data"),
+            type: "map_data",
           };
           addReport(outputData);
         })
@@ -195,7 +195,7 @@ export const useMapTools = () => {
                 ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
                 : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
             } - ${t(`results_report_card_country_${selectedCountry}`)}`,
-            type: t("results_report_card_risk_plot_data"),
+            type: "risk_plot_data",
           };
           addReport(outputData);
         })
@@ -222,7 +222,7 @@ export const useMapTools = () => {
             title: `${t("results_report_card_adaptation_plot_title")} ${t(
               `results_report_card_hazard_${selectedHazard}`
             )} - ${t(`results_report_card_country_${selectedCountry}`)}`,
-            type: t("results_report_card_adaptation_plot_data"),
+            type: "adaptation_plot_data",
           };
           addReport(outputData);
         })
