@@ -685,6 +685,7 @@ class RunScenario:
             "scenario": self.request_data.scenario,
             "ref_year": self.request_data.ref_year,
             "future_year": self.request_data.future_year,
+            "app_option": "era" if self.request_data.is_era else "explore",
         }
         self.base_handler.create_results_metadata_file(metadata)
 

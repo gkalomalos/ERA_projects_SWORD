@@ -332,6 +332,7 @@ class BaseHandler:
                 "scenario": "rcp45",
                 "ref_year": 2024,
                 "future_year": 2050,
+                "app_option": "era"
             }
         """
         filepath = DATA_TEMP_DIR / "_metadata.txt"
@@ -372,6 +373,7 @@ class BaseHandler:
                 "scenario": "rcp45",
                 "ref_year": 2024,
                 "future_year": 2050,
+                "app_option": "era"
             }
         """
         filepath = DATA_TEMP_DIR / "_metadata.txt"
