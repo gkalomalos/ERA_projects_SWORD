@@ -21,6 +21,7 @@ from run_add_to_ouput import RunAddToOutput
 from run_check_data_type import RunCheckDataType
 from run_clear_temp_dir import RunClearTempDir
 from run_fetch_measures import RunFetchScenario
+from run_fetch_reports import RunFetchReports
 from run_scenario import RunScenario
 
 
@@ -60,6 +61,10 @@ def process_message(message):
     elif script_name == "run_add_to_ouput.py":
         runner = RunAddToOutput(data)
         result = runner.run_add_to_output()
+        response = {"success": True, "result": result}
+    elif script_name == "run_fetch_reports.py":
+        runner = RunFetchReports(data)
+        result = runner.run_fetch_reports()
         response = {"success": True, "result": result}
     else:
         response = {"success": False, "error": f"Unknown script: {script_name}"}
