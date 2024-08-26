@@ -479,6 +479,13 @@ class RunScenario:
                     self.request_data.country_name
                 )
 
+            # Calculate custom scenario return periods per hazard type
+            # This option should be different for custom scenario runs, but there is
+            # no option at the moment for the user to select custom return periods
+            return_periods = self.hazard_handler.get_custom_rp_per_hazard(
+                self.request_data.hazard_code
+            )
+
             # Set present year for custom scenario from user time horizon selection
             exposure_present.ref_year = self.request_data.ref_year
 
@@ -512,11 +519,31 @@ class RunScenario:
 
             # Case 1: User loads hazard dataset
             if self.request_data.hazard_filename:
-                hazard_present = self.hazard_handler.get_hazard(
-                    hazard_type=self.request_data.hazard_type,
-                    filepath=self.request_data.hazard_filename,
-                )
-                hazard_present.units = hazard_intensity_unit
+                file_type = self.base_handler.check_file_type(self.request_data.hazard_filename)
+                # If this is a historical climate scenario run, create a Hazard object using
+                # the provided hazard dataset.
+                if self.request_data.scenario == "historical":
+                    hazard_present = self.hazard_handler.get_hazard(
+                        hazard_type=self.request_data.hazard_type,
+                        filepath=self.request_data.hazard_filename,
+                        source=file_type,
+                    )
+                    hazard_present.units = hazard_intensity_unit
+                # If this is a future based climate scenario run, create a historical Hazard
+                # object using the ERA project historical climate scenario dataset and then
+                # create a future based climate scenario Hazard object using the provided
+                # hazard dataset.
+                else:
+                    hazard_present_filename = self.hazard_handler.get_hazard_filename(
+                        self.request_data.hazard_code,
+                        self.request_data.country_code,
+                        "historical",
+                    )
+                    hazard_present = self.hazard_handler.get_hazard(
+                        hazard_type=self.request_data.hazard_type, filepath=hazard_present_filename
+                    )
+                    hazard_present.units = hazard_intensity_unit
+
             # Case 2: User fetches hazard datasets from the CLIMADA API
             else:
                 hazard_present = self.hazard_handler.get_hazard(
@@ -532,9 +559,11 @@ class RunScenario:
             if self.request_data.scenario != "historical":
                 # Case 1: User loads hazard dataset
                 if self.request_data.hazard_filename:
+                    file_type = self.base_handler.check_file_type(self.request_data.hazard_filename)
                     hazard_future = self.hazard_handler.get_hazard(
                         hazard_type=self.request_data.hazard_type,
                         filepath=self.request_data.hazard_filename,
+                        source=file_type,
                     )
                     hazard_future.units = hazard_intensity_unit
                 # Case 2: User fetches hazard datasets from the CLIMADA API
@@ -563,10 +592,6 @@ class RunScenario:
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
             self.costben_handler.plot_cost_benefit(cost_benefit)
-            if not self.costben_handler.plot_cost_benefit(cost_benefit):
-                self.logger.log("error", "Cost-benefit chart plotting failed or was skipped.")
-
-            # Plot waterfall graph
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."
@@ -604,11 +629,13 @@ class RunScenario:
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_present,
                     self.request_data.country_name,
+                    return_periods,
                 )
             else:
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_future,
                     self.request_data.country_name,
+                    return_periods,
                 )
 
             # Calculate impact geojson data files
@@ -617,7 +644,7 @@ class RunScenario:
                 self.impact_handler.generate_impact_geojson(
                     impact_present,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
@@ -625,7 +652,7 @@ class RunScenario:
                 self.impact_handler.generate_impact_geojson(
                     impact_future,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
