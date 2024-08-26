@@ -9,8 +9,9 @@ and updating progress for the frontend.
 
 import json
 from os import makedirs, path
+from pathlib import Path
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import geopandas as gpd
 import pycountry
@@ -396,8 +397,61 @@ class BaseHandler:
                 metadata["future_year"] = int(metadata["future_year"])
 
         except IOError as e:
-            self.logger.log("error", f"An I/O error occurred: {e.strerror}")
+            logger.log("error", f"An I/O error occurred: {e.strerror}")
         except Exception as e:
-            self.logger.log("error", f"An unexpected error occurred: {str(e)}")
+            logger.log("error", f"An unexpected error occurred: {str(e)}")
 
         return metadata
+
+    def check_file_type(self, file_path: Path) -> Optional[str]:
+        """
+        Check the type of the given file based on its extension.
+
+        This method examines the file extension of the provided file path and determines
+        whether the file is of a recognized type such as `.mat`, `.hdf5`, or `.tif`.
+
+        :param file_path: The path to the file whose type is to be checked.
+        :type file_path: Path
+
+        :return: The file type as a string if recognized, otherwise None.
+        :rtype: Optional[str]
+
+        Example usage:
+
+        .. code-block:: python
+
+            file_type = file_handler.check_file_type(Path("data.hdf5"))
+            if file_type:
+                print(f"File is of type: {file_type}")
+            else:
+                print("File type is not recognized")
+        """
+        try:
+            # Ensure the file exists before checking the type
+            if not file_path.is_file():
+                logger.log("error", f"File does not exist: {file_path}")
+                return None
+
+            # Extract the file extension
+            _, file_extension = path.splitext(file_path)
+            file_extension = file_extension.lower()
+
+            # Define the recognized file types
+            recognized_types = {
+                ".mat": "mat",  # MATLAB file
+                ".hdf5": "hdf5",  # HDF5 file
+                ".h5": "hdf5",  # HDF5 file with .h5 extension
+                ".tif": "raster",  # TIFF image file
+                ".tiff": "raster",  # TIFF image file with .tiff extension
+            }
+
+            # Check if the file type is recognized
+            if file_extension in recognized_types:
+                return recognized_types[file_extension]
+            else:
+                logger.log("info", f"Unrecognized file type: {file_extension}")
+                return None
+
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred: {str(e)}")
+            return None
