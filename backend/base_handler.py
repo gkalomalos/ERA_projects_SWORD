@@ -457,15 +457,15 @@ class BaseHandler:
             logger.log("error", f"An unexpected error occurred: {str(e)}")
             return None
 
-    def read_parquet_file(self, file_name: str) -> Optional[pd.DataFrame]:
+    def read_parquet_file(self, file_path: str) -> Optional[pd.DataFrame]:
         """
         Read a Parquet file from the DATA_TEMP_DIR directory.
 
         This method reads a Parquet file located in the `DATA_TEMP_DIR` directory and returns
         the contents as a pandas DataFrame.
 
-        :param file_name: The name of the Parquet file to read.
-        :type file_name: str
+        :param file_path: The name of the path of the Parquet file to read.
+        :type file_path: str
 
         :return: A pandas DataFrame if the file is successfully read, otherwise None.
         :rtype: Optional[pd.DataFrame]
@@ -483,8 +483,6 @@ class BaseHandler:
                 print(df.head())
         """
         try:
-            file_path = DATA_TEMP_DIR / file_name
-
             # Ensure the file exists
             if not file_path.is_file():
                 raise FileNotFoundError(f"File does not exist: {file_path}")
@@ -506,7 +504,7 @@ class BaseHandler:
 
         return None
 
-    def save_parquet_file(self, df: pd.DataFrame, file_name: str) -> Optional[Path]:
+    def save_parquet_file(self, df: pd.DataFrame, file_path: str) -> Optional[Path]:
         """
         Save a pandas DataFrame to a Parquet file in the DATA_TEMP_DIR directory.
 
@@ -516,8 +514,8 @@ class BaseHandler:
         :param df: The DataFrame to save.
         :type df: pd.DataFrame
 
-        :param file_name: The name of the file to save the DataFrame as, with a .parquet extension.
-        :type file_name: str
+        :param file_path: The name of the file path to save the DataFrame as, with a .parquet extension.
+        :type file_path: str
 
         :return: The path to the saved Parquet file if successful, otherwise None.
         :rtype: Optional[Path]
@@ -536,14 +534,8 @@ class BaseHandler:
         """
         try:
             # Ensure the file has a .parquet extension
-            if not file_name.endswith(".parquet"):
+            if not file_path.endswith(".parquet"):
                 raise ValueError("The file name must end with .parquet")
-
-            # Construct the full file path
-            file_path = DATA_TEMP_DIR / file_name
-
-            # Ensure the directory exists
-            makedirs(DATA_TEMP_DIR, exist_ok=True)
 
             # Save the DataFrame to a Parquet file
             df.to_parquet(file_path, index=False, compression="snappy")

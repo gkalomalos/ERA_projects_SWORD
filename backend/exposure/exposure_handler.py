@@ -25,6 +25,7 @@ import json
 from time import time
 
 import geopandas as gpd
+import pandas as pd
 
 from climada.entity import Exposures
 from climada.util.api_client import Client
@@ -169,3 +170,74 @@ class ExposureHandler:
             logger.log("error", f"Invalid Exposure object: {e}")
         except Exception as e:
             logger.log("error", f"An unexpected error occurred: {e}")
+
+    def generate_exposure_report_dataset(
+        self, exposure: Exposures, country_name: str
+    ) -> pd.DataFrame:
+        """
+        Generate a dataset for exposure reporting.
+
+        This method generates a dataset by spatially joining exposure data with administrative boundaries.
+        It creates a DataFrame that includes columns for administrative layers, latitude, longitude, and exposure values.
+
+        :param exposure: The Exposures object containing the exposure data.
+        :type exposure: Exposures
+        :param country_name: The name of the country for which the dataset is generated.
+        :type country_name: str
+        :return: A DataFrame containing the merged exposure and administrative data.
+        :rtype: pd.DataFrame
+
+        Example usage:
+
+        .. code-block:: python
+
+            final_df = base_handler.generate_exposure_report_dataset(exposure, "EGY")
+            print(final_df.head())
+        """
+        try:
+            # Cast the exposure data to a GeoDataFrame
+            exp_gdf = exposure.gdf
+            exposure_gdf = gpd.GeoDataFrame(
+                exp_gdf,
+                geometry=gpd.points_from_xy(
+                    exp_gdf["longitude"], exp_gdf["latitude"], crs="EPSG:4326"
+                ),
+            )
+
+            # Retrieve the ISO3 country code
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            layers = [1, 2]
+
+            # Copy the exposure_gdf to avoid modifying the original DataFrame
+            final_gdf = exposure_gdf.copy()
+
+            # Iterate through each administrative layer
+            for layer in layers:
+                try:
+                    # Retrieve the admin_gdf for the current layer
+                    admin_gdf = self.base_handler.get_admin_data(country_iso3, layer)
+
+                    # Perform spatial join with the current layer
+                    joined_gdf = gpd.sjoin(final_gdf, admin_gdf, how="left", predicate="within")
+
+                    # Add the admin column for this layer to final_gdf
+                    final_gdf[f"admin{layer}"] = joined_gdf["name"]
+
+                except Exception as e:
+                    logger.log("error", f"Error processing layer {layer}: {str(e)}")
+                    # Continue with the next layer if an error occurs
+                    continue
+
+            # Keep only the necessary columns for the final report
+            final_df = final_gdf[
+                ["admin1", "admin2", "latitude", "longitude", "value", "value_unit"]
+            ]
+
+            return final_df
+
+        except AttributeError as e:
+            logger.log("error", f"Invalid Exposure object: {str(e)}")
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred: {str(e)}")
+
+        return pd.DataFrame()  # Return an empty DataFrame in case of failure
