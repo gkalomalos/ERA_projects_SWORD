@@ -33,6 +33,7 @@ from exposure.exposure_handler import ExposureHandler
 from hazard.hazard_handler import HazardHandler
 from impact.impact_handler import ImpactHandler
 from logger_config import LoggerConfig
+from constants import DATA_TEMP_DIR
 
 
 @dataclass
@@ -624,7 +625,7 @@ class RunScenario:
                     exposure_future, self.request_data.country_name
                 )
 
-            self.base_handler.update_progress(80, "Generating Hazard map data files...")
+            self.base_handler.update_progress(75, "Generating Hazard map data files...")
             if self.request_data.scenario == "historical":
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_present,
@@ -639,7 +640,7 @@ class RunScenario:
                 )
 
             # Calculate impact geojson data files
-            self.base_handler.update_progress(90, "Generating Impact map data files...")
+            self.base_handler.update_progress(80, "Generating Impact map data files...")
             if self.request_data.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(
                     impact_present,
@@ -656,6 +657,29 @@ class RunScenario:
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
+
+            # Save exporure data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(85, "Generating Exposure report data files...")
+            exp_rep_df = self.exposure_handler.generate_exposure_report_dataset(
+                exposure_present if self.request_data.scenario == "historical" else exposure_future,
+                self.request_data.country_name,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                exp_rep_df, DATA_TEMP_DIR / "exposure_report_data.parquet"
+            )
+
+            # Save hazard data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(90, "Generating Hazard report data files...")
+            haz_rep_df = self.hazard_handler.generate_hazard_report_dataset(
+                hazard_present if self.request_data.scenario == "historical" else hazard_future,
+                self.request_data.country_name,
+                return_periods,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                haz_rep_df, DATA_TEMP_DIR / "hazard_report_data.parquet"
+            )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")
 
@@ -693,6 +717,7 @@ class RunScenario:
         else:
             self._run_custom_scenario()
 
+        # Generate map title
         map_title = self.base_handler.set_map_title(
             self.request_data.hazard_type,
             self.request_data.country_name,
