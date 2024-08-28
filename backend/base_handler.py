@@ -484,7 +484,7 @@ class BaseHandler:
         """
         try:
             # Ensure the file exists
-            if not file_path.is_file():
+            if not Path(file_path).is_file():
                 raise FileNotFoundError(f"File does not exist: {file_path}")
 
             # Ensure the file has a .parquet extension
@@ -534,7 +534,7 @@ class BaseHandler:
         """
         try:
             # Ensure the file has a .parquet extension
-            if not file_path.endswith(".parquet"):
+            if not str(file_path).endswith(".parquet"):
                 raise ValueError("The file name must end with .parquet")
 
             # Save the DataFrame to a Parquet file
