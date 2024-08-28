@@ -14,6 +14,7 @@ import sys
 from typing import Any, Dict, Optional
 
 import geopandas as gpd
+import pandas as pd
 import pycountry
 
 from climada.util.api_client import Client
@@ -455,3 +456,102 @@ class BaseHandler:
         except Exception as e:
             logger.log("error", f"An unexpected error occurred: {str(e)}")
             return None
+
+    def read_parquet_file(self, file_name: str) -> Optional[pd.DataFrame]:
+        """
+        Read a Parquet file from the DATA_TEMP_DIR directory.
+
+        This method reads a Parquet file located in the `DATA_TEMP_DIR` directory and returns
+        the contents as a pandas DataFrame.
+
+        :param file_name: The name of the Parquet file to read.
+        :type file_name: str
+
+        :return: A pandas DataFrame if the file is successfully read, otherwise None.
+        :rtype: Optional[pd.DataFrame]
+
+        :raises FileNotFoundError: If the file does not exist in the DATA_TEMP_DIR directory.
+        :raises ValueError: If the file extension is not `.parquet`.
+        :raises Exception: For any other errors that occur during reading.
+
+        Example usage:
+
+        .. code-block:: python
+
+            df = file_handler.read_parquet_file("data.parquet")
+            if df is not None:
+                print(df.head())
+        """
+        try:
+            file_path = DATA_TEMP_DIR / file_name
+
+            # Ensure the file exists
+            if not file_path.is_file():
+                raise FileNotFoundError(f"File does not exist: {file_path}")
+
+            # Ensure the file has a .parquet extension
+            if not file_path.suffix == ".parquet":
+                raise ValueError(f"Incorrect file extension: {file_path.suffix}. Expected .parquet")
+
+            # Read the Parquet file into a DataFrame
+            df = pd.read_parquet(file_path)
+            return df
+
+        except FileNotFoundError as fnf_error:
+            logger.log("error", str(fnf_error))
+        except ValueError as ve:
+            logger.log("error", str(ve))
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred while reading the file: {str(e)}")
+
+        return None
+
+    def save_parquet_file(self, df: pd.DataFrame, file_name: str) -> Optional[Path]:
+        """
+        Save a pandas DataFrame to a Parquet file in the DATA_TEMP_DIR directory.
+
+        This method saves the provided DataFrame as a Parquet file in the `DATA_TEMP_DIR`
+        directory.
+
+        :param df: The DataFrame to save.
+        :type df: pd.DataFrame
+
+        :param file_name: The name of the file to save the DataFrame as, with a .parquet extension.
+        :type file_name: str
+
+        :return: The path to the saved Parquet file if successful, otherwise None.
+        :rtype: Optional[Path]
+
+        :raises ValueError: If the file extension is not `.parquet`.
+        :raises Exception: For any other errors that occur during saving.
+
+        Example usage:
+
+        .. code-block:: python
+
+            df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
+            file_path = file_handler.save_parquet_file(df, "data.parquet")
+            if file_path:
+                print(f"DataFrame saved successfully at {file_path}")
+        """
+        try:
+            # Ensure the file has a .parquet extension
+            if not file_name.endswith(".parquet"):
+                raise ValueError("The file name must end with .parquet")
+
+            # Construct the full file path
+            file_path = DATA_TEMP_DIR / file_name
+
+            # Ensure the directory exists
+            makedirs(DATA_TEMP_DIR, exist_ok=True)
+
+            # Save the DataFrame to a Parquet file
+            df.to_parquet(file_path, index=False, compression="snappy")
+            return file_path
+
+        except ValueError as ve:
+            logger.log("error", str(ve))
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred while saving the file: {str(e)}")
+
+        return None
