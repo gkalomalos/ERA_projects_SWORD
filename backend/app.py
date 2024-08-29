@@ -64,7 +64,7 @@ def process_message(message):
         result = runner.run_add_to_output()
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_reports.py":
-        runner = RunFetchReports(data)
+        runner = RunFetchReports()
         result = runner.run_fetch_reports()
         response = {"success": True, "result": result}
     elif script_name == "run_export_report.py":
