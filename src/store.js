@@ -86,6 +86,7 @@ const useStore = create((set, get) => ({
   setMapTitle: (data) => set({ mapTitle: data }),
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
+  setReports: (reports) => set({ reports }),
   setScenarioRunCode: () => set({ scenarioRunCode: generateRunCode() }),
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),

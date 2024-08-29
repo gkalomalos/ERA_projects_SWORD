@@ -6,14 +6,22 @@ import MacroIcon from "@mui/icons-material/Assessment";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import TuneIcon from "@mui/icons-material/Tune";
 
+import { fetchReports } from "../../utils/reportTools";
 import MainSubTabs from "./MainSubTabs";
 import useStore from "../../store";
 
 const MainTabs = () => {
   const { selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
 
+  const onFetchReportsHandler = async () => {
+    await fetchReports();
+  };
+
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
+    if (newValue === 3) {
+      onFetchReportsHandler();
+    }
     setSelectedSubTab(0);
   };
 

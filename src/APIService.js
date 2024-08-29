@@ -40,7 +40,7 @@ export default class APIService {
 
   static async FetchReports() {
     try {
-      const scriptName = "run_fetch_measures.py";
+      const scriptName = "run_fetch_reports.py";
       const response = await window.api.runPythonScript({
         scriptName,
       });
