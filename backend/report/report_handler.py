@@ -5,21 +5,23 @@ from typing import Optional
 
 import xlsxwriter
 
-# from logger_config import LoggerConfig
+from constants import DATA_TEMP_DIR, REPORTS_DIR
+from logger_config import LoggerConfig
 
 
 @dataclass
 class ReportParameters:
+    annual_population_growth: Optional[str] = None
+    annual_gdp_growth: Optional[str] = None
     country_code: Optional[str] = None
     country_name: Optional[str] = None
+    exposure_economic: Optional[str] = None
+    exposure_noneconomic: Optional[str] = None
     hazard: Optional[str] = None
     hazard_code: Optional[str] = None
     scenario: Optional[str] = None
+    scenario_id: Optional[str] = None
     time_horizon: Optional[str] = None
-    exposure_economic: Optional[str] = None
-    exposure_noneconomic: Optional[str] = None
-    annual_population_growth: Optional[str] = None
-    annual_gdp_growth: Optional[str] = None
 
 
 class ReportHandler:
@@ -27,7 +29,7 @@ class ReportHandler:
         self.report_parameters = report_parameters
         report_file_path = self._get_report_file_path()
         self.workbook = xlsxwriter.Workbook(filename=report_file_path)
-        # self.logger = LoggerConfig(logger_types=["file"])
+        self.logger = LoggerConfig(logger_types=["file"])
 
     def _get_report_file_path(self) -> str:
         country_code = self.report_parameters.country_code
@@ -36,7 +38,28 @@ class ReportHandler:
             self.report_parameters.exposure_economic or self.report_parameters.exposure_noneconomic
         )
 
-        return f"{country_code}_{hazard_code}_{exposure}.xlsx"
+        # Check if scenario_id is provided
+        scenario_id = self.report_parameters.scenario_id
+        if scenario_id:
+            try:
+                # Find the directory matching the scenario_id
+                target_dir = REPORTS_DIR / scenario_id
+
+                # Construct the report file path within the target directory
+                report_file_path = target_dir / f"{country_code}_{hazard_code}_{exposure}.xlsx"
+            except StopIteration:
+                raise ValueError(f"No directory found for scenario ID: {scenario_id}")
+            except Exception as e:
+                self.logger.log(
+                    "error",
+                    f"An unexpected error occurred while creating the report file path: {str(e)}",
+                )
+                return ""
+        else:
+            # Use the DATA_TEMP_DIR if scenario_id is not provided
+            report_file_path = DATA_TEMP_DIR / f"{country_code}_{hazard_code}_{exposure}.xlsx"
+
+        return str(report_file_path)
 
     def _generate_general_information_tab(self):
         ws = self.workbook.add_worksheet("General Information")
@@ -136,27 +159,9 @@ class ReportHandler:
         ws.set_column("B:B", 40)
         ws.set_column("C:C", 60)
 
-    def save_report(self):
+    def _save_report(self):
         self.workbook.close()
 
     def generate_excel_report(self):
         self._generate_general_information_tab()
-        self.save_report()
-
-
-# Example usage
-if __name__ == "__main__":
-    report_params = ReportParameters(
-        country_code="THA",
-        country_name="Thailand",
-        hazard="Flood",
-        hazard_code="FL",
-        scenario="Historical",
-        time_horizon="2024 - 2050",
-        exposure_economic="Tree crops",
-        exposure_noneconomic="",
-        annual_population_growth=2.94,
-        annual_gdp_growth=None,
-    )
-    report_handler = ReportHandler(report_params)
-    report_handler.generate_excel_report()
+        self._save_report()
