@@ -349,7 +349,9 @@ class BaseHandler:
         except Exception as e:
             logger.log("error", (f"An unexpected error occurred: {str(e)}"))
 
-    def read_results_metadata_file(self) -> Dict[str, Any]:
+    def read_results_metadata_file(
+        self, metadata_filepath: Optional[Path] = None
+    ) -> Dict[str, Any]:
         """
         Read the metadata file and return the metadata as a dictionary.
 
@@ -357,6 +359,8 @@ class BaseHandler:
         column names and the second line contains the corresponding values. The data is
         returned as a dictionary with appropriate type conversions.
 
+        :param metadata_filepath: Optional file path to a specific metadata file.
+        :type metadata_filepath: Path, optional
         :return: A dictionary containing the metadata read from the file.
         :rtype: dict
 
@@ -378,10 +382,16 @@ class BaseHandler:
                 "app_option": "era"
             }
         """
-        filepath = DATA_TEMP_DIR / "_metadata.txt"
         metadata = {}
 
         try:
+            # Use the provided filepath or default to DATA_TEMP_DIR
+            if metadata_filepath:
+                filepath = metadata_filepath
+            else:
+                filepath = DATA_TEMP_DIR / "_metadata.txt"
+
+            # Read and parse the metadata file
             with open(filepath, "r") as file:
                 # Read the column names
                 keys = file.readline().strip().split("\t")
@@ -397,12 +407,55 @@ class BaseHandler:
                 metadata["ref_year"] = int(metadata["ref_year"])
                 metadata["future_year"] = int(metadata["future_year"])
 
+        except FileNotFoundError as e:
+            logger.log("error", f"Metadata file not found: {str(e)}")
         except IOError as e:
             logger.log("error", f"An I/O error occurred: {e.strerror}")
         except Exception as e:
             logger.log("error", f"An unexpected error occurred: {str(e)}")
 
         return metadata
+
+    def get_scenario_metadata(self, scenario_id: str) -> Dict[str, Any]:
+        """
+        Retrieve the metadata for a given scenario ID.
+
+        This method navigates to the appropriate directory based on the scenario ID,
+        reads the _metadata.txt file within that directory, and returns the metadata
+        as a dictionary.
+
+        :param scenario_id: The scenario ID, which is a part of the directory name.
+        :type scenario_id: str
+        :return: A dictionary containing the metadata from the _metadata.txt file.
+        :rtype: Dict[str, Any]
+
+        Example usage:
+
+        .. code-block:: python
+
+            handler = ReportHandler(Path("/path/to/reports"))
+            metadata = handler.get_metadata_by_scenario_id("202408291038")
+            print(metadata)
+        """
+        try:
+            # Find the directory matching the scenario_id
+            target_dir = REPORTS_DIR / scenario_id
+
+            # Construct the path to the _metadata.txt file
+            metadata_file_path = target_dir / "_metadata.txt"
+
+            # Ensure the metadata file exists
+            if not metadata_file_path.exists():
+                raise FileNotFoundError(f"Metadata file not found in {target_dir}")
+
+            # Read and return the metadata
+            return self.read_results_metadata_file(metadata_file_path)
+
+        except StopIteration:
+            raise ValueError(f"No directory found for scenario ID: {scenario_id}")
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred while retrieving metadata: {str(e)}")
+            return {}
 
     def check_file_type(self, file_path: Path) -> Optional[str]:
         """
