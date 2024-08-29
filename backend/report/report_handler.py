@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+import pandas as pd
 import xlsxwriter
 
 from constants import DATA_TEMP_DIR, REPORTS_DIR
@@ -27,6 +28,7 @@ class ReportParameters:
 class ReportHandler:
     def __init__(self, report_parameters: ReportParameters) -> None:
         self.report_parameters = report_parameters
+        self.target_dir = REPORTS_DIR / self.report_parameters.scenario_id or DATA_TEMP_DIR
         report_file_path = self._get_report_file_path()
         self.workbook = xlsxwriter.Workbook(filename=report_file_path)
         self.logger = LoggerConfig(logger_types=["file"])
@@ -37,27 +39,8 @@ class ReportHandler:
         exposure = (
             self.report_parameters.exposure_economic or self.report_parameters.exposure_noneconomic
         )
-
-        # Check if scenario_id is provided
-        scenario_id = self.report_parameters.scenario_id
-        if scenario_id:
-            try:
-                # Find the directory matching the scenario_id
-                target_dir = REPORTS_DIR / scenario_id
-
-                # Construct the report file path within the target directory
-                report_file_path = target_dir / f"{country_code}_{hazard_code}_{exposure}.xlsx"
-            except StopIteration:
-                raise ValueError(f"No directory found for scenario ID: {scenario_id}")
-            except Exception as e:
-                self.logger.log(
-                    "error",
-                    f"An unexpected error occurred while creating the report file path: {str(e)}",
-                )
-                return ""
-        else:
-            # Use the DATA_TEMP_DIR if scenario_id is not provided
-            report_file_path = DATA_TEMP_DIR / f"{country_code}_{hazard_code}_{exposure}.xlsx"
+        # Construct the report file path within the target directory
+        report_file_path = self.target_dir / f"{country_code}_{hazard_code}_{exposure}.xlsx"
 
         return str(report_file_path)
 
@@ -159,9 +142,63 @@ class ReportHandler:
         ws.set_column("B:B", 40)
         ws.set_column("C:C", 60)
 
+    def _generate_hazard_tab(self):
+        hazard_df = pd.read_parquet(self.target_dir / "hazard_report_data.parquet")
+
+        ws = self.workbook.add_worksheet("Hazard")
+
+        # Define a format for headers
+        bold_format = self.workbook.add_format({"bold": True})
+
+        # Write column headers with bold formatting
+        for col_num, value in enumerate(hazard_df.columns):
+            ws.write(0, col_num, value, bold_format)
+
+        # Write data from DataFrame
+        for row_num, row_data in enumerate(hazard_df.values.tolist(), start=1):
+            for col_num, cell_data in enumerate(row_data):
+                ws.write(row_num, col_num, cell_data)
+
+    def _generate_exposure_tab(self):
+        exposure_df = pd.read_parquet(self.target_dir / "exposure_report_data.parquet")
+
+        ws = self.workbook.add_worksheet("Exposure")
+
+        # Define a format for headers
+        bold_format = self.workbook.add_format({"bold": True})
+
+        # Write column headers with bold formatting
+        for col_num, value in enumerate(exposure_df.columns):
+            ws.write(0, col_num, value, bold_format)
+
+        # Write data from DataFrame
+        for row_num, row_data in enumerate(exposure_df.values.tolist(), start=1):
+            for col_num, cell_data in enumerate(row_data):
+                ws.write(row_num, col_num, cell_data)
+
+    def _generate_impact_tab(self):
+        impact_df = pd.read_parquet(self.target_dir / "impact_report_data.parquet")
+
+        ws = self.workbook.add_worksheet("Impact")
+
+        # Define a format for headers
+        bold_format = self.workbook.add_format({"bold": True})
+
+        # Write column headers with bold formatting
+        for col_num, value in enumerate(impact_df.columns):
+            ws.write(0, col_num, value, bold_format)
+
+        # Write data from DataFrame
+        for row_num, row_data in enumerate(impact_df.values.tolist(), start=1):
+            for col_num, cell_data in enumerate(row_data):
+                ws.write(row_num, col_num, cell_data)
+
     def _save_report(self):
         self.workbook.close()
 
     def generate_excel_report(self):
         self._generate_general_information_tab()
+        self._generate_hazard_tab()
+        self._generate_exposure_tab()
+        self._generate_impact_tab()
         self._save_report()
