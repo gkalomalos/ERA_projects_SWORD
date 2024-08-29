@@ -89,4 +89,17 @@ export default class APIService {
       console.log(error);
     }
   }
+
+  static async ExportReport(body) {
+    try {
+      const scriptName = "run_export_report.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

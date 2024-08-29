@@ -3,14 +3,37 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Button, Typography } from "@mui/material";
 
+import APIService from "../../APIService";
 import useStore from "../../store";
 
 const OutputResultsCard = () => {
   const { t } = useTranslation();
-  const { selectedReportType } = useStore();
+  const {
+    scenarioRunCode,
+    selectedReportType,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+  } = useStore();
 
   const handleButtonClick = (type) => {
-    console.log(type);
+    if (type === "excel") {
+      const body = {
+        exportType: type,
+        scenarioRunCode: scenarioRunCode,
+      };
+      APIService.ExportReport(body)
+        .then((response) => {
+          setAlertMessage(response.result.status.message);
+          response.result.status.code === 2000
+            ? setAlertSeverity("success")
+            : setAlertSeverity("error");
+          setAlertShowMessage(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   return (

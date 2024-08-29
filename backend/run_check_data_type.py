@@ -88,7 +88,6 @@ class RunCheckDataType:
             "status": {"code": status_code, "message": run_status_message},
         }
 
-        # Clear files in temp directory
         self.logger.log(
             "info", f"Finished fetching {data_type} data in {time() - initial_time}sec."
         )
