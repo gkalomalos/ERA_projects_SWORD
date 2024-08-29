@@ -668,6 +668,43 @@ class HazardHandler:
 
         return code
 
+    def get_hazard_name(self, hazard_code: str) -> str:
+        """
+        Retrieve the hazard type corresponding to a given hazard code.
+
+        This function maps a hazard code to its corresponding hazard type. If the hazard code
+        is not recognized, it raises a ValueError.
+
+        :param hazard_code: The hazard code as a string.
+        :type hazard_code: str
+        :return: The hazard type corresponding to the provided hazard code.
+        :rtype: str
+        :raises ValueError: If the hazard code is not recognized.
+        """
+        # Map hazard codes to their corresponding types
+        hazard_names = {
+            "TC": "tropical_cyclone",
+            "RF": "river_flood",
+            "WS": "storm_europe",
+            "BF": "wildfire",
+            "EQ": "earthquake",
+            "FL": "flood",
+            "D": "drought",
+            "HW": "heatwaves",
+        }
+
+        # Retrieve the hazard type for the given hazard code
+        hazard_type = hazard_names.get(hazard_code, None)
+
+        # Raise an exception if the hazard code is not found
+        if hazard_type is None:
+            logger.log(
+                "error",
+                f"Hazard code '{hazard_code}' is not recognized.",
+            )
+
+        return hazard_type
+
     def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
         """
         Get the hazard filename based on the request parameters.
