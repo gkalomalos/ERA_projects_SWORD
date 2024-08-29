@@ -25,6 +25,16 @@ class ReportParameters:
     time_horizon: Optional[str] = None
 
 
+@dataclass
+class ReportViewObject:
+    id: str
+    data: str
+    data_dict: dict
+    image: str
+    title: str
+    type: str
+
+
 class ReportHandler:
     def __init__(self, report_parameters: ReportParameters) -> None:
         self.report_parameters = report_parameters
