@@ -761,6 +761,19 @@ class HazardHandler:
             final_df = final_df.dropna(subset=["admin1", "admin2"], how="all")
             final_df = final_df.reset_index(drop=True)
 
+            # Rename the columns
+            column_mapping = {
+                "admin1": "Admin 1",
+                "admin2": "Admin 2",
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+            }
+            # Add dynamic RP column renaming to the mapping
+            column_mapping.update({f"rp{rp}": f"RP{rp}" for rp in return_periods})
+
+            # Apply the renaming
+            final_df = final_df.rename(columns=column_mapping)
+
             return final_df
 
         except AttributeError as e:

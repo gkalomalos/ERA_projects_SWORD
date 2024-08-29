@@ -233,6 +233,18 @@ class ExposureHandler:
                 ["admin1", "admin2", "latitude", "longitude", "value", "value_unit"]
             ]
 
+            # Rename the columns
+            column_mapping = {
+                "admin1": "Admin 1",
+                "admin2": "Admin 2",
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+                "value": "Asset Value",
+                "value_unit": "Asset UoM",
+            }
+            # Apply the renaming
+            final_df = final_df.rename(columns=column_mapping)
+
             return final_df
 
         except AttributeError as e:
