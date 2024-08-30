@@ -28,8 +28,7 @@ class ReportParameters:
 @dataclass
 class ReportViewObject:
     id: str
-    data: str
-    data_dict: dict
+    data: dict
     image: str
     title: str
     type: str

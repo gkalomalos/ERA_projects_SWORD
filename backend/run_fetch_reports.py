@@ -30,10 +30,12 @@ class RunFetchReports:
             # Iterate through each folder in REPORTS_DIR
             for report_dir in Path(REPORTS_DIR).iterdir():
                 if report_dir.is_dir():
-                    report_id = report_dir.name.split("_")[0]  # Extract ID from folder name
+                    report_id = report_dir.name  # .split("_")[0]  # Extract ID from folder name
 
                     # Extract metadata or other relevant information
-                    metadata = self.base_handler.read_results_metadata_file(report_dir)
+                    metadata = self.base_handler.read_results_metadata_file(
+                        report_dir / "_metadata.txt"
+                    )
 
                     # Generate title from directory name or metadata
                     title = report_dir.name
@@ -49,17 +51,13 @@ class RunFetchReports:
                     else:
                         image_path = ""  # Default or placeholder image
 
-                    # Placeholder data dictionary, populate with actual extraction logic
-                    data_dict = {}
-
                     # Assuming report_type is derived from metadata or directory name
                     report_type = "output_data"  # This can be dynamic
 
                     # Create a Report object
                     report = ReportViewObject(
                         id=report_id,
-                        data=f"",
-                        data_dict=metadata,
+                        data=metadata,
                         image=image_path,
                         title=title,
                         type=report_type,
