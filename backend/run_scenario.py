@@ -776,14 +776,14 @@ class RunScenario:
 
         # Create metadata file
         metadata = {
-            "asset_type": self.request_data.asset_type,
+            "asset_type": self.request_data.asset_type.lower(),
             "annual_growth": self.request_data.annual_growth,
-            "country_name": self.request_data.country_name,
-            "exposure_economic": self.request_data.exposure_economic,
-            "exposure_non_economic": self.request_data.exposure_non_economic,
-            "hazard_type": self.request_data.hazard_type,
+            "country_name": self.request_data.country_name.lower(),
+            "exposure_economic": self.request_data.exposure_economic.lower(),
+            "exposure_non_economic": self.request_data.exposure_non_economic.lower(),
+            "hazard_type": self.request_data.hazard_type.lower(),
             "is_era": self.request_data.is_era,
-            "scenario": self.request_data.scenario,
+            "scenario": self.request_data.scenario.lower(),
             "ref_year": self.request_data.ref_year,
             "future_year": self.request_data.future_year,
             "app_option": "era" if self.request_data.is_era else "explore",
