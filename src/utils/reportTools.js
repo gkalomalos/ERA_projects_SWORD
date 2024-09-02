@@ -12,15 +12,6 @@ export const useReportTools = () => {
     reports,
     addReport,
     setAlertMessage,
-
-    selectedCountry,
-    selectedExposureEconomic,
-    selectedExposureNonEconomic,
-    selectedHazard,
-    selectedScenario,
-    selectedAnnualGrowth,
-    selectedTimeHorizon,
-
     setAlertSeverity,
     setAlertShowMessage,
     setSelectedCountry,
@@ -30,6 +21,9 @@ export const useReportTools = () => {
     setSelectedExposureNonEconomic,
     setSelectedTimeHorizon,
     setSelectedAnnualGrowth,
+    setIsValidHazard,
+    setIsValidExposureEconomic,
+    setIsValidExposureNonEconomic,
     setScenarioRunCode,
   } = useStore.getState();
 
@@ -53,6 +47,7 @@ export const useReportTools = () => {
                   ? report.data.exposure_economic
                   : report.data.exposure_non_economic
               } - ${report.data.ref_year},${report.data.ref_year} - ${report.data.annual_growth} `,
+              params: report.data,
               image: report.data.country_name === "Thailand" ? outputIconTha : outputIconEgy,
               title: `Impact data of ${t(
                 `results_report_card_hazard_${report.data.hazard_type}`
@@ -80,16 +75,7 @@ export const useReportTools = () => {
   };
 
   const getScenario = (id) => {
-    try {
-      const scenario = reports.find((scenario) => scenario.id === id);
-      if (!scenario) {
-        throw new Error(`Scenario with id ${id} not found.`);
-      }
-      return scenario;
-    } catch (error) {
-      console.error(error.message);
-      return null;
-    }
+    return reports.find((report) => report.id === id) || null;
   };
 
   const restoreScenario = async (id) => {
@@ -97,35 +83,34 @@ export const useReportTools = () => {
       const scenario = getScenario(id);
 
       if (!scenario) {
-        throw new Error("Scenario could not be restored because it was not found.");
+        throw new Error(`Scenario with id ${id} not found.`);
       }
 
       const scenarioData = scenario.data;
+      const scenarioParams = scenario.params;
 
-      // Update parameters in the correct order
-      await setSelectedCountry(scenarioData.country_name);
-      await setSelectedHazard(scenarioData.hazard_type);
-      await setSelectedScenario(scenarioData.scenario);
+      setScenarioRunCode(id);
+      setSelectedCountry(scenarioParams.country_name);
+      setSelectedHazard(scenarioParams.hazard_type);
+      setIsValidHazard(true);
+      setSelectedScenario(scenarioParams.scenario);
 
-      if (scenarioData.exposure_economic) {
-        await setSelectedExposureEconomic(scenarioData.exposure_economic);
+      if (scenarioParams.exposure_economic) {
+        setSelectedExposureEconomic(scenarioParams.exposure_economic);
+        setIsValidExposureEconomic(true);
       } else {
-        await setSelectedExposureNonEconomic(scenarioData.exposure_non_economic);
+        setSelectedExposureNonEconomic(scenarioParams.exposure_non_economic);
+        setIsValidExposureNonEconomic(true);
       }
 
-      await setSelectedTimeHorizon([scenarioData.ref_year, scenarioData.future_year]);
-      await setSelectedAnnualGrowth(scenarioData.annual_growth);
-      await setScenarioRunCode(id);
+      setSelectedTimeHorizon([scenarioParams.ref_year, scenarioData.ref_year]);
+      setSelectedAnnualGrowth(scenarioParams.annual_growth);
     } catch (error) {
-      console.error("Error in restoreScenario:", error.message);
-      console.log("selectedCountry:", selectedCountry);
-      console.log("selectedExposureEconomic:", selectedExposureEconomic);
-      console.log("selectedExposureNonEconomic:", selectedExposureNonEconomic);
-      console.log("selectedHazard:", selectedHazard);
-      console.log("selectedScenario:", selectedScenario);
-      console.log("selectedAnnualGrowth:", selectedAnnualGrowth);
-      console.log("selectedTimeHorizon:", selectedTimeHorizon);
-      return null;
+      console.error("Error restoring scenario:", error);
+      setAlertMessage("An error occurred while restoring the scenario.");
+      setAlertSeverity("error");
+    } finally {
+      setAlertShowMessage(true);
     }
   };
 
