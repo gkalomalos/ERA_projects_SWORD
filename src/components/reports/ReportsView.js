@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 
+import { useReportTools } from "../../utils/reportTools";
 import ReportCard from "./ReportCard";
 import useStore from "../../store";
 
 const ReportsView = () => {
   const { reports, removeReport, updateReports } = useStore();
+  const { restoreScenario } = useReportTools();
 
   const [selectedReport, setSelectedReport] = useState(null);
 
@@ -17,7 +19,7 @@ const ReportsView = () => {
     if (action === "delete") {
       removeReport(id);
     } else if (action === "restore") {
-      console.log("restored");
+      restoreScenario(id);
     } else {
       const lastIndex = reports.length - 1;
       const [movedReport] = reports.splice(index, 1);
