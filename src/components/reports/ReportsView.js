@@ -16,6 +16,8 @@ const ReportsView = () => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
       removeReport(id);
+    } else if (action === "restore") {
+      console.log("restored");
     } else {
       const lastIndex = reports.length - 1;
       const [movedReport] = reports.splice(index, 1);

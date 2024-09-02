@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import RestoreIcon from "@mui/icons-material/Restore";
 
 import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
@@ -32,6 +33,13 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "delete");
+  };
+
+  const handleRestoreButtonClick = () => {
+    setAlertMessage("Scenario restored successfully.");
+    setAlertSeverity("success");
+    setAlertShowMessage(true);
+    onReportAction(id, "restore");
   };
 
   const handleDownButtonClick = () => {
@@ -134,6 +142,13 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
               <ArrowDownward fontSize="small" />
               <Typography>{t("results_report_card_move_down")}</Typography>
             </IconButton>
+
+            {type === "output_data" && (
+              <IconButton aria-label="restore" onClick={handleRestoreButtonClick} size="small">
+                <RestoreIcon fontSize="small" />
+                <Typography>{t("results_report_card_restore")}</Typography>
+              </IconButton>
+            )}
           </Box>
         </Box>
       </Box>
