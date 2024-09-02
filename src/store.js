@@ -59,7 +59,7 @@ const useStore = create((set, get) => ({
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),
   setIsScenarioRunCompleted: (data) => set({ isScenarioRunCompleted: data }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
-  setIsValidExposureEconomic: (isValid) => {
+  setIsValidExposureEconomic: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidExposureEconomic: true });
@@ -67,7 +67,7 @@ const useStore = create((set, get) => ({
       set({ isValidExposureEconomic: isValid });
     }
   },
-  setIsValidExposureNonEconomic: (isValid) => {
+  setIsValidExposureNonEconomic: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidExposureNonEconomic: true });
@@ -75,7 +75,7 @@ const useStore = create((set, get) => ({
       set({ isValidExposureNonEconomic: isValid });
     }
   },
-  setIsValidHazard: (isValid) => {
+  setIsValidHazard: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidHazard: true });
@@ -87,7 +87,9 @@ const useStore = create((set, get) => ({
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
   setReports: (reports) => set({ reports }),
-  setScenarioRunCode: () => set({ scenarioRunCode: generateRunCode() }),
+  setScenarioRunCode: (code = null) => {
+    set({ scenarioRunCode: code || generateRunCode() });
+  },
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),
   setSelectedCard: (card) => set({ selectedCard: card }),
