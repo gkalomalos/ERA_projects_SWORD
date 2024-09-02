@@ -9,10 +9,6 @@ from report.report_handler import ReportViewObject
 from logger_config import LoggerConfig
 from constants import REPORTS_DIR
 
-# Assuming these are paths to your static image assets
-THAILAND_IMAGE_PATH = "/static/images/folder_grey_network_icon_512.png"
-EGYPT_IMAGE_PATH = "/static/images/folder_grey_cloud_icon_512.png"
-
 
 class RunFetchReports:
     def __init__(self):
@@ -41,15 +37,7 @@ class RunFetchReports:
                     title = report_dir.name
 
                     # Extract the country from the directory name
-                    country_code = report_dir.name.split("_")[1].lower()
-
-                    # Determine the image path based on the country code
-                    if country_code == "tha":
-                        image_path = THAILAND_IMAGE_PATH
-                    elif country_code == "egy":
-                        image_path = EGYPT_IMAGE_PATH
-                    else:
-                        image_path = ""  # Default or placeholder image
+                    image_path = ""  # Default or placeholder image
 
                     # Assuming report_type is derived from metadata or directory name
                     report_type = "output_data"  # This can be dynamic
