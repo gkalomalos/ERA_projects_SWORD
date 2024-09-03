@@ -30,9 +30,12 @@ const ReportsView = () => {
     APIService.RemoveReport(body)
       .then((response) => {
         setAlertMessage(response.result.status.message);
-        response.result.status.code === 2000
-          ? setAlertSeverity("success")
-          : setAlertSeverity("error");
+        if (response.result.status.code === 2000) {
+          setAlertSeverity("success");
+          removeReport(code);
+        } else {
+          setAlertSeverity("error");
+        }
         setAlertShowMessage(true);
       })
       .catch((error) => {
@@ -43,7 +46,6 @@ const ReportsView = () => {
   const onActionReportHandler = (id, action) => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
-      removeReport(id);
       onRemoveReportHandler(id);
     } else if (action === "restore") {
       restoreScenario(id);

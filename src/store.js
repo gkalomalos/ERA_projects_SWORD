@@ -35,10 +35,16 @@ const useStore = create((set, get) => ({
   selectedTimeHorizon: [2024, 2050],
 
   // Method to add a new report
-  addReport: (newReport) =>
-    set((state) => ({
-      reports: [...state.reports, newReport],
-    })),
+  addReport: (newReport) => {
+    const { reports } = get();
+    // Check if the report already exists
+    const reportExists = reports.some((r) => r.id === newReport.id);
+    if (!reportExists) {
+      set((state) => ({
+        reports: [...state.reports, newReport],
+      }));
+    }
+  },
 
   // Method to remove a report by id
   removeReport: (reportId) =>

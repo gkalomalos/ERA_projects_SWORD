@@ -74,7 +74,7 @@ export const useMapTools = () => {
             setAlertSeverity("success");
 
             const outputData = {
-              id: `${scenarioRunCode}_${new Date().getTime().toString()}`,
+              id: `${scenarioRunCode}`,
               data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
                 selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
               } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
