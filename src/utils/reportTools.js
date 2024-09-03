@@ -64,12 +64,12 @@ export const useReportTools = () => {
       } else {
         setAlertMessage(`Failed to fetch reports: ${status.message}`);
         setAlertSeverity("error");
+        setAlertShowMessage(true);
       }
     } catch (error) {
       console.error("Error fetching reports:", error);
       setAlertMessage("An error occurred while fetching reports.");
       setAlertSeverity("error");
-    } finally {
       setAlertShowMessage(true);
     }
   };
