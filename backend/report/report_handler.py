@@ -38,11 +38,11 @@ class ReportHandler:
     def __init__(self, report_parameters: ReportParameters) -> None:
         self.report_parameters = report_parameters
         self.target_dir = REPORTS_DIR / self.report_parameters.scenario_id or DATA_TEMP_DIR
-        report_file_path = self._get_report_file_path()
+        report_file_path = self.get_report_file_path()
         self.workbook = xlsxwriter.Workbook(filename=report_file_path)
         self.logger = LoggerConfig(logger_types=["file"])
 
-    def _get_report_file_path(self) -> str:
+    def get_report_file_path(self) -> str:
         country_code = self.report_parameters.country_code
         hazard_code = self.report_parameters.hazard_code
         exposure = (
