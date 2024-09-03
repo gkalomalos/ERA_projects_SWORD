@@ -4,8 +4,17 @@ import { useReportTools } from "../../utils/reportTools";
 import ReportCard from "./ReportCard";
 import useStore from "../../store";
 
+import APIService from "../../APIService";
+
 const ReportsView = () => {
-  const { reports, removeReport, updateReports } = useStore();
+  const {
+    reports,
+    removeReport,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+    updateReports,
+  } = useStore();
   const { restoreScenario } = useReportTools();
 
   const [selectedReport, setSelectedReport] = useState(null);
@@ -14,10 +23,28 @@ const ReportsView = () => {
     setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
   };
 
+  const onRemoveReportHandler = (code) => {
+    const body = {
+      code: code,
+    };
+    APIService.RemoveReport(body)
+      .then((response) => {
+        setAlertMessage(response.result.status.message);
+        response.result.status.code === 2000
+          ? setAlertSeverity("success")
+          : setAlertSeverity("error");
+        setAlertShowMessage(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const onActionReportHandler = (id, action) => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
       removeReport(id);
+      onRemoveReportHandler(id);
     } else if (action === "restore") {
       restoreScenario(id);
     } else {

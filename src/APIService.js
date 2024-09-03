@@ -102,4 +102,17 @@ export default class APIService {
       console.log(error);
     }
   }
+
+  static async RemoveReport(body) {
+    try {
+      const scriptName = "run_remove_report.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

@@ -23,6 +23,7 @@ from run_clear_temp_dir import RunClearTempDir
 from run_export_report import RunExportReport
 from run_fetch_measures import RunFetchScenario
 from run_fetch_reports import RunFetchReports
+from run_remove_report import RunRemoveReport
 from run_scenario import RunScenario
 
 
@@ -62,6 +63,10 @@ def process_message(message):
     elif script_name == "run_add_to_ouput.py":
         runner = RunAddToOutput(data)
         result = runner.run_add_to_output()
+        response = {"success": True, "result": result}
+    elif script_name == "run_remove_report.py":
+        runner = RunRemoveReport(data)
+        result = runner.run_remove_report()
         response = {"success": True, "result": result}
     elif script_name == "run_fetch_reports.py":
         runner = RunFetchReports()
