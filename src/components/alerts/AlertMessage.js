@@ -30,7 +30,7 @@ const AlertMessage = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert onClose={handleCloseMessage} severity={alertSeverity} sx={{ width: "100%" }}>
-          {alertMessage}
+          <span dangerouslySetInnerHTML={{ __html: alertMessage }} />
         </Alert>
       </Snackbar>
     </Stack>

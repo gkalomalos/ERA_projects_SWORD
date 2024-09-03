@@ -24,18 +24,26 @@ const OutputResultsCard = () => {
       };
       APIService.ExportReport(body)
         .then((response) => {
-          setAlertMessage(response.result.status.message);
-          response.result.status.code === 2000
-            ? setAlertSeverity("success")
-            : setAlertSeverity("error");
+          const { status, data } = response.result;
+          const reportPath = data.report_path;
+          let alertMessage = status.message;
+
+          if (reportPath && reportPath.trim() !== "") {
+            alertMessage += ` <a href="${reportPath}" target="_blank" rel="noopener noreferrer">View Report</a>`;
+          }
+
+          setAlertMessage(alertMessage);
+          setAlertSeverity(status.code === 2000 ? "success" : "error");
           setAlertShowMessage(true);
         })
         .catch((error) => {
           console.log(error);
+          setAlertMessage("An error occurred while exporting the report.");
+          setAlertSeverity("error");
+          setAlertShowMessage(true);
         });
     }
   };
-
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
