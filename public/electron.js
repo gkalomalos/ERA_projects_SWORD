@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -261,6 +261,14 @@ ipcMain.handle("copy-file", async (event, { sourcePath, destinationPath }) => {
     event.sender.send("copy-file-reply", { success: true, destinationPath });
   } catch (error) {
     event.sender.send("copy-file-reply", { success: false, error: error.message });
+  }
+});
+
+ipcMain.handle("open-report", async (event, reportPath) => {
+  try {
+    await shell.openPath(reportPath);
+  } catch (error) {
+    console.error("Failed to open report:", error);
   }
 });
 

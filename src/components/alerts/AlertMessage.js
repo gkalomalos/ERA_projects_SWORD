@@ -1,9 +1,7 @@
 import React, { forwardRef } from "react";
 import PropTypes from "prop-types";
-
-import { Snackbar, Stack } from "@mui/material";
+import { Snackbar, Stack, Button } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-
 import useStore from "../../store";
 
 const Alert = forwardRef(function Alert(props, ref) {
@@ -17,20 +15,32 @@ const AlertMessage = () => {
     setAlertShowMessage(false);
   };
 
+  const handleLinkClick = (event, reportPath) => {
+    event.preventDefault();
+    window.electron.openReport(reportPath);
+  };
+
   if (!(alertMessage && alertShowMessage)) {
     return null;
   }
+
+  const [messageText, reportPath] = alertMessage.split("::");
 
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>
       <Snackbar
         open={alertShowMessage}
-        autoHideDuration={6000}
+        autoHideDuration={10000}
         onClose={handleCloseMessage}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert onClose={handleCloseMessage} severity={alertSeverity} sx={{ width: "100%" }}>
-          <span dangerouslySetInnerHTML={{ __html: alertMessage }} />
+          <span>{messageText}</span>
+          {reportPath && (
+            <Button onClick={(event) => handleLinkClick(event, reportPath)} sx={{ marginLeft: 1 }}>
+              View Report
+            </Button>
+          )}
         </Alert>
       </Snackbar>
     </Stack>

@@ -25,12 +25,8 @@ const OutputResultsCard = () => {
       APIService.ExportReport(body)
         .then((response) => {
           const { status, data } = response.result;
-          const reportPath = data.report_path;
-          let alertMessage = status.message;
-
-          if (reportPath && reportPath.trim() !== "") {
-            alertMessage += ` <a href="${reportPath}" target="_blank" rel="noopener noreferrer">View Report</a>`;
-          }
+          const reportPath = data.report_path || "";
+          const alertMessage = reportPath ? `${status.message}::${reportPath}` : status.message;
 
           setAlertMessage(alertMessage);
           setAlertSeverity(status.code === 2000 ? "success" : "error");
@@ -44,6 +40,7 @@ const OutputResultsCard = () => {
         });
     }
   };
+
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
