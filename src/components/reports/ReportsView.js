@@ -13,6 +13,7 @@ const ReportsView = () => {
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
+    setSelectedScenarioRunCode,
     updateReports,
   } = useStore();
   const { restoreScenario } = useReportTools();
@@ -21,6 +22,7 @@ const ReportsView = () => {
 
   const onCardClickHandler = (id) => {
     setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
+    setSelectedScenarioRunCode(id);
   };
 
   const onRemoveReportHandler = (code) => {

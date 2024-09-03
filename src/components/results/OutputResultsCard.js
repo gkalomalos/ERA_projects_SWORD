@@ -9,8 +9,8 @@ import useStore from "../../store";
 const OutputResultsCard = () => {
   const { t } = useTranslation();
   const {
-    scenarioRunCode,
     selectedReportType,
+    selectedScenarioRunCode,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
@@ -20,7 +20,7 @@ const OutputResultsCard = () => {
     if (type === "excel") {
       const body = {
         exportType: type,
-        scenarioRunCode: scenarioRunCode,
+        scenarioRunCode: selectedScenarioRunCode,
       };
       APIService.ExportReport(body)
         .then((response) => {

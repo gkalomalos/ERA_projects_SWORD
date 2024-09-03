@@ -11,8 +11,13 @@ import useStore from "../../store";
 
 const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
-  const { setAlertMessage, setAlertSeverity, setAlertShowMessage, setSelectedReportType } =
-    useStore();
+  const {
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+    setSelectedScenarioRunCode,
+    setSelectedReportType,
+  } = useStore();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const handleMouseDown = () => {
@@ -26,6 +31,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   const handleClick = () => {
     onCardClick(id);
     setSelectedReportType(type);
+    setSelectedScenarioRunCode(id);
   };
 
   const handleDeleteButtonClick = () => {
@@ -33,6 +39,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "delete");
+    setSelectedScenarioRunCode("");
   };
 
   const handleRestoreButtonClick = () => {
@@ -40,6 +47,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "restore");
+    setSelectedScenarioRunCode("");
   };
 
   const handleDownButtonClick = () => {
