@@ -37,7 +37,26 @@ const AlertMessage = () => {
         <Alert onClose={handleCloseMessage} severity={alertSeverity} sx={{ width: "100%" }}>
           <span>{messageText}</span>
           {reportPath && (
-            <Button onClick={(event) => handleLinkClick(event, reportPath)} sx={{ marginLeft: 1 }}>
+            <Button
+              onClick={(event) => handleLinkClick(event, reportPath)}
+              sx={{
+                color: "white",
+                marginLeft: 1,
+                border: "1px solid white",
+                transition: "background-color 0.2s",
+                maxWidth: "100%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                padding: "4px 8px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                "&:active": {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                },
+              }}
+            >
               View Report
             </Button>
           )}
