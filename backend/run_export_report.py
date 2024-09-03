@@ -1,4 +1,18 @@
 """
+Module for exporting reports based on scenario data.
+
+This module provides functionality to generate Excel reports from scenario metadata. It validates
+requests, gathers necessary data, and uses the ReportHandler class to generate and export reports.
+
+Classes:
+
+RunExportReport:
+    Handles the process of exporting reports based on the provided request data.
+
+Methods:
+
+run_export_report:
+    Entry point for generating and exporting Excel reports.
 """
 
 import json
@@ -12,15 +26,40 @@ from report.report_handler import ReportHandler, ReportParameters
 
 
 class RunExportReport:
+    """
+    Class for handling the export of reports based on scenario data.
+
+    This class provides functionality to validate the request, gather scenario metadata,
+    and generate an Excel report using the ReportHandler class.
+    """
+
     def __init__(self, request):
+        """
+        Initialize the RunExportReport instance.
+
+        This initializes the necessary handler instances and stores the request data.
+
+        :param request: The request data containing export parameters.
+        :type request: dict
+        """
         self.base_handler = BaseHandler()
         self.hazard_handler = HazardHandler()
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
 
     def run_export_report(self) -> dict:
+        """
+        Run the process to export an Excel report based on the scenario data.
+
+        This method validates the request, gathers scenario metadata, and generates
+        an Excel report. It handles any errors that occur during the process.
+
+        :return: A dictionary containing the response data and status.
+        :rtype: dict
+        """
         initial_time = time()
 
+        # Validate the request
         if not self.valid_request():
             run_status_message = "Invalid request: Missing required fields"
             status_code = 3000
@@ -31,12 +70,14 @@ class RunExportReport:
             }
             return response
 
+        # Extract necessary information from the request
         export_type = self.request.get("exportType", "")
         scenario_code = self.request.get("scenarioRunCode", "")
         status_code = 2000
 
         self.base_handler.update_progress(20, "Generating excel report...")
 
+        # Gather scenario metadata
         scenario_metadata = self.base_handler.get_scenario_metadata(scenario_code)
         report_parameters = ReportParameters(
             country_code=self.base_handler.get_iso3_country_code(
@@ -62,6 +103,7 @@ class RunExportReport:
             ),
         )
 
+        # Generate the report
         report_handler = ReportHandler(report_parameters)
         report_handler.generate_excel_report()
 

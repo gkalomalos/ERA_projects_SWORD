@@ -1,3 +1,22 @@
+"""
+Module to handle adding temporary output data to the reports directory.
+
+This module provides functionality to move data from a temporary output directory
+to a permanent reports directory. It also creates a disclaimer file in the destination
+directory and handles various error cases that might occur during the process.
+
+Classes:
+
+RunAddToOutput:
+    Handles the process of copying data from the temporary directory to the reports directory 
+    and creating a disclaimer file.
+
+Methods:
+
+run_add_to_output:
+    Entry point to add data from the temporary output directory to the reports directory.
+"""
+
 import json
 import sys
 import os
@@ -11,12 +30,31 @@ from constants import DATA_TEMP_DIR, REPORTS_DIR
 
 
 class RunAddToOutput:
+    """
+    Class for handling the addition of temporary output data to the reports directory.
+
+    This class provides functionality to validate the request, copy files from a temporary
+    directory to a permanent location, and create a disclaimer file in the destination directory.
+    """
+
     def __init__(self, request):
+        """
+        Initialize the RunAddToOutput instance.
+
+        This initializes the BaseHandler and LoggerConfig instances required for handling
+        operations and logging within the process of adding data to the reports directory.
+        """
         self.base_handler = BaseHandler()
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
 
     def _create_disclaimer_file(self):
+        """
+        Create a disclaimer file in the reports directory.
+
+        This method creates a "_README.txt" file in the specified report directory with a disclaimer
+        text. If a disclaimer file already exists, it will be overwritten.
+        """
         disclaimer_filepath = REPORTS_DIR / self.request / "_README.txt"
 
         # Disclaimer text
@@ -53,9 +91,20 @@ See the GNU General Public License for more details: https://www.gnu.org/license
             )
 
     def run_add_to_output(self) -> None:
+        """
+        Run the process to add temporary output data to the reports directory.
+
+        This method validates the request, creates the destination directory, copies files
+        from the temporary directory to the reports directory, and creates a disclaimer file.
+        It also handles any errors that occur during this process.
+
+        :return: A dictionary containing the response data and status.
+        :rtype: dict
+        """
         initial_time = time()
         status_code = 2000
 
+        # Validate the request
         if not self.request:
             run_status_message = "Invalid request: Missing run scenario id"
             status_code = 3000
