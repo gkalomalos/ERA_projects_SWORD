@@ -7,7 +7,7 @@ import ResultsTypography from "./ResultsTypography";
 import useStore from "../../store";
 
 const EconomicResultsCard = () => {
-  const { activeMap, setActiveMap } = useStore();
+  const { activeMap, activeViewControl, setActiveMap } = useStore();
   const { t } = useTranslation();
 
   const handleButtonClick = (type) => {
@@ -19,26 +19,30 @@ const EconomicResultsCard = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "85vh" }}>
       {/* Button Section with flex column direction */}
-      <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
-        {["hazard", "exposure", "impact"].map((type) => (
-          <Button
-            key={type}
-            variant="contained"
-            sx={{
-              marginBottom: 2,
-              bgcolor: isButtonSelected(type) ? "#F79191" : "#FFCCCC",
-              transition: "transform 0.1s ease-in-out",
-              "&:active": {
-                transform: "scale(0.96)",
-              },
-              "&:hover": { bgcolor: "#F79191" },
-            }}
-            onClick={() => handleButtonClick(type)}
-          >
-            {t(`results_eco_button_${type}`)}
-          </Button>
-        ))}
-      </Box>
+
+      {activeViewControl === "display_map" && (
+        <Box sx={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
+          {["hazard", "exposure", "impact"].map((type) => (
+            <Button
+              key={type}
+              variant="contained"
+              sx={{
+                marginBottom: 2,
+                bgcolor: isButtonSelected(type) ? "#F79191" : "#FFCCCC",
+                transition: "transform 0.1s ease-in-out",
+                "&:active": {
+                  transform: "scale(0.96)",
+                },
+                "&:hover": { bgcolor: "#F79191" },
+              }}
+              onClick={() => handleButtonClick(type)}
+            >
+              {t(`results_eco_button_${type}`)}
+            </Button>
+          ))}
+        </Box>
+      )}
+
       {/* Result Details section */}
       <Box
         sx={{
@@ -58,7 +62,6 @@ const EconomicResultsCard = () => {
         >
           {t("results_eco_details")}
         </Typography>
-        {/* Content here will grow to fill available space */}
 
         <ResultsTypography />
       </Box>
