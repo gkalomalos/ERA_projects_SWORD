@@ -15,16 +15,16 @@ const AlertMessage = () => {
     setAlertShowMessage(false);
   };
 
-  const handleLinkClick = (event, reportPath) => {
+  const handleLinkClick = (event, path) => {
     event.preventDefault();
-    window.electron.openReport(reportPath);
+    window.electron.openReport(path);
   };
 
   if (!(alertMessage && alertShowMessage)) {
     return null;
   }
 
-  const [messageText, reportPath] = alertMessage.split("::");
+  const [messageText, path] = alertMessage.split("::");
 
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>
@@ -36,9 +36,9 @@ const AlertMessage = () => {
       >
         <Alert onClose={handleCloseMessage} severity={alertSeverity} sx={{ width: "100%" }}>
           <span>{messageText}</span>
-          {reportPath && (
+          {path && (
             <Button
-              onClick={(event) => handleLinkClick(event, reportPath)}
+              onClick={(event) => handleLinkClick(event, path)}
               sx={{
                 color: "white",
                 marginLeft: 1,
@@ -57,7 +57,7 @@ const AlertMessage = () => {
                 },
               }}
             >
-              View Report
+              View
             </Button>
           )}
         </Alert>
