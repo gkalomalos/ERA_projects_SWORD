@@ -134,7 +134,9 @@ See the GNU General Public License for more details: https://www.gnu.org/license
                     shutil.copy2(source_path, destination_path)
 
             self._create_disclaimer_file()
-            run_status_message = "Added temp output data to reports directory"
+            run_status_message = (
+                f"Added scenario output data to reports directory.::{destination_dir}"
+            )
         except Exception as exc:
             run_status_message = (
                 f"Error while trying to add temp output data to reports directory. More info: {exc}"

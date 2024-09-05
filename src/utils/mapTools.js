@@ -51,7 +51,7 @@ export const useMapTools = () => {
       // Listen for the save screenshot response
       window.electron.onSaveScreenshotReply((event, { success, error, filePath }) => {
         if (success) {
-          setAlertMessage("Screenshot saved successfully!");
+          setAlertMessage(`Screenshot saved successfully!::${filePath}`);
           setAlertSeverity("success");
           setAlertShowMessage(true);
           resolve(filePath); // Resolve the promise with the file path on success
