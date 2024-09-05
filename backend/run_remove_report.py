@@ -102,7 +102,7 @@ class RunRemoveReport:
             try:
                 # Attempt to delete the directory and all its contents
                 shutil.rmtree(report_dir)
-                run_status_message = f"Successfully removed the report directory: {report_dir}"
+                run_status_message = f"Successfully removed report::{REPORTS_DIR}"
                 self.logger.log("info", run_status_message)
             except Exception as e:
                 # Log the exception and update the status
