@@ -12,6 +12,9 @@ contextBridge.exposeInMainWorld("electron", {
   copyFile: (sourcePath, destinationPath) =>
     ipcRenderer.invoke("copy-file", { sourcePath, destinationPath }),
   onCopyFileReply: (callback) => ipcRenderer.on("copy-file-reply", callback),
+  copyFolder: (sourceFolder, destinationFolder) =>
+    ipcRenderer.invoke("copy-folder", { sourceFolder, destinationFolder }),
+  onCopyFolderReply: (callback) => ipcRenderer.on("copy-folder-reply", callback),
   openReport: (reportPath) => ipcRenderer.invoke("open-report", reportPath),
 });
 

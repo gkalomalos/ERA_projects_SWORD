@@ -148,6 +148,27 @@ export const useMapTools = () => {
     }
   };
 
+  const copyFolderToTemp = (sourceFolder) => {
+    return new Promise((resolve, reject) => {
+      // Get the temp folder path first
+      window.electron.fetchTempDir().then((tempFolder) => {
+        const destinationFolder = `${tempFolder}`;
+
+        // Invoke folder copy
+        window.electron.copyFolder(sourceFolder, destinationFolder);
+
+        // Listen for the response
+        window.electron.onCopyFolderReply((event, { success, error, destinationFolder }) => {
+          if (success) {
+            resolve(destinationFolder); // Resolve the promise on success
+          } else {
+            reject(new Error(error)); // Reject the promise on error
+          }
+        });
+      });
+    });
+  };
+
   const copyFileToReports = (sourcePath, destinationPath) => {
     return new Promise((resolve, reject) => {
       window.electron.copyFile(sourcePath, destinationPath);
@@ -236,6 +257,7 @@ export const useMapTools = () => {
   };
 
   return {
+    copyFolderToTemp,
     handleAddToOutput,
     handleSaveImage,
     handleSaveMap,

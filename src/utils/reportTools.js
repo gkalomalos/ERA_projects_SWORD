@@ -2,12 +2,14 @@ import { useTranslation } from "react-i18next";
 
 import APIService from "../APIService";
 import useStore from "../store";
+import { useMapTools } from "../utils/mapTools";
 
 import outputIconTha from "../assets/folder_grey_network_icon_512.png";
 import outputIconEgy from "../assets/folder_grey_cloud_icon_512.png";
 
 export const useReportTools = () => {
   const { t } = useTranslation();
+  const { copyFolderToTemp } = useMapTools();
   const {
     reports,
     addReport,
@@ -80,15 +82,16 @@ export const useReportTools = () => {
 
   const restoreScenario = async (id) => {
     try {
+      const reportPath = await window.electron.fetchReportDir();
       const scenario = getScenario(id);
 
       if (!scenario) {
         throw new Error(`Scenario with id ${id} not found.`);
       }
 
-      const scenarioData = scenario.data;
       const scenarioParams = scenario.params;
 
+      // Set scenario details
       setScenarioRunCode(id);
       setSelectedCountry(scenarioParams.country_name);
       setSelectedHazard(scenarioParams.hazard_type);
@@ -103,8 +106,12 @@ export const useReportTools = () => {
         setIsValidExposureNonEconomic(true);
       }
 
-      setSelectedTimeHorizon([scenarioParams.ref_year, scenarioData.ref_year]);
+      setSelectedTimeHorizon([scenarioParams.ref_year, scenarioParams.future_year]);
       setSelectedAnnualGrowth(scenarioParams.annual_growth);
+
+      // Copy folder to temp
+      const sourceFolder = `${reportPath}\\${id}`;
+      await copyFolderToTemp(sourceFolder);
     } catch (error) {
       console.error("Error restoring scenario:", error);
       setAlertMessage("An error occurred while restoring the scenario.");

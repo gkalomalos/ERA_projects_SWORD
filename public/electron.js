@@ -248,6 +248,30 @@ ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
   });
 });
 
+// Handle folder copy request
+ipcMain.handle("copy-folder", async (event, { sourceFolder, destinationFolder }) => {
+  try {
+    // Ensure the destination directory exists
+    fs.mkdirSync(destinationFolder, { recursive: true });
+
+    // Read all files in the source folder
+    const files = fs.readdirSync(sourceFolder);
+
+    // Loop through files and copy them
+    for (const file of files) {
+      const sourcePath = path.join(sourceFolder, file);
+      const destinationPath = path.join(destinationFolder, file);
+
+      // Copy the file
+      fs.copyFileSync(sourcePath, destinationPath);
+    }
+
+    event.sender.send("copy-folder-reply", { success: true, destinationFolder });
+  } catch (error) {
+    event.sender.send("copy-folder-reply", { success: false, error: error.message });
+  }
+});
+
 // Handle copy file from temp folder request
 ipcMain.handle("copy-file", async (event, { sourcePath, destinationPath }) => {
   try {
