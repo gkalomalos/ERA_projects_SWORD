@@ -85,6 +85,7 @@ class RunFetchReports:
         """
         initial_time = time()
         status_code = 2000
+        run_status_message = ""
         self.base_handler.update_progress(10, "Fetching available data from reports directory...")
         reports = []
 

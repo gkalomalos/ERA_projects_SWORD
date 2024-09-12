@@ -25,30 +25,37 @@ const ReportsView = () => {
     setSelectedScenarioRunCode(id);
   };
 
-  const onRemoveReportHandler = (code) => {
-    const body = {
-      code: code,
-    };
-    APIService.RemoveReport(body)
-      .then((response) => {
-        setAlertMessage(response.result.status.message);
-        if (response.result.status.code === 2000) {
-          setAlertSeverity("success");
-          removeReport(code);
-        } else {
-          setAlertSeverity("error");
-        }
-        setAlertShowMessage(true);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const onRemoveReportHandler = async (report) => {
+    const body = { report: report };
+
+    try {
+      const response = await APIService.RemoveReport(body);
+
+      // Ensure that the response and status exist
+      const message = response?.result?.status?.message || "Failed to remove report";
+      const code = response?.result?.status?.code || 5000;
+
+      setAlertMessage(message);
+      setAlertSeverity(code === 2000 ? "success" : "error");
+      setAlertShowMessage(true);
+
+      // Remove the report from the store only if the response was successful
+      if (code === 2000) {
+        await removeReport(report.id); // Update store after success
+      }
+    } catch (error) {
+      console.log(error);
+      setAlertMessage("An error occurred while removing the report");
+      setAlertSeverity("error");
+      setAlertShowMessage(true);
+    }
   };
 
   const onActionReportHandler = (id, action) => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
-      onRemoveReportHandler(id);
+      const filteredReport = reports.filter((report) => report.id === id)[0];
+      onRemoveReportHandler(filteredReport);
     } else if (action === "restore") {
       restoreScenario(id);
     } else {

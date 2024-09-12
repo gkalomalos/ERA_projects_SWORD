@@ -61,7 +61,7 @@ class RunRemoveReport:
         :return: True if the request is valid, False otherwise.
         :rtype: bool
         """
-        required_fields = ["code"]
+        required_fields = ["report"]
         for field in required_fields:
             if field not in self.request:
                 self.logger.log("error", f"Missing required field: {field}")
@@ -70,16 +70,13 @@ class RunRemoveReport:
 
     def run_remove_report(self) -> dict:
         """
-        Run the process to remove the report directory.
-
-        This method validates the request, constructs the path to the report directory,
-        attempts to remove the directory and its contents if it exists, updates progress,
-        and generates a response containing the result of the operation.
+        Run the process to remove the report directory or image file.
 
         :return: A dictionary containing the response data and status.
         :rtype: dict
         """
         initial_time = time()
+        run_status_message = ""  # Initialize run_status_message to avoid UnboundLocalError
 
         if not self.valid_request():
             run_status_message = "Invalid request: Missing required fields"
@@ -90,30 +87,48 @@ class RunRemoveReport:
                 "status": {"code": status_code, "message": run_status_message},
             }
 
-        # Retrieve the code from the request and define the path to the report directory
-        code = self.request.get("code", "")
-        report_dir = os.path.join(REPORTS_DIR, code)
+        # Retrieve the report and type
+        report = self.request.get("report")
+        report_type = report.get("type")
         status_code = 2000
 
-        self.base_handler.update_progress(10, "Removing report directory and components...")
+        if report_type == "output_data":
+            report_code = report.get("id")
+            report_dir = os.path.join(REPORTS_DIR, report_code)
 
-        # Check if the directory exists
-        if os.path.exists(report_dir) and os.path.isdir(report_dir):
-            try:
-                # Attempt to delete the directory and all its contents
-                shutil.rmtree(report_dir)
-                run_status_message = f"Successfully removed report::{REPORTS_DIR}"
-                self.logger.log("info", run_status_message)
-            except Exception as e:
-                # Log the exception and update the status
-                run_status_message = f"Failed to remove the report directory: {e}"
-                status_code = 5000
+            self.base_handler.update_progress(10, "Removing report directory and components...")
+
+            # Check if the directory exists
+            if os.path.exists(report_dir) and os.path.isdir(report_dir):
+                try:
+                    shutil.rmtree(report_dir)
+                    run_status_message = f"Successfully removed report::{REPORTS_DIR}"
+                    self.logger.log("info", run_status_message)
+                except Exception as e:
+                    run_status_message = f"Failed to remove the report directory: {e}"
+                    status_code = 5000
+                    self.logger.log("error", run_status_message)
+            else:
+                run_status_message = f"Report directory not found: {report_dir}"
+                status_code = 4004
                 self.logger.log("error", run_status_message)
         else:
-            # Handle case where the directory does not exist
-            run_status_message = f"Report directory not found: {report_dir}"
-            status_code = 4004
-            self.logger.log("error", run_status_message)
+            image_path = report.get("image")
+            self.base_handler.update_progress(10, "Removing the specified image file...")
+
+            if os.path.exists(image_path) and os.path.isfile(image_path):
+                try:
+                    os.remove(image_path)
+                    run_status_message = f"Successfully removed image file"
+                    self.logger.log("info", run_status_message)
+                except Exception as e:
+                    run_status_message = f"Failed to remove image file: {e}"
+                    status_code = 5000
+                    self.logger.log("error", run_status_message)
+            else:
+                run_status_message = f"Image file not found: {image_path}"
+                status_code = 4004
+                self.logger.log("error", run_status_message)
 
         self.base_handler.update_progress(100, run_status_message)
 
@@ -124,7 +139,8 @@ class RunRemoveReport:
         }
 
         self.logger.log(
-            "info", f"Finished removing report directory in {time() - initial_time:.2f} sec."
+            "info",
+            f"Finished removing report directory in {time() - initial_time:.2f} sec.",
         )
         return response
 
