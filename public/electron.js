@@ -310,8 +310,17 @@ ipcMain.on("shutdown", () => {
   app.quit();
 });
 
-ipcMain.on("reload", () => {
+ipcMain.on("reload", async () => {
   console.log("Reload CLIMADA App...");
+
+  try {
+    const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
+    console.log("Temporary directory cleared:", result);
+  } catch (error) {
+    console.error("Failed to clear temporary directory:", error);
+  }
+
+  // Reload the application
   mainWindow.webContents.reloadIgnoringCache();
 });
 
