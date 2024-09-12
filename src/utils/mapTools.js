@@ -98,6 +98,12 @@ export const useMapTools = () => {
     }
   };
 
+  const handleAddData = () => {
+    if (isScenarioRunCompleted) {
+      APIService.AddToOutput(scenarioRunCode);
+    }
+  };
+
   const getSaveMapTitle = () => {
     let title = "";
     if (activeMap === "hazard") {
@@ -130,6 +136,9 @@ export const useMapTools = () => {
       const id = new Date().getTime().toString();
       const filepath = `${reportPath}\\${scenarioRunCode}\\${activeMap}_${id}.png`;
       takeScreenshot(activeMapRef, filepath)
+        .then(() => {
+          handleAddData();
+        })
         .then(() => {
           const outputData = {
             id: id,
@@ -202,6 +211,9 @@ export const useMapTools = () => {
       const destinationFile = `${reportPath}\\${scenarioRunCode}\\risks_waterfall_plot_${id}.png`;
 
       copyFileToReports(sourceFile, destinationFile)
+        .then(() => {
+          handleAddData();
+        })
         .then(() => {
           const outputData = {
             id: id,
