@@ -16,6 +16,7 @@ export const useReportTools = () => {
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
+    setIsScenarioRunCompleted,
     setSelectedCountry,
     setSelectedHazard,
     setSelectedScenario,
@@ -93,6 +94,7 @@ export const useReportTools = () => {
 
       // Set scenario details
       setScenarioRunCode(id);
+      setIsScenarioRunCompleted(true);
       setSelectedCountry(scenarioParams.country_name);
       setSelectedHazard(scenarioParams.hazard_type);
       setIsValidHazard(true);
