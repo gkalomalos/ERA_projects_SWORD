@@ -51,7 +51,12 @@ export const useReportTools = () => {
                   : report.data.exposure_non_economic
               } - ${report.data.ref_year},${report.data.ref_year} - ${report.data.annual_growth} `,
               params: report.data,
-              image: report.data.country_name === "thailand" ? outputIconTha : outputIconEgy,
+              image:
+                report.type === "output_data"
+                  ? report.data.country_name === "thailand"
+                    ? outputIconTha
+                    : outputIconEgy
+                  : report.image,
               title: `Impact data of ${t(
                 `results_report_card_hazard_${report.data.hazard_type}`
               )} on ${

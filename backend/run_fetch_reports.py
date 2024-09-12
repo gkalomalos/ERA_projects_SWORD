@@ -17,8 +17,8 @@ run_fetch_reports:
 """
 
 import json
-import sys
 from pathlib import Path
+import sys
 from time import time
 
 from base_handler import BaseHandler
@@ -45,6 +45,33 @@ class RunFetchReports:
         self.base_handler = BaseHandler()
         self.logger = LoggerConfig(logger_types=["file"])
 
+    def check_for_snapshot_images(self, report_dir: Path) -> list:
+        """
+        Check if the report directory contains snapshot images and determine their type.
+
+        :param report_dir: Path to the report directory to scan for snapshot images.
+        :return: List of tuples containing the snapshot image file path and its determined report type.
+        :rtype: list
+        """
+        snapshot_images = []
+
+        for file_path in report_dir.glob("snapshot_*.png"):
+            file_name = file_path.name
+
+            # Determine report type based on the filename
+            if "risks_waterfall_plot" in file_name:
+                report_type = "risk_plot_data"
+            elif "cost_benefit_plot" in file_name:
+                report_type = "adaptation_plot_data"
+            elif "snapshot_map_" in file_name:
+                report_type = "map_data"
+            else:
+                continue  # Skip if the filename doesn't match known patterns
+
+            snapshot_images.append((str(file_path), report_type))  # Append the file path and type
+
+        return snapshot_images
+
     def run_fetch_reports(self) -> dict:
         """
         Run the process to fetch report data from the reports directory.
@@ -58,45 +85,50 @@ class RunFetchReports:
         """
         initial_time = time()
         status_code = 2000
-
         self.base_handler.update_progress(10, "Fetching available data from reports directory...")
+        reports = []
 
-        reports = []  # List to store report objects
         try:
             # Iterate through each folder in REPORTS_DIR
             for report_dir in Path(REPORTS_DIR).iterdir():
                 if report_dir.is_dir():
-                    # Extract ID from folder name
                     report_id = report_dir.name
-
-                    # Extract metadata from the _metadata.txt file
                     metadata = self.base_handler.read_results_metadata_file(
                         report_dir / "_metadata.txt"
                     )
-
-                    # Generate title from directory name or metadata
                     title = report_dir.name
 
-                    # Placeholder image path (can be updated based on actual data)
-                    image_path = ""
-
-                    # Assuming report_type is derived from metadata or directory name
-                    report_type = "output_data"  # This can be dynamic
-
-                    # Create a Report object
-                    report = ReportViewObject(
+                    # Always create an output_data report
+                    output_report = ReportViewObject(
                         id=report_id,
                         data=metadata,
-                        image=image_path,
+                        image="",  # Placeholder, if no specific image is found
                         title=title,
-                        type=report_type,
+                        type="output_data",  # Default report type
                     )
+                    reports.append(output_report)
 
-                    reports.append(report)
+                    # Check for snapshot images in the current report directory
+                    snapshot_images = self.check_for_snapshot_images(report_dir)
 
-            run_status_message = "Fetched data from reports directory successfully."
+                    # If snapshot images are found, create a report object for each snapshot
+                    for image_path, report_type in snapshot_images:
+                        file_name = Path(image_path).name
+                        # Extract the ID by splitting the filename at the last underscore and removing the extension
+                        report_file_id = file_name.rsplit("_", 1)[-1].split(".")[0]
+
+                        snapshot_report = ReportViewObject(
+                            id=report_file_id,  # Use extracted ID from the filename
+                            data=metadata,
+                            image=image_path,
+                            title=title,
+                            type=report_type,  # Use determined report type
+                        )
+                        reports.append(snapshot_report)
+
+                run_status_message = "Fetched data from reports directory successfully."
+
         except Exception as exc:
-            # Handle any exceptions that occur during the report fetching process
             run_status_message = (
                 f"Error while trying to fetch data from reports directory. More info: {exc}"
             )
@@ -105,9 +137,9 @@ class RunFetchReports:
 
         self.base_handler.update_progress(100, run_status_message)
 
-        # Prepare the response with the fetched report data
+        # Prepare the response
         response = {
-            "data": [report.__dict__ for report in reports],  # Convert Report objects to dict
+            "data": [report.__dict__ for report in reports],
             "status": {"code": status_code, "message": run_status_message},
         }
 
