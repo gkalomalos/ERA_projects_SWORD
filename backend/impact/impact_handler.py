@@ -392,13 +392,16 @@ class ImpactHandler:
                 return 100
             elif hazard_type == "D":
                 if exposure_type in [
-                    "tree_crops_farmers",
-                    "grass_crops_farmers",
                     "tree_crops",
                     "grass_crops",
                 ]:
                     return 11000
-                elif exposure_type in ["water_users", "wet_markets"]:
+                elif exposure_type in [
+                    "water_users",
+                    "wet_markets",
+                    "tree_crops_farmers",
+                    "grass_crops_farmers",
+                ]:
                     return 100
             elif hazard_type == "FL":
                 # All economic and non economic assets appear better on map with 100m radius
