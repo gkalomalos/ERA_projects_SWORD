@@ -517,9 +517,9 @@ class ImpactHandler:
             geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
             impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
 
-            # Filter impact_gdf to exclude rows where all return period values are zero
+            # Filter impact_gdf to exclude rows where all return period values are zero or negative
             impact_gdf = impact_gdf[
-                (impact_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
+                (impact_gdf[[f"rp{rp}" for rp in return_periods]] > 0).any(axis=1)
             ]
             impact_gdf = impact_gdf.drop(columns=["latitude", "longitude"])
             impact_gdf = impact_gdf.reset_index(drop=True)
@@ -528,7 +528,7 @@ class ImpactHandler:
             percentile_values = {}
             percentiles = (20, 40, 60, 80)
             for rp in return_periods:
-                rp_data = impact_gdf[f"rp{rp}"]
+                rp_data = impact_gdf[f"rp{rp}"][impact_gdf[f"rp{rp}"] > 0]
                 percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
                 percentile_values[f"rp{rp}"].insert(0, 0)
 
@@ -606,7 +606,7 @@ class ImpactHandler:
 
             # Filter out rows where all return period values are zero
             impact_gdf = impact_gdf[
-                (impact_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
+                (impact_gdf[[f"rp{rp}" for rp in return_periods]] > 0).any(axis=1)
             ]
 
             # Retrieve the admin_gdf and perform spatial join
