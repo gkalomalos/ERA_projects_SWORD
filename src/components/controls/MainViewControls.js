@@ -4,16 +4,12 @@ import { useTranslation } from "react-i18next";
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import TuneIcon from "@mui/icons-material/Tune";
-import PendingIcon from "@mui/icons-material/Pending";
 
 import useStore from "../../store";
 
 const controls = [
   { id: "display_map", icon: <MapIcon /> },
   { id: "display_chart", icon: <BarChartIcon /> },
-  { id: "settings", icon: <TuneIcon /> },
-  { id: "progress", icon: <PendingIcon /> },
 ];
 
 const MainViewControls = () => {

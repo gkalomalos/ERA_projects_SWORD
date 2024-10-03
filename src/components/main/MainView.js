@@ -7,8 +7,6 @@ import MacroEconomicView from "../main/MacroEconomicView";
 import MainViewControls from "../controls/MainViewControls";
 import MainViewTitle from "../title/MainViewTitle";
 import MapLayout from "../map/MapLayout";
-import ProgressView from "../controls/ProgressView";
-import SettingsView from "../controls/SettingsView";
 import ViewCard from "../cards/ViewCard";
 import ReportsView from "../reports/ReportsView";
 import useStore from "../../store";
@@ -24,8 +22,6 @@ const MainView = () => {
         <>
           {activeViewControl === "display_map" && <MapLayout />}
           {activeViewControl === "display_chart" && <RiskChartLayout />}
-          {activeViewControl === "settings" && <SettingsView />}
-          {activeViewControl === "progress" && <ProgressView />}
           <MainViewControls />
         </>
       )}
@@ -33,8 +29,6 @@ const MainView = () => {
         <>
           {activeViewControl === "display_map" && <AdaptationMap />}
           {activeViewControl === "display_chart" && <AdaptationChartLayout />}
-          {activeViewControl === "settings" && <SettingsView />}
-          {activeViewControl === "progress" && <ProgressView />}
           <MainViewControls />
         </>
       )}
