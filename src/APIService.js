@@ -38,6 +38,19 @@ export default class APIService {
     }
   }
 
+  static async FetchMacroEconomicChartData(body) {
+    try {
+      const scriptName = "run_fetch_macro_chart_data.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async FetchReports() {
     try {
       const scriptName = "run_fetch_reports.py";

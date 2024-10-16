@@ -159,6 +159,28 @@ class BaseHandler:
             )
         return map_title
 
+    def set_macroeconomic_chart_title(self, country_name: str, macro_variable: str) -> str:
+        """
+        Generates a formatted title for a macroeconomic chart based on the country and variable.
+
+        :param country_name: The name of the country for which the chart is generated.
+        :param macro_variable: The macroeconomic variable to be included in the title.
+        :return: A formatted string representing the chart title.
+        :raises ValueError: If country_name or macro_variable is empty or invalid.
+        """
+        if not country_name or not macro_variable:
+            raise ValueError("Both country_name and macro_variable must be provided.")
+
+        # Beautify the country name and macro variable for better presentation
+        country_beautified = country_name.capitalize()
+        macro_variable_beautified = self.beautify_macro_variable(macro_variable)
+
+        if not macro_variable_beautified:
+            raise ValueError(f"Invalid macro variable: {macro_variable}")
+
+        # Construct and return the chart title
+        return f"{country_beautified} projected {macro_variable_beautified}"
+
     def beautify_hazard_type(self, hazard_type: str) -> str:
         """
         Get a beautified version of the hazard type for UI and reports.
@@ -214,6 +236,28 @@ class BaseHandler:
             _scenario = "historical"
 
         return _scenario
+
+    def beautify_macro_variable(self, macro_variable: str) -> str:
+        """
+        Converts raw macroeconomic variable names into human-readable, capitalized format.
+
+        :param macro_variable: The raw macroeconomic variable string.
+        :return: A human-readable version of the macroeconomic variable. Returns an empty string if the input is not recognized.
+        :raises ValueError: If an empty or invalid macro_variable is provided.
+        """
+        beautified_names = {
+            "gdp": "GDP",
+            "employment": "Employment",
+            "consumption": "Consumption",
+            "capital_stock": "Capital stock",
+            "damage": "Damage, loss of productivity, and destruction of capital",
+        }
+
+        if not macro_variable:
+            raise ValueError("Macro variable cannot be empty.")
+
+        # Return the beautified name or default to an empty string if not found
+        return beautified_names.get(macro_variable, "")
 
     def clear_temp_dir(self) -> None:
         """

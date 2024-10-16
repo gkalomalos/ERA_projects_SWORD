@@ -9,12 +9,16 @@ const useStore = create((set, get) => ({
   alertMessage: "",
   alertSeverity: "info",
   alertShowMessage: false,
+  isPlotMacroChartCompleted: false,
+  isPlotMacroChartRunning: false,
   isScenarioRunCompleted: false,
   isScenarioRunning: false,
   isValidExposureEconomic: false,
   isValidExposureNonEconomic: false,
   isValidHazard: false,
   mapTitle: "",
+  macroEconomicChartData: {},
+  macroEconomicChartTitle: "",
   modalMessage: "",
   progress: 0,
   reports: [],
@@ -28,6 +32,12 @@ const useStore = create((set, get) => ({
   selectedExposureNonEconomic: "",
   selectedHazard: "",
   selectedHazardFile: "",
+  selectedMacroCard: "country",
+  selectedMacroCountry: "",
+  selectedMacroHazard: "",
+  selectedMacroScenario: "",
+  selectedMacroSector: "",
+  selectedMacroVariable: "",
   selectedReportType: "",
   selectedScenario: "",
   selectedScenarioRunCode: "",
@@ -64,6 +74,8 @@ const useStore = create((set, get) => ({
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),
+  setIsPlotMacroChartCompleted: (data) => set({ isPlotMacroChartCompleted: data }),
+  setIsPlotMacroChartRunning: (data) => set({ isPlotMacroChartRunning: data }),
   setIsScenarioRunCompleted: (data) => set({ isScenarioRunCompleted: data }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
   setIsValidExposureEconomic: (isValid = null) => {
@@ -91,6 +103,8 @@ const useStore = create((set, get) => ({
     }
   },
   setMapTitle: (data) => set({ mapTitle: data }),
+  setMacroEconomicChartData: (data) => set({ macroEconomicChartData: data }),
+  setMacroEconomicChartTitle: (title) => set({ macroEconomicChartTitle: title }),
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
   setReports: (reports) => set({ reports }),
@@ -116,6 +130,16 @@ const useStore = create((set, get) => ({
       isValidHazard: false,
     });
   },
+  setSelectedMacroCard: (card) => set({ selectedMacroCard: card }),
+  setSelectedMacroCountry: (country) => {
+    set({
+      selectedMacroCountry: country,
+      selectedMacroSector: "",
+      selectedMacroHazard: "",
+      selectedMacroScenario: "",
+      selectedMacroVariable: "",
+    });
+  },
   setSelectedExposureEconomic: (exposureEconomic) => {
     set({ selectedExposureEconomic: exposureEconomic, selectedAnnualGrowth: 0 });
   },
@@ -135,13 +159,38 @@ const useStore = create((set, get) => ({
       isValidExposureNonEconomic: false,
     });
   },
+  setSelectedMacroHazard: (hazard) => {
+    set({
+      selectedMacroSector: "",
+      selectedMacroHazard: hazard,
+      selectedMacroScenario: "",
+      selectedMacroVariable: "",
+    });
+  },
+  setSelectedMacroScenario: (scenario) => set({ selectedMacroScenario: scenario }),
+  setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),
+  setSelectedMacroVariable: (variable) => set({ selectedMacroVariable: variable }),
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
   setSelectedReportType: (reportType) => set({ selectedReportType: reportType }),
   setSelectedScenario: (scenario) => set({ selectedScenario: scenario }),
   setSelectedScenarioRunCode: (code) => set({ selectedScenarioRunCode: code }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
-  setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
+  setSelectedTab: (tab) => {
+    let viewControl = "";
+    if (tab === 1) {
+      viewControl = "display_map";
+    } else if (tab === 2) {
+      viewControl = "display_macro_parameters";
+    }
+
+    set({
+      selectedTab: tab,
+      selectedSubTab: 0,
+      activeViewControl: viewControl,
+    });
+  },
+
   setSelectedTimeHorizon: (timeHorizon) => set({ selectedTimeHorizon: timeHorizon }),
   setActiveViewControl: (control) => set({ activeViewControl: control }),
 }));

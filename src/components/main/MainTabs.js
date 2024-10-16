@@ -59,7 +59,7 @@ const MainTabs = () => {
           <Tab
             icon={<MacroIcon />}
             iconPosition="start"
-            label="Macroeconomic (In Dev.)"
+            label="Macroeconomic"
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
           />
           <Tab

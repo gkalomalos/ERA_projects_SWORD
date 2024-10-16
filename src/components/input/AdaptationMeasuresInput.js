@@ -48,11 +48,16 @@ const AdaptationMeasuresInput = () => {
               sx={{
                 bgcolor: "#EBF3F5",
                 mb: 2,
-                height: "48px",
+                minHeight: "24px",
               }}
             >
               <CardContent sx={{ p: 1 }}>
-                <Typography gutterBottom variant="h6" component="div" sx={{ my: 0 }}>
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="div"
+                  sx={{ my: 0, wordWrap: "break-word" }} // wordWrap for long text
+                >
                   {measureName}
                 </Typography>
               </CardContent>
