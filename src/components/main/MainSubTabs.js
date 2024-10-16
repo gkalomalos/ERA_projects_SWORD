@@ -18,7 +18,7 @@ const MainSubTabs = () => {
       "+ Add to Output",
       activeViewControl === "display_map" ? "+ Save Map" : "+ Save Chart", // Dynamically change label
     ], // Added "Save to Map" or "+ Save Chart" button
-    2: ["Risk", "Adaptation"], // Subtabs for "Macroeconomic (in dev) section"
+    2: [], // Subtabs for "Macroeconomic section"
     3: [], // Subtabs for "Outputs (reporting) section"
   };
 

@@ -372,7 +372,7 @@ class RunScenario:
 
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
-            self.costben_handler.plot_cost_benefit(cost_benefit)
+            self.costben_handler.plot_cost_benefit(cost_benefit, self.request_data.asset_type)
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."
@@ -628,7 +628,7 @@ class RunScenario:
 
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
-            self.costben_handler.plot_cost_benefit(cost_benefit)
+            self.costben_handler.plot_cost_benefit(cost_benefit, self.request_data.asset_type)
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."

@@ -242,7 +242,7 @@ class HazardHandler:
             if hazard_type == "flood":
                 source = "raster"
             if hazard_type == "heatwaves":
-                source = "mat"
+                source = "hdf5"
         if source == "climada_api":
             hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
         if source == "raster":
@@ -721,7 +721,7 @@ class HazardHandler:
         elif hazard_code == "FL":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
-            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.mat"
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.h5"
         return hazard_filename  # TODO: Extract this to settings file
 
     def generate_hazard_report_dataset(
