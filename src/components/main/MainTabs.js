@@ -11,7 +11,7 @@ import MainSubTabs from "./MainSubTabs";
 import useStore from "../../store";
 
 const MainTabs = () => {
-  const { selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
+  const { selectedAppOption, selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
   const { fetchReports } = useReportTools();
 
   const onFetchReportsHandler = async () => {
@@ -61,6 +61,7 @@ const MainTabs = () => {
             iconPosition="start"
             label="Macroeconomic"
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
+            disabled={selectedAppOption === "explore"}
           />
           <Tab
             icon={<ContentPasteIcon />}
