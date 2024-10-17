@@ -21,6 +21,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.0.0",
+    "electron-updater": "^6.3.4",
     "date-fns": "^3.6.0",
     "file-saver": "^2.0.5",
     "i18next": "^23.7.8",
@@ -43,7 +44,7 @@
     "eject": "react-scripts eject",
     "start:electron": "npm run build && electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder -w"
   },
   "eslintConfig": {
     "extends": [
@@ -95,6 +96,29 @@
       "buildResources": "assets"
     },
     "artifactName": "${productName}-v${version}.${ext}",
-    "extends": null
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://ath-git.swordgroup.lan/unu/climada-unu/-/releases",
+        "channel": "latest"
+      }
+    ],
+    "generateUpdatesFilesForAllChannels": true,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/favicon.ico",
+      "uninstallerIcon": "build/favicon.ico",
+      "allowElevation": true,
+      "license": "EULA.txt",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
