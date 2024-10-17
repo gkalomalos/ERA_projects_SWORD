@@ -11,9 +11,9 @@ import useStore from "../../store";
 const RunPlotMacroButton = () => {
   const { t } = useTranslation();
   const {
-    selectedMacroCountry,
-    selectedMacroHazard,
-    selectedMacroScenario,
+    selectedCountry,
+    selectedHazard,
+    selectedScenario,
     selectedMacroSector,
     selectedMacroVariable,
     setAlertMessage,
@@ -29,27 +29,27 @@ const RunPlotMacroButton = () => {
   const [isPlotButtonDisabled, setIsPlotButtonDisabled] = useState(true);
 
   const isValid = () =>
-    selectedMacroCountry &&
-    selectedMacroHazard &&
-    selectedMacroScenario &&
+    selectedCountry &&
+  selectedHazard &&
+  selectedScenario &&
     selectedMacroSector &&
     selectedMacroVariable;
 
   useEffect(() => {
     setIsPlotButtonDisabled(!isValid());
   }, [
-    selectedMacroCountry,
-    selectedMacroHazard,
-    selectedMacroScenario,
+    selectedCountry,
+    selectedHazard,
+    selectedScenario,
     selectedMacroSector,
     selectedMacroVariable,
   ]);
 
   const handleRunButton = () => {
     const body = {
-      countryName: selectedMacroCountry,
-      hazardType: selectedMacroHazard,
-      scenario: selectedMacroScenario,
+      countryName: selectedCountry,
+      hazardType: selectedHazard,
+      scenario: selectedScenario,
       sector: selectedMacroSector,
       variable: selectedMacroVariable,
     };

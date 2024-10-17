@@ -5,7 +5,7 @@ import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 import useStore from "../../store";
 
 const Hazard = () => {
-  const { selectedMacroHazard, setActiveViewControl, setSelectedMacroCard } = useStore();
+  const { selectedHazard, setActiveViewControl, setSelectedMacroCard } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
@@ -24,7 +24,7 @@ const Hazard = () => {
   };
 
   const handleBgColor = () => {
-    if (selectedMacroHazard) {
+    if (selectedHazard) {
       setBgColor("#E5F5EB"); // green
     } else {
       setBgColor("#EBF3F5"); // default light blue
@@ -33,7 +33,7 @@ const Hazard = () => {
 
   useEffect(() => {
     handleBgColor();
-  }, [selectedMacroHazard]);
+  }, [selectedHazard]);
 
   return (
     <Card
@@ -60,12 +60,12 @@ const Hazard = () => {
           <Typography id="hazard-dropdown" gutterBottom variant="h6" component="div" m={0}>
             {t("hazard_macro_title")}
           </Typography>
-          {selectedMacroHazard && (
+          {selectedHazard && (
             <TextField
               id="hazard"
               fullWidth
               variant="outlined"
-              value={t(`input_hazard_${selectedMacroHazard}`)}
+              value={t(`input_hazard_${selectedHazard}`)}
               disabled
               InputProps={{
                 readOnly: true,

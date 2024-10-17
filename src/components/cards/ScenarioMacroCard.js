@@ -5,23 +5,23 @@ import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/materia
 import useStore from "../../store";
 
 const ScenarioMacroCard = () => {
-  const { selectedMacroHazard, selectedMacroScenario, setSelectedMacroScenario } = useStore();
+  const { selectedHazard, selectedScenario, setSelectedScenario } = useStore();
   const { t } = useTranslation();
 
   const scenarios =
-  selectedMacroHazard === "flood"
+  selectedHazard === "flood"
       ? ["historical", "rcp26", "rcp85"]
       : ["historical", "rcp45", "rcp85"];
 
   const handleCardSelect = (scenario) => {
-    if (selectedMacroScenario === scenario) {
-      setSelectedMacroScenario(""); // Deselect if already selected
+    if (selectedScenario === scenario) {
+      setSelectedScenario(""); // Deselect if already selected
     } else {
-      setSelectedMacroScenario(scenario);
+      setSelectedScenario(scenario);
     }
   };
 
-  const isButtonSelected = (scenario) => selectedMacroScenario === scenario;
+  const isButtonSelected = (scenario) => selectedScenario === scenario;
 
   return (
     <Card

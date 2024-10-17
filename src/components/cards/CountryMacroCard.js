@@ -8,17 +8,17 @@ const countries = ["egypt", "thailand"];
 
 const CountryMacroCard = () => {
   const { t } = useTranslation();
-  const { selectedMacroCountry, setSelectedMacroCountry } = useStore();
+  const { selectedCountry, setSelectedCountry } = useStore();
 
   const handleSelect = (country) => {
-    if (selectedMacroCountry === country) {
-      setSelectedMacroCountry(""); // Deselect if already selected
+    if (selectedCountry === country) {
+      setSelectedCountry(""); // Deselect if already selected
     } else {
-      setSelectedMacroCountry(country);
+      setSelectedCountry(country);
     }
   };
 
-  const isButtonSelected = (country) => selectedMacroCountry === country;
+  const isButtonSelected = (country) => selectedCountry === country;
 
   return (
     <Card

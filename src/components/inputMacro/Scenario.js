@@ -5,7 +5,7 @@ import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 import useStore from "../../store";
 
 const Scenario = () => {
-  const { selectedMacroScenario, setActiveViewControl, setSelectedMacroCard } = useStore();
+  const { selectedScenario, setActiveViewControl, setSelectedMacroCard } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
@@ -24,7 +24,7 @@ const Scenario = () => {
   };
 
   const handleBgColor = () => {
-    if (selectedMacroScenario) {
+    if (selectedScenario) {
       setBgcolor("#E5F5EB"); // green
     } else {
       setBgcolor("#EBF3F5"); // default light blue
@@ -33,7 +33,7 @@ const Scenario = () => {
 
   useEffect(() => {
     handleBgColor();
-  }, [selectedMacroScenario]);
+  }, [selectedScenario]);
 
   return (
     <Card
@@ -61,12 +61,12 @@ const Scenario = () => {
             {t("scenario_title")}
           </Typography>
 
-          {selectedMacroScenario && (
+          {selectedScenario && (
             <TextField
               id="scenario"
               fullWidth
               variant="outlined"
-              value={t(`input_scenario_scenarios_${selectedMacroScenario}`)}
+              value={t(`input_scenario_scenarios_${selectedScenario}`)}
               disabled
               InputProps={{
                 readOnly: true,

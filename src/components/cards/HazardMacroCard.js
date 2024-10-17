@@ -12,19 +12,19 @@ const hazardDict = {
 
 const HazardMacroCard = () => {
   const { t } = useTranslation();
-  const { selectedMacroCountry, selectedMacroHazard, setSelectedMacroHazard } = useStore();
+  const { selectedCountry, selectedHazard, setSelectedHazard } = useStore();
 
-  const hazards = hazardDict[selectedMacroCountry] || [];
+  const hazards = hazardDict[selectedCountry] || [];
 
   const handleCardSelect = (hazard) => {
-    if (selectedMacroHazard === hazard) {
-      setSelectedMacroHazard("");
+    if (selectedHazard === hazard) {
+      setSelectedHazard("");
     } else {
-      setSelectedMacroHazard(hazard);
+      setSelectedHazard(hazard);
     }
   };
 
-  const isButtonSelected = (hazard) => selectedMacroHazard === hazard;
+  const isButtonSelected = (hazard) => selectedHazard === hazard;
 
   return (
     <Card
