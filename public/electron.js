@@ -1,4 +1,5 @@
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
@@ -322,6 +323,38 @@ ipcMain.on("reload", async () => {
 
   // Reload the application
   mainWindow.webContents.reloadIgnoringCache();
+});
+
+// Check for updates after the app is ready
+app.on("ready", () => {
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
+autoUpdater.setFeedURL({
+  provider: "generic",
+  url: "https://ath-git.swordgroup.lan/unu/climada-unu/-/releases",
+});
+
+// Listen for update-available event
+autoUpdater.on("update-available", () => {
+  dialog.showMessageBox({
+    type: "info",
+    title: "Update available",
+    message: "A new version is available and will be downloaded in the background.",
+  });
+});
+
+// Listen for update-downloaded event
+autoUpdater.on("update-downloaded", () => {
+  dialog
+    .showMessageBox({
+      type: "info",
+      title: "Update Ready",
+      message: "Update downloaded. The app will restart to apply the update.",
+    })
+    .then(() => {
+      autoUpdater.quitAndInstall();
+    });
 });
 
 app.on("activate", () => {
