@@ -30,6 +30,7 @@ from climada.entity import DiscRates, Entity
 from climada.entity.measures import MeasureSet
 from climada.hazard import Hazard
 import matplotlib.pyplot as plt
+import numpy as np
 
 from constants import DATA_TEMP_DIR, REQUIREMENTS_DIR
 from hazard.hazard_handler import HazardHandler
@@ -242,6 +243,19 @@ class CostBenefitHandler:
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
         try:
+            # Define a threshold for very small values that are too close to zero
+            # to resolve infinite values in plot.
+            threshold = 1e-6
+
+            # Validate the cost-benefit ratio to check for invalid, negative, or very small values
+            invalid_values = [
+                (key, val)
+                for key, val in cost_benefit.cost_ben_ratio.items()
+                if np.isnan(val) or np.isinf(val) or val < threshold
+            ]
+            if invalid_values:
+                raise ValueError(f"Invalid values in cost-benefit ratio: {invalid_values}")
+
             # Get the scaling factor and update the cost_benefit ratio accordingly
             factor, label = self.get_scaling_factor(cost_benefit.cost_ben_ratio)
 

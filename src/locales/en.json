@@ -640,5 +640,5 @@
   "adaptation_input_no_hazard": "No hazard selected",
   "economic_non_economic_risk_display_chart_title": "Impact of ",
   "economic_non_economic_risk_display_chart_loading_error": "An error has occured while loading this chart. Chart will only be shown when future climate scenario is selected.",
-  "economic_non_economic_adaptation_display_chart_loading_error": "An error has occured while loading this chart. Chart will only be shown when future climate scenario is selected."
+  "economic_non_economic_adaptation_display_chart_loading_error": "An error has occurred while loading this chart. The chart will only be shown when a future climate scenario is selected and valid cost-benefit ratio values are available (not invalid or too close to zero)."
 }
