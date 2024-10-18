@@ -256,8 +256,36 @@ class BaseHandler:
         if not macro_variable:
             raise ValueError("Macro variable cannot be empty.")
 
+    def beautify_asset(self, asset: str) -> str:
+        """
+        Converts raw asset names into human-readable, capitalized format.
+
+        :param asset: The raw asset string.
+        :return: A human-readable version of the asset variable. Returns an empty string if the input is not recognized.
+        :raises ValueError: If an empty or invalid macro_variable is provided.
+        """
+        beautified_assets = {
+            "crops": "Crops",
+            "livestock": "Livestock",
+            "power_plants": "Power Plants",
+            "hotels": "Hotels",
+            "hospitalised_people": "Hospitalized people",
+            "students": "Students",
+            "diarrhea_patients": "Diarrhea Patients",
+            "roads": "Road Users",
+            "tree_crops": "Tree Crops",
+            "grass_crops": "Grass Crops",
+            "wet_markets": "Wet Markets",
+            "grass_crops_farmers": "Grass Crops Farmers",
+            "tree_crops_farmers": "Tree Crops Farmers",
+            "buddhist_monks": "Buddhist Monks",
+        }
+
+        if not asset:
+            raise ValueError("Assets cannot be empty.")
+
         # Return the beautified name or default to an empty string if not found
-        return beautified_names.get(macro_variable, "")
+        return beautified_assets.get(asset, "")
 
     def clear_temp_dir(self) -> None:
         """
