@@ -72,9 +72,10 @@ export const useMapTools = () => {
           setAlertMessage(response.result.status.message);
           if (response.result.status.code === 2000) {
             setAlertSeverity("success");
-
+            const id = new Date().getTime().toString();
             const outputData = {
-              id: `${scenarioRunCode}`,
+              id: id,
+              scenarioId: `${scenarioRunCode}`,
               data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
                 selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
               } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
@@ -142,6 +143,7 @@ export const useMapTools = () => {
         .then(() => {
           const outputData = {
             id: id,
+            scenarioId: `${scenarioRunCode}`,
             data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
               selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
             } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
@@ -217,6 +219,7 @@ export const useMapTools = () => {
         .then(() => {
           const outputData = {
             id: id,
+            scenarioId: `${scenarioRunCode}`,
             data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
               selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
             } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
@@ -248,6 +251,7 @@ export const useMapTools = () => {
         .then(() => {
           const outputData = {
             id: id,
+            scenarioId: `${scenarioRunCode}`,
             data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
               selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
             } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,

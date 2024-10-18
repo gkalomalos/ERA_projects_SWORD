@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { useReportTools } from "../../utils/reportTools";
 import ReportCard from "./ReportCard";
@@ -10,19 +10,26 @@ const ReportsView = () => {
   const {
     reports,
     removeReport,
+    selectedReport,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
     setSelectedScenarioRunCode,
+    setSelectedReport,
     updateReports,
   } = useStore();
   const { restoreScenario } = useReportTools();
 
-  const [selectedReport, setSelectedReport] = useState(null);
-
   const onCardClickHandler = (id) => {
-    setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
-    setSelectedScenarioRunCode(id);
+    const report = reports.find((report) => report.id === id);
+    if (report) {
+      if (selectedReport?.id === id) {
+        setSelectedReport(null);
+      } else {
+        setSelectedReport(report);
+      }
+      setSelectedScenarioRunCode(id);
+    }
   };
 
   const onRemoveReportHandler = async (report) => {
@@ -81,7 +88,7 @@ const ReportsView = () => {
           data={report.data}
           id={report.id}
           image={report.image}
-          isSelected={selectedReport === report.id}
+          isSelected={selectedReport?.id === report.id}
           onCardClick={onCardClickHandler}
           onReportAction={onActionReportHandler}
           title={report.title}

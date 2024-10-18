@@ -35,6 +35,7 @@ const useStore = create((set, get) => ({
   selectedMacroCard: "country",
   selectedMacroSector: "",
   selectedMacroVariable: "",
+  selectedReport: null,
   selectedReportType: "",
   selectedScenario: "",
   selectedScenarioRunCode: "",
@@ -155,6 +156,7 @@ const useStore = create((set, get) => ({
   setSelectedScenario: (scenario) => set({ selectedScenario: scenario }),
   setSelectedScenarioRunCode: (code) => set({ selectedScenarioRunCode: code }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
+  setSelectedReport: (report) => set({ selectedReport: report }),
   setSelectedTab: (tab) => {
     let viewControl = "";
     if (tab === 1) {

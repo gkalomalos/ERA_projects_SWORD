@@ -9,6 +9,7 @@ import useStore from "../../store";
 const OutputResultsCard = () => {
   const { t } = useTranslation();
   const {
+    selectedReport,
     selectedReportType,
     selectedScenarioRunCode,
     setAlertMessage,
@@ -20,6 +21,7 @@ const OutputResultsCard = () => {
     const body = {
       exportType: type,
       scenarioRunCode: selectedScenarioRunCode,
+      reportId: selectedReport?.id,
     };
     APIService.ExportReport(body)
       .then((response) => {

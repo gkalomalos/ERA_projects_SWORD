@@ -12,6 +12,7 @@ import useStore from "../../store";
 const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
   const {
+    selectedReport,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
@@ -31,7 +32,9 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   const handleClick = () => {
     onCardClick(id);
     setSelectedReportType(type);
-    setSelectedScenarioRunCode(id);
+    if (selectedReport?.id !== id) {
+      setSelectedScenarioRunCode(id);
+    }
   };
 
   const handleDeleteButtonClick = () => {
