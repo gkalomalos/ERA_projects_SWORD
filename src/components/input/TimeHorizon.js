@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
+
+import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const TimeHorizon = () => {
@@ -9,6 +11,9 @@ const TimeHorizon = () => {
     selectedAppOption,
     selectedCountry,
     selectedTimeHorizon,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
   } = useStore();
@@ -38,6 +43,9 @@ const TimeHorizon = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
     if (selectedAppOption === "era") {
+      setAlertMessage("Time Horizon is fixed to 2024 - 2050 for ERA Project");
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     }
     setSelectedCard("timeHorizon");
@@ -57,52 +65,57 @@ const TimeHorizon = () => {
   }, [selectedAppOption, selectedCountry]);
 
   return (
-    <Card
-      variant="outlined"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
-      onClick={handleClick}
-      sx={{
-        cursor: "pointer",
-        bgcolor: bgColor,
-        transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
-        "&:hover": {
-          bgcolor: "#DAE7EA",
-        },
-        ".MuiCardContent-root:last-child": {
-          padding: 2,
-        },
-        transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
-      }}
-    >
-      <CardContent>
-        <Box>
-          <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div" m={0}>
-            {t("time_horizon_title")}
-          </Typography>
-          {selectedTimeHorizon && (
-            <TextField
-              id="timeHorizon"
-              fullWidth
-              variant="outlined"
-              value={`${selectedTimeHorizon[0]} - ${selectedTimeHorizon[1]}`}
-              disabled
-              InputProps={{
-                readOnly: true,
-              }}
-              sx={{
-                ".MuiInputBase-input.Mui-disabled": {
-                  WebkitTextFillColor: "#A6A6A6", // Change the text color for disabled content
-                  bgcolor: "#E6E6E6", // Change background for disabled TextField
-                  padding: 1,
-                },
-              }}
-            />
-          )}
-        </Box>
-      </CardContent>
-    </Card>
+    <Box>
+      <Card
+        variant="outlined"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp} // Reset animation when the mouse leaves the card
+        onClick={handleClick}
+        sx={{
+          cursor: "pointer",
+          bgcolor: bgColor,
+          transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
+          "&:hover": {
+            bgcolor: "#DAE7EA",
+          },
+          ".MuiCardContent-root:last-child": {
+            padding: 2,
+          },
+          transform: clicked ? "scale(0.97)" : "scale(1)", // Apply scale transform when clicked
+        }}
+      >
+        <CardContent>
+          <Box>
+            <Typography id="time-horizon-dropdown" gutterBottom variant="h6" component="div" m={0}>
+              {t("time_horizon_title")}
+            </Typography>
+            {selectedTimeHorizon && (
+              <TextField
+                id="timeHorizon"
+                fullWidth
+                variant="outlined"
+                value={`${selectedTimeHorizon[0]} - ${selectedTimeHorizon[1]}`}
+                disabled
+                InputProps={{
+                  readOnly: true,
+                }}
+                sx={{
+                  ".MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "#A6A6A6", // Change the text color for disabled content
+                    bgcolor: "#E6E6E6", // Change background for disabled TextField
+                    padding: 1,
+                  },
+                }}
+              />
+            )}
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Alert message section */}
+      <AlertMessage />
+    </Box>
   );
 };
 

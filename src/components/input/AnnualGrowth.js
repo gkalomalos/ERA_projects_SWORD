@@ -11,6 +11,9 @@ const AnnualGrowth = () => {
     selectedAnnualGrowth,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
   } = useStore();
@@ -41,6 +44,9 @@ const AnnualGrowth = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
     if (selectedAppOption === "era") {
+      setAlertMessage("Annual GDP/Population Growth is fixed for ERA Project");
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     }
     setSelectedCard("annualGrowth");
