@@ -13,7 +13,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import APIService from "../../APIService";
-import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const exposureNonEconomicDict = {
@@ -271,9 +270,6 @@ const ExposureNonEconomicCard = () => {
           </Typography>
         </Box>
       </CardContent>
-
-      {/* Alert message section */}
-      <AlertMessage />
     </Card>
   );
 };

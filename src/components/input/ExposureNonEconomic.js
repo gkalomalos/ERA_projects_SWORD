@@ -9,6 +9,9 @@ const ExposureNonEconomic = () => {
     isValidExposureNonEconomic,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
   } = useStore();
@@ -32,6 +35,11 @@ const ExposureNonEconomic = () => {
 
   const handleClick = () => {
     if (selectedExposureEconomic) {
+      setAlertMessage(
+        "Non-Economic assets cannot be selected when an Economic asset is active. To enable the selection of non-Economic assets, please deselect one of the currently active Economic assets."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     }
     setSelectedCard("exposureNonEconomic");

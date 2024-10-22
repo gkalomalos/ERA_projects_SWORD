@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Card, CardContent, TextField, Typography } from "@mui/material";
 
-import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const TimeHorizon = () => {
@@ -112,9 +111,6 @@ const TimeHorizon = () => {
           </Box>
         </CardContent>
       </Card>
-
-      {/* Alert message section */}
-      <AlertMessage />
     </Box>
   );
 };

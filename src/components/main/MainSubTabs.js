@@ -3,7 +3,6 @@ import React from "react";
 import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
-import AlertMessage from "../alerts/AlertMessage";
 import { useMapTools } from "../../utils/mapTools";
 
 const MainSubTabs = () => {
@@ -103,7 +102,6 @@ const MainSubTabs = () => {
           )
         )}
       </Tabs>
-      <AlertMessage />
     </Paper>
   );
 };

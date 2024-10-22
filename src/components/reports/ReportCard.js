@@ -6,16 +6,17 @@ import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import RestoreIcon from "@mui/icons-material/Restore";
 
-import AlertMessage from "../alerts/AlertMessage";
 import useStore from "../../store";
 
 const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
   const {
+    reports,
     selectedReport,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
+    setMapTitle,
     setSelectedScenarioRunCode,
     setSelectedReportType,
   } = useStore();
@@ -32,8 +33,12 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   const handleClick = () => {
     onCardClick(id);
     setSelectedReportType(type);
-    if (selectedReport?.id !== id) {
-      setSelectedScenarioRunCode(id);
+
+    if (selectedReport && selectedReport?.id !== id) {
+      setSelectedScenarioRunCode(selectedReport.scenarioId);
+    } else {
+      // Reset or handle case when there's no selected report
+      setSelectedScenarioRunCode(null);
     }
   };
 
@@ -51,6 +56,9 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     setAlertShowMessage(true);
     onReportAction(id, "restore");
     setSelectedScenarioRunCode("");
+
+    const restoredScenario = reports.find((r) => r.id === id);
+    setMapTitle(restoredScenario.title);
   };
 
   const handleDownButtonClick = () => {
@@ -163,8 +171,6 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
           </Box>
         </Box>
       </Box>
-      {/* Alert message section */}
-      <AlertMessage />
     </>
   );
 };

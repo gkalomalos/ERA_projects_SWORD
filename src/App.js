@@ -2,6 +2,7 @@ import React from "react";
 import { Grid, Box } from "@mui/material";
 
 import AdaptationMeasuresInput from "./components/input/AdaptationMeasuresInput";
+import AlertMessage from "./components/alerts/AlertMessage";
 import MacroEconomicInput from "./components/inputMacro/MacroEconomicInput";
 import DataInput from "./components/input/DataInput";
 import Header from "./components/nav/Header";
@@ -54,6 +55,9 @@ const App = () => {
             </Grid>
           </Box>
           <LoadModal />
+
+          {/* Alert message section */}
+          <AlertMessage />
         </Box>
       )}
     </>

@@ -7,6 +7,9 @@ import useStore from "../../store";
 const ExposureEconomic = () => {
   const {
     isValidExposureEconomic,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
     selectedCountry,
@@ -42,8 +45,18 @@ const ExposureEconomic = () => {
 
   const handleClick = () => {
     if (selectedExposureNonEconomic) {
+      setAlertMessage(
+        "Economic assets cannot be selected when a non-Economic asset is active. To enable the selection of Economic assets, please deselect one of the currently active non-Economic assets."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      setAlertMessage(
+        "There are no Economic assets available for the selected country, Thailand, and the selected hazard, Heatwaves."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     } else {
       setSelectedCard("exposureEconomic");
