@@ -43,6 +43,7 @@ export const useReportTools = () => {
           if (!existingReport) {
             const reportData = {
               id: report.id,
+              scenarioId: report.scenario_id,
               data: `${report.data.country_name} - ${report.data.hazard_type} - ${
                 report.data.scenario
               } - ${
@@ -57,13 +58,13 @@ export const useReportTools = () => {
                     ? outputIconTha
                     : outputIconEgy
                   : report.image,
-              title: `Impact data of ${t(
+              title: ` ${t(
                 `results_report_card_hazard_${report.data.hazard_type}`
-              )} on ${
-                report.data.exposure_economic
-                  ? t(`results_report_card_exposure_${report.data.exposure_economic}`)
-                  : t(`results_report_card_exposure_${report.data.exposure_non_economic}`)
-              } in ${t(`results_report_card_country_${report.data.country_name.toLowerCase()}`)}`,
+              )} risk analysis for ${t(
+                `results_report_card_country_${report.data.country_name}`
+              )} in ${report.data.future_year} (${t(
+                `results_report_card_scenario_${report.data.scenario}`
+              )}).`,
               type: report.type,
             };
             addReport(reportData);
