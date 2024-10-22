@@ -63,8 +63,12 @@ class RunFetchReports:
                 report_type = "risk_plot_data"
             elif "cost_benefit_plot" in file_name:
                 report_type = "adaptation_plot_data"
-            elif "snapshot_map_" in file_name:
-                report_type = "map_data"
+            elif "snapshot_map_exposure" in file_name:
+                report_type = "exposure_map_data"
+            elif "snapshot_map_hazard" in file_name:
+                report_type = "hazard_map_data"
+            elif "snapshot_map_impact" in file_name:
+                report_type = "impact_map_data"
             else:
                 continue  # Skip if the filename doesn't match known patterns
 
@@ -93,7 +97,7 @@ class RunFetchReports:
             # Iterate through each folder in REPORTS_DIR
             for report_dir in Path(REPORTS_DIR).iterdir():
                 if report_dir.is_dir():
-                    report_id = report_dir.name
+                    scenario_id = report_dir.name
                     metadata = self.base_handler.read_results_metadata_file(
                         report_dir / "_metadata.txt"
                     )
@@ -101,7 +105,8 @@ class RunFetchReports:
 
                     # Always create an output_data report
                     output_report = ReportViewObject(
-                        id=report_id,
+                        id=scenario_id, #TODO: Change
+                        scenario_id=scenario_id,
                         data=metadata,
                         image="",  # Placeholder, if no specific image is found
                         title=title,
@@ -120,6 +125,7 @@ class RunFetchReports:
 
                         snapshot_report = ReportViewObject(
                             id=report_file_id,  # Use extracted ID from the filename
+                            scenario_id=scenario_id,
                             data=metadata,
                             image=image_path,
                             title=title,

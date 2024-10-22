@@ -21,7 +21,7 @@ const OutputResultsCard = () => {
     const body = {
       exportType: type,
       scenarioRunCode: selectedScenarioRunCode,
-      reportId: selectedReport?.id,
+      report: selectedReport,
     };
     APIService.ExportReport(body)
       .then((response) => {
@@ -90,7 +90,9 @@ const OutputResultsCard = () => {
                 }}
                 onClick={() => handleButtonClick(type)}
                 disabled={
-                  selectedReportType === "map_data" ||
+                  selectedReportType === "exposure_map_data" ||
+                  selectedReportType === "hazard_map_data" ||
+                  selectedReportType === "impact_map_data" ||
                   selectedReportType === "risk_plot_data" ||
                   selectedReportType === "adaptation_plot_data" ||
                   selectedReportType === ""

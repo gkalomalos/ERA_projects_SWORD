@@ -28,7 +28,7 @@ const ReportsView = () => {
       } else {
         setSelectedReport(report);
       }
-      setSelectedScenarioRunCode(id);
+      setSelectedScenarioRunCode(report.scenarioId);
     }
   };
 

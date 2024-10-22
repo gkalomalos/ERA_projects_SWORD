@@ -135,7 +135,7 @@ export const useMapTools = () => {
 
     if (isScenarioRunCompleted && activeMapRef) {
       const id = new Date().getTime().toString();
-      const filepath = `${reportPath}\\${scenarioRunCode}\\snapshot_map_${activeMap}_${id}.png`;
+      const filepath = `${reportPath}\\${scenarioRunCode}\\snapshot_${activeMap}_map_data_${id}.png`;
       takeScreenshot(activeMapRef, filepath)
         .then(() => {
           handleAddData();
@@ -149,7 +149,7 @@ export const useMapTools = () => {
             } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
             image: filepath,
             title: getSaveMapTitle(),
-            type: "map_data",
+            type: `${activeMap}_map_data`,
           };
           addReport(outputData);
         })
@@ -210,7 +210,7 @@ export const useMapTools = () => {
     if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 0) {
       const id = new Date().getTime().toString();
       const sourceFile = `${tempPath}\\risks_waterfall_plot.png`;
-      const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_chart_risks_waterfall_plot_${id}.png`;
+      const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_risk_plot_data_${id}.png`;
 
       copyFileToReports(sourceFile, destinationFile)
         .then(() => {
@@ -245,7 +245,7 @@ export const useMapTools = () => {
     if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 1) {
       const id = new Date().getTime().toString();
       const sourceFile = `${tempPath}\\cost_benefit_plot.png`;
-      const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_chart_cost_benefit_plot_${id}.png`;
+      const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_adaptation_plot_data_${id}.png`;
 
       copyFileToReports(sourceFile, destinationFile)
         .then(() => {
