@@ -59,15 +59,15 @@ class RunFetchReports:
             file_name = file_path.name
 
             # Determine report type based on the filename
-            if "risks_waterfall_plot" in file_name:
+            if "snapshot_risk_plot_data" in file_name:
                 report_type = "risk_plot_data"
-            elif "cost_benefit_plot" in file_name:
+            elif "snapshot_adaptation_plot_data" in file_name:
                 report_type = "adaptation_plot_data"
-            elif "snapshot_map_exposure" in file_name:
+            elif "snapshot_exposure_map_data" in file_name:
                 report_type = "exposure_map_data"
-            elif "snapshot_map_hazard" in file_name:
+            elif "snapshot_hazard_map_data" in file_name:
                 report_type = "hazard_map_data"
-            elif "snapshot_map_impact" in file_name:
+            elif "snapshot_impact_map_data" in file_name:
                 report_type = "impact_map_data"
             else:
                 continue  # Skip if the filename doesn't match known patterns
