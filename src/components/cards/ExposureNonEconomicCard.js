@@ -54,14 +54,12 @@ const ExposureNonEconomicCard = () => {
 
   const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry][selectedHazard] || [];
 
-  const handleCardSelect = async (exposure) => {
+  const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {
       setSelectedExposureNonEconomic(""); // Deselect if already selected
     } else {
       setSelectedExposureNonEconomic(exposure);
     }
-    // Clear the temp directory to reset maps
-    await window.electron.clearTempDir();
     setSelectedExposureFile("");
     setIsValidExposureNonEconomic(false);
     setFetchExposureMessage("");

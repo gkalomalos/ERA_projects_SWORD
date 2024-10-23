@@ -27,7 +27,9 @@ export const useReportTools = () => {
     setIsValidHazard,
     setIsValidExposureEconomic,
     setIsValidExposureNonEconomic,
+    setMapTitle,
     setScenarioRunCode,
+    setSelectedReport,
   } = useStore.getState();
 
   const fetchReports = async () => {
@@ -96,6 +98,7 @@ export const useReportTools = () => {
         throw new Error(`Scenario with id ${id} not found.`);
       }
 
+      setSelectedReport(scenario);
       const scenarioParams = scenario.params;
 
       // Set scenario details
@@ -105,6 +108,7 @@ export const useReportTools = () => {
       setSelectedHazard(scenarioParams.hazard_type);
       setIsValidHazard(true);
       setSelectedScenario(scenarioParams.scenario);
+      setMapTitle(scenario.title);
 
       if (scenarioParams.exposure_economic) {
         setSelectedExposureEconomic(scenarioParams.exposure_economic);

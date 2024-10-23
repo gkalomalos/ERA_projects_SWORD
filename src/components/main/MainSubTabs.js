@@ -6,7 +6,8 @@ import useStore from "../../store";
 import { useMapTools } from "../../utils/mapTools";
 
 const MainSubTabs = () => {
-  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
+  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } =
+    useStore();
   const { handleSaveImage, handleSaveMap, handleAddToOutput } = useMapTools();
 
   const subTabsMap = {
