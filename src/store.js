@@ -126,6 +126,7 @@ const useStore = create((set, get) => ({
       isValidExposureEconomic: false,
       isValidExposureNonEconomic: false,
       isValidHazard: false,
+      mapTitle: ""
     });
   },
   setSelectedMacroCard: (card) => set({ selectedMacroCard: card }),
@@ -146,6 +147,7 @@ const useStore = create((set, get) => ({
       selectedTimeHorizon: [2024, 2050],
       isValidExposureEconomic: false,
       isValidExposureNonEconomic: false,
+      mapTitle: ""
     });
   },
   setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),

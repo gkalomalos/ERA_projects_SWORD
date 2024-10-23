@@ -39,12 +39,14 @@ const HazardCard = () => {
 
   const hazards = hazardDict[selectedCountry] || [];
 
-  const handleCardSelect = (hazard) => {
+  const handleCardSelect = async (hazard) => {
     if (selectedHazard === hazard) {
       setSelectedHazard("");
     } else {
       setSelectedHazard(hazard);
     }
+    // Clear the temp directory to reset maps
+    await window.electron.clearTempDir();
     setSelectedHazardFile("");
     setIsValidHazard(false);
     setFetchHazardMessage("");

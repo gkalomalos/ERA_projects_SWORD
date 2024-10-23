@@ -12,16 +12,28 @@ const hazardDict = {
 
 const HazardMacroCard = () => {
   const { t } = useTranslation();
-  const { selectedCountry, selectedHazard, setSelectedHazard } = useStore();
+  const {
+    selectedCountry,
+    selectedHazard,
+    setFetchHazardMessage,
+    setIsValidHazard,
+    setSelectedHazard,
+    setSelectedHazardFile,
+  } = useStore();
 
   const hazards = hazardDict[selectedCountry] || [];
 
-  const handleCardSelect = (hazard) => {
+  const handleCardSelect = async (hazard) => {
     if (selectedHazard === hazard) {
       setSelectedHazard("");
     } else {
       setSelectedHazard(hazard);
     }
+    // Clear the temp directory to reset maps
+    await window.electron.clearTempDir();
+    setSelectedHazardFile("");
+    setIsValidHazard(false);
+    setFetchHazardMessage("");
   };
 
   const isButtonSelected = (hazard) => selectedHazard === hazard;

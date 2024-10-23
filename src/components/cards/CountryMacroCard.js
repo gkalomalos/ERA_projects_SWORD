@@ -10,12 +10,14 @@ const CountryMacroCard = () => {
   const { t } = useTranslation();
   const { selectedCountry, setSelectedCountry } = useStore();
 
-  const handleSelect = (country) => {
+  const handleSelect = async (country) => {
     if (selectedCountry === country) {
       setSelectedCountry(""); // Deselect if already selected
     } else {
       setSelectedCountry(country);
     }
+    // Clear the temp directory to reset maps
+    await window.electron.clearTempDir();
   };
 
   const isButtonSelected = (country) => selectedCountry === country;

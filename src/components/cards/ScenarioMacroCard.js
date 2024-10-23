@@ -9,16 +9,18 @@ const ScenarioMacroCard = () => {
   const { t } = useTranslation();
 
   const scenarios =
-  selectedHazard === "flood"
+    selectedHazard === "flood"
       ? ["historical", "rcp26", "rcp85"]
       : ["historical", "rcp45", "rcp85"];
 
-  const handleCardSelect = (scenario) => {
+  const handleCardSelect = async (scenario) => {
     if (selectedScenario === scenario) {
       setSelectedScenario(""); // Deselect if already selected
     } else {
       setSelectedScenario(scenario);
     }
+    // Clear the temp directory to reset maps
+    await window.electron.clearTempDir();
   };
 
   const isButtonSelected = (scenario) => selectedScenario === scenario;
