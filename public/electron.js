@@ -213,7 +213,7 @@ ipcMain.handle("fetch-report-dir", () => {
 });
 
 // Handle clear temporary directory request
-ipcMain.handle("clearTempDir", async () => {
+ipcMain.handle("clear-temp-dir", async () => {
   try {
     const scriptName = "run_clear_temp_dir.py";
     const data = {}; // assuming no additional data is required

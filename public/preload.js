@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
+  clearTempDir: () => ipcRenderer.invoke("clear-temp-dir"),
   fetchTempDir: () => ipcRenderer.invoke("fetch-temp-dir"),
   fetchReportDir: () => ipcRenderer.invoke("fetch-report-dir"),
   isDevelopmentEnv: () => ipcRenderer.invoke("is-development-env"),
