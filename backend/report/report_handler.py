@@ -3,10 +3,15 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from docx2pdf import convert
+from docx.shared import Mm
+from docxtpl import DocxTemplate, InlineImage
+from pythoncom import CoInitialize
 import pandas as pd
 import xlsxwriter
 
-from constants import DATA_TEMP_DIR, REPORTS_DIR
+from constants import DATA_TEMP_DIR, REPORTS_DIR, REQUIREMENTS_DIR
+from base_handler import BaseHandler
 from logger_config import LoggerConfig
 
 
@@ -28,6 +33,7 @@ class ReportParameters:
 @dataclass
 class ReportViewObject:
     id: str
+    scenario_id: str
     data: dict
     image: str
     title: str
@@ -38,35 +44,34 @@ class ReportHandler:
     def __init__(self, report_parameters: ReportParameters) -> None:
         self.report_parameters = report_parameters
         self.target_dir = REPORTS_DIR / self.report_parameters.scenario_id or DATA_TEMP_DIR
-        report_file_path = self.get_report_file_path()
-        self.workbook = xlsxwriter.Workbook(filename=report_file_path)
         self.logger = LoggerConfig(logger_types=["file"])
+        self.base_handler = BaseHandler()
 
-    def get_report_file_path(self) -> str:
+    def get_report_file_path(self, export_type: str) -> str:
         country_code = self.report_parameters.country_code
         hazard_code = self.report_parameters.hazard_code
         exposure = (
             self.report_parameters.exposure_economic or self.report_parameters.exposure_noneconomic
         )
+        export_types = {"excel": "xlsx", "pdf": "pdf", "word": "docx"}
+        extension = export_types.get(export_type)
         # Construct the report file path within the target directory
-        report_file_path = self.target_dir / f"{country_code}_{hazard_code}_{exposure}.xlsx"
+        report_file_path = self.target_dir / f"{country_code}_{hazard_code}_{exposure}.{extension}"
 
         return str(report_file_path)
 
-    def _generate_general_information_tab(self):
-        ws = self.workbook.add_worksheet("General Information")
+    def _generate_general_information_tab(self, workbook):
+        ws = workbook.add_worksheet("General Information")
 
         # Hide gridlines
         ws.hide_gridlines(option=2)
 
         # Define formats
-        bold_20_format = self.workbook.add_format({"bold": True, "font_size": 20})
-        bold_11_format = self.workbook.add_format({"bold": True, "font_size": 11})
-        normal_11_format = self.workbook.add_format({"font_size": 11})
-        italic_11_format = self.workbook.add_format(
-            {"italic": True, "font_size": 11, "align": "left"}
-        )
-        disclaimer_format = self.workbook.add_format(
+        bold_20_format = workbook.add_format({"bold": True, "font_size": 20})
+        bold_11_format = workbook.add_format({"bold": True, "font_size": 11})
+        normal_11_format = workbook.add_format({"font_size": 11})
+        italic_11_format = workbook.add_format({"italic": True, "font_size": 11, "align": "left"})
+        disclaimer_format = workbook.add_format(
             {"italic": True, "font_size": 11, "align": "left", "text_wrap": True}
         )
 
@@ -151,13 +156,13 @@ class ReportHandler:
         ws.set_column("B:B", 40)
         ws.set_column("C:C", 60)
 
-    def _generate_hazard_tab(self):
+    def _generate_hazard_tab(self, workbook):
         hazard_df = pd.read_parquet(self.target_dir / "hazard_report_data.parquet")
 
-        ws = self.workbook.add_worksheet("Hazard")
+        ws = workbook.add_worksheet("Hazard")
 
         # Define a format for headers
-        bold_format = self.workbook.add_format({"bold": True})
+        bold_format = workbook.add_format({"bold": True})
 
         # Write column headers with bold formatting
         for col_num, value in enumerate(hazard_df.columns):
@@ -168,13 +173,13 @@ class ReportHandler:
             for col_num, cell_data in enumerate(row_data):
                 ws.write(row_num, col_num, cell_data)
 
-    def _generate_exposure_tab(self):
+    def _generate_exposure_tab(self, workbook):
         exposure_df = pd.read_parquet(self.target_dir / "exposure_report_data.parquet")
 
-        ws = self.workbook.add_worksheet("Exposure")
+        ws = workbook.add_worksheet("Exposure")
 
         # Define a format for headers
-        bold_format = self.workbook.add_format({"bold": True})
+        bold_format = workbook.add_format({"bold": True})
 
         # Write column headers with bold formatting
         for col_num, value in enumerate(exposure_df.columns):
@@ -185,13 +190,13 @@ class ReportHandler:
             for col_num, cell_data in enumerate(row_data):
                 ws.write(row_num, col_num, cell_data)
 
-    def _generate_impact_tab(self):
+    def _generate_impact_tab(self, workbook):
         impact_df = pd.read_parquet(self.target_dir / "impact_report_data.parquet")
 
-        ws = self.workbook.add_worksheet("Impact")
+        ws = workbook.add_worksheet("Impact")
 
         # Define a format for headers
-        bold_format = self.workbook.add_format({"bold": True})
+        bold_format = workbook.add_format({"bold": True})
 
         # Write column headers with bold formatting
         for col_num, value in enumerate(impact_df.columns):
@@ -202,12 +207,94 @@ class ReportHandler:
             for col_num, cell_data in enumerate(row_data):
                 ws.write(row_num, col_num, cell_data)
 
-    def _save_report(self):
-        self.workbook.close()
+    def _save_report(self, workbook):
+        workbook.close()
 
     def generate_excel_report(self):
-        self._generate_general_information_tab()
-        self._generate_hazard_tab()
-        self._generate_exposure_tab()
-        self._generate_impact_tab()
-        self._save_report()
+        report_file_path = self.get_report_file_path(export_type="excel")
+        workbook = xlsxwriter.Workbook(filename=report_file_path)
+        self._generate_general_information_tab(workbook)
+        self._generate_hazard_tab(workbook)
+        self._generate_exposure_tab(workbook)
+        self._generate_impact_tab(workbook)
+        self._save_report(workbook)
+
+    def generate_word_report(self, report_type: str, scenario_id: str, report_id: str):
+        # Create new document
+        report_template = DocxTemplate(REQUIREMENTS_DIR / "report_template.docx")
+        report_file_path = self.get_report_file_path(export_type="word")
+
+        # Set beautified parameters
+        asset_type = (
+            self.report_parameters.exposure_economic
+            if self.report_parameters.exposure_economic
+            else self.report_parameters.exposure_noneconomic
+        )
+
+        self.logger.log('info', f"asset_type: {asset_type}")
+        self.logger.log('info', f"self.report_parameters: {self.report_parameters}")
+
+        hazard_type_beautified = self.base_handler.beautify_hazard_type(
+            self.report_parameters.hazard
+        )
+        scenario_beautified = self.base_handler.beautify_scenario(self.report_parameters.scenario)
+        asset_type_beautified = self.base_handler.beautify_asset(asset_type)
+        country_name_beautified = self.report_parameters.country_name.capitalize()
+        time_horizon_beautified = self.report_parameters.time_horizon
+        annual_population_growth_beautified = (
+            f"{self.report_parameters.annual_population_growth} %"
+            if self.report_parameters.annual_population_growth
+            else "N/A"
+        )
+        annual_gdp_growth_beautified = (
+            f"{self.report_parameters.annual_gdp_growth} %"
+            if self.report_parameters.annual_gdp_growth
+            else "N/A"
+        )
+
+        # Set report input fields section
+        report_title = f"Report"
+        report_subtitle = f"Summary of the Impact of {hazard_type_beautified} on {asset_type_beautified} in {country_name_beautified}"
+        report_description = "Report description"  # TODO
+
+        # Set report custom section parameters
+        image_path = os.path.join(
+            REPORTS_DIR, scenario_id, f"snapshot_{report_type}_{report_id}.png"
+        )
+        image = InlineImage(
+            tpl=report_template, image_descriptor=image_path, width=Mm(115), height=Mm(80)
+        )
+        # Set report dynamic context
+        context = {
+            "report_title": report_title,
+            "report_subtitle": report_subtitle,
+            "report_description": report_description,
+            "hazard_type": hazard_type_beautified,
+            "scenario": scenario_beautified,
+            "time_horizon": time_horizon_beautified,
+            "exposure_economic": (
+                asset_type_beautified if self.report_parameters.exposure_economic else "N/A"
+            ),
+            "exposure_non_economic": (
+                asset_type_beautified if self.report_parameters.exposure_noneconomic else "N/A"
+            ),
+            "annual_population_growth": annual_population_growth_beautified,
+            "annual_gdp_growth": annual_gdp_growth_beautified,
+            "created_by": str(os.getlogin()),
+            "created_date": str(datetime.now().strftime("%Y-%m-%d")),
+            "created_time": str(datetime.now().strftime("%H:%M:%S")),
+            "section_title": "section_title",  # TODO
+            "section_description": "section_description",  # TODO
+            "image_title": "image_title",  # TODO
+            "image": image,
+            "image_label": "image_label",  # TODO
+        }
+
+        # Render context into template's placeholders
+        report_template.render(context)
+        # Save document as .docx
+        report_template.save(report_file_path)
+        CoInitialize()
+
+    def generate_pdf_report(self, report_type: str):
+        pass

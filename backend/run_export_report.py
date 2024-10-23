@@ -74,9 +74,12 @@ class RunExportReport:
             # Extract necessary information from the request
             export_type = self.request.get("exportType", "")
             scenario_code = self.request.get("scenarioRunCode", "")
-            status_code = 2000
+            report = self.request.get("report")
+            report_type = report.get("type")
+            report_id = report.get("id")
 
-            self.base_handler.update_progress(20, "Generating excel report...")
+            status_code = 2000
+            self.base_handler.update_progress(20, "Setting up report parameters...")
 
             # Gather scenario metadata
             scenario_metadata = self.base_handler.get_scenario_metadata(scenario_code)
@@ -105,19 +108,45 @@ class RunExportReport:
                     else None
                 ),
             )
+            if export_type == "excel":
+                self.base_handler.update_progress(30, "Generating excel report...")
 
-            # Generate the report
-            report_handler = ReportHandler(report_parameters)
-            report_filepath = report_handler.get_report_file_path()
-            report_handler.generate_excel_report()
+                # Generate the report
+                report_handler = ReportHandler(report_parameters)
+                report_filepath = report_handler.get_report_file_path(export_type)
+                report_handler.generate_excel_report()
 
-            run_status_message = "Generated excel report successfully."
+                run_status_message = "Generated excel report successfully."
+                response = {
+                    "data": {"report_path": str(report_filepath)},
+                    "status": {"code": status_code, "message": run_status_message},
+                }
+            elif export_type == "word":
+                self.base_handler.update_progress(30, "Generating word report...")
+                # Generate the report
+                report_handler = ReportHandler(report_parameters)
+                report_filepath = report_handler.get_report_file_path(export_type)
+                report_handler.generate_word_report(report_type, scenario_code, report_id)
+
+                run_status_message = "Generated word report successfully."
+                response = {
+                    "data": {"report_path": str(report_filepath)},
+                    "status": {"code": status_code, "message": run_status_message},
+                }
+            elif export_type == "pdf":
+                self.base_handler.update_progress(30, "Generating PDF report...")
+                # Generate the report
+                report_handler = ReportHandler(report_parameters)
+                report_filepath = report_handler.get_report_file_path(export_type)
+                report_handler.generate_pdf_report(report_type)
+
+                run_status_message = "Generated PDF report successfully."
+                response = {
+                    "data": {"report_path": str(report_filepath)},
+                    "status": {"code": status_code, "message": run_status_message},
+                }
+
             self.base_handler.update_progress(100, run_status_message)
-
-            response = {
-                "data": {"report_path": str(report_filepath)},
-                "status": {"code": status_code, "message": run_status_message},
-            }
 
         except Exception as e:
             run_status_message = f"An error occurred: {str(e)}"
