@@ -69,9 +69,6 @@ export const useMapTools = () => {
 
   const handleAddToOutput = () => {
     const isReportExisting = reportExists(selectedReport?.id);
-    console.log("selectedReport:", selectedReport);
-    console.log("isReportExisting:", isReportExisting);
-    console.log("isScenarioRunCompleted:", isScenarioRunCompleted);
     // New scenario run
     if (isScenarioRunCompleted && !selectedReport) {
       APIService.AddToOutput(scenarioRunCode)
@@ -161,7 +158,7 @@ export const useMapTools = () => {
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
-    if (isScenarioRunCompleted && activeMapRef) {
+    if (isScenarioRunCompleted || selectedReport) {
       const id = new Date().getTime().toString();
       const filepath = `${reportPath}\\${scenarioRunCode}\\snapshot_${activeMap}_map_data_${id}.png`;
       takeScreenshot(activeMapRef, filepath)
@@ -239,7 +236,11 @@ export const useMapTools = () => {
 
     // Checks if the scenario has finished running, the selected sub tab is Risk
     // and the selected view control is the display chart
-    if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 0) {
+    if (
+      (isScenarioRunCompleted || selectedReport) &&
+      activeViewControl === "display_chart" &&
+      selectedSubTab === 0
+    ) {
       const id = new Date().getTime().toString();
       const sourceFile = `${tempPath}\\risks_waterfall_plot.png`;
       const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_risk_plot_data_${id}.png`;
