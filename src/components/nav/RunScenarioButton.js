@@ -30,7 +30,6 @@ const RunScenarioButton = () => {
     setAlertSeverity,
     setAlertShowMessage,
     setIsScenarioRunCompleted,
-    setScenarioRunCode,
   } = useStore();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -93,7 +92,6 @@ const RunScenarioButton = () => {
         setIsRunButtonDisabled(false);
         setMapTitle(response.result.data.mapTitle);
         setIsScenarioRunning(false);
-        setScenarioRunCode();
         setIsScenarioRunCompleted(true);
       })
       .catch((error) => {
