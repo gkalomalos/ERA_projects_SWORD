@@ -201,27 +201,30 @@ const ExposureNonEconomicCard = () => {
             </Box>
 
             {/* Fetch button section */}
-            <Box>
-              <Button
-                component="span"
-                sx={{
-                  bgcolor: "#FFEBEB",
-                  color: "#000000",
-                  fontWeight: "bold",
-                  margin: 2,
-                  "&:hover": { bgcolor: "#FFCCCC" },
-                  transition: "transform 0.1s ease-in-out", // Add transition for transform
-                  "&:active": {
-                    transform: "scale(0.96)", // Slightly scale down when clicked
-                  },
-                }}
-                variant="contained"
-                onClick={handleFetchButtonClick}
-                disabled={true}
-              >
-                {t("card_exposure_non_economic_fetch_button")}
-              </Button>
-            </Box>
+            {/* Remove until further notice */}
+            {false && (
+              <Box>
+                <Button
+                  component="span"
+                  sx={{
+                    bgcolor: "#FFEBEB",
+                    color: "#000000",
+                    fontWeight: "bold",
+                    margin: 2,
+                    "&:hover": { bgcolor: "#FFCCCC" },
+                    transition: "transform 0.1s ease-in-out", // Add transition for transform
+                    "&:active": {
+                      transform: "scale(0.96)", // Slightly scale down when clicked
+                    },
+                  }}
+                  variant="contained"
+                  onClick={handleFetchButtonClick}
+                  disabled={true}
+                >
+                  {t("card_exposure_non_economic_fetch_button")}
+                </Button>
+              </Box>
+            )}
           </Box>
         )}
 
