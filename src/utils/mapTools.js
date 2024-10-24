@@ -5,8 +5,6 @@ import "leaflet-simple-map-screenshoter";
 
 import useStore from "../store";
 import APIService from "../APIService";
-import outputIconTha from "../assets/folder_grey_network_icon_512.png";
-import outputIconEgy from "../assets/folder_grey_cloud_icon_512.png";
 
 export const useMapTools = () => {
   const { t } = useTranslation();
@@ -76,22 +74,6 @@ export const useMapTools = () => {
           setAlertMessage(response.result.status.message);
           if (response.result.status.code === 2000) {
             setAlertSeverity("success");
-            const id = new Date().getTime().toString();
-            const outputData = {
-              id: id,
-              scenarioId: `${scenarioRunCode}`,
-              data: `${selectedCountry} - ${selectedHazard} - ${selectedScenario} - ${
-                selectedExposureEconomic ? selectedExposureEconomic : selectedExposureNonEconomic
-              } - ${selectedTimeHorizon} - ${selectedAnnualGrowth}`,
-              image: selectedCountry === "thailand" ? outputIconTha : outputIconEgy,
-              title: `Impact data of ${t(`results_report_card_hazard_${selectedHazard}`)} on ${
-                selectedExposureEconomic
-                  ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
-                  : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
-              } in ${t(`results_report_card_country_${selectedCountry}`)}`,
-              type: "output_data",
-            };
-            addReport(outputData);
           } else {
             setAlertSeverity("error");
           }
@@ -233,6 +215,14 @@ export const useMapTools = () => {
   const handleSaveImage = async () => {
     const tempPath = await window.electron.fetchTempDir();
     const reportPath = await window.electron.fetchReportDir();
+
+    if (!selectedReport) {
+      setAlertMessage(
+        "No report selected. Select a report from the Output section or run a new scenario."
+      );
+      setAlertSeverity("error");
+      setAlertShowMessage(true);
+    }
 
     // Checks if the scenario has finished running, the selected sub tab is Risk
     // and the selected view control is the display chart
