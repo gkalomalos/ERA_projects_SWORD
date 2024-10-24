@@ -6,13 +6,12 @@ import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import RestoreIcon from "@mui/icons-material/Restore";
 
+import { useReportTools } from "../../utils/reportTools";
 import useStore from "../../store";
 
 const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
   const {
-    reports,
-    selectedReport,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
@@ -20,6 +19,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     setSelectedScenarioRunCode,
     setSelectedReportType,
   } = useStore();
+  const { getReport } = useReportTools();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const handleMouseDown = () => {
@@ -31,15 +31,8 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   };
 
   const handleClick = () => {
-    onCardClick(id);
-    setSelectedReportType(type);
-
-    if (selectedReport && selectedReport?.id !== id) {
-      setSelectedScenarioRunCode(selectedReport.scenarioId);
-    } else {
-      // Reset or handle case when there's no selected report
-      setSelectedScenarioRunCode(null);
-    }
+    onCardClick(id); // Only call the handler from the parent
+    setSelectedReportType(type); // This is fine to set since it’s unique to ReportCard
   };
 
   const handleDeleteButtonClick = () => {
@@ -57,7 +50,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
     onReportAction(id, "restore");
     setSelectedScenarioRunCode("");
 
-    const restoredScenario = reports.find((r) => r.id === id);
+    const restoredScenario = getReport(id);
     setMapTitle(restoredScenario.title);
   };
 

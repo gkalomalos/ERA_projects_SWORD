@@ -30,6 +30,8 @@ const RunScenarioButton = () => {
     setAlertSeverity,
     setAlertShowMessage,
     setIsScenarioRunCompleted,
+    setScenarioRunCode,
+    setSelectedReport,
   } = useStore();
 
   const [isRunButtonLoading, setIsRunButtonLoading] = useState(false);
@@ -81,6 +83,7 @@ const RunScenarioButton = () => {
     setIsRunButtonDisabled(true);
     setIsRunButtonLoading(true);
     setIsScenarioRunning(true);
+    setSelectedReport(null);
     APIService.Run(body)
       .then((response) => {
         setAlertMessage(response.result.status.message);
@@ -92,6 +95,7 @@ const RunScenarioButton = () => {
         setIsRunButtonDisabled(false);
         setMapTitle(response.result.data.mapTitle);
         setIsScenarioRunning(false);
+        setScenarioRunCode();
         setIsScenarioRunCompleted(true);
       })
       .catch((error) => {

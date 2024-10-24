@@ -18,18 +18,20 @@ const ReportsView = () => {
     setSelectedReport,
     updateReports,
   } = useStore();
-  const { restoreScenario } = useReportTools();
+  const { restoreScenario, getReport } = useReportTools();
 
   const onCardClickHandler = (id) => {
-    const report = reports.find((report) => report.id === id);
-    if (report) {
-      if (selectedReport?.id === id) {
-        setSelectedReport(null);
-      } else {
-        setSelectedReport(report);
-      }
-      setSelectedScenarioRunCode(report.scenarioId);
-    }
+    const report = getReport(id);
+    setSelectedReport(report)
+    setSelectedScenarioRunCode(report.scenarioId);
+    // if (report) {
+    //   if (selectedReport?.id === id) {
+    //     setSelectedReport(null); // Deselect if it's already selected
+    //   } else {
+    //     setSelectedReport(report); // Select new report
+    //   }
+    //   setSelectedScenarioRunCode(report.scenarioId);
+    // }
   };
 
   const onRemoveReportHandler = async (report) => {

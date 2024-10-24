@@ -40,7 +40,7 @@ export const useReportTools = () => {
       if (status.code === 2000) {
         // Loop through each report and add it to the store if it doesn't already exist
         data.forEach((report) => {
-          const existingReport = reports.find((r) => r.id === report.id);
+          const existingReport = getReport(report.id);
 
           if (!existingReport) {
             const reportData = {
@@ -85,14 +85,14 @@ export const useReportTools = () => {
     }
   };
 
-  const getScenario = (id) => {
+  const getReport = (id) => {
     return reports.find((report) => report.id === id) || null;
   };
 
   const restoreScenario = async (id) => {
     try {
       const reportPath = await window.electron.fetchReportDir();
-      const scenario = getScenario(id);
+      const scenario = getReport(id);
 
       if (!scenario) {
         throw new Error(`Scenario with id ${id} not found.`);
@@ -133,8 +133,14 @@ export const useReportTools = () => {
     }
   };
 
+  const reportExists = (reportId) => {
+    return reports.some((r) => r && r.id === reportId);
+  };
+
   return {
     fetchReports,
     restoreScenario,
+    reportExists,
+    getReport,
   };
 };

@@ -16,6 +16,7 @@ export const useMapTools = () => {
     activeViewControl,
     addReport,
     isScenarioRunCompleted,
+    reports,
     scenarioRunCode,
     setAlertMessage,
     setAlertSeverity,
@@ -25,6 +26,7 @@ export const useMapTools = () => {
     selectedExposureEconomic,
     selectedExposureNonEconomic,
     selectedHazard,
+    selectedReport,
     selectedScenario,
     selectedSubTab,
     selectedTimeHorizon,
@@ -66,7 +68,12 @@ export const useMapTools = () => {
   };
 
   const handleAddToOutput = () => {
-    if (isScenarioRunCompleted) {
+    const isReportExisting = reportExists(selectedReport?.id);
+    console.log("selectedReport:", selectedReport);
+    console.log("isReportExisting:", isReportExisting);
+    console.log("isScenarioRunCompleted:", isScenarioRunCompleted);
+    // New scenario run
+    if (isScenarioRunCompleted && !selectedReport) {
       APIService.AddToOutput(scenarioRunCode)
         .then((response) => {
           setAlertMessage(response.result.status.message);
@@ -96,6 +103,20 @@ export const useMapTools = () => {
         .catch((error) => {
           console.log(error);
         });
+    }
+    // Restored scenario (already exists)
+    if (selectedReport && isReportExisting) {
+      setAlertMessage("Report already available in Outputs (Reporting) section.");
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
+    }
+    // Not selected restored scenario and no new scenario run
+    if (!selectedReport && !isScenarioRunCompleted) {
+      setAlertMessage(
+        "No report selected. Select a report from the Output (Reporting) section or run a new scenario."
+      );
+      setAlertSeverity("error");
+      setAlertShowMessage(true);
     }
   };
 
@@ -133,6 +154,13 @@ export const useMapTools = () => {
   const handleSaveMap = async () => {
     const reportPath = await window.electron.fetchReportDir();
 
+    if (!selectedReport) {
+      setAlertMessage(
+        "No report selected. Select a report from the Output section or run a new scenario."
+      );
+      setAlertSeverity("error");
+      setAlertShowMessage(true);
+    }
     if (isScenarioRunCompleted && activeMapRef) {
       const id = new Date().getTime().toString();
       const filepath = `${reportPath}\\${scenarioRunCode}\\snapshot_${activeMap}_map_data_${id}.png`;
@@ -199,6 +227,10 @@ export const useMapTools = () => {
         }
       });
     });
+  };
+
+  const reportExists = (reportId) => {
+    return reports.some((r) => r && r.id === reportId);
   };
 
   const handleSaveImage = async () => {
