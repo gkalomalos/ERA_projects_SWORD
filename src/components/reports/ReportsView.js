@@ -22,7 +22,7 @@ const ReportsView = () => {
 
   const onCardClickHandler = (id) => {
     const report = getReport(id);
-    setSelectedReport(report)
+    setSelectedReport(report);
     setSelectedScenarioRunCode(report.scenarioId);
     // if (report) {
     //   if (selectedReport?.id === id) {
@@ -64,6 +64,14 @@ const ReportsView = () => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
       const filteredReport = reports.filter((report) => report.id === id)[0];
+      
+      // Filter out all reports with the same scenarioId
+      const updatedReports = reports.filter(
+        (report) => report.scenarioId !== filteredReport.scenarioId
+      );
+
+      updateReports(updatedReports); // Update the frontend reports
+
       onRemoveReportHandler(filteredReport);
     } else if (action === "restore") {
       restoreScenario(id);
