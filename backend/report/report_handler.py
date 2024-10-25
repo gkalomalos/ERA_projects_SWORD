@@ -308,7 +308,6 @@ class ReportHandler:
         # Set report input fields section
         report_title = f"Report"
         report_subtitle = f"Summary of the Impact of {hazard_type_beautified} on {asset_type_beautified} in {country_name_beautified}"
-        report_description = "report_description"  # TODO
 
         section_title = self._get_section_title(report_type)
         section_description = self._get_section_description(
@@ -331,7 +330,6 @@ class ReportHandler:
         context = {
             "report_title": report_title,
             "report_subtitle": report_subtitle,
-            "report_description": report_description,
             "hazard_type": hazard_type_beautified,
             "scenario": scenario_beautified,
             "time_horizon": time_horizon_beautified,
@@ -362,5 +360,16 @@ class ReportHandler:
         report_template.save(report_file_path)
         CoInitialize()
 
-    def generate_pdf_report(self, report_type: str):
-        pass
+    def generate_pdf_report(self, report_type: str, scenario_id: str, report_id: str):
+        # Step 1: Generate Word report
+        self.generate_word_report(
+            report_type=report_type, scenario_id=scenario_id, report_id=report_id
+        )
+
+        # Step 2: Define paths for Word and PDF files
+        word_file_path = self.get_report_file_path(export_type="word", report_type=report_type)
+        pdf_file_path = self.get_report_file_path(export_type="pdf", report_type=report_type)
+
+        # Step 3: Convert Word to PDF
+        convert(word_file_path, pdf_file_path)
+

@@ -138,7 +138,7 @@ class RunExportReport:
                 # Generate the report
                 report_handler = ReportHandler(report_parameters)
                 report_filepath = report_handler.get_report_file_path(export_type)
-                report_handler.generate_pdf_report(report_type)
+                report_handler.generate_pdf_report(report_type, scenario_code, report_id)
 
                 run_status_message = "Generated PDF report successfully."
                 response = {
