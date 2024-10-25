@@ -96,15 +96,15 @@ class RunExportReport:
                 scenario_id=scenario_code,
                 time_horizon=f"{scenario_metadata.get('ref_year')} - {scenario_metadata.get('future_year')}",
                 exposure_economic=scenario_metadata.get("exposure_economic"),
-                exposure_noneconomic=scenario_metadata.get("exposure_non_economic"),
+                exposure_non_economic=scenario_metadata.get("exposure_non_economic"),
                 annual_population_growth=(
                     scenario_metadata.get("annual_growth")
-                    if scenario_metadata.get("asset_type") == "economic"
+                    if scenario_metadata.get("exposure_economic")
                     else None
                 ),
                 annual_gdp_growth=(
                     scenario_metadata.get("annual_growth")
-                    if scenario_metadata.get("asset_type") == "non_economic"
+                    if scenario_metadata.get("exposure_non_economic")
                     else None
                 ),
             )
