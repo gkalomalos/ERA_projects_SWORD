@@ -125,7 +125,7 @@ class RunExportReport:
                 self.base_handler.update_progress(30, "Generating word report...")
                 # Generate the report
                 report_handler = ReportHandler(report_parameters)
-                report_filepath = report_handler.get_report_file_path(export_type)
+                report_filepath = report_handler.get_report_file_path(export_type, report_type)
                 report_handler.generate_word_report(report_type, scenario_code, report_id)
 
                 run_status_message = "Generated word report successfully."
@@ -137,7 +137,7 @@ class RunExportReport:
                 self.base_handler.update_progress(30, "Generating PDF report...")
                 # Generate the report
                 report_handler = ReportHandler(report_parameters)
-                report_filepath = report_handler.get_report_file_path(export_type)
+                report_filepath = report_handler.get_report_file_path(export_type, report_type)
                 report_handler.generate_pdf_report(report_type, scenario_code, report_id)
 
                 run_status_message = "Generated PDF report successfully."
