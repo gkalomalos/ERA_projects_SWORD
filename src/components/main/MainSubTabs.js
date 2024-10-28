@@ -15,7 +15,7 @@ const MainSubTabs = () => {
     1: [
       "Risk",
       "Adaptation",
-      "+ Add to Output",
+      "+ Save Scenario",
       activeViewControl === "display_map" ? "+ Save Map" : "+ Save Chart", // Dynamically change label
     ], // Added "Save to Map" or "+ Save Chart" button
     2: [], // Subtabs for "Macroeconomic section"
@@ -75,7 +75,7 @@ const MainSubTabs = () => {
         }}
       >
         {subTabs.map((label, index) =>
-          // Conditionally render a button instead of a tab for "+ Add to Output" and "Save to Map"
+          // Conditionally render a button instead of a tab for "+ Save Scenario" and "Save to Map"
           index === 2 || index === 3 ? (
             <Box
               key={index}
