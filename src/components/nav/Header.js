@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
-import HelpButton from "./HelpButton";
 import LanguageSelector from "./LanguageButton";
 import MinimizeButton from "./MinimizeButton";
 import ReloadButton from "./ReloadButton";
-import SettingsModal from "./SettingsButton";
 import ShutdownButton from "./ShutdownButton";
 
 import giz_logo from "../../assets/giz_logo.png";
@@ -17,15 +14,6 @@ import css from "./Header.module.css";
 
 const Header = () => {
   const { t } = useTranslation();
-  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
-
-  const handleOpenSettings = () => {
-    setSettingsModalOpen(true);
-  };
-
-  const handleCloseSettings = () => {
-    setSettingsModalOpen(false);
-  };
 
   return (
     <AppBar
@@ -69,11 +57,6 @@ const Header = () => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <ReloadButton />
           <LanguageSelector />
-          <IconButton color="inherit" onClick={handleOpenSettings}>
-            <SettingsIcon />
-          </IconButton>
-          <SettingsModal isOpen={isSettingsModalOpen} onClose={handleCloseSettings} />
-          <HelpButton />
           <MinimizeButton />
           <ShutdownButton />
         </div>
