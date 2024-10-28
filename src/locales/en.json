@@ -326,7 +326,7 @@
 
   "results_era_egypt_flood_students_1_0_display_map_hazard": "The flood hazard map is created using CLIMADA River Flood API with input data from ISIMIP with around 5km resolution. The return periods are 2, 5, 10, 25 years. RCP 2.6 and 8.5 was used. The Flood depth (meter) input data can be found at https://data.isimip.org/.",
   "results_era_egypt_flood_students_1_0_display_map_exposure": "Number of students data from GAR 2015. Admin 0 level shows the total number of students at the country level. Admin 1 level shows the total number of students at the provincial level. Admin 2 level shows the total number of students at the district level.",
-  "results_era_egypt_flood_students_1_0_display_map_impact": "Number of students directly affected due to floods. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_egypt_flood_students_1_0_display_map_impact": "Number of students directly affected due to floods. The dots indicate where the schools are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_egypt_flood_students_1_1_display_map_hazard": "",
   "results_era_egypt_flood_students_1_1_display_map_exposure": "",
   "results_era_egypt_flood_students_1_1_display_map_impact": "",
@@ -391,7 +391,7 @@
 
   "results_era_egypt_heatwaves_students_1_0_display_map_hazard": "The heatwave hazard map is created with input data from WCRP CORDEX (World Climate Research Programme Coordinated Regional Downscaling Experiment) with 22 km resolution. The return periods are 10, 25, 50, 75, and 100 years. RCP 4.5 and 8.5 were used. The Maximum Temperature input data can be found at https://cordex.org/data-access/",
   "results_era_egypt_heatwaves_students_1_0_display_map_exposure": "Number of students data from GAR 2015. Admin 0 level shows the total number of students at the country level. Admin 1 level shows the total number of students at the provincial level. Admin 2 level shows the total number of students at the district level.",
-  "results_era_egypt_heatwaves_students_1_0_display_map_impact": "Number of students hospitalized due to high temperatures. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_egypt_heatwaves_students_1_0_display_map_impact": "Number of students hospitalized due to high temperatures. The dots indicate where the schools are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_egypt_heatwaves_students_1_1_display_map_hazard": "",
   "results_era_egypt_heatwaves_students_1_1_display_map_exposure": "",
   "results_era_egypt_heatwaves_students_1_1_display_map_impact": "",
@@ -482,7 +482,7 @@
 
   "results_era_thailand_flood_buddhist_monks_1_0_display_map_hazard": "The flood hazard map is created using CLIMADA River Flood API with input data from ISIMIP with around 5km resolution. The return periods are 2, 5, 10, 25 years. RCP 2.6 and 8.5 was used. The Flood depth (meter) input data can be found at https://data.isimip.org/",
   "results_era_thailand_flood_buddhist_monks_1_0_display_map_exposure": "Number of Buddhist monks. Admin 0 level shows the total number of Buddhist monks at the country level. Admin 1 level shows the total number of Buddhist monks at the provincial level. Admin 2 level shows the total number of Buddhist monks at the district level.",
-  "results_era_thailand_flood_buddhist_monks_1_0_display_map_impact": "Number of Buddhist monks affected by floods. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_thailand_flood_buddhist_monks_1_0_display_map_impact": "Number of Buddhist monks affected by floods. The dots indicate where the temples are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_thailand_flood_buddhist_monks_1_1_display_map_hazard": "",
   "results_era_thailand_flood_buddhist_monks_1_1_display_map_exposure": "",
   "results_era_thailand_flood_buddhist_monks_1_1_display_map_impact": "",
@@ -547,7 +547,7 @@
 
   "results_era_thailand_flood_students_1_0_display_map_hazard": "The flood hazard map is created using CLIMADA River Flood API with input data from ISIMIP with around 5km resolution. The return periods are 2, 5, 10, 25 years. RCP 2.6 and 8.5 was used. The Flood depth (meter) input data can be found at https://data.isimip.org/",
   "results_era_thailand_flood_students_1_0_display_map_exposure": "Number of students between age of 3 and 17 years old. Admin 0 level shows the total number of students at the country level. Admin 1 level shows the total number of students at the provincial level. Admin 2 level shows the total number of students at the district level. ",
-  "results_era_thailand_flood_students_1_0_display_map_impact": "Number of students directly affected due to floods. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_thailand_flood_students_1_0_display_map_impact": "Number of students directly affected due to floods. The dots indicate where the schools are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_thailand_flood_students_1_1_display_map_hazard": "",
   "results_era_thailand_flood_students_1_1_display_map_exposure": "",
   "results_era_thailand_flood_students_1_1_display_map_impact": "",
@@ -599,7 +599,7 @@
 
   "results_era_thailand_heatwaves_buddhist_monks_1_0_display_map_hazard": "The heatwave hazard map is created with input data from WCRP CORDEX (World Climate Research Programme Coordinated Regional Downscaling Experiment) with 22 km resolution. The return periods are 10, 25, 50, 75, and 100 years. RCP 4.5 and 8.5 were used. The Maximum Temperature input data can be found at https://cordex.org/data-access/",
   "results_era_thailand_heatwaves_buddhist_monks_1_0_display_map_exposure": "Number of Buddhist monks. Admin 0 level shows the total number of Buddhist monks at the country level. Admin 1 level shows the total number of Buddhist monks at the provincial level. Admin 2 level shows the total number of Buddhist monks at the district level.",
-  "results_era_thailand_heatwaves_buddhist_monks_1_0_display_map_impact": "Number of Buddhist monks hospitalized due to high temperatures. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_thailand_heatwaves_buddhist_monks_1_0_display_map_impact": "Number of Buddhist monks hospitalized due to high temperatures. The dots indicate where the temples are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_thailand_heatwaves_buddhist_monks_1_1_display_map_hazard": "",
   "results_era_thailand_heatwaves_buddhist_monks_1_1_display_map_exposure": "",
   "results_era_thailand_heatwaves_buddhist_monks_1_1_display_map_impact": "",
@@ -611,7 +611,7 @@
 
   "results_era_thailand_heatwaves_students_1_0_display_map_hazard": "The heatwave hazard map is created with input data from WCRP CORDEX (World Climate Research Programme Coordinated Regional Downscaling Experiment) with 22 km resolution. The return periods are 10, 25, 50, 75, and 100 years. RCP 4.5 and 8.5 were used. The Maximum Temperature input data can be found at https://cordex.org/data-access/",
   "results_era_thailand_heatwaves_students_1_0_display_map_exposure": "Number of students between age of 3 and 17 years old. Admin 0 level shows the total number of students at the country level. Admin 1 level shows the total number of students at the provincial level. Admin 2 level shows the total number of students at the district level. ",
-  "results_era_thailand_heatwaves_students_1_0_display_map_impact": "Number of students hospitalized due to high temperatures. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
+  "results_era_thailand_heatwaves_students_1_0_display_map_impact": "Number of students hospitalized due to high temperatures. The dots indicate where the schools are located. These impacts are calculated based on the different hazard intensities and the vulnerability of the asset defined by the damage function.",
   "results_era_thailand_heatwaves_students_1_1_display_map_hazard": "",
   "results_era_thailand_heatwaves_students_1_1_display_map_exposure": "",
   "results_era_thailand_heatwaves_students_1_1_display_map_impact": "",
