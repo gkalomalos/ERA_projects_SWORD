@@ -327,7 +327,9 @@ ipcMain.on("reload", async () => {
 
 // Check for updates after the app is ready
 app.on("ready", () => {
-  autoUpdater.checkForUpdatesAndNotify();
+  if (!isDevelopmentEnv()) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 });
 
 autoUpdater.setFeedURL({
