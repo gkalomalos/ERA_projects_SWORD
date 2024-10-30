@@ -256,6 +256,8 @@ class BaseHandler:
         if not macro_variable:
             raise ValueError("Macro variable cannot be empty.")
 
+        return beautified_names[macro_variable]
+
     def beautify_asset(self, asset: str) -> str:
         """
         Converts raw asset names into human-readable, capitalized format.
