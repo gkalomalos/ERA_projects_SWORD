@@ -68,7 +68,7 @@ const ExposureEconomic = () => {
     if (selectedExposureEconomic && isValidExposureEconomic) {
       setBgColor("#C0E7CF"); //green
     } else if (selectedExposureEconomic && !isValidExposureEconomic) {
-      setBgColor("#FFCCCC"); //red
+      setBgColor("#FFB3B3"); //red
     } else if (selectedExposureNonEconomic) {
       setBgColor("#CFCFCF"); //grey
       // Added to handle missing asset datasets for heatwaves in Thailand

@@ -50,7 +50,7 @@ const ExposureNonEconomic = () => {
     if (selectedExposureNonEconomic && isValidExposureNonEconomic) {
       setBgColor("#C0E7CF"); //green
     } else if (selectedExposureNonEconomic && !isValidExposureNonEconomic) {
-      setBgColor("#FFCCCC"); //red
+      setBgColor("#FFB3B3"); //red
     } else if (selectedExposureEconomic) {
       setBgColor("#CFCFCF"); //grey
     } else {
