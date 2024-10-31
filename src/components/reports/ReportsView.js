@@ -1,76 +1,104 @@
-import React, { useState } from "react";
+import React from "react";
 
-import image1 from "./cost_benefit_plot.png";
-import image2 from "./risks_waterfall_plot_1.png";
-import image3 from "./risks_waterfall_plot_2.png";
-
+import { useReportTools } from "../../utils/reportTools";
 import ReportCard from "./ReportCard";
+import useStore from "../../store";
 
-// Test report data
-const demoReportData = [
-  {
-    id: "1",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
-    image: image2,
-    title: "Flood Expansion – return period 1 in 100 years",
-    type: "Economic – Risk – Hazard – Map",
-  },
-  {
-    id: "2",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/…",
-    image: image3,
-    title: "Exposure of Markets",
-    type: "Economic – Risk – Exposure – Map",
-  },
-  {
-    id: "3",
-    data: "Thailand/2050/SSP2-4.5/Flood/Markets/GDP2/...",
-    image: image1,
-    title: "Cost-Benefit Analysis of Adaptation Measures",
-    type: "Economic – Adaptation – Cost-Benefit – Chart",
-  },
-];
+import APIService from "../../APIService";
 
 const ReportsView = () => {
-  const [selectedReport, setSelectedReport] = useState(null);
-  const [reportData, setReportData] = useState(demoReportData);
+  const {
+    reports,
+    removeReport,
+    selectedReport,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+    setSelectedScenarioRunCode,
+    setSelectedReport,
+    updateReports,
+  } = useStore();
+  const { restoreScenario, getReport } = useReportTools();
 
   const onCardClickHandler = (id) => {
-    setSelectedReport((prevSelectedReport) => (prevSelectedReport === id ? null : id));
+    const report = getReport(id);
+    setSelectedReport(report);
+    setSelectedScenarioRunCode(report.scenarioId);
+    // if (report) {
+    //   if (selectedReport?.id === id) {
+    //     setSelectedReport(null); // Deselect if it's already selected
+    //   } else {
+    //     setSelectedReport(report); // Select new report
+    //   }
+    //   setSelectedScenarioRunCode(report.scenarioId);
+    // }
+  };
+
+  const onRemoveReportHandler = async (report) => {
+    const body = { report: report };
+
+    try {
+      const response = await APIService.RemoveReport(body);
+
+      // Ensure that the response and status exist
+      const message = response?.result?.status?.message || "Failed to remove report";
+      const code = response?.result?.status?.code || 5000;
+
+      setAlertMessage(message);
+      setAlertSeverity(code === 2000 ? "success" : "error");
+      setAlertShowMessage(true);
+
+      // Remove the report from the store only if the response was successful
+      if (code === 2000) {
+        await removeReport(report.id); // Update store after success
+      }
+    } catch (error) {
+      console.log(error);
+      setAlertMessage("An error occurred while removing the report");
+      setAlertSeverity("error");
+      setAlertShowMessage(true);
+    }
   };
 
   const onActionReportHandler = (id, action) => {
-    const index = reportData.findIndex((report) => report.id === id);
-    const newReportData = [...reportData];
-
+    const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
-      newReportData.splice(index, 1);
-    } else {
-      const lastIndex = reportData.length - 1;
-      const [movedReport] = newReportData.splice(index, 1);
+      const filteredReport = reports.filter((report) => report.id === id)[0];
+      
+      // Filter out all reports with the same scenarioId
+      const updatedReports = reports.filter(
+        (report) => report.scenarioId !== filteredReport.scenarioId
+      );
 
+      updateReports(updatedReports); // Update the frontend reports
+
+      onRemoveReportHandler(filteredReport);
+    } else if (action === "restore") {
+      restoreScenario(id);
+    } else {
+      const lastIndex = reports.length - 1;
+      const [movedReport] = reports.splice(index, 1);
       let newIndex;
       if (action === "up") {
         newIndex = index === 0 ? lastIndex : index - 1;
       } else if (action === "down") {
         newIndex = index === lastIndex ? 0 : index + 1;
       }
-
+      const newReportData = [...reports];
       newReportData.splice(newIndex, 0, movedReport);
+      updateReports(newReportData);
     }
-
-    setReportData(newReportData);
   };
 
   return (
     <>
-      {reportData.map((report) => (
+      {reports.map((report) => (
         <ReportCard
           key={report.id}
           data={report.data}
           id={report.id}
           image={report.image}
-          isSelected={selectedReport === report.id}
+          isSelected={selectedReport?.id === report.id}
           onCardClick={onCardClickHandler}
           onReportAction={onActionReportHandler}
           title={report.title}

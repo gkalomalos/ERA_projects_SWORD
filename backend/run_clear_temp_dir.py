@@ -56,4 +56,3 @@ if __name__ == "__main__":
     runner = RunClearTempDir(req)
     resp = runner.run_clear_temp_dir()
     print(json.dumps(resp))  # Print the result as a JSON string
-    # sys.stdout.flush()  # Ensure the output is immediately available to the parent process

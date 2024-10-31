@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import { formatNumberDivisor } from "../../utils/formatters";
 import "./LegendLegacy.css";
 
 const LegendLegacy = ({ colorScale, minValue, maxValue, type, unit }) => {
@@ -26,10 +27,6 @@ const LegendLegacy = ({ colorScale, minValue, maxValue, type, unit }) => {
     ${colorScale((minValue + maxValue) / 2)} 50%, 
     ${colorScale(maxValue)} 100%)`;
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(num / divisor);
-  };
-
   return (
     <div className="legend-container">
       <div className="legend-title">{updatedTitle}</div>
@@ -38,12 +35,12 @@ const LegendLegacy = ({ colorScale, minValue, maxValue, type, unit }) => {
       </div>
       <div className="legend-values">
         {minValue === maxValue ? (
-          <span>{formatNumber(minValue)}</span>
+          <span>{formatNumberDivisor(minValue, divisor)}</span>
         ) : (
           <>
-            <span>{formatNumber(minValue)}</span>
-            <span>{formatNumber((minValue + maxValue) / 2)}</span>
-            <span>{formatNumber(maxValue)}</span>
+            <span>{formatNumberDivisor(minValue, divisor)}</span>
+            <span>{formatNumberDivisor((minValue + maxValue) / 2, divisor)}</span>
+            <span>{formatNumberDivisor(maxValue, divisor)}</span>
           </>
         )}
       </div>

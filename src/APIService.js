@@ -38,6 +38,31 @@ export default class APIService {
     }
   }
 
+  static async FetchMacroEconomicChartData(body) {
+    try {
+      const scriptName = "run_fetch_macro_chart_data.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async FetchReports() {
+    try {
+      const scriptName = "run_fetch_reports.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async Shutdown() {
     try {
       const response = await window.electron.send("shutdown");
@@ -59,6 +84,45 @@ export default class APIService {
   static async Refresh() {
     try {
       const response = await window.electron.send("reload");
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async AddToOutput(body) {
+    try {
+      const scriptName = "run_add_to_ouput.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async ExportReport(body) {
+    try {
+      const scriptName = "run_export_report.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async RemoveReport(body) {
+    try {
+      const scriptName = "run_remove_report.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+        data: body,
+      });
       return response;
     } catch (error) {
       console.log(error);

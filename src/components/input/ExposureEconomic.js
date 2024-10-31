@@ -7,6 +7,9 @@ import useStore from "../../store";
 const ExposureEconomic = () => {
   const {
     isValidExposureEconomic,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
     selectedCountry,
@@ -16,7 +19,7 @@ const ExposureEconomic = () => {
   } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+  const [bgColor, setBgColor] = useState("#CCE1E7"); // State to manage background color
 
   const handleMouseDown = () => {
     // Deactivate input card click in case non-economic exposure is selected
@@ -42,8 +45,18 @@ const ExposureEconomic = () => {
 
   const handleClick = () => {
     if (selectedExposureNonEconomic) {
+      setAlertMessage(
+        "Economic assets cannot be selected when a non-Economic asset is active. To enable the selection of Economic assets, please deselect one of the currently active non-Economic assets."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
+      setAlertMessage(
+        "There are no Economic assets available for the selected country, Thailand, and the selected hazard, Heatwaves."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     } else {
       setSelectedCard("exposureEconomic");
@@ -53,16 +66,16 @@ const ExposureEconomic = () => {
 
   const handleBgColor = () => {
     if (selectedExposureEconomic && isValidExposureEconomic) {
-      setBgColor("#E5F5EB"); //green
+      setBgColor("#C0E7CF"); //green
     } else if (selectedExposureEconomic && !isValidExposureEconomic) {
-      setBgColor("#FFCCCC"); //red
+      setBgColor("#FFB3B3"); //red
     } else if (selectedExposureNonEconomic) {
-      setBgColor("#E6E6E6"); //grey
+      setBgColor("#CFCFCF"); //grey
       // Added to handle missing asset datasets for heatwaves in Thailand
     } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
-      setBgColor("#E6E6E6"); //grey
+      setBgColor("#CFCFCF"); //grey
     } else {
-      setBgColor("#EBF3F5"); //default light blue
+      setBgColor("#CCE1E7"); //default light blue
     }
   };
 

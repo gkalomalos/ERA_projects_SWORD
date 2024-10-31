@@ -30,6 +30,7 @@ from climada.entity import DiscRates, Entity
 from climada.entity.measures import MeasureSet
 from climada.hazard import Hazard
 import matplotlib.pyplot as plt
+import numpy as np
 
 from constants import DATA_TEMP_DIR, REQUIREMENTS_DIR
 from hazard.hazard_handler import HazardHandler
@@ -207,22 +208,83 @@ class CostBenefitHandler:
             logger.log("error", f"Failed to plot waterfall chart. More info: {e}")
             raise Exception(f"Failed to plot waterfall chart: {e}") from e
 
-    def plot_cost_benefit(self, cost_benefit: CostBenefit):
+    def get_scaling_factor(self, values: dict) -> tuple:
         """
-        Plots the cost-benefit chart for the cost-benefit analysis.
+        Determines the appropriate scaling factor (thousands, millions, or billions)
+        based on the values in the cost-benefit ratio.
+
+        :param values: A dictionary of cost-benefit values.
+        :type values: dict
+        :return: The scaling factor and its string representation.
+        :rtype: tuple
+        """
+        scaling_factors = {1_000_000_000: "billions", 1_000_000: "millions", 1_000: "thousands"}
+
+        # Find the min value from the ratio
+        max_value = max(abs(1 / value) for value in values.values())
+
+        # Determine the appropriate scaling factor
+        for factor, label in scaling_factors.items():
+            if max_value >= factor:
+                return factor, label
+
+        # Default to 1000 (thousands) if no larger factor applies
+        return 1000, "thousands"
+
+    def plot_cost_benefit(self, cost_benefit: CostBenefit, asset_type: str = "economic"):
+        """
+        Plots the cost-benefit chart for the cost-benefit analysis, adjusting for scaling.
 
         :param cost_benefit: The cost-benefit analysis object.
         :type cost_benefit: CostBenefit
+        :param asset_type: Type of asset ("economic" or "non_economic") to determine if scaling should be applied.
+        :type asset_type: str
         :return: The cost-benefit plot axis.
         :rtype: matplotlib.axes._subplots.AxesSubplot
         """
         try:
+            # Define a threshold for very small values that are too close to zero
+            # to resolve infinite values in plot.
+            threshold = 1e-6
+
+            # Validate the cost-benefit ratio to check for invalid, negative, or very small values
+            invalid_values = [
+                (key, val)
+                for key, val in cost_benefit.cost_ben_ratio.items()
+                if np.isnan(val) or np.isinf(val) or val < threshold
+            ]
+            if invalid_values:
+                raise ValueError(f"Invalid values in cost-benefit ratio: {invalid_values}")
+
+            # Get the scaling factor and update the cost_benefit ratio accordingly
+            factor, label = self.get_scaling_factor(cost_benefit.cost_ben_ratio)
+
+            # Scale the cost-benefit values
+            for key, value in cost_benefit.cost_ben_ratio.items():
+                cost_benefit.cost_ben_ratio[key] = value / factor
+
+            # Plot the cost-benefit chart
             axis = cost_benefit.plot_cost_benefit()
             axis.set_title("Cost-Benefit Analysis")
+
+            # Set the y-axis label with/without the scaling factor
+            if asset_type == "non_economic":
+                axis.set_ylabel(f"Benefit/Cost ratio ({cost_benefit.unit} per {factor} USD)")
+            else:
+                axis.set_ylabel("Benefit/Cost ratio")
+
+            # Get the min and max values for proper scaling
+            y_min, y_max = axis.get_ylim()
+
+            # Set y-axis limits, with a 10% gap above the max value
+            axis.set_ylim(y_min, y_max * 1.1)
+
+            # Save the plot
             filename = DATA_TEMP_DIR / "cost_benefit_plot.png"
             plt.savefig(filename, dpi=300, bbox_inches="tight")
             plt.close()
             return axis
+
         except Exception as e:
             logger.log("error", f"Failed to plot cost-benefit chart. More info: {e}")
-            raise Exception(f"Failed to plot cost-benefit chart: {e}") from e
+            return None

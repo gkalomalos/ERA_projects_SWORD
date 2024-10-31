@@ -8,6 +8,7 @@ import useStore from "../../store";
 const ResultsTypography = () => {
   const {
     activeMap,
+    activeViewControl,
     selectedAppOption,
     selectedCountry,
     selectedHazard,
@@ -15,7 +16,6 @@ const ResultsTypography = () => {
     selectedExposureNonEconomic,
     selectedTab,
     selectedSubTab,
-    viewControl,
   } = useStore();
   const { t } = useTranslation();
 
@@ -37,7 +37,7 @@ const ResultsTypography = () => {
             `${selectedExposure}_` +
             `${selectedTab}_` +
             `${selectedSubTab}_` +
-            `${viewControl}_` +
+            `${activeViewControl}_` +
             `${activeMap}`
         );
       }
@@ -46,7 +46,7 @@ const ResultsTypography = () => {
         `results_${selectedAppOption}_` +
           `${selectedTab}_` +
           `${selectedSubTab}_` +
-          `${viewControl}_` +
+          `${activeViewControl}_` +
           `${activeMap}`
       );
     }

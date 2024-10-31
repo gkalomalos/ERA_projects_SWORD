@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import L from "leaflet";
+import "leaflet-simple-map-screenshoter";
 import Button from "@mui/material/Button";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 
@@ -12,8 +13,9 @@ import Legend from "./Legend";
 import useStore from "../../store";
 
 const HazardMap = () => {
-  const { selectedCountry, selectedHazard } = useStore();
+  const { selectedCountry, selectedHazard, setActiveMapRef } = useStore();
   const { t } = useTranslation();
+  const mapRefSet = useRef(false);
 
   const [activeRPLayer, setActiveRPLayer] = useState(null);
   const [legendTitle, setLegendTitle] = useState("");
@@ -24,8 +26,6 @@ const HazardMap = () => {
   const [unit, setUnit] = useState("");
   const [suffix, setSuffix] = useState("");
   const [divisor, setDivisor] = useState(1);
-
-  const mapRef = useRef();
 
   const getSuffixAndDivisor = (value) => {
     if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
@@ -172,15 +172,22 @@ const HazardMap = () => {
     thailand: [15.87, 100.9925],
   };
 
+  const MapEvents = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!mapRefSet.current) {
+        setActiveMapRef(map);
+        mapRefSet.current = true; // Update the ref to indicate that setActiveMapRef has been called
+      }
+    }, [map, setActiveMapRef]);
+
+    return null;
+  };
+
   useEffect(() => {
     fetchGeoJson(activeRPLayer);
   }, [activeRPLayer, fetchGeoJson]);
-
-  useEffect(() => {
-    if (mapRef.current && selectedCountry in countryCoordinates) {
-      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
-    }
-  }, [selectedCountry]);
 
   return (
     <MapContainer
@@ -188,13 +195,13 @@ const HazardMap = () => {
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
       style={{ position: "relative", height: "100%", width: "100%" }}
-      whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={12}
+        maxZoom={15}
         minZoom={5}
       />
+      <MapEvents />
       <div style={buttonContainerStyle}>
         {returnPeriods.map((rp) => (
           <Button

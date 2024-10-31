@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
-import HelpButton from "./HelpButton";
 import LanguageSelector from "./LanguageButton";
 import MinimizeButton from "./MinimizeButton";
 import ReloadButton from "./ReloadButton";
-import SettingsModal from "./SettingsButton";
 import ShutdownButton from "./ShutdownButton";
 
 import giz_logo from "../../assets/giz_logo.png";
@@ -17,15 +14,6 @@ import css from "./Header.module.css";
 
 const Header = () => {
   const { t } = useTranslation();
-  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
-
-  const handleOpenSettings = () => {
-    setSettingsModalOpen(true);
-  };
-
-  const handleCloseSettings = () => {
-    setSettingsModalOpen(false);
-  };
 
   return (
     <AppBar
@@ -37,43 +25,53 @@ const Header = () => {
         sx={{
           width: "100%",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center", // Ensure items are aligned in the center vertically
-          flexWrap: "nowrap", // Prevent wrapping of items
+          alignItems: "center",
+          flexWrap: "nowrap",
         }}
       >
+        {/* Logos Section */}
         <div
           style={{
             display: "flex",
-            alignItems: "center", // Align logos in the center vertically
-            justifyContent: "flex-start", // Align logos to the start horizontally
-            overflow: "hidden", // Prevent overflow
+            alignItems: "center",
+            flexGrow: 1,
+            flexBasis: "33%", // Each section takes up one-third of the available space
+            justifyContent: "flex-start",
+            overflow: "hidden",
           }}
         >
           <img src={giz_logo} alt="giz_logo" className={css.logo_giz} />
           <img src={unu_ehs_logo} alt="unu_ehs_logo" className={css.logo_unu} />
         </div>
+
+        {/* Title Section */}
         <Typography
           variant="h3"
           noWrap
           component="div"
           sx={{
             flexGrow: 1,
-            textAlign: "center", // Center the title text
+            flexBasis: "33%",
+            textAlign: "center",
             m: 1.5,
-            display: { xs: "none", sm: "block" }, // Hide on extra small screens if necessary
+            display: { xs: "none", sm: "block" },
           }}
         >
           {t("application_title")}
         </Typography>
-        <div style={{ display: "flex", alignItems: "center" }}>
+
+        {/* Buttons Section */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexGrow: 1,
+            flexBasis: "33%",
+            justifyContent: "flex-end",
+          }}
+        >
           <ReloadButton />
           <LanguageSelector />
-          <IconButton color="inherit" onClick={handleOpenSettings}>
-            <SettingsIcon />
-          </IconButton>
-          <SettingsModal isOpen={isSettingsModalOpen} onClose={handleCloseSettings} />
-          <HelpButton />
           <MinimizeButton />
           <ShutdownButton />
         </div>

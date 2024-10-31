@@ -242,7 +242,7 @@ class HazardHandler:
             if hazard_type == "flood":
                 source = "raster"
             if hazard_type == "heatwaves":
-                source = "raster"
+                source = "hdf5"
         if source == "climada_api":
             hazard = self._get_hazard_from_client(hazard_type, scenario, time_horizon, country)
         if source == "raster":
@@ -668,6 +668,43 @@ class HazardHandler:
 
         return code
 
+    def get_hazard_name(self, hazard_code: str) -> str:
+        """
+        Retrieve the hazard type corresponding to a given hazard code.
+
+        This function maps a hazard code to its corresponding hazard type. If the hazard code
+        is not recognized, it raises a ValueError.
+
+        :param hazard_code: The hazard code as a string.
+        :type hazard_code: str
+        :return: The hazard type corresponding to the provided hazard code.
+        :rtype: str
+        :raises ValueError: If the hazard code is not recognized.
+        """
+        # Map hazard codes to their corresponding types
+        hazard_names = {
+            "TC": "tropical_cyclone",
+            "RF": "river_flood",
+            "WS": "storm_europe",
+            "BF": "wildfire",
+            "EQ": "earthquake",
+            "FL": "flood",
+            "D": "drought",
+            "HW": "heatwaves",
+        }
+
+        # Retrieve the hazard type for the given hazard code
+        hazard_type = hazard_names.get(hazard_code, None)
+
+        # Raise an exception if the hazard code is not found
+        if hazard_type is None:
+            logger.log(
+                "error",
+                f"Hazard code '{hazard_code}' is not recognized.",
+            )
+
+        return hazard_type
+
     def get_hazard_filename(self, hazard_code: str, country_code: str, scenario: str) -> str:
         """
         Get the hazard filename based on the request parameters.
@@ -684,5 +721,101 @@ class HazardHandler:
         elif hazard_code == "FL":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
-            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
+            hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.h5"
         return hazard_filename  # TODO: Extract this to settings file
+
+    def generate_hazard_report_dataset(
+        self, hazard: Hazard, country_name: str, return_periods: tuple
+    ) -> pd.DataFrame:
+        """
+        Generate a dataset for hazard reporting.
+
+        This method generates a dataset by spatially joining hazard data with administrative boundaries.
+        It creates a DataFrame that includes columns for hazard return periods and administrative layers.
+
+        :param hazard: The Hazard object containing the hazard data.
+        :type hazard: Hazard
+        :param country_name: The name of the country for which the dataset is generated.
+        :type country_name: str
+        :param return_periods: Tuple of return periods to include in the dataset.
+        :type return_periods: tuple
+        :return: A DataFrame containing the merged hazard and administrative data.
+        :rtype: pd.DataFrame
+
+        Example usage:
+
+        .. code-block:: python
+
+            final_df = base_handler.generate_hazard_report_dataset(hazard, "EGY", (10, 15, 20, 25))
+            print(final_df.head())
+        """
+        try:
+            # Cast hazard data to a DataFrame
+            coords = np.array(hazard.centroids.coord)
+            local_exceedance_inten = pd.DataFrame(
+                hazard.intensity.toarray().T, columns=[f"rp{year}" for year in return_periods]
+            )
+            data = np.column_stack((coords, local_exceedance_inten))
+            columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+
+            hazard_df = pd.DataFrame(data, columns=columns)
+            hazard_df.update(hazard_df[[f"rp{rp}" for rp in return_periods]].round(1))
+            geometry = [Point(xy) for xy in zip(hazard_df["longitude"], hazard_df["latitude"])]
+            hazard_gdf = gpd.GeoDataFrame(hazard_df, geometry=geometry, crs="EPSG:4326")
+
+            # Filter out rows where all return period values are zero
+            hazard_gdf = hazard_gdf[
+                (hazard_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
+            ]
+
+            # Retrieve the admin_gdf and perform spatial join
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            layers = [1, 2]
+            final_gdf = hazard_gdf.copy()
+
+            # Iterate through each administrative layer
+            for layer in layers:
+                try:
+                    # Retrieve the admin_gdf for the current layer
+                    admin_gdf = self.base_handler.get_admin_data(country_iso3, layer)
+
+                    # Perform spatial join with the current layer
+                    joined_gdf = gpd.sjoin(final_gdf, admin_gdf, how="left", predicate="within")
+
+                    # Add the admin column for this layer to final_gdf
+                    final_gdf[f"admin{layer}"] = joined_gdf["name"]
+                except Exception as e:
+                    logger.log("error", f"Error processing layer {layer}: {str(e)}")
+                    # Continue with the next layer if an error occurs
+                    continue
+
+            # Keep only the necessary columns for the final report
+            final_df = final_gdf[
+                ["admin1", "admin2", "latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+            ]
+
+            # Clean up the DataFrame
+            final_df = final_df.dropna(subset=["admin1", "admin2"], how="all")
+            final_df = final_df.reset_index(drop=True)
+
+            # Rename the columns
+            column_mapping = {
+                "admin1": "Admin 1",
+                "admin2": "Admin 2",
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+            }
+            # Add dynamic RP column renaming to the mapping
+            column_mapping.update({f"rp{rp}": f"RP{rp}" for rp in return_periods})
+
+            # Apply the renaming
+            final_df = final_df.rename(columns=column_mapping)
+
+            return final_df
+
+        except AttributeError as e:
+            logger.log("error", f"Invalid Hazard object: {str(e)}")
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred: {str(e)}")
+
+        return pd.DataFrame()  # Return an empty DataFrame in case of failure

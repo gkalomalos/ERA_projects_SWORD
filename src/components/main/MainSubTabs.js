@@ -3,22 +3,36 @@ import React from "react";
 import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
 import useStore from "../../store";
+import { useMapTools } from "../../utils/mapTools";
 
 const MainSubTabs = () => {
-  const { selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
+  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } =
+    useStore();
+  const { handleSaveImage, handleSaveMap, handleAddToOutput } = useMapTools();
+
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
-    1: ["Risk", "Adaptation", "+ Add to Output"], // Subtabs for "Economic & Non-Economic section"
-    2: ["Risk", "Adaptation"], // Subtabs for "Macroeconomic (in dev) section"
+    1: [
+      "Risk",
+      "Adaptation",
+      "+ Save Scenario",
+      activeViewControl === "display_map" ? "+ Save Map" : "+ Save Chart", // Dynamically change label
+    ], // Added "Save to Map" or "+ Save Chart" button
+    2: [], // Subtabs for "Macroeconomic section"
     3: [], // Subtabs for "Outputs (reporting) section"
-  };
-
-  const handleAddToOutput = () => {
-    console.log("add to output");
   };
 
   const handleSubTabChange = (event, newValue) => {
     setSelectedSubTab(newValue);
+  };
+
+  const handleButtonClick = (index) => {
+    if (activeViewControl === "display_map") {
+      return index === 2 ? handleAddToOutput() : handleSaveMap();
+    } else if (activeViewControl === "display_chart") {
+      return handleSaveImage();
+    }
+    // Do nothing if activeViewControl is not "display_map" or "display_chart"
   };
 
   const subTabs = subTabsMap[selectedTab];
@@ -61,9 +75,12 @@ const MainSubTabs = () => {
         }}
       >
         {subTabs.map((label, index) =>
-          // Conditionally render a button instead of a tab for "+ Add to Output"
-          index === 2 ? (
-            <Box key={index} sx={{ position: "absolute", top: 0, right: 8 }}>
+          // Conditionally render a button instead of a tab for "+ Save Scenario" and "Save to Map"
+          index === 2 || index === 3 ? (
+            <Box
+              key={index}
+              sx={{ position: "absolute", top: 0, right: index === 2 ? 100 : index === 3 ? 0 : 8 }}
+            >
               <Button
                 variant="contained"
                 size="small"
@@ -76,7 +93,7 @@ const MainSubTabs = () => {
                   "&:hover": { bgcolor: "#F79191" },
                   textTransform: "none",
                 }}
-                onClick={() => handleAddToOutput()}
+                onClick={() => handleButtonClick(index)}
               >
                 {label}
               </Button>

@@ -1,5 +1,8 @@
 # data & temp(exposures, hazards, reports)
-data
+data/exposures
+data/reports
+data/temp
+data/unu
 climada_unu.db
 src/temp
 gadm41_EGY.gpkg

@@ -4,16 +4,24 @@ import { useTranslation } from "react-i18next";
 
 import { Box, Typography, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import RestoreIcon from "@mui/icons-material/Restore";
 
-import AlertMessage from "../alerts/AlertMessage";
+import { useReportTools } from "../../utils/reportTools";
 import useStore from "../../store";
 
-const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
+const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, title, type }) => {
   const { t } = useTranslation();
-  const { setAlertMessage, setAlertSeverity, setAlertShowMessage } = useStore();
+  const {
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+    setMapTitle,
+    setSelectedScenarioRunCode,
+    setSelectedReportType,
+  } = useStore();
+  const { getReport } = useReportTools();
 
   const [clicked, setClicked] = useState(false); // State to manage click animation
-
   const handleMouseDown = () => {
     setClicked(true); // Trigger animation
   };
@@ -23,7 +31,8 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
   };
 
   const handleClick = () => {
-    onCardClick(id);
+    onCardClick(id); // Only call the handler from the parent
+    setSelectedReportType(type); // This is fine to set since it’s unique to ReportCard
   };
 
   const handleDeleteButtonClick = () => {
@@ -31,6 +40,18 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "delete");
+    setSelectedScenarioRunCode("");
+  };
+
+  const handleRestoreButtonClick = () => {
+    setAlertMessage("Scenario restored successfully.");
+    setAlertSeverity("success");
+    setAlertShowMessage(true);
+    onReportAction(id, "restore");
+    setSelectedScenarioRunCode("");
+
+    const restoredScenario = getReport(id);
+    setMapTitle(restoredScenario.title);
   };
 
   const handleDownButtonClick = () => {
@@ -50,7 +71,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
         onClick={handleClick}
         sx={{
           alignItems: "flex-start",
-          backgroundColor: isSelected ? "#EBF3F5" : "FFFFFF",
+          backgroundColor: isSelected ? "#CCE1E7" : "FFFFFF",
           border: "1px solid #ccc",
           borderRadius: "16px",
           display: "flex",
@@ -95,7 +116,7 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
               <ListItemText primary={title} />
             </ListItem>
             <ListItem>
-              <ListItemText secondary={type} />
+              <ListItemText secondary={t(`results_report_card_${type}`)} />
             </ListItem>
             <ListItem>
               <ListItemText secondary={data} />
@@ -103,12 +124,14 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
           </List>
         </Box>
 
-        <Box sx={{ flex: 3, maxWidth: "25%" }}>
+        <Box sx={{ flex: 3, maxWidth: "25%", display: "flex", alignItems: "center" }}>
           <Box
             component="img"
             sx={{
-              width: "128px",
-              height: "100%",
+              width: "auto",
+              height: "100%", // Take full height of the parent box
+              maxHeight: "128px", // Set a max height to prevent the image from becoming too large
+              objectFit: "contain", // Ensure the image fits within the bounds without being distorted
             }}
             alt="report_image"
             src={image}
@@ -131,16 +154,21 @@ const ReportsCard = ({ data, image, id, isSelected, onCardClick, onReportAction,
               <ArrowDownward fontSize="small" />
               <Typography>{t("results_report_card_move_down")}</Typography>
             </IconButton>
+
+            {type === "output_data" && (
+              <IconButton aria-label="restore" onClick={handleRestoreButtonClick} size="small">
+                <RestoreIcon fontSize="small" />
+                <Typography>{t("results_report_card_restore")}</Typography>
+              </IconButton>
+            )}
           </Box>
         </Box>
       </Box>
-      {/* Alert message section */}
-      <AlertMessage />
     </>
   );
 };
 
-ReportsCard.propTypes = {
+ReportCard.propTypes = {
   data: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   image: PropTypes.any.isRequired,
@@ -151,4 +179,4 @@ ReportsCard.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
-export default ReportsCard;
+export default ReportCard;
