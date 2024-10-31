@@ -52,7 +52,10 @@ const ExposureNonEconomicCard = () => {
 
   const [fetchExposureMessage, setFetchExposureMessage] = useState("");
 
-  const exposuresNonEconomic = exposureNonEconomicDict[selectedCountry][selectedHazard] || [];
+  const exposuresNonEconomic =
+    selectedCountry && selectedHazard
+      ? exposureNonEconomicDict[selectedCountry]?.[selectedHazard] || []
+      : [];
 
   const handleCardSelect = (exposure) => {
     if (selectedExposureNonEconomic === exposure) {
