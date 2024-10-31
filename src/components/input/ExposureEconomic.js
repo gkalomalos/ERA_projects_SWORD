@@ -66,14 +66,14 @@ const ExposureEconomic = () => {
 
   const handleBgColor = () => {
     if (selectedExposureEconomic && isValidExposureEconomic) {
-      setBgColor("#E5F5EB"); //green
+      setBgColor("#C0E7CF"); //green
     } else if (selectedExposureEconomic && !isValidExposureEconomic) {
       setBgColor("#FFCCCC"); //red
     } else if (selectedExposureNonEconomic) {
-      setBgColor("#E6E6E6"); //grey
+      setBgColor("#CFCFCF"); //grey
       // Added to handle missing asset datasets for heatwaves in Thailand
     } else if (selectedCountry === "thailand" && selectedHazard === "heatwaves") {
-      setBgColor("#E6E6E6"); //grey
+      setBgColor("#CFCFCF"); //grey
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }

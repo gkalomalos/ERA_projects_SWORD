@@ -25,7 +25,7 @@ const Country = () => {
 
   const handleBgColor = () => {
     if (selectedCountry) {
-      setBgcolor("#E5F5EB"); // green
+      setBgcolor("#C0E7CF"); // green
     } else {
       setBgcolor("#EBF3F5"); // default light blue
     }

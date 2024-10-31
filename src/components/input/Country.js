@@ -25,7 +25,7 @@ const Country = () => {
 
   const handleBgColor = () => {
     if (selectedCountry) {
-      setBgcolor("#E5F5EB"); // green
+      setBgcolor("#C0E7CF"); // green
     } else {
       setBgcolor("#EBF3F5"); // default light blue
     }
@@ -47,7 +47,7 @@ const Country = () => {
         bgcolor: bgcolor,
         transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
         "&:hover": {
-          bgcolor: "#EBF3F5", // Change to #DAE7EA
+          bgcolor: "#DAE9ED", // Change to #DAE7EA
         },
         ".MuiCardContent-root:last-child": {
           padding: 2,

@@ -55,7 +55,7 @@ const AnnualGrowth = () => {
 
   const handleBgColor = () => {
     if (selectedAppOption === "era" && selectedCountry) {
-      setBgColor("#E5F5EB"); //green
+      setBgColor("#C0E7CF"); //green
     } else {
       setBgColor("#EBF3F5"); //default light blue
     }

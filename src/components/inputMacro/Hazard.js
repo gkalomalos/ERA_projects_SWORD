@@ -25,7 +25,7 @@ const Hazard = () => {
 
   const handleBgColor = () => {
     if (selectedHazard) {
-      setBgColor("#E5F5EB"); // green
+      setBgColor("#C0E7CF"); // green
     } else {
       setBgColor("#EBF3F5"); // default light blue
     }
