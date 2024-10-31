@@ -8,7 +8,7 @@ const Hazard = () => {
   const { isValidHazard, selectedHazard, setSelectedCard, setSelectedTab } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+  const [bgColor, setBgColor] = useState("#CCE1E7"); // State to manage background color
 
   const handleMouseDown = () => {
     setClicked(true); // Trigger animation
@@ -29,7 +29,7 @@ const Hazard = () => {
     } else if (selectedHazard && !isValidHazard) {
       setBgColor("#FFCCCC"); //red
     } else {
-      setBgColor("#EBF3F5"); //default light blue
+      setBgColor("#CCE1E7"); //default light blue
     }
   };
 

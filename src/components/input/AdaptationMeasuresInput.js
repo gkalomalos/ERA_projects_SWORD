@@ -46,7 +46,7 @@ const AdaptationMeasuresInput = () => {
               key={index}
               variant="outlined"
               sx={{
-                bgcolor: "#EBF3F5",
+                bgcolor: "#CCE1E7",
                 mb: 2,
                 minHeight: "24px",
               }}

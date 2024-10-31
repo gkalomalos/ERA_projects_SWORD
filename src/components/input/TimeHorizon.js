@@ -18,7 +18,7 @@ const TimeHorizon = () => {
   } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+  const [bgColor, setBgColor] = useState("#CCE1E7"); // State to manage background color
 
   const handleMouseDown = () => {
     // Deactivate input card click in case of ERA project scenario.
@@ -55,7 +55,7 @@ const TimeHorizon = () => {
     if (selectedAppOption === "era" && selectedCountry) {
       setBgColor("#C0E7CF"); //green
     } else {
-      setBgColor("#EBF3F5"); //default light blue
+      setBgColor("#CCE1E7"); //default light blue
     }
   };
 
