@@ -1,17 +1,28 @@
 import { create } from "zustand";
 
+import { generateRunCode } from "./utils/misc";
+
 const useStore = create((set, get) => ({
   activeMap: "hazard",
+  activeMapRef: null,
+  activeViewControl: "display_map",
   alertMessage: "",
   alertSeverity: "info",
   alertShowMessage: false,
+  isPlotMacroChartCompleted: false,
+  isPlotMacroChartRunning: false,
+  isScenarioRunCompleted: false,
   isScenarioRunning: false,
   isValidExposureEconomic: false,
   isValidExposureNonEconomic: false,
   isValidHazard: false,
   mapTitle: "",
+  macroEconomicChartData: {},
+  macroEconomicChartTitle: "",
   modalMessage: "",
   progress: 0,
+  reports: [],
+  scenarioRunCode: "",
   selectedAnnualGrowth: 0,
   selectedAppOption: "",
   selectedCard: "country",
@@ -21,18 +32,51 @@ const useStore = create((set, get) => ({
   selectedExposureNonEconomic: "",
   selectedHazard: "",
   selectedHazardFile: "",
+  selectedMacroCard: "country",
+  selectedMacroSector: "",
+  selectedMacroVariable: "",
+  selectedReport: null,
+  selectedReportType: "",
   selectedScenario: "",
-  selectedTab: 0,
+  selectedScenarioRunCode: "",
   selectedSubTab: 0,
+  selectedTab: 0,
   selectedTimeHorizon: [2024, 2050],
-  viewControl: "display_map",
+
+  // Method to add a new report
+  addReport: (newReport) => {
+    const { reports } = get();
+    // Check if the report already exists
+    const reportExists = reports.some((r) => r.id === newReport.id);
+    if (!reportExists) {
+      set((state) => ({
+        reports: [...state.reports, newReport],
+      }));
+    }
+  },
+
+  // Method to remove a report by id
+  removeReport: (reportId) =>
+    set((state) => ({
+      reports: state.reports.filter((report) => report.id !== reportId),
+    })),
+
+  // Method to update reports
+  updateReports: (newReports) =>
+    set(() => ({
+      reports: newReports,
+    })),
 
   setActiveMap: (map) => set({ activeMap: map }),
+  setActiveMapRef: (mapRef) => set({ activeMapRef: mapRef }),
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),
+  setIsPlotMacroChartCompleted: (data) => set({ isPlotMacroChartCompleted: data }),
+  setIsPlotMacroChartRunning: (data) => set({ isPlotMacroChartRunning: data }),
+  setIsScenarioRunCompleted: (data) => set({ isScenarioRunCompleted: data }),
   setIsScenarioRunning: (data) => set({ isScenarioRunning: data }),
-  setIsValidExposureEconomic: (isValid) => {
+  setIsValidExposureEconomic: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidExposureEconomic: true });
@@ -40,7 +84,7 @@ const useStore = create((set, get) => ({
       set({ isValidExposureEconomic: isValid });
     }
   },
-  setIsValidExposureNonEconomic: (isValid) => {
+  setIsValidExposureNonEconomic: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidExposureNonEconomic: true });
@@ -48,7 +92,7 @@ const useStore = create((set, get) => ({
       set({ isValidExposureNonEconomic: isValid });
     }
   },
-  setIsValidHazard: (isValid) => {
+  setIsValidHazard: (isValid = null) => {
     const { selectedAppOption } = get();
     if (selectedAppOption === "era") {
       set({ isValidHazard: true });
@@ -57,8 +101,14 @@ const useStore = create((set, get) => ({
     }
   },
   setMapTitle: (data) => set({ mapTitle: data }),
+  setMacroEconomicChartData: (data) => set({ macroEconomicChartData: data }),
+  setMacroEconomicChartTitle: (title) => set({ macroEconomicChartTitle: title }),
   setModalMessage: (message) => set({ modalMessage: message }),
   setProgress: (newProgress) => set({ progress: newProgress }),
+  setReports: (reports) => set({ reports }),
+  setScenarioRunCode: (code = null) => {
+    set({ scenarioRunCode: code || generateRunCode() });
+  },
   setSelectedAnnualGrowth: (annualGrowth) => set({ selectedAnnualGrowth: annualGrowth }),
   setSelectedAppOption: (option) => set({ selectedAppOption: option }),
   setSelectedCard: (card) => set({ selectedCard: card }),
@@ -76,8 +126,12 @@ const useStore = create((set, get) => ({
       isValidExposureEconomic: false,
       isValidExposureNonEconomic: false,
       isValidHazard: false,
+      mapTitle: "",
+      isScenarioRunCompleted: false,
+      // selectedReport: null,
     });
   },
+  setSelectedMacroCard: (card) => set({ selectedMacroCard: card }),
   setSelectedExposureEconomic: (exposureEconomic) => {
     set({ selectedExposureEconomic: exposureEconomic, selectedAnnualGrowth: 0 });
   },
@@ -95,15 +149,37 @@ const useStore = create((set, get) => ({
       selectedTimeHorizon: [2024, 2050],
       isValidExposureEconomic: false,
       isValidExposureNonEconomic: false,
+      mapTitle: "",
+      isScenarioRunCompleted: false,
+      // selectedReport: null,
     });
   },
+  setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),
+  setSelectedMacroVariable: (variable) => set({ selectedMacroVariable: variable }),
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
+  setSelectedReportType: (reportType) => set({ selectedReportType: reportType }),
   setSelectedScenario: (scenario) => set({ selectedScenario: scenario }),
-  setSelectedTab: (tab) => set({ selectedTab: tab, selectedSubTab: 0 }),
+  setSelectedScenarioRunCode: (code) => set({ selectedScenarioRunCode: code }),
   setSelectedSubTab: (subTab) => set({ selectedSubTab: subTab }),
+  setSelectedReport: (report) => set({ selectedReport: report }),
+  setSelectedTab: (tab) => {
+    let viewControl = "";
+    if (tab === 1) {
+      viewControl = "display_map";
+    } else if (tab === 2) {
+      viewControl = "display_macro_parameters";
+    }
+
+    set({
+      selectedTab: tab,
+      selectedSubTab: 0,
+      activeViewControl: viewControl,
+    });
+  },
+
   setSelectedTimeHorizon: (timeHorizon) => set({ selectedTimeHorizon: timeHorizon }),
-  setViewControl: (control) => set({ viewControl: control }),
+  setActiveViewControl: (control) => set({ activeViewControl: control }),
 }));
 
 export default useStore;

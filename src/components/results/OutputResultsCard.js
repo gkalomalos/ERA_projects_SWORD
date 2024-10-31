@@ -1,13 +1,44 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
+
+import APIService from "../../APIService";
+import useStore from "../../store";
 
 const OutputResultsCard = () => {
   const { t } = useTranslation();
+  const {
+    selectedReport,
+    selectedReportType,
+    selectedScenarioRunCode,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+  } = useStore();
 
   const handleButtonClick = (type) => {
-    console.log(type);
+    const body = {
+      exportType: type,
+      scenarioRunCode: selectedScenarioRunCode,
+      report: selectedReport,
+    };
+    APIService.ExportReport(body)
+      .then((response) => {
+        const { status, data } = response.result;
+        const reportPath = data.report_path || "";
+        const alertMessage = reportPath ? `${status.message}::${reportPath}` : status.message;
+
+        setAlertMessage(alertMessage);
+        setAlertSeverity(status.code === 2000 ? "success" : "error");
+        setAlertShowMessage(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setAlertMessage("An error occurred while exporting the report.");
+        setAlertSeverity("error");
+        setAlertShowMessage(true);
+      });
   };
 
   return (
@@ -33,6 +64,7 @@ const OutputResultsCard = () => {
                   textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
+                disabled={selectedReportType === "output_data" || selectedReportType === ""}
               >
                 {t(`results_export_button_${type}`)}
               </Button>
@@ -57,40 +89,19 @@ const OutputResultsCard = () => {
                   textTransform: "none",
                 }}
                 onClick={() => handleButtonClick(type)}
+                disabled={
+                  selectedReportType === "exposure_map_data" ||
+                  selectedReportType === "hazard_map_data" ||
+                  selectedReportType === "impact_map_data" ||
+                  selectedReportType === "risk_plot_data" ||
+                  selectedReportType === "adaptation_plot_data" ||
+                  selectedReportType === ""
+                }
               >
                 {t(`results_export_button_${type}`)}
               </Button>
             ))}
           </Box>
-        </Box>
-        {/* Result Details section */}
-        <Box
-          sx={{
-            bgcolor: "#FFCCCC",
-            padding: 2,
-            borderRadius: "4px",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              borderBottom: "1px solid #6F6F6F",
-              paddingBottom: 1,
-              color: "#6F6F6F",
-              textAlign: "center",
-            }}
-          >
-            {t("results_report_details")}
-          </Typography>
-          {/* Content here will grow to fill available space */}
-          <Typography variant="body1" sx={{ marginTop: 2, flexGrow: 1, color: "#6F6F6F" }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum.
-          </Typography>
         </Box>
       </Box>
     </>

@@ -33,6 +33,7 @@ from exposure.exposure_handler import ExposureHandler
 from hazard.hazard_handler import HazardHandler
 from impact.impact_handler import ImpactHandler
 from logger_config import LoggerConfig
+from constants import DATA_TEMP_DIR
 
 
 @dataclass
@@ -371,7 +372,7 @@ class RunScenario:
 
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
-            self.costben_handler.plot_cost_benefit(cost_benefit)
+            self.costben_handler.plot_cost_benefit(cost_benefit, self.request_data.asset_type)
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."
@@ -404,7 +405,7 @@ class RunScenario:
                     exposure_future, self.request_data.country_name
                 )
 
-            self.base_handler.update_progress(80, "Generating Hazard map data files...")
+            self.base_handler.update_progress(75, "Generating Hazard map data files...")
             if self.request_data.scenario == "historical":
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_present,
@@ -419,7 +420,7 @@ class RunScenario:
                 )
 
             # Calculate impact geojson data files
-            self.base_handler.update_progress(90, "Generating Impact map data files...")
+            self.base_handler.update_progress(80, "Generating Impact map data files...")
             if self.request_data.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(
                     impact_present,
@@ -436,6 +437,42 @@ class RunScenario:
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
+
+            # Save exporure data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(85, "Generating Exposure report data files...")
+            exp_rep_df = self.exposure_handler.generate_exposure_report_dataset(
+                exposure_present if self.request_data.scenario == "historical" else exposure_future,
+                self.request_data.country_name,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                exp_rep_df, DATA_TEMP_DIR / "exposure_report_data.parquet"
+            )
+
+            # Save hazard data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(90, "Generating Hazard report data files...")
+            haz_rep_df = self.hazard_handler.generate_hazard_report_dataset(
+                hazard_present if self.request_data.scenario == "historical" else hazard_future,
+                self.request_data.country_name,
+                return_periods,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                haz_rep_df, DATA_TEMP_DIR / "hazard_report_data.parquet"
+            )
+
+            # Save impact data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(95, "Generating Impact report data files...")
+            imp_rep_df = self.impact_handler.generate_impact_report_dataset(
+                impact_present if self.request_data.scenario == "historical" else impact_future,
+                self.request_data.country_name,
+                return_periods,
+                self.request_data.asset_type,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                imp_rep_df, DATA_TEMP_DIR / "impact_report_data.parquet"
+            )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")
 
@@ -479,6 +516,13 @@ class RunScenario:
                     self.request_data.country_name
                 )
 
+            # Calculate custom scenario return periods per hazard type
+            # This option should be different for custom scenario runs, but there is
+            # no option at the moment for the user to select custom return periods
+            return_periods = self.hazard_handler.get_custom_rp_per_hazard(
+                self.request_data.hazard_code
+            )
+
             # Set present year for custom scenario from user time horizon selection
             exposure_present.ref_year = self.request_data.ref_year
 
@@ -512,11 +556,31 @@ class RunScenario:
 
             # Case 1: User loads hazard dataset
             if self.request_data.hazard_filename:
-                hazard_present = self.hazard_handler.get_hazard(
-                    hazard_type=self.request_data.hazard_type,
-                    filepath=self.request_data.hazard_filename,
-                )
-                hazard_present.units = hazard_intensity_unit
+                file_type = self.base_handler.check_file_type(self.request_data.hazard_filename)
+                # If this is a historical climate scenario run, create a Hazard object using
+                # the provided hazard dataset.
+                if self.request_data.scenario == "historical":
+                    hazard_present = self.hazard_handler.get_hazard(
+                        hazard_type=self.request_data.hazard_type,
+                        filepath=self.request_data.hazard_filename,
+                        source=file_type,
+                    )
+                    hazard_present.units = hazard_intensity_unit
+                # If this is a future based climate scenario run, create a historical Hazard
+                # object using the ERA project historical climate scenario dataset and then
+                # create a future based climate scenario Hazard object using the provided
+                # hazard dataset.
+                else:
+                    hazard_present_filename = self.hazard_handler.get_hazard_filename(
+                        self.request_data.hazard_code,
+                        self.request_data.country_code,
+                        "historical",
+                    )
+                    hazard_present = self.hazard_handler.get_hazard(
+                        hazard_type=self.request_data.hazard_type, filepath=hazard_present_filename
+                    )
+                    hazard_present.units = hazard_intensity_unit
+
             # Case 2: User fetches hazard datasets from the CLIMADA API
             else:
                 hazard_present = self.hazard_handler.get_hazard(
@@ -532,9 +596,11 @@ class RunScenario:
             if self.request_data.scenario != "historical":
                 # Case 1: User loads hazard dataset
                 if self.request_data.hazard_filename:
+                    file_type = self.base_handler.check_file_type(self.request_data.hazard_filename)
                     hazard_future = self.hazard_handler.get_hazard(
                         hazard_type=self.request_data.hazard_type,
                         filepath=self.request_data.hazard_filename,
+                        source=file_type,
                     )
                     hazard_future.units = hazard_intensity_unit
                 # Case 2: User fetches hazard datasets from the CLIMADA API
@@ -562,7 +628,7 @@ class RunScenario:
 
             # Plot cost-benefit charts
             self.base_handler.update_progress(50, "Plotting cost-benefit graph...")
-            self.costben_handler.plot_cost_benefit(cost_benefit)
+            self.costben_handler.plot_cost_benefit(cost_benefit, self.request_data.asset_type)
             if self.request_data.scenario != "historical":
                 self.base_handler.update_progress(
                     55, "Plotting waterfall graph with given risk metric..."
@@ -595,25 +661,27 @@ class RunScenario:
                     exposure_future, self.request_data.country_name
                 )
 
-            self.base_handler.update_progress(80, "Generating Hazard map data files...")
+            self.base_handler.update_progress(75, "Generating Hazard map data files...")
             if self.request_data.scenario == "historical":
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_present,
                     self.request_data.country_name,
+                    return_periods,
                 )
             else:
                 self.hazard_handler.generate_hazard_geojson(
                     hazard_future,
                     self.request_data.country_name,
+                    return_periods,
                 )
 
             # Calculate impact geojson data files
-            self.base_handler.update_progress(90, "Generating Impact map data files...")
+            self.base_handler.update_progress(80, "Generating Impact map data files...")
             if self.request_data.scenario == "historical":
                 self.impact_handler.generate_impact_geojson(
                     impact_present,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
@@ -621,10 +689,46 @@ class RunScenario:
                 self.impact_handler.generate_impact_geojson(
                     impact_future,
                     self.request_data.country_name,
-                    (25, 20, 15, 10),
+                    return_periods,
                     self.request_data.asset_type,
                     self.request_data.exposure_type,
                 )
+
+            # Save exporure data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(85, "Generating Exposure report data files...")
+            exp_rep_df = self.exposure_handler.generate_exposure_report_dataset(
+                exposure_present if self.request_data.scenario == "historical" else exposure_future,
+                self.request_data.country_name,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                exp_rep_df, DATA_TEMP_DIR / "exposure_report_data.parquet"
+            )
+
+            # Save hazard data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(90, "Generating Hazard report data files...")
+            haz_rep_df = self.hazard_handler.generate_hazard_report_dataset(
+                hazard_present if self.request_data.scenario == "historical" else hazard_future,
+                self.request_data.country_name,
+                return_periods,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                haz_rep_df, DATA_TEMP_DIR / "hazard_report_data.parquet"
+            )
+
+            # Save impact data to parquet files in TEMP directory to be used in report generation
+            self.base_handler.update_progress(95, "Generating Impact report data files...")
+            imp_rep_df = self.impact_handler.generate_impact_report_dataset(
+                impact_present if self.request_data.scenario == "historical" else impact_future,
+                self.request_data.country_name,
+                return_periods,
+                self.request_data.asset_type,
+            )
+            # Save the generated DataFrame as a Parquet file
+            self.base_handler.save_parquet_file(
+                imp_rep_df, DATA_TEMP_DIR / "impact_report_data.parquet"
+            )
 
             self.base_handler.update_progress(100, "Scenario run successfully.")
 
@@ -662,12 +766,30 @@ class RunScenario:
         else:
             self._run_custom_scenario()
 
+        # Generate map title
         map_title = self.base_handler.set_map_title(
             self.request_data.hazard_type,
             self.request_data.country_name,
             self.request_data.future_year,
             self.request_data.scenario,
         )
+
+        # Create metadata file
+        metadata = {
+            "asset_type": self.request_data.asset_type.lower(),
+            "annual_growth": self.request_data.annual_growth,
+            "country_name": self.request_data.country_name.lower(),
+            "exposure_economic": self.request_data.exposure_economic.lower(),
+            "exposure_non_economic": self.request_data.exposure_non_economic.lower(),
+            "hazard_type": self.request_data.hazard_type.lower(),
+            "is_era": self.request_data.is_era,
+            "scenario": self.request_data.scenario.lower(),
+            "ref_year": self.request_data.ref_year,
+            "future_year": self.request_data.future_year,
+            "app_option": "era" if self.request_data.is_era else "explore",
+        }
+        self.base_handler.create_results_metadata_file(metadata)
+
         response = {
             "data": {"mapTitle": map_title},
             "status": self.status.get_status(),

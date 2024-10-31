@@ -4,24 +4,20 @@ import { useTranslation } from "react-i18next";
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import TuneIcon from "@mui/icons-material/Tune";
-import PendingIcon from "@mui/icons-material/Pending";
 
 import useStore from "../../store";
 
 const controls = [
   { id: "display_map", icon: <MapIcon /> },
   { id: "display_chart", icon: <BarChartIcon /> },
-  { id: "settings", icon: <TuneIcon /> },
-  { id: "progress", icon: <PendingIcon /> },
 ];
 
 const MainViewControls = () => {
-  const { setViewControl, viewControl } = useStore();
+  const { activeViewControl, setActiveViewControl } = useStore();
   const { t } = useTranslation();
 
   const handleSelect = (control) => {
-    setViewControl(control);
+    setActiveViewControl(control);
   };
 
   return (
@@ -61,7 +57,7 @@ const MainViewControls = () => {
                 {control.icon}
                 <Typography
                   variant="body1"
-                  sx={{ ml: 1, fontWeight: control.id === viewControl ? "bold" : "normal" }}
+                  sx={{ ml: 1, fontWeight: control.id === activeViewControl ? "bold" : "normal" }}
                 >
                   {t(`main_view_controls_${control.id}`)}
                 </Typography>

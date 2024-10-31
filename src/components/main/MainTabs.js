@@ -6,14 +6,23 @@ import MacroIcon from "@mui/icons-material/Assessment";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import TuneIcon from "@mui/icons-material/Tune";
 
+import { useReportTools } from "../../utils/reportTools";
 import MainSubTabs from "./MainSubTabs";
 import useStore from "../../store";
 
 const MainTabs = () => {
-  const { selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
+  const { selectedAppOption, selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
+  const { fetchReports } = useReportTools();
+
+  const onFetchReportsHandler = async () => {
+    await fetchReports();
+  };
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
+    if (newValue === 3) {
+      onFetchReportsHandler();
+    }
     setSelectedSubTab(0);
   };
 
@@ -50,8 +59,9 @@ const MainTabs = () => {
           <Tab
             icon={<MacroIcon />}
             iconPosition="start"
-            label="Macroeconomic (In Dev.)"
+            label="Macroeconomic"
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
+            disabled={selectedAppOption === "explore"}
           />
           <Tab
             icon={<ContentPasteIcon />}

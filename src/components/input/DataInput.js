@@ -2,7 +2,6 @@ import React from "react";
 
 import { Box, Grid } from "@mui/material";
 
-import AlertMessage from "../alerts/AlertMessage";
 import AnnualGrowth from "./AnnualGrowth";
 import Country from "./Country";
 import DataInputViewTitle from "../title/DataInputViewTitle";
@@ -56,9 +55,6 @@ const DataInput = () => {
         <Grid item xs={12}>
           <RunScenarioButton />
         </Grid>
-
-        {/* Alert message section */}
-        <AlertMessage />
       </Box>
     </>
   );

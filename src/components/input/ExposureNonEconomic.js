@@ -9,12 +9,15 @@ const ExposureNonEconomic = () => {
     isValidExposureNonEconomic,
     selectedExposureEconomic,
     selectedExposureNonEconomic,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
     setSelectedCard,
     setSelectedTab,
   } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [bgColor, setBgColor] = useState("#EBF3F5"); // State to manage background color
+  const [bgColor, setBgColor] = useState("#CCE1E7"); // State to manage background color
 
   const handleMouseDown = () => {
     if (selectedExposureEconomic) {
@@ -32,6 +35,11 @@ const ExposureNonEconomic = () => {
 
   const handleClick = () => {
     if (selectedExposureEconomic) {
+      setAlertMessage(
+        "Non-Economic assets cannot be selected when an Economic asset is active. To enable the selection of non-Economic assets, please deselect one of the currently active Economic assets."
+      );
+      setAlertSeverity("info");
+      setAlertShowMessage(true);
       return;
     }
     setSelectedCard("exposureNonEconomic");
@@ -40,13 +48,13 @@ const ExposureNonEconomic = () => {
 
   const handleBgColor = () => {
     if (selectedExposureNonEconomic && isValidExposureNonEconomic) {
-      setBgColor("#E5F5EB"); //green
+      setBgColor("#C0E7CF"); //green
     } else if (selectedExposureNonEconomic && !isValidExposureNonEconomic) {
-      setBgColor("#FFCCCC"); //red
+      setBgColor("#FFB3B3"); //red
     } else if (selectedExposureEconomic) {
-      setBgColor("#E6E6E6"); //grey
+      setBgColor("#CFCFCF"); //grey
     } else {
-      setBgColor("#EBF3F5"); //default light blue
+      setBgColor("#CCE1E7"); //default light blue
     }
   };
 

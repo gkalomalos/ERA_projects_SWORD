@@ -22,7 +22,7 @@ For Developers
 
       # Or using Conda
       conda env create -f requirements/environment.yml
-      conda activate climadera
+      conda activate riskwise
 
 3. **Install Dependencies** (if not using conda) :
 

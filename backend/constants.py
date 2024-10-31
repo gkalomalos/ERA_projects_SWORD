@@ -64,3 +64,6 @@ BACKEND_DIR = BASE_DIR / "backend"
 
 # REQUIREMENTS
 REQUIREMENTS_DIR = BASE_DIR / "requirements"
+
+# REPORTS
+REPORTS_DIR = DATA_DIR / "reports"

@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
+import { formatNumber } from "../../utils/formatters";
 import { getScaleLegacy } from "../../utils/colorScalesLegacy";
 import LegendLegacy from "./LegendLegacy";
 import useStore from "../../store";
@@ -12,15 +13,15 @@ import useStore from "../../store";
 const adminLayers = [0, 1, 2]; // Administrative layers
 
 const ExposureMap = () => {
-  const { selectedCountry, selectedExposureEconomic, selectedHazard } = useStore();
+  const { selectedCountry, selectedExposureEconomic, selectedHazard, setActiveMapRef } = useStore();
   const { t } = useTranslation();
+  const mapRefSet = useRef(false);
+
   const [activeAdminLayer, setActiveAdminLayer] = useState(0);
   const [mapInfo, setMapInfo] = useState({ geoJson: null, colorScale: null });
   const [maxValue, setMaxValue] = useState(null);
   const [minValue, setMinValue] = useState(null);
   const [unit, setUnit] = useState("");
-
-  const mapRef = useRef();
 
   const fetchGeoJson = async (layer) => {
     try {
@@ -98,7 +99,7 @@ const ExposureMap = () => {
       layer.bindPopup(
         `${t("map_exposure_popup_country")}: ${country}<br>${t(
           "map_exposure_button_admin"
-        )}: ${name}<br>${t("map_exposure_popup_value")}: ${value} ${unit}`
+        )}: ${name}<br>${t("map_exposure_popup_value")}: ${formatNumber(value)} ${unit}`
       );
     }
   };
@@ -109,11 +110,18 @@ const ExposureMap = () => {
     }
   }, [activeAdminLayer]);
 
-  useEffect(() => {
-    if (mapRef.current && selectedCountry in countryCoordinates) {
-      mapRef.current.flyTo(countryCoordinates[selectedCountry], 6); // Change map center and zoom
-    }
-  }, [selectedCountry]);
+  const MapEvents = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!mapRefSet.current) {
+        setActiveMapRef(map);
+        mapRefSet.current = true; // Update the ref to indicate that setActiveMapRef has been called
+      }
+    }, [map, setActiveMapRef]);
+
+    return null;
+  };
 
   return (
     <MapContainer
@@ -121,13 +129,13 @@ const ExposureMap = () => {
       center={countryCoordinates[selectedCountry] || [30.0, 31.0]}
       zoom={6}
       style={{ height: "100%", width: "100%" }}
-      whenCreated={(mapInstance) => (mapRef.current = mapInstance)}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={12}
+        maxZoom={15}
         minZoom={5}
       />
+      <MapEvents />
       <div style={buttonContainerStyle}>
         {adminLayers.map((layer) => (
           <Button

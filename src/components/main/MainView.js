@@ -3,18 +3,19 @@ import React from "react";
 import AdaptationMap from "../map/AdaptationMap";
 import AdaptationChartLayout from "../controls/AdaptationChartLayout";
 import RiskChartLayout from "../controls/RiskChartLayout";
-import MacroEconomicView from "../main/MacroEconomicView";
+import MacroEconomicChart from "../charts/MacroEconomicChart";
+import MacroEconomicTable from "../tables/MacroEconomicTable";
 import MainViewControls from "../controls/MainViewControls";
+import MacroViewControls from "../controls/MacroViewControls";
 import MainViewTitle from "../title/MainViewTitle";
 import MapLayout from "../map/MapLayout";
-import ProgressView from "../controls/ProgressView";
-import SettingsView from "../controls/SettingsView";
 import ViewCard from "../cards/ViewCard";
 import ReportsView from "../reports/ReportsView";
+import ViewMacroCard from "../cards/ViewMacroCard"
 import useStore from "../../store";
 
 const MainView = () => {
-  const { selectedSubTab, selectedTab, viewControl } = useStore();
+  const { activeViewControl, selectedSubTab, selectedTab } = useStore();
 
   return (
     <>
@@ -22,25 +23,24 @@ const MainView = () => {
       {selectedTab === 0 && <ViewCard />}
       {selectedTab === 1 && selectedSubTab === 0 && (
         <>
-          {viewControl === "display_map" && <MapLayout />}
-          {viewControl === "display_chart" && <RiskChartLayout />}
-          {viewControl === "settings" && <SettingsView />}
-          {viewControl === "progress" && <ProgressView />}
+          {activeViewControl === "display_map" && <MapLayout />}
+          {activeViewControl === "display_chart" && <RiskChartLayout />}
           <MainViewControls />
         </>
       )}
       {selectedTab === 1 && selectedSubTab === 1 && (
         <>
-          {viewControl === "display_map" && <AdaptationMap />}
-          {viewControl === "display_chart" && <AdaptationChartLayout />}
-          {viewControl === "settings" && <SettingsView />}
-          {viewControl === "progress" && <ProgressView />}
+          {activeViewControl === "display_map" && <AdaptationMap />}
+          {activeViewControl === "display_chart" && <AdaptationChartLayout />}
           <MainViewControls />
         </>
       )}
       {selectedTab === 2 && (
         <>
-          <MacroEconomicView />
+          {activeViewControl === "display_macro_parameters" && <ViewMacroCard />}
+          {activeViewControl === "display_macro_chart" && <MacroEconomicChart />}
+          {activeViewControl === "display_macro_table" && <MacroEconomicTable />}
+          <MacroViewControls />
         </>
       )}
       {selectedTab === 3 && (

@@ -8,7 +8,7 @@ const Country = () => {
   const { selectedCountry, setSelectedCard, setSelectedTab } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
-  const [bgcolor, setBgcolor] = useState("#EBF3F5"); // State to manage background color
+  const [bgcolor, setBgcolor] = useState("#CCE1E7"); // State to manage background color
 
   const handleMouseDown = () => {
     setClicked(true); // Trigger animation
@@ -25,9 +25,9 @@ const Country = () => {
 
   const handleBgColor = () => {
     if (selectedCountry) {
-      setBgcolor("#E5F5EB"); // green
+      setBgcolor("#C0E7CF"); // green
     } else {
-      setBgcolor("#EBF3F5"); // default light blue
+      setBgcolor("#CCE1E7"); // default light blue
     }
   };
 
@@ -47,7 +47,7 @@ const Country = () => {
         bgcolor: bgcolor,
         transition: "background-color 0.3s, transform 0.1s", // Added transform to the transition
         "&:hover": {
-          bgcolor: "#EBF3F5", // Change to #DAE7EA
+          bgcolor: "#DAE9ED", // Change to #DAE7EA
         },
         ".MuiCardContent-root:last-child": {
           padding: 2,

@@ -387,19 +387,21 @@ class ImpactHandler:
         """
         if country_iso3 == "THA":
             if hazard_type == "HW":
-                if exposure_type in ["buddhist_monks"]:
-                    return 11000
-                elif exposure_type in ["students"]:
-                    return 100
+                # All non economic assets appear better on map with 100m radius
+                # due to the high density of assets in the area.
+                return 100
             elif hazard_type == "D":
                 if exposure_type in [
-                    "tree_crops_farmers",
-                    "grass_crops_farmers",
                     "tree_crops",
                     "grass_crops",
                 ]:
                     return 11000
-                elif exposure_type in ["water_users", "wet_markets"]:
+                elif exposure_type in [
+                    "water_users",
+                    "wet_markets",
+                    "tree_crops_farmers",
+                    "grass_crops_farmers",
+                ]:
                     return 100
             elif hazard_type == "FL":
                 # All economic and non economic assets appear better on map with 100m radius
@@ -408,7 +410,10 @@ class ImpactHandler:
 
         if country_iso3 == "EGY":
             if hazard_type == "HW":
-                # All economic and non economic assets appear better on map with 100m radius
+                # Hotels have extremely high density so an extra small radius is required
+                if exposure_type in ["hotels"]:
+                    return 10
+                # All other economic and non economic assets appear better on map with 100m radius
                 # due to the high density of assets in the area.
                 return 100
             if hazard_type == "FL":
@@ -512,9 +517,9 @@ class ImpactHandler:
             geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
             impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
 
-            # Filter impact_gdf to exclude rows where all return period values are zero
+            # Filter impact_gdf to exclude rows where all return period values are zero or negative
             impact_gdf = impact_gdf[
-                (impact_gdf[[f"rp{rp}" for rp in return_periods]] != 0).any(axis=1)
+                (impact_gdf[[f"rp{rp}" for rp in return_periods]] > 0).any(axis=1)
             ]
             impact_gdf = impact_gdf.drop(columns=["latitude", "longitude"])
             impact_gdf = impact_gdf.reset_index(drop=True)
@@ -523,7 +528,7 @@ class ImpactHandler:
             percentile_values = {}
             percentiles = (20, 40, 60, 80)
             for rp in return_periods:
-                rp_data = impact_gdf[f"rp{rp}"]
+                rp_data = impact_gdf[f"rp{rp}"][impact_gdf[f"rp{rp}"] > 0]
                 percentile_values[f"rp{rp}"] = np.percentile(rp_data, percentiles).round(1).tolist()
                 percentile_values[f"rp{rp}"].insert(0, 0)
 
@@ -552,3 +557,106 @@ class ImpactHandler:
                 json.dump(impact_geojson, f)
         except Exception as exception:
             logger.log("error", f"An unexpected error occurred. More info: {exception}")
+
+    def generate_impact_report_dataset(
+        self, impact: Impact, country_name: str, return_periods: tuple, asset_type: str
+    ) -> pd.DataFrame:
+        """
+        Generate a dataset for impact reporting.
+
+        This method generates a dataset by spatially joining impact data with administrative boundaries.
+        It creates a DataFrame that includes columns for impact return periods and administrative layers.
+
+        :param impact: The Impact object containing the impact data.
+        :type impact: Impact
+        :param country_name: The name of the country for which the dataset is generated.
+        :type country_name: str
+        :param return_periods: Tuple of return periods to include in the dataset.
+        :type return_periods: tuple
+        :param asset_type: The type of asset (economic or non_economic).
+        :type asset_type: str
+        :return: A DataFrame containing the merged impact and administrative data.
+        :rtype: pd.DataFrame
+
+        Example usage:
+
+        .. code-block:: python
+
+            final_df = base_handler.generate_impact_report_dataset(impact, "EGY", (10, 15, 20, 25), "economic")
+            print(final_df.head())
+        """
+        try:
+            # Cast impact data to a DataFrame
+            coords = np.array(impact.coord_exp)
+            local_exceedance_imp = impact.local_exceedance_imp(return_periods)
+            local_exceedance_imp = pd.DataFrame(local_exceedance_imp).T
+            data = np.column_stack((coords, local_exceedance_imp))
+            columns = ["latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+
+            impact_df = pd.DataFrame(data, columns=columns)
+
+            # Round the rp values based on the asset_type
+            if asset_type == "economic":
+                impact_df.update(impact_df[[f"rp{rp}" for rp in return_periods]].round(2))
+            elif asset_type == "non_economic":
+                impact_df.update(impact_df[[f"rp{rp}" for rp in return_periods]].apply(np.ceil))
+
+            geometry = [Point(xy) for xy in zip(impact_df["longitude"], impact_df["latitude"])]
+            impact_gdf = gpd.GeoDataFrame(impact_df, geometry=geometry, crs="EPSG:4326")
+
+            # Filter out rows where all return period values are zero
+            impact_gdf = impact_gdf[
+                (impact_gdf[[f"rp{rp}" for rp in return_periods]] > 0).any(axis=1)
+            ]
+
+            # Retrieve the admin_gdf and perform spatial join
+            country_iso3 = self.base_handler.get_iso3_country_code(country_name)
+            layers = [1, 2]
+            final_gdf = impact_gdf.copy()
+
+            # Iterate through each administrative layer
+            for layer in layers:
+                try:
+                    # Retrieve the admin_gdf for the current layer
+                    admin_gdf = self.base_handler.get_admin_data(country_iso3, layer)
+
+                    # Perform spatial join with the current layer
+                    joined_gdf = gpd.sjoin(final_gdf, admin_gdf, how="left", predicate="within")
+
+                    # Add the admin column for this layer to final_gdf
+                    final_gdf[f"admin{layer}"] = joined_gdf["name"]
+                except Exception as e:
+                    logger.log("error", f"Error processing layer {layer}: {str(e)}")
+                    # Continue with the next layer if an error occurs
+                    continue
+
+            # Keep only the necessary columns for the final report
+            final_df = final_gdf[
+                ["admin1", "admin2", "latitude", "longitude"] + [f"rp{rp}" for rp in return_periods]
+            ]
+
+            # Clean up the DataFrame
+            final_df = final_df.dropna(subset=["admin1", "admin2"], how="all")
+            final_df = final_df.reset_index(drop=True)
+
+            # Rename the columns
+            column_mapping = {
+                "admin1": "Admin 1",
+                "admin2": "Admin 2",
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+            }
+            # Add dynamic RP column renaming to the mapping
+            column_mapping.update({f"rp{rp}": f"RP{rp}" for rp in return_periods})
+
+            # Apply the renaming
+            final_df = final_df.rename(columns=column_mapping)
+
+            return final_df
+
+        except AttributeError as e:
+            logger.log("error", f"Invalid Impact object: {str(e)}")
+        except Exception as e:
+            logger.log("error", f"An unexpected error occurred: {str(e)}")
+
+        return pd.DataFrame()  # Return an empty DataFrame in case of failure

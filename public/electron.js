@@ -1,6 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const { spawn } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 global.pythonProcess = null;
 
@@ -205,7 +207,13 @@ ipcMain.handle("fetch-temp-dir", () => {
   return tempFolderPath;
 });
 
-ipcMain.handle("clearTempDir", async () => {
+ipcMain.handle("fetch-report-dir", () => {
+  const reportFolderPath = path.join(app.getAppPath(), "data", "reports");
+  return reportFolderPath;
+});
+
+// Handle clear temporary directory request
+ipcMain.handle("clear-temp-dir", async () => {
   try {
     const scriptName = "run_clear_temp_dir.py";
     const data = {}; // assuming no additional data is required
@@ -218,9 +226,74 @@ ipcMain.handle("clearTempDir", async () => {
   }
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
+// Handle save screenshot request
+ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
+  const buffer = Buffer.from(blob, "base64");
+
+  // Ensure the directory exists
+  const dir = path.dirname(filePath);
+  fs.mkdir(dir, { recursive: true }, (err) => {
+    if (err) {
+      event.sender.send("save-screenshot-reply", { success: false, error: err.message });
+      return;
+    }
+
+    // Write the file
+    fs.writeFile(filePath, buffer, (err) => {
+      if (err) {
+        event.sender.send("save-screenshot-reply", { success: false, error: err.message });
+      } else {
+        event.sender.send("save-screenshot-reply", { success: true, filePath });
+      }
+    });
+  });
+});
+
+// Handle folder copy request
+ipcMain.handle("copy-folder", async (event, { sourceFolder, destinationFolder }) => {
+  try {
+    // Ensure the destination directory exists
+    fs.mkdirSync(destinationFolder, { recursive: true });
+
+    // Read all files in the source folder
+    const files = fs.readdirSync(sourceFolder);
+
+    // Loop through files and copy them
+    for (const file of files) {
+      const sourcePath = path.join(sourceFolder, file);
+      const destinationPath = path.join(destinationFolder, file);
+
+      // Copy the file
+      fs.copyFileSync(sourcePath, destinationPath);
+    }
+
+    event.sender.send("copy-folder-reply", { success: true, destinationFolder });
+  } catch (error) {
+    event.sender.send("copy-folder-reply", { success: false, error: error.message });
+  }
+});
+
+// Handle copy file from temp folder request
+ipcMain.handle("copy-file", async (event, { sourcePath, destinationPath }) => {
+  try {
+    // Ensure the destination directory exists
+    const dir = path.dirname(destinationPath);
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Copy the file
+    fs.copyFileSync(sourcePath, destinationPath);
+
+    event.sender.send("copy-file-reply", { success: true, destinationPath });
+  } catch (error) {
+    event.sender.send("copy-file-reply", { success: false, error: error.message });
+  }
+});
+
+ipcMain.handle("open-report", async (event, reportPath) => {
+  try {
+    await shell.openPath(reportPath);
+  } catch (error) {
+    console.error("Failed to open report:", error);
   }
 });
 
@@ -238,14 +311,53 @@ ipcMain.on("shutdown", () => {
   app.quit();
 });
 
-ipcMain.on("reload", () => {
+ipcMain.on("reload", async () => {
   console.log("Reload CLIMADA App...");
+
+  try {
+    const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
+    console.log("Temporary directory cleared:", result);
+  } catch (error) {
+    console.error("Failed to clear temporary directory:", error);
+  }
+
+  // Reload the application
   mainWindow.webContents.reloadIgnoringCache();
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Check for updates after the app is ready
+app.on("ready", () => {
+  if (!isDevelopmentEnv()) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+});
+
+autoUpdater.setFeedURL({
+  provider: "generic",
+  url: "https://ath-git.swordgroup.lan/unu/climada-unu/-/releases",
+});
+
+// Listen for update-available event
+autoUpdater.on("update-available", () => {
+  dialog.showMessageBox({
+    type: "info",
+    title: "Update available",
+    message: "A new version is available and will be downloaded in the background.",
+  });
+});
+
+// Listen for update-downloaded event
+autoUpdater.on("update-downloaded", () => {
+  dialog
+    .showMessageBox({
+      type: "info",
+      title: "Update Ready",
+      message: "Update downloaded. The app will restart to apply the update.",
+    })
+    .then(() => {
+      autoUpdater.quitAndInstall();
+    });
+});
 
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
@@ -260,5 +372,11 @@ app.on("before-quit", () => {
 
   if (global.pythonProcess && !global.pythonProcess.killed) {
     global.pythonProcess.kill();
+  }
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
   }
 });
