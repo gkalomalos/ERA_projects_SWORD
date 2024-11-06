@@ -94,8 +94,14 @@ const ExposureMap = () => {
   const onEachFeature = (feature, layer) => {
     if (feature.properties) {
       const country = feature.properties["country"];
-      const value = feature.properties.value;
+      let value = feature.properties.value;
       const name = feature.properties.name;
+
+      // Check if the value should be rounded up for non-economic exposure
+      if (!selectedExposureEconomic) {
+        value = Math.ceil(value);
+      }
+
       layer.bindPopup(
         `${t("map_exposure_popup_country")}: ${country}<br>${t(
           "map_exposure_button_admin"
