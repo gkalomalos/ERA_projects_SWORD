@@ -70,11 +70,22 @@ const ExposureNonEconomicCard = () => {
 
   const isButtonSelected = (exposure) => selectedExposureNonEconomic === exposure;
 
-  const handleLoadButtonClick = (event) => {
+  const handleLoadButtonClick = () => {
+    if (!selectedExposureNonEconomic) {
+      setAlertMessage("Please select a Non-Economic Asset first");
+      setAlertSeverity("warning");
+      setAlertShowMessage(true);
+    } else {
+      document.getElementById("exposure-non-economic-contained-button-file").click();
+    }
+  };
+
+  const handleFileChange = (event) => {
     // Reset the value of the fetched Exposure data if existing
     setFetchExposureMessage("");
     setSelectedExposureFile("");
     setIsValidExposureNonEconomic(false);
+
     const file = event.target.files[0];
     if (file) {
       setSelectedExposureFile(file.name);
@@ -94,7 +105,7 @@ const ExposureNonEconomicCard = () => {
     setIsValidExposureNonEconomic(false);
   };
 
-  const handleFetchButtonClick = (event) => {
+  const handleFetchButtonClick = () => {
     // Reset the value of the file input if already selected
     setSelectedExposureFile("");
     setFetchExposureMessage("");
@@ -147,87 +158,85 @@ const ExposureNonEconomicCard = () => {
         </Typography>
 
         {/* Non Economic Exposure selection section */}
-        {exposuresNonEconomic.map((exposure) => (
-          <CardActionArea
-            key={exposure}
-            onClick={() => handleCardSelect(exposure)}
-            sx={{
-              backgroundColor: isButtonSelected(exposure) ? "#F79191" : "#FFCCCC",
-              borderRadius: "8px",
-              margin: "16px", // Space around buttons
-              marginLeft: 0,
-              textAlign: "center",
-              padding: "8px 0",
-              transition: "transform 0.1s ease-in-out", // Add transition for transform
-              "&:active": {
-                transform: "scale(0.96)", // Slightly scale down when clicked
-              },
-            }}
-          >
-            <Typography variant="body1" color="text.primary" sx={{ textAlign: "center" }}>
-              {t(`card_exposure_non_economic_${exposure}`)}
-            </Typography>
-          </CardActionArea>
-        ))}
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {exposuresNonEconomic.map((exposure) => (
+            <CardActionArea
+              key={exposure}
+              onClick={() => handleCardSelect(exposure)}
+              sx={{
+                backgroundColor: isButtonSelected(exposure) ? "#F79191" : "#FFCCCC",
+                borderRadius: "8px",
+                margin: "8px 0", // Adjust spacing for vertical alignment
+                textAlign: "center",
+                padding: "8px 0",
+                transition: "transform 0.1s ease-in-out", // Add transition for transform
+                "&:active": {
+                  transform: "scale(0.96)", // Slightly scale down when clicked
+                },
+              }}
+            >
+              <Typography variant="body1" color="text.primary" sx={{ textAlign: "center" }}>
+                {t(`card_exposure_non_economic_${exposure}`)}
+              </Typography>
+            </CardActionArea>
+          ))}
+        </Box>
 
         {/* Load button section */}
-        {selectedCountry && selectedAppOption === "explore" && (
+        {selectedCountry && selectedHazard && selectedAppOption === "explore" && (
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-            <Box>
-              <input
-                accept=".xlsx"
-                hidden
-                id="exposure-non-economic-contained-button-file"
-                multiple={false}
-                onChange={handleLoadButtonClick}
-                type="file"
-              />
-              <label htmlFor="exposure-non-economic-contained-button-file">
-                <Button
-                  component="span"
-                  sx={{
-                    bgcolor: "#FFEBEB",
-                    color: "#000000",
-                    fontWeight: "bold",
-                    margin: 2,
-                    "&:hover": { bgcolor: "#FFCCCC" },
-                    transition: "transform 0.1s ease-in-out",
-                    "&:active": {
-                      transform: "scale(0.96)",
-                    },
-                  }}
-                  variant="contained"
-                >
-                  {t("card_exposure_non_economic_load_button")}
-                </Button>
-              </label>
-            </Box>
+            <Button
+              component="span"
+              onClick={handleLoadButtonClick}
+              sx={{
+                bgcolor: "#FFEBEB",
+                color: "#000000",
+                fontWeight: "bold",
+                margin: 2,
+                "&:hover": { bgcolor: "#FFCCCC" },
+                transition: "transform 0.1s ease-in-out", // Add transition for transform
+                "&:active": {
+                  transform: "scale(0.96)", // Slightly scale down when clicked
+                },
+              }}
+              variant="contained"
+            >
+              {t("card_exposure_non_economic_load_button")}
+            </Button>
+            <input
+              accept=".xlsx"
+              hidden
+              id="exposure-non-economic-contained-button-file"
+              multiple={false}
+              onChange={handleFileChange}
+              type="file"
+            />
+          </Box>
+        )}
 
-            {/* Fetch button section */}
-            {/* Remove until further notice */}
-            {false && (
-              <Box>
-                <Button
-                  component="span"
-                  sx={{
-                    bgcolor: "#FFEBEB",
-                    color: "#000000",
-                    fontWeight: "bold",
-                    margin: 2,
-                    "&:hover": { bgcolor: "#FFCCCC" },
-                    transition: "transform 0.1s ease-in-out", // Add transition for transform
-                    "&:active": {
-                      transform: "scale(0.96)", // Slightly scale down when clicked
-                    },
-                  }}
-                  variant="contained"
-                  onClick={handleFetchButtonClick}
-                  disabled={true}
-                >
-                  {t("card_exposure_non_economic_fetch_button")}
-                </Button>
-              </Box>
-            )}
+        {/* Fetch button section */}
+        {/* Remove until further notice */}
+        {false && (
+          <Box>
+            <Button
+              component="span"
+              sx={{
+                bgcolor: "#FFEBEB",
+                color: "#000000",
+                fontWeight: "bold",
+                margin: 2,
+                "&:hover": { bgcolor: "#FFCCCC" },
+                transition: "transform 0.1s ease-in-out", // Add transition for transform
+                "&:active": {
+                  transform: "scale(0.96)", // Slightly scale down when clicked
+                },
+              }}
+              variant="contained"
+              onClick={handleFetchButtonClick}
+              disabled={true}
+            >
+              {t("card_exposure_non_economic_fetch_button")}
+            </Button>
           </Box>
         )}
 

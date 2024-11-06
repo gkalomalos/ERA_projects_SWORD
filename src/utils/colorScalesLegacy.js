@@ -4,12 +4,12 @@ import {
   interpolateYlOrBr,
   interpolateReds,
 } from "d3-scale-chromatic";
-import { scaleSequential } from "d3-scale";
+import { scaleSequentialLog } from "d3-scale";
 
-const interpolateRdYlGnReversed = (t) => interpolateRdYlGn(1 - t);
-const interpolateBluesReversed = (t) => interpolateBlues(1 - t);
-const interpolateRedsReversed = (t) => interpolateReds(1 - t);
-const interpolateYlOrBrReversed = (t) => interpolateYlOrBr(1 - t);
+const interpolateRdYlGnReversed = (t) => interpolateRdYlGn(0.2 + 0.8 * (1 - t));
+const interpolateBluesReversed = (t) => interpolateBlues(0.2 + 0.8 * (1 - t));
+const interpolateRedsReversed = (t) => interpolateReds(0.2 + 0.8 * (1 - t));
+const interpolateYlOrBrReversed = (t) => interpolateYlOrBr(0.2 + 0.8 * (1 - t));
 
 export const getColorScale = (hazard) => {
   switch (hazard) {
@@ -26,5 +26,6 @@ export const getColorScale = (hazard) => {
 
 export const getScaleLegacy = (hazard, maxValue, minValue) => {
   const colorScale = getColorScale(hazard);
-  return scaleSequential(colorScale).domain([maxValue, minValue]);
+  const adjustedMin = maxValue * 0.005; // Adjust this fraction as needed
+  return scaleSequentialLog(colorScale).domain([maxValue, adjustedMin]);
 };
