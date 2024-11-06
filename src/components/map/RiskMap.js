@@ -13,7 +13,14 @@ import Legend from "./Legend";
 import useStore from "../../store";
 
 const RiskMap = () => {
-  const { selectedCountry, selectedHazard, setActiveMapRef } = useStore();
+  const {
+    selectedCountry,
+    selectedHazard,
+    setActiveMapRef,
+    setAlertMessage,
+    setAlertSeverity,
+    setAlertShowMessage,
+  } = useStore();
   const { t } = useTranslation();
   const mapRefSet = useRef(false);
 
@@ -76,6 +83,19 @@ const RiskMap = () => {
       } catch (error) {
         console.error("Error fetching GeoJSON data:", error);
         setMapInfo({ geoJson: null, colorScale: null });
+
+        // In case of no impact centroids or another error occurs
+        if (error.message.includes("ERR_FILE_NOT_FOUND")) {
+          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertSeverity("info");
+          setAlertShowMessage(true);
+        }
+
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertSeverity("info");
+          setAlertShowMessage(true);
+        }
       }
     },
     [selectedHazard, activeRPLayer]
