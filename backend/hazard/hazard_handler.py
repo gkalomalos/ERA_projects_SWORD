@@ -557,6 +557,12 @@ class HazardHandler:
         try:
             country_iso3 = self.base_handler.get_iso3_country_code(country_name)
             admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
+
+            # The latest .h5 Thailand - Drought hazard files have minor inconsistencies compared
+            # to the other ones (lat/lon values not present). Use this to populate the coord 
+            # hazard attribute from the meta group if no centroid lat/lon values are available.
+            hazard._set_coords_centroids()
+
             coords = np.array(hazard.centroids.coord)
             # TODO: There's an issue with the UNU EHS hazard datasets. These datasets contain
             # the RPL calculated values and not the absolute hazard intensity values.
