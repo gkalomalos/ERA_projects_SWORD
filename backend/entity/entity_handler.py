@@ -143,7 +143,7 @@ class EntityHandler:
             ) ** (future_year - present_year)
 
             # Approach #2
-            # number_of_years = future_year - present_year  # + 1 TODO: Check if this is needed or not
+            # number_of_years = future_year - present_year  # + 1
             # growth = aag**number_of_years
             # entity_future.exposures.gdf["value"] = entity_future.exposures.gdf["value"] * growth
 
