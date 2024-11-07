@@ -57,7 +57,7 @@ const HazardCard = () => {
   // Handle click on Load button, checking if hazard is selected
   const handleLoadButtonClick = () => {
     if (!selectedHazard) {
-      setAlertMessage("Please select a Hazard type first");
+      setAlertMessage(t("alert_message_hazard_card_select_hazard"));
       setAlertSeverity("warning");
       setAlertShowMessage(true);
     } else {

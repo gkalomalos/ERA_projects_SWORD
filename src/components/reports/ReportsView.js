@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useReportTools } from "../../utils/reportTools";
 import ReportCard from "./ReportCard";
@@ -19,6 +20,7 @@ const ReportsView = () => {
     updateReports,
   } = useStore();
   const { restoreScenario, getReport } = useReportTools();
+  const { t } = useTranslation();
 
   const onCardClickHandler = (id) => {
     const report = getReport(id);
@@ -54,7 +56,7 @@ const ReportsView = () => {
       }
     } catch (error) {
       console.log(error);
-      setAlertMessage("An error occurred while removing the report");
+      setAlertMessage(t("alert_message_report_view_error_delete"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -64,7 +66,7 @@ const ReportsView = () => {
     const index = reports.findIndex((report) => report.id === id);
     if (action === "delete") {
       const filteredReport = reports.filter((report) => report.id === id)[0];
-      
+
       // Filter out all reports with the same scenarioId
       const updatedReports = reports.filter(
         (report) => report.scenarioId !== filteredReport.scenarioId

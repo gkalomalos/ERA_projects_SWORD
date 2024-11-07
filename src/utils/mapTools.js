@@ -51,12 +51,12 @@ export const useMapTools = () => {
       // Listen for the save screenshot response
       window.electron.onSaveScreenshotReply((event, { success, error, filePath }) => {
         if (success) {
-          setAlertMessage(`Screenshot saved successfully!::${filePath}`);
+          setAlertMessage(`${t("alert_message_successful_screenshot")}::${filePath}`);
           setAlertSeverity("success");
           setAlertShowMessage(true);
           resolve(filePath); // Resolve the promise with the file path on success
         } else {
-          setAlertMessage(`Failed to save screenshot: ${error}`);
+          setAlertMessage(`${t("alert_message_error_screenshot")}: ${error}`);
           setAlertSeverity("error");
           setAlertShowMessage(true);
           reject(new Error(error)); // Reject the promise on error
@@ -85,15 +85,13 @@ export const useMapTools = () => {
     }
     // Restored scenario (already exists)
     if (selectedReport && isReportExisting) {
-      setAlertMessage("Report already available in Outputs (Reporting) section.");
+      setAlertMessage(t("alert_message_report_available"));
       setAlertSeverity("info");
       setAlertShowMessage(true);
     }
     // Not selected restored scenario and no new scenario run
     if (!selectedReport && !isScenarioRunCompleted) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output (Reporting) section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -134,9 +132,7 @@ export const useMapTools = () => {
     const reportPath = await window.electron.fetchReportDir();
 
     if (!selectedReport) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -194,12 +190,12 @@ export const useMapTools = () => {
       // Listen for the copy file response
       window.electron.onCopyFileReply((event, { success, error, destinationPath }) => {
         if (success) {
-          setAlertMessage("File copied successfully!");
+          setAlertMessage(t("alert_message_successful_copy_file"));
           setAlertSeverity("success");
           setAlertShowMessage(true);
           resolve(destinationPath); // Resolve the promise with the destination path on success
         } else {
-          setAlertMessage(`Failed to copy file: ${error}`);
+          setAlertMessage(`${t("alert_message_error_copy_file")}: ${error}`);
           setAlertSeverity("error");
           setAlertShowMessage(true);
           reject(new Error(error)); // Reject the promise on error
@@ -217,9 +213,7 @@ export const useMapTools = () => {
     const reportPath = await window.electron.fetchReportDir();
 
     if (!selectedReport) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }

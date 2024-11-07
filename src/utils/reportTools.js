@@ -73,13 +73,13 @@ export const useReportTools = () => {
           }
         });
       } else {
-        setAlertMessage(`Failed to fetch reports: ${status.message}`);
+        setAlertMessage(`${"alert_message_report_tools_error_fetch_reports"}: ${status.message}`);
         setAlertSeverity("error");
         setAlertShowMessage(true);
       }
     } catch (error) {
       console.error("Error fetching reports:", error);
-      setAlertMessage("An error occurred while fetching reports.");
+      setAlertMessage(t("alert_message_report_tools_error_fetch_reports"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -126,7 +126,7 @@ export const useReportTools = () => {
       await copyFolderToTemp(sourceFolder);
     } catch (error) {
       console.error("Error restoring scenario:", error);
-      setAlertMessage("An error occurred while restoring the scenario.");
+      setAlertMessage(t("alert_message_report_tools_error_restore_report"));
       setAlertSeverity("error");
     } finally {
       setAlertShowMessage(true);

@@ -36,7 +36,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   };
 
   const handleDeleteButtonClick = () => {
-    setAlertMessage("Report deleted successfully.");
+    setAlertMessage(t("alert_message_report_card_successful_delete"));
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "delete");
@@ -44,7 +44,7 @@ const ReportCard = ({ data, image, id, isSelected, onCardClick, onReportAction, 
   };
 
   const handleRestoreButtonClick = () => {
-    setAlertMessage("Scenario restored successfully.");
+    setAlertMessage(t("alert_message_report_card_successful_restore"));
     setAlertSeverity("success");
     setAlertShowMessage(true);
     onReportAction(id, "restore");

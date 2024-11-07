@@ -86,13 +86,13 @@ const RiskMap = () => {
 
         // In case of no impact centroids or another error occurs
         if (error.message.includes("ERR_FILE_NOT_FOUND")) {
-          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertMessage(t("alert_message_risk_map_no_impact"));
           setAlertSeverity("info");
           setAlertShowMessage(true);
         }
 
         if (error instanceof TypeError && error.message === "Failed to fetch") {
-          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertMessage(t("alert_message_risk_map_no_impact"));
           setAlertSeverity("info");
           setAlertShowMessage(true);
         }

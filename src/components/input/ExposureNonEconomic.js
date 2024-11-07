@@ -35,9 +35,7 @@ const ExposureNonEconomic = () => {
 
   const handleClick = () => {
     if (selectedExposureEconomic) {
-      setAlertMessage(
-        "Non-Economic assets cannot be selected when an Economic asset is active. To enable the selection of non-Economic assets, please deselect one of the currently active Economic assets."
-      );
+      setAlertMessage(t("alert_message_exposure_non_economic_select_asset"));
       setAlertSeverity("info");
       setAlertShowMessage(true);
       return;

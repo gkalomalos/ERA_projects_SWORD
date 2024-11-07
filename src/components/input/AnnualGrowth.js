@@ -44,7 +44,7 @@ const AnnualGrowth = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
     if (selectedAppOption === "era") {
-      setAlertMessage("Annual GDP/Population Growth is fixed for ERA Project");
+      setAlertMessage(t("alert_message_annual_growth_fixed_growth"));
       setAlertSeverity("info");
       setAlertShowMessage(true);
       return;
