@@ -27,7 +27,7 @@ RISK WISE is an Electron desktop application, featuring a Python-based backend t
 
 Dependencies
 ------------
-The application requires internet connection to fetch datasets from online sources. Also, it requires reading data from a .xlsx datasets files, which come bundled withing the application in the data directory. 
+The application requires an internet connection to fetch datasets from online sources. Also, it requires reading data from a .xlsx dataset file, which comes bundled within the application in the data directory. 
 
 Logging
 -------
@@ -35,7 +35,33 @@ The application logs important actions and errors, facilitating debugging and mo
 
 Documentation
 -------------
-Developer documentation, including a detailed description of API endpoints and usage examples.
+Developer documentation includes a detailed description of API endpoints and usage examples. To generate documentation locally, run:
+
+   .. code-block:: sh
+
+      sphinx-build -b html docs/ docs/_build/
+
+To generate a PDF version of the documentation, follow these steps:
+
+1. **Build LaTeX Files**:
+   
+   .. code-block:: sh
+
+      sphinx-build -b latex docs/ docs/_build/latex
+
+2. **Navigate to LaTeX Directory**:
+   
+   .. code-block:: sh
+
+      cd docs/_build/latex
+
+3. **Generate PDF with pdflatex**:
+   
+   .. code-block:: sh
+
+      pdflatex riskwise.tex
+
+Repeat the last step as needed to resolve cross-references.
 
 Before Opening a Pull Request
 ------------------------------
@@ -43,23 +69,26 @@ Before opening a pull request, please ensure the following steps are completed t
 
 1. **Run the Tests**:
    Ensure that all tests pass successfully to maintain application integrity.
+   
    .. code-block:: sh
 
       python -m unittest backend/tests.py
 
 2. **Comply with Linting Standards**:
    Your code should comply with established linting standards. The CI pipeline will fail if these standards are not met.
+   
    .. code-block:: sh
 
       pylint backend/ --fail-under=8
 
 3. **Update the Documentation**:
-   If your changes affect how users interact with the application or add new features, please update the documentation accordingly. Once updates are made, build the documentation locally to ensure it compiles without errors.
+   If your changes affect user interactions with the application or add new features, please update the documentation. After updates, build the documentation locally to ensure it compiles without errors.
+   
    .. code-block:: sh
 
       sphinx-build -b html docs/ docs/_build/
 
-   Review the generated HTML files in `docs/_build/` to verify your changes. Include the updated documentation files in your pull request.
+   Review the generated HTML files in `docs/_build/` to verify your changes. Include updated documentation files in your pull request.
 
 4. **Upload Documentation Changes**:
-   Along with your code changes, commit any updated documentation files to ensure the documentation remains current and useful for all users.
+   Along with code changes, commit any updated documentation files to ensure the documentation remains current and useful for all users.

@@ -101,6 +101,40 @@ sphinx-build -b html docs/ docs/_build
 
 Developer documentation, including a detailed description of API endpoints and usage examples, can be found [here](https://ath-git.swordgroup.lan/unu/climada-unu/).
 
+### Install LaTeX (for PDF Generation)
+
+To generate PDFs, you'll need a LaTeX distribution. Follow these instructions based on your operating system:
+
+1. **Windows**: Install [MiKTeX](https://miktex.org/download). During installation, ensure you select the option to install packages on-the-fly, so MiKTeX can automatically download any missing packages.
+
+2. **macOS**: Install [MacTeX](https://tug.org/mactex/). After installation, make sure `pdflatex` is in your PATH by opening a terminal and running:
+   ```sh
+   which pdflatex
+   ```
+
+To generate a PDF version of the documentation, follow these steps:
+
+1. **Build LaTeX Files**: Run the following command to create LaTeX files in the `docs/_build/latex` directory.
+
+   ```sh
+   sphinx-build -b latex docs/ docs/_build/latex
+
+   ```
+
+2. **Navigate to LaTeX Directory**:
+
+   ```sh
+   cd docs/_build/latex
+
+   ```
+
+3. **Generate PDF with pdflatex**:
+   Run the command below, which compiles the tex file to PDF format. If needed, run this command multiple times to ensure cross-references resolve properly.
+
+   ```sh
+   pdflatex riskwise.tex
+   ```
+
 ## Before Opening a Pull Request
 
 Ensure you run the tests and comply with the linting standards before opening a pull request:
@@ -132,14 +166,14 @@ Failure to meet the test coverage and linting standards will result in CI pipeli
 
 ## Tag new version
 
-Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly. 
+Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly.
 
 ```sh
 git tag -a <version> -m "<tag_title>" -m "tag_comments"
 
 # Example
 git tag -a v0.5.5 -m "RISK WISE version 0.5.5" -m "
->> 
+>>
 >> - Refactor run scenario process to increase performance and readability.
 >> - Modify information shown on Hazard and Risk maps.
 >> - Modify the run era scenario process with proper entity files.
