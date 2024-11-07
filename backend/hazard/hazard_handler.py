@@ -557,7 +557,7 @@ class HazardHandler:
             admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
 
             # The latest .h5 Thailand - Drought hazard files have minor inconsistencies compared
-            # to the other ones (lat/lon values not present). Use this to populate the coord 
+            # to the other ones (lat/lon values not present). Use this to populate the coord
             # hazard attribute from the meta group if no centroid lat/lon values are available.
             hazard._set_coords_centroids()
 
