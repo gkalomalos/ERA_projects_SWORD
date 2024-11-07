@@ -10,13 +10,16 @@ Welcome to docs's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   setup
    costben
    entity
    exposure
    hazard
    impact
+   macroeconomic
+   report
    scripts
-   setup
+   
 
 Overview
 --------
