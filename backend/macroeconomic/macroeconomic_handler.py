@@ -18,7 +18,6 @@ class MacroeconomicHandler:
         self,
         file_path: str,
         country_name: str,
-        hazard_type: str,
         scenario: str,
         sector: str,
         macro_variable: str,
@@ -29,7 +28,6 @@ class MacroeconomicHandler:
 
         :param file_path: The path to the Excel file.
         :param country_name: Name of the country to filter by.
-        :param hazard_type: Type of hazard to filter by.
         :param scenario: Scenario to filter by.
         :param sector: Sector to filter by.
         :param macro_variable: Macroeconomic variable to filter by.
@@ -41,7 +39,6 @@ class MacroeconomicHandler:
             # Filter the dataframe based on request parameters
             filtered_df = df[
                 (df["Country"] == country_name)
-                & (df["Hazard"] == hazard_type)
                 & (df["Scenario"] == scenario)
                 & (df["Sector"] == sector)
                 & (df["Variable"] == macro_variable)
