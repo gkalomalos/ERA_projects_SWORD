@@ -6,7 +6,7 @@ const fs = require("fs");
 
 global.pythonProcess = null;
 
-const basePath = app.getAppPath();
+const basePath = app.isPackaged ? path.join(__dirname, "build") : app.getAppPath();
 let mainWindow;
 let loaderWindow;
 
@@ -99,7 +99,7 @@ const createMainWindow = () => {
     webPreferences: {
       contextIsolation: true,
       enableRemoteModule: false,
-      preload: path.join(basePath, "build", "preload.js"),
+      preload: path.join(basePath, "preload.js"),
       webSecurity: true,
       nodeIntegration: true,
     },
@@ -108,9 +108,7 @@ const createMainWindow = () => {
   mainWindow.show();
   mainWindow.maximize();
   mainWindow.loadURL(
-    isDevelopmentEnv()
-      ? "http://localhost:5173"
-      : `file://${path.join(basePath, "build", "index.html")}`
+    isDevelopmentEnv() ? "http://localhost:5173" : `file://${path.join(basePath, "index.html")}`
   );
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
