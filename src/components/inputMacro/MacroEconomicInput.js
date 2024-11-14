@@ -32,10 +32,10 @@ const MacroEconomicInput = () => {
             <Scenario />
           </Grid>
           <Grid item xs={12}>
-            <Sector />
+            <MacroEconomicVariable />
           </Grid>
           <Grid item xs={12}>
-            <MacroEconomicVariable />
+            <Sector />
           </Grid>
         </Grid>
 

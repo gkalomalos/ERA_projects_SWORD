@@ -4,7 +4,6 @@ import AdaptationMap from "../map/AdaptationMap";
 import AdaptationChartLayout from "../controls/AdaptationChartLayout";
 import RiskChartLayout from "../controls/RiskChartLayout";
 import MacroEconomicChart from "../charts/MacroEconomicChart";
-import MacroEconomicTable from "../tables/MacroEconomicTable";
 import MainViewControls from "../controls/MainViewControls";
 import MacroViewControls from "../controls/MacroViewControls";
 import MainViewTitle from "../title/MainViewTitle";
@@ -39,7 +38,6 @@ const MainView = () => {
         <>
           {activeViewControl === "display_macro_parameters" && <ViewMacroCard />}
           {activeViewControl === "display_macro_chart" && <MacroEconomicChart />}
-          {activeViewControl === "display_macro_table" && <MacroEconomicTable />}
           <MacroViewControls />
         </>
       )}
