@@ -6,16 +6,16 @@ export default defineConfig({
   plugins: [react()],
   root: "./src",
   build: {
-    outDir: "../build", // Output folder for production build
+    outDir: "../build",
     emptyOutDir: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "src/index.html"),
         preload: path.resolve(__dirname, "src/preload.js"),
-        renderer: path.resolve(__dirname, "src/renderer.js"), // Explicitly add renderer.js
+        renderer: path.resolve(__dirname, "src/renderer.js"),
       },
       output: {
-        entryFileNames: "[name].js", // Keeps original filenames
+        entryFileNames: "[name].js",
       },
     },
   },
@@ -24,5 +24,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+    extensions: [".js", ".jsx"],
   },
 });
