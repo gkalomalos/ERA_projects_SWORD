@@ -12,10 +12,10 @@ const RunPlotMacroButton = () => {
   const { t } = useTranslation();
   const {
     selectedCountry,
-    selectedHazard,
     selectedScenario,
     selectedMacroSector,
     selectedMacroVariable,
+    setActiveViewControl,
     setAlertMessage,
     setAlertSeverity,
     setAlertShowMessage,
@@ -29,26 +29,15 @@ const RunPlotMacroButton = () => {
   const [isPlotButtonDisabled, setIsPlotButtonDisabled] = useState(true);
 
   const isValid = () =>
-    selectedCountry &&
-  selectedHazard &&
-  selectedScenario &&
-    selectedMacroSector &&
-    selectedMacroVariable;
+    selectedCountry && selectedScenario && selectedMacroSector && selectedMacroVariable;
 
   useEffect(() => {
     setIsPlotButtonDisabled(!isValid());
-  }, [
-    selectedCountry,
-    selectedHazard,
-    selectedScenario,
-    selectedMacroSector,
-    selectedMacroVariable,
-  ]);
+  }, [selectedCountry, selectedScenario, selectedMacroSector, selectedMacroVariable]);
 
   const handleRunButton = () => {
     const body = {
       countryName: selectedCountry,
-      hazardType: selectedHazard,
       scenario: selectedScenario,
       sector: selectedMacroSector,
       variable: selectedMacroVariable,
@@ -69,6 +58,7 @@ const RunPlotMacroButton = () => {
         setIsPlotButtonLoading(false);
         setIsPlotMacroChartRunning(false);
         setIsPlotMacroChartCompleted(true);
+        setActiveViewControl("display_macro_chart")
       })
       .catch((error) => {
         console.log(error);
