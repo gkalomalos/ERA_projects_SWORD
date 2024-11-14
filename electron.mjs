@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
-const { autoUpdater } = require("electron-updater");
-const { spawn } = require("child_process");
-const path = require("path");
-const fs = require("fs");
+import { app, BrowserWindow, ipcMain, shell, dialog } from "electron";
+import pkg from "electron-updater"; // Import electron-updater as a default
+const { autoUpdater } = pkg; // Destructure autoUpdater
+import { spawn } from "child_process";
+import path from "path";
+import fs from "fs";
 
 global.pythonProcess = null;
 
@@ -30,11 +31,13 @@ app.commandLine.appendSwitch("in-process-gpu");
 if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
+
 app.whenReady().then(async () => {
-  createLoaderWindow(); // Create the loader window
+  createLoaderWindow();
   global.pythonProcess = createPythonProcess();
-  await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
+  await waitForPythonProcessReady(global.pythonProcess);
   try {
+    console.log("Running clear temp directory script...");
     const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
     console.log("Result of clearing temp directory:", result);
   } catch (error) {
@@ -46,7 +49,7 @@ app.whenReady().then(async () => {
 });
 
 const createLoaderWindow = () => {
-  const iconPath = path.join(basePath, "src", "assets", "favicon.ico");
+  const iconPath = path.join(app.getAppPath(), "public", "favicon.ico");
 
   loaderWindow = new BrowserWindow({
     height: 200,
@@ -62,7 +65,7 @@ const createLoaderWindow = () => {
     },
   });
 
-  const loaderPath = path.join(basePath, "src", "loader.html");
+  const loaderPath = path.join(basePath, isDevelopmentEnv() ? "src/loader.html" : "loader.html");
   loaderWindow.loadFile(loaderPath);
 };
 
@@ -85,7 +88,7 @@ const waitForPythonProcessReady = (pythonProcess) => {
 };
 
 const createMainWindow = () => {
-  const iconPath = path.join(basePath, "src", "assets", "favicon.ico");
+  const iconPath = path.join(app.getAppPath(), "public", "favicon.ico");
 
   mainWindow = new BrowserWindow({
     minHeight: 720,
@@ -101,17 +104,15 @@ const createMainWindow = () => {
       enableRemoteModule: false,
       preload: path.join(basePath, "build", "preload.js"),
       webSecurity: true,
+      webSecurity: true,
       nodeIntegration: true,
     },
   });
 
   mainWindow.show();
   mainWindow.maximize();
-  mainWindow.loadURL(
-    isDevelopmentEnv()
-      ? "http://localhost:5173"
-      : `file://${path.join(basePath, "build", "index.html")}`
-  );
+  mainWindow.loadURL(`file://${path.join(basePath, "build", "index.html")}`);
+
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
   }

@@ -5,7 +5,7 @@
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
   "version": "0.6.4",
   "private": true,
-  "main": "electron.js",
+  "main": "electron.mjs",
   "homepage": ".",
   "dependencies": {
     "@emotion/react": "^11.11.1",
