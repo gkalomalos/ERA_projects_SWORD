@@ -15,6 +15,8 @@ import useStore from "./store";
 
 import "./App.css";
 
+console.log('jeere')
+
 const App = () => {
   const { selectedAppOption, selectedTab } = useStore();
 
