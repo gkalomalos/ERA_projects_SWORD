@@ -1,20 +1,28 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 import { formatNumberDivisor } from "../../utils/formatters";
 import "./LegendLegacy.css";
 
 const LegendLegacy = ({ colorScale, minValue, maxValue, type, unit }) => {
+  const { t } = useTranslation();
   const getSuffixAndDivisor = (value) => {
-    if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
-    if (value >= 1e6) return { suffix: "Millions", divisor: 1e6 };
-    if (value >= 1e3) return { suffix: "Thousands", divisor: 1e3 };
+    if (value >= 1e9) return { suffix: t("map_legend_title_billions_suffix"), divisor: 1e9 };
+    if (value >= 1e6) return { suffix: t("map_legend_title_millions_suffix"), divisor: 1e6 };
+    if (value >= 1e3) return { suffix: t("map_legend_title_thousands_suffix"), divisor: 1e3 };
     return { suffix: "", divisor: 1 };
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    return `${type === "economic" ? "Asset Value" : "Number of People"} ${
-      unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""
+    return `${
+      type === "economic"
+        ? t("map_legend_legacy_title_ecenomic_suffix")
+        : t("map_legend_legacy_title_non_ecenomic_suffix")
+    } ${
+      unit
+        ? ` (${unit}${suffix ? ` ${t("map_legend_legacy_title_in_suffix")} ${suffix}` : ""})`
+        : ""
     }`;
   };
 

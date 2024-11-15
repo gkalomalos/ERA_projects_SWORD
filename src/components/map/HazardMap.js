@@ -43,7 +43,11 @@ const HazardMap = () => {
     } else if (selectedHazard === "heatwaves") {
       prefix = t("map_hazard_legend_title_heatwaves_prefix");
     }
-    return `${prefix}${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    return `${prefix}${
+      unit
+        ? ` (${unit}${suffix ? ` ${t("map_legend_legacy_title_in_suffix")} ${suffix}` : ""})`
+        : ""
+    }`;
   };
 
   const fetchGeoJson = useCallback(

@@ -647,7 +647,7 @@
   "main_subsection_title_adaptation": "Adaptation",
   "main_subsection_title_save_scenario": "+ Save Scenario",
   "main_subsection_title_save_map": "+ Save Map",
-  "main_subsection_title_save_chart": "+ Save Chart",
+  "main_subsection_title_save_chart": "+ Savse Chart",
   "map_hazard_legend_title_generic_prefix": "Hazard",
   "map_hazard_legend_title_flood_prefix": "Flood depth",
   "map_hazard_legend_title_drought_prefix": "Standard Precipitation Index",
@@ -655,5 +655,13 @@
   "map_legend_title_billions_suffix": "Billions",
   "map_legend_title_millions_suffix": "Millions",
   "map_legend_title_thousands_suffix": "Thousands",
-  "level": "Level"
+  "level": "Level",
+  "map_legend_legacy_title_ecenomic_suffix": "Asset Value",
+  "map_legend_legacy_title_non_ecenomic_suffix": "Number of People",
+  "map_legend_legacy_title_in_suffix": "in",
+  "map_legend_legacy_title_map_suffix": "map",
+  "map_legend_legacy_title_for_suffix": "for",
+  "map_legend_legacy_title_of_suffix": "of",
+  "map_legend_legacy_title_on_suffix": "on",
+  "results_report_card_title_risk_analysis": "risk analysis"
 }

@@ -60,11 +60,11 @@ export const useReportTools = () => {
                     ? outputIconTha
                     : outputIconEgy
                   : report.image,
-              title: ` ${t(
-                `results_report_card_hazard_${report.data.hazard_type}`
-              )} risk analysis for ${t(
+              title: ` ${t(`results_report_card_hazard_${report.data.hazard_type}`)} ${t(
+                "results_report_card_title_risk_analysis"
+              )} ${t("map_legend_legacy_title_for_suffix")} ${t(
                 `results_report_card_country_${report.data.country_name}`
-              )} in ${report.data.future_year} (${t(
+              )} ${t("map_legend_legacy_title_in_suffix")} ${report.data.future_year} (${t(
                 `results_report_card_scenario_${report.data.scenario}`
               )}).`,
               type: report.type,

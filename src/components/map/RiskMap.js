@@ -42,7 +42,11 @@ const RiskMap = () => {
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    return `Risk${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    return `Risk${
+      unit
+        ? ` (${unit}${suffix ? ` ${t("map_legend_legacy_title_in_suffix")} ${suffix}` : ""})`
+        : ""
+    }`;
   };
 
   const fetchGeoJson = useCallback(

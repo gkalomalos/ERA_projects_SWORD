@@ -106,23 +106,35 @@ export const useMapTools = () => {
   const getSaveMapTitle = () => {
     let title = "";
     if (activeMap === "hazard") {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${t(
         `results_report_card_hazard_${selectedHazard}`
-      )} in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      )} ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     } else if (activeMap === "exposure") {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${
         selectedExposureEconomic
           ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
           : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
-      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      } ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     } else {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${t(
         `results_report_card_hazard_${selectedHazard}`
-      )} on ${
+      )} ${t("map_legend_legacy_title_on_suffix")} ${
         selectedExposureEconomic
           ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
           : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
-      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      } ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     }
 
     return title;
@@ -243,7 +255,7 @@ export const useMapTools = () => {
             image: destinationFile,
             title: `${t("results_report_card_risk_plot_title")} ${t(
               `results_report_card_hazard_${selectedHazard}`
-            )} on ${
+            )}${t("map_legend_legacy_title_on_suffix")} ${
               selectedExposureEconomic
                 ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
                 : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
