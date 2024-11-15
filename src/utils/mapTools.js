@@ -271,7 +271,11 @@ export const useMapTools = () => {
 
     // Checks if the scenario has finished running, the selected sub tab is Adaptation
     // and the selected view control is the display chart
-    if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 1) {
+    if (
+      (isScenarioRunCompleted || selectedReport) &&
+      activeViewControl === "display_chart" &&
+      selectedSubTab === 1
+    ) {
       const id = new Date().getTime().toString();
       const sourceFile = `${tempPath}\\cost_benefit_plot.png`;
       const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_adaptation_plot_data_${id}.png`;
