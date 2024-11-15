@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { AppBar, Box, Tabs, Tab } from "@mui/material";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
@@ -13,6 +14,7 @@ import useStore from "../../store";
 const MainTabs = () => {
   const { selectedAppOption, selectedTab, setSelectedTab, setSelectedSubTab } = useStore();
   const { fetchReports } = useReportTools();
+  const { t } = useTranslation();
 
   const onFetchReportsHandler = async () => {
     await fetchReports();
@@ -47,26 +49,26 @@ const MainTabs = () => {
           <Tab
             icon={<TuneIcon sx={{ fontSize: "1rem" }} />}
             iconPosition="start"
-            label="Parameters"
+            label={t("main_section_title_parameters")}
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
           />
           <Tab
             icon={<PaymentsIcon />}
             iconPosition="start"
-            label="Economic & Non-Economic"
+            label={t("main_section_title_economic_non_economic")}
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
           />
           <Tab
             icon={<MacroIcon />}
             iconPosition="start"
-            label="Macroeconomic"
+            label={t("main_section_title_macroeconomic")}
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
             disabled={selectedAppOption === "explore"}
           />
           <Tab
             icon={<ContentPasteIcon />}
             iconPosition="start"
-            label="Outputs (Reporting)"
+            label={t("main_section_title_outputs")}
             sx={{ display: "flex", alignItems: "center", minHeight: 48 }}
           />
         </Tabs>
