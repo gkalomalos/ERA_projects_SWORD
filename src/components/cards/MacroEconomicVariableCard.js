@@ -8,7 +8,18 @@ const MacroEconomicVariableCard = () => {
   const { selectedMacroVariable, setSelectedMacroVariable } = useStore();
   const { t } = useTranslation();
 
-  const variables = ["capital_stock", "gdp", "employment", "consumption", "damage"];
+  const variables = [
+    "gdp",
+    "houses",
+    "consumption",
+    "population",
+    "government_debt",
+    "employment",
+    "capital",
+    "domestic_price_index",
+    "wage_index",
+    "domestically_used_output",
+  ];
 
   const handleCardSelect = (variable) => {
     if (selectedMacroVariable === variable) {

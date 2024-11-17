@@ -5,10 +5,17 @@ import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/materia
 import useStore from "../../store";
 
 const SectorMacroCard = () => {
-  const { selectedMacroSector, setSelectedMacroSector } = useStore();
+  const { selectedMacroSector, selectedMacroVariable, setSelectedMacroSector } = useStore();
   const { t } = useTranslation();
 
-  const sectors = ["agriculture", "energy", "healthcare"];
+  const sectors = [
+    "whole_economy",
+    "agriculture",
+    "energy",
+    "manufacturing",
+    "tourism",
+    "services",
+  ];
 
   const handleCardSelect = (sector) => {
     if (selectedMacroSector === sector) {
@@ -48,28 +55,29 @@ const SectorMacroCard = () => {
         >
           {t("card_macro_sector_title")}
         </Typography>
-        {sectors.map((sector) => (
-          <CardActionArea
-            key={sector}
-            onClick={() => handleCardSelect(sector)}
-            sx={{
-              backgroundColor: isButtonSelected(sector) ? "#F79191" : "#FFCCCC",
-              borderRadius: "8px",
-              margin: "16px", // Space around buttons
-              marginLeft: 0,
-              textAlign: "center",
-              padding: "8px 0",
-              transition: "transform 0.1s ease-in-out", // Add transition for transform
-              "&:active": {
-                transform: "scale(0.96)", // Slightly scale down when clicked
-              },
-            }}
-          >
-            <Typography variant="body1" color="text.primary" sx={{ textAlign: "center" }}>
-              {t(`card_macro_sector_${sector}`)}
-            </Typography>
-          </CardActionArea>
-        ))}
+        {selectedMacroVariable &&
+          sectors.map((sector) => (
+            <CardActionArea
+              key={sector}
+              onClick={() => handleCardSelect(sector)}
+              sx={{
+                backgroundColor: isButtonSelected(sector) ? "#F79191" : "#FFCCCC",
+                borderRadius: "8px",
+                margin: "16px", // Space around buttons
+                marginLeft: 0,
+                textAlign: "center",
+                padding: "8px 0",
+                transition: "transform 0.1s ease-in-out", // Add transition for transform
+                "&:active": {
+                  transform: "scale(0.96)", // Slightly scale down when clicked
+                },
+              }}
+            >
+              <Typography variant="body1" color="text.primary" sx={{ textAlign: "center" }}>
+                {t(`card_macro_sector_${sector}`)}
+              </Typography>
+            </CardActionArea>
+          ))}
         <Box sx={{ padding: 2, backgroundColor: "#F2F2F2", borderRadius: "8px" }}>
           <Typography variant="body2" color="text.primary">
             {t("card_macro_sector_remarks")}
