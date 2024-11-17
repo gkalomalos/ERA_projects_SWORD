@@ -51,6 +51,18 @@ export default class APIService {
     }
   }
 
+  static async FetchCREDOutputData(body) {
+    try {
+      const scriptName = "run_fetch_cred_output.py";
+      const response = await window.api.runPythonScript({
+        scriptName,
+      });
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async FetchReports() {
     try {
       const scriptName = "run_fetch_reports.py";

@@ -5,17 +5,12 @@ import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/materia
 import useStore from "../../store";
 
 const SectorMacroCard = () => {
-  const { selectedMacroSector, selectedMacroVariable, setSelectedMacroSector } = useStore();
+  const { credOutputData, selectedMacroSector, selectedMacroVariable, setSelectedMacroSector } =
+    useStore();
   const { t } = useTranslation();
 
-  const sectors = [
-    "whole_economy",
-    "agriculture",
-    "energy",
-    "manufacturing",
-    "tourism",
-    "services",
-  ];
+  // Extract distinct economic sectors
+  const sectors = Array.from(new Set(credOutputData.map((row) => row.economic_indicator)));
 
   const handleCardSelect = (sector) => {
     if (selectedMacroSector === sector) {

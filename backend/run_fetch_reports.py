@@ -105,7 +105,7 @@ class RunFetchReports:
 
                     # Always create an output_data report
                     output_report = ReportViewObject(
-                        id=scenario_id, #TODO: Change
+                        id=scenario_id,  # TODO: Change
                         scenario_id=scenario_id,
                         data=metadata,
                         image="",  # Placeholder, if no specific image is found
