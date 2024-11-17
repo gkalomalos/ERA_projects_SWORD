@@ -10,7 +10,7 @@ const SectorMacroCard = () => {
   const { t } = useTranslation();
 
   // Extract distinct economic sectors
-  const sectors = Array.from(new Set(credOutputData.map((row) => row.economic_indicator)));
+  const sectors = Array.from(new Set(credOutputData.map((row) => row.economic_sector)));
 
   const handleCardSelect = (sector) => {
     if (selectedMacroSector === sector) {
