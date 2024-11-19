@@ -5,11 +5,18 @@ import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/materia
 import useStore from "../../store";
 
 const MacroEconomicVariableCard = () => {
-  const { credOutputData, selectedMacroVariable, setSelectedMacroVariable } = useStore();
+  const { credOutputData, selectedCountry, selectedMacroVariable, setSelectedMacroVariable } =
+    useStore();
   const { t } = useTranslation();
 
   // Extract distinct economic indicators
-  const variables = Array.from(new Set(credOutputData.map((row) => row.economic_indicator)));
+  const variables = Array.from(
+    new Set(
+      credOutputData
+        .filter((row) => row.country === selectedCountry)
+        .map((row) => row.economic_indicator)
+    )
+  );
 
   const handleCardSelect = (variable) => {
     if (selectedMacroVariable === variable) {

@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Box, Typography } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import {
@@ -29,35 +28,56 @@ ChartJS.register(
 );
 
 const MacroEconomicChart = () => {
-  const { macroEconomicChartData, macroEconomicChartTitle } = useStore();
+  const {
+    credOutputData,
+    selectedCountry,
+    selectedScenario,
+    selectedMacroSector,
+    selectedMacroVariable,
+    macroEconomicChartTitle,
+  } = useStore();
 
-  const hasData = macroEconomicChartData?.datasets?.length > 0;
+  // Filter data based on selected filters
+  const filteredData = credOutputData.filter(
+    (row) =>
+      row.country === selectedCountry &&
+      row.scenario === selectedScenario &&
+      row.economic_sector === selectedMacroSector &&
+      row.economic_indicator === selectedMacroVariable
+  );
 
-  const transformedData = hasData
-    ? {
-        labels: macroEconomicChartData.years,
-        datasets: [
-          {
-            label: "With adaptation",
-            data: macroEconomicChartData.datasets[0].data,
-            borderColor: "rgba(75, 192, 192, 1)",
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            fill: true,
-            tension: 0.4,
-          },
-          {
-            label: "Without adaptation",
-            data: macroEconomicChartData.datasets[1].data,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            fill: true,
-            tension: 0.4,
-          },
-        ],
-      }
-    : {
-        datasets: [],
-      };
+  // Group data by adaptation value
+  const groupedData = filteredData.reduce((acc, row) => {
+    const adaptationLabel =
+      row.adpatation === null || row.adpatation === "None"
+        ? "Without adaptation"
+        : `${row.adpatation * 100}% Adaptation`;
+
+    if (!acc[adaptationLabel]) {
+      acc[adaptationLabel] = { years: [], values: [] };
+    }
+    acc[adaptationLabel].years.push(row.year);
+    acc[adaptationLabel].values.push(row.proportion_change_from_baseline);
+
+    return acc;
+  }, {});
+
+  // Transform data for Chart.js
+  const datasets = Object.keys(groupedData).map((label) => ({
+    label,
+    data: groupedData[label].values,
+    borderColor: label.includes("Without") ? "rgba(255, 99, 132, 1)" : "rgba(75, 192, 192, 1)", // Different colors for adaptation types
+    backgroundColor: label.includes("Without")
+      ? "rgba(255, 99, 132, 0.2)"
+      : "rgba(75, 192, 192, 0.2)",
+    fill: true,
+    tension: 0.4,
+  }));
+
+  const transformedData = {
+    labels: filteredData.length > 0 ? [...new Set(filteredData.map((row) => row.year))] : [],
+    datasets,
+  };
 
   const options = {
     scales: {
@@ -84,11 +104,11 @@ const MacroEconomicChart = () => {
     >
       <Box sx={{ height: "100%", overflowY: "auto" }}>
         <div>
-          {hasData ? (
+          {filteredData.length > 0 ? (
             <Line data={transformedData} options={options} />
           ) : (
             <Typography variant="h6" align="center" color="textSecondary">
-              No data available
+              No data available for the selected filters
             </Typography>
           )}
         </div>
