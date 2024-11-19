@@ -28,15 +28,19 @@ export const useMacroTools = () => {
   };
 
   const generateChartFromCREDData = (credOutputData, filters) => {
-    const { selectedCountry, selectedScenario, selectedMacroSector, selectedMacroVariable } =
-      filters;
+    const {
+      selectedMacroCountry,
+      selectedMacroScenario,
+      selectedMacroSector,
+      selectedMacroVariable,
+    } = filters;
 
     try {
       // Filter data based on selected filters
       const filteredData = credOutputData.filter(
         (row) =>
-          row.country === selectedCountry &&
-          row.scenario === selectedScenario &&
+          row.country === selectedMacroCountry &&
+          row.scenario === selectedMacroScenario &&
           row.economic_sector === selectedMacroSector &&
           row.economic_indicator === selectedMacroVariable
       );

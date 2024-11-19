@@ -30,8 +30,8 @@ ChartJS.register(
 const MacroEconomicChart = () => {
   const {
     credOutputData,
-    selectedCountry,
-    selectedScenario,
+    selectedMacroCountry,
+    selectedMacroScenario,
     selectedMacroSector,
     selectedMacroVariable,
     macroEconomicChartTitle,
@@ -40,8 +40,8 @@ const MacroEconomicChart = () => {
   // Filter data based on selected filters
   const filteredData = credOutputData.filter(
     (row) =>
-      row.country === selectedCountry &&
-      row.scenario === selectedScenario &&
+      row.country === selectedMacroCountry &&
+      row.scenario === selectedMacroScenario &&
       row.economic_sector === selectedMacroSector &&
       row.economic_indicator === selectedMacroVariable
   );

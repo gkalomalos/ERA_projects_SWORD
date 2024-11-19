@@ -35,6 +35,8 @@ const useStore = create((set, get) => ({
   selectedHazard: "",
   selectedHazardFile: "",
   selectedMacroCard: "country",
+  selectedMacroCountry: "",
+  selectedMacroScenario: "",
   selectedMacroSector: "",
   selectedMacroVariable: "",
   selectedReport: null,
@@ -131,10 +133,17 @@ const useStore = create((set, get) => ({
       isValidHazard: false,
       mapTitle: "",
       isScenarioRunCompleted: false,
-      // selectedReport: null,
     });
   },
   setSelectedMacroCard: (card) => set({ selectedMacroCard: card }),
+  setSelectedMacroCountry: (country) => {
+    set({
+      selectedMacroCountry: country,
+      selectedMacroScenario: "",
+      selectedMacroSector: "",
+      selectedMacroVariable: "",
+    });
+  },
   setSelectedExposureEconomic: (exposureEconomic) => {
     set({ selectedExposureEconomic: exposureEconomic, selectedAnnualGrowth: 0 });
   },
@@ -157,6 +166,7 @@ const useStore = create((set, get) => ({
       // selectedReport: null,
     });
   },
+  setSelectedMacroScenario: (scenario) => set({ selectedMacroScenario: scenario }),
   setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),
   setSelectedMacroVariable: (variable) => set({ selectedMacroVariable: variable }),
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),

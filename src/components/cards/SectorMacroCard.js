@@ -7,7 +7,7 @@ import useStore from "../../store";
 const SectorMacroCard = () => {
   const {
     credOutputData,
-    selectedCountry,
+    selectedMacroCountry,
     selectedMacroSector,
     selectedMacroVariable,
     setSelectedMacroSector,
@@ -20,7 +20,7 @@ const SectorMacroCard = () => {
       credOutputData
         .filter(
           (row) =>
-            row.country === selectedCountry && row.economic_indicator === selectedMacroVariable
+            row.country === selectedMacroCountry && row.economic_indicator === selectedMacroVariable
         )
         .map((row) => row.economic_sector)
     )

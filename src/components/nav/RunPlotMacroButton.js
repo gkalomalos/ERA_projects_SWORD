@@ -11,8 +11,8 @@ const RunPlotMacroButton = () => {
   const { t } = useTranslation();
   const {
     credOutputData,
-    selectedCountry,
-    selectedScenario,
+    selectedMacroCountry,
+    selectedMacroScenario,
     selectedMacroSector,
     selectedMacroVariable,
     setActiveViewControl,
@@ -23,16 +23,16 @@ const RunPlotMacroButton = () => {
   const [isPlotButtonDisabled, setIsPlotButtonDisabled] = useState(true);
 
   const isValid = () =>
-    selectedCountry && selectedScenario && selectedMacroSector && selectedMacroVariable;
+    selectedMacroCountry && selectedMacroScenario && selectedMacroSector && selectedMacroVariable;
 
   useEffect(() => {
     setIsPlotButtonDisabled(!isValid());
-  }, [selectedCountry, selectedScenario, selectedMacroSector, selectedMacroVariable]);
+  }, [selectedMacroCountry, selectedMacroScenario, selectedMacroSector, selectedMacroVariable]);
 
   const handleRunButton = () => {
     const filters = {
-      selectedCountry,
-      selectedScenario,
+      selectedMacroCountry,
+      selectedMacroScenario,
       selectedMacroSector,
       selectedMacroVariable,
     };

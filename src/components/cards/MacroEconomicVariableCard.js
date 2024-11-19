@@ -5,7 +5,7 @@ import { Box, Card, CardActionArea, Typography, CardContent } from "@mui/materia
 import useStore from "../../store";
 
 const MacroEconomicVariableCard = () => {
-  const { credOutputData, selectedCountry, selectedMacroVariable, setSelectedMacroVariable } =
+  const { credOutputData, selectedMacroCountry, selectedMacroVariable, setSelectedMacroVariable } =
     useStore();
   const { t } = useTranslation();
 
@@ -13,7 +13,7 @@ const MacroEconomicVariableCard = () => {
   const variables = Array.from(
     new Set(
       credOutputData
-        .filter((row) => row.country === selectedCountry)
+        .filter((row) => row.country === selectedMacroCountry)
         .map((row) => row.economic_indicator)
     )
   );
