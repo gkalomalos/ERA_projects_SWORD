@@ -163,12 +163,20 @@ const useStore = create((set, get) => ({
       isValidExposureNonEconomic: false,
       mapTitle: "",
       isScenarioRunCompleted: false,
-      // selectedReport: null,
     });
   },
-  setSelectedMacroScenario: (scenario) => set({ selectedMacroScenario: scenario }),
+  setSelectedMacroScenario: (scenario) =>
+    set({
+      selectedMacroScenario: scenario,
+      selectedMacroVariable: "",
+      selectedMacroSector: "",
+    }),
   setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),
-  setSelectedMacroVariable: (variable) => set({ selectedMacroVariable: variable }),
+  setSelectedMacroVariable: (variable) =>
+    set({
+      selectedMacroVariable: variable,
+      selectedMacroSector: "",
+    }),
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
   setSelectedReportType: (reportType) => set({ selectedReportType: reportType }),

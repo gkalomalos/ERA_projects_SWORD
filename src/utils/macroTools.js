@@ -1,8 +1,11 @@
+import { useTranslation } from "react-i18next";
+
 import APIService from "../APIService";
 
 import useStore from "../store";
 
 export const useMacroTools = () => {
+  const { t } = useTranslation();
   const {
     setAlertMessage,
     setAlertSeverity,
@@ -82,7 +85,9 @@ export const useMacroTools = () => {
         datasets,
       };
 
-      const chartTitle = `${selectedMacroVariable} - ${selectedMacroSector}`;
+      const chartTitle = `${t(`input_macro_variable_${selectedMacroVariable}`)} - ${t(
+        `input_macro_sector_${selectedMacroSector}`
+      )}`;
 
       // Update the Zustand store
       setMacroEconomicChartData(chartData);

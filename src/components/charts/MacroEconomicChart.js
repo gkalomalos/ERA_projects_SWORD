@@ -48,31 +48,50 @@ const MacroEconomicChart = () => {
 
   // Group data by adaptation value
   const groupedData = filteredData.reduce((acc, row) => {
-    const adaptationLabel =
-      row.adpatation === null || row.adpatation === "None"
-        ? "Without adaptation"
-        : `${row.adpatation * 100}% Adaptation`;
+    const adaptationKey = row.adpatation === 0 ? "None" : row.adpatation;
 
-    if (!acc[adaptationLabel]) {
-      acc[adaptationLabel] = { years: [], values: [] };
+    if (!acc[adaptationKey]) {
+      acc[adaptationKey] = { years: [], values: [] };
     }
-    acc[adaptationLabel].years.push(row.year);
-    acc[adaptationLabel].values.push(row.proportion_change_from_baseline);
+    acc[adaptationKey].years.push(row.year);
+    acc[adaptationKey].values.push(row.proportion_change_from_baseline);
 
     return acc;
   }, {});
 
-  // Transform data for Chart.js
-  const datasets = Object.keys(groupedData).map((label) => ({
-    label,
-    data: groupedData[label].values,
-    borderColor: label.includes("Without") ? "rgba(255, 99, 132, 1)" : "rgba(75, 192, 192, 1)", // Different colors for adaptation types
-    backgroundColor: label.includes("Without")
-      ? "rgba(255, 99, 132, 0.2)"
-      : "rgba(75, 192, 192, 0.2)",
-    fill: true,
-    tension: 0.4,
-  }));
+  const datasets = Object.keys(groupedData).map((key) => {
+    let borderColor;
+    let backgroundColor;
+
+    if (key === "None") {
+      // No adaptation
+      borderColor = "rgba(255, 99, 132, 1)"; // Red
+      backgroundColor = "rgba(255, 99, 132, 0.2)";
+    } else if (key === "0.33") {
+      // 33% Adaptation
+      borderColor = "rgba(54, 162, 235, 1)"; // Blue
+      backgroundColor = "rgba(54, 162, 235, 0.2)";
+    } else if (key === "0.67") {
+      // 67% Adaptation
+      borderColor = "rgba(75, 192, 192, 1)"; // Green
+      backgroundColor = "rgba(75, 192, 192, 0.2)";
+    } else {
+      // Fallback for unexpected adaptation values
+      borderColor = "rgba(153, 102, 255, 1)"; // Purple
+      backgroundColor = "rgba(153, 102, 255, 0.2)";
+    }
+
+    const label = key === "None" ? "Without adaptation" : `${key * 100}% Adaptation`;
+
+    return {
+      label,
+      data: groupedData[key].values,
+      borderColor,
+      backgroundColor,
+      fill: true,
+      tension: 0.4,
+    };
+  });
 
   const transformedData = {
     labels: filteredData.length > 0 ? [...new Set(filteredData.map((row) => row.year))] : [],
