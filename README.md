@@ -358,3 +358,25 @@ Once your pull request is merged:
 ---
 
 This structured workflow ensures contributors work efficiently without cluttering the main repository while providing maintainers with a clear and organized review process.
+
+## CLIMADA Citation
+
+Publications:
+
+- **General Use**: Cite the [Zenodo archive](https://doi.org/10.5281/zenodo.3406473) of the specific CLIMADA version you are using.
+
+- **Impact Calculations**: Aznar-Siguan, G. and Bresch, D. N. (2019): CLIMADA v1: A global weather and climate risk assessment platform, Geosci. Model Dev., 12, 3085–3097, [https://doi.org/10.5194/gmd-12-3085-2019](https://doi.org/10.5194/gmd-12-3085-2019).
+
+- **Cost-Benefit Analysis**: Bresch, D. N. and Aznar-Siguan, G. (2021): CLIMADA v1.4.1: Towards a globally consistent adaptation options appraisal tool, Geosci. Model Dev., 14, 351–363, [https://doi.org/10.5194/gmd-14-351-2021](https://doi.org/10.5194/gmd-14-351-2021).
+
+- **Uncertainty and Sensitivity Analysis**: Kropf, C. M. et al. (2022): Uncertainty and sensitivity analysis for probabilistic weather and climate-risk modelling: an implementation in CLIMADA v.3.1.0. Geosci. Model Dev. 15, 7177–7201, [https://doi.org/10.5194/gmd-15-7177-2022](https://doi.org/10.5194/gmd-15-7177-2022).
+
+- **Lines and Polygons Exposures**: Mühlhofer, E., et al. (2024): OpenStreetMap for Multi-Faceted Climate Risk Assessments: Environ. Res. Commun. 6 015005, [https://doi.org/10.1088/2515-7620/ad15ab](https://doi.org/10.1088/2515-7620/ad15ab).
+
+- **LitPop Exposures**: Eberenz, S., et al. (2020): Asset exposure data for global physical risk assessment. Earth System Science Data 12, 817–833, [https://doi.org/10.3929/ethz-b-000409595](https://doi.org/10.3929/ethz-b-000409595).
+
+- **Impact Function Calibration**: Riedel, L., et al. (2024): A Module for Calibrating Impact Functions in the Climate Risk Modeling Platform CLIMADA. Journal of Open Source Software, 9(99), 6755, [https://doi.org/10.21105/joss.06755](https://doi.org/10.21105/joss.06755).
+
+- **GloFAS River Flood Module**: Riedel, L. et al. (2024): Fluvial flood inundation and socio-economic impact model based on open data, Geosci. Model Dev., 17, 5291–5308, [https://doi.org/10.5194/gmd-17-5291-2024](https://doi.org/10.5194/gmd-17-5291-2024).
+
+For a comprehensive list of CLIMADA-related publications, refer to the [Zotero library](https://www.zotero.org/groups/2523345/climada_publications). You can also download the complete BibTeX file: [climada_publications.bib](https://www.zotero.org/groups/2523345/climada_publications/items/collectionKey/9K5I3X3I/items/top?format=bibtex&limit=1000). 
