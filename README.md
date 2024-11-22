@@ -380,3 +380,5 @@ Publications:
 - **GloFAS River Flood Module**: Riedel, L. et al. (2024): Fluvial flood inundation and socio-economic impact model based on open data, Geosci. Model Dev., 17, 5291–5308, [https://doi.org/10.5194/gmd-17-5291-2024](https://doi.org/10.5194/gmd-17-5291-2024).
 
 For a comprehensive list of CLIMADA-related publications, refer to the [Zotero library](https://www.zotero.org/groups/2523345/climada_publications). You can also download the complete BibTeX file: [climada_publications.bib](https://www.zotero.org/groups/2523345/climada_publications/items/collectionKey/9K5I3X3I/items/top?format=bibtex&limit=1000). 
+
+More information on [CLIMADA](https://wcr.ethz.ch/research/climada.html)
