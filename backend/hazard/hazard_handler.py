@@ -320,7 +320,7 @@ class HazardHandler:
                 haz_type=hazard_code,
                 band=events,
             )
-            # TODO: Set intensity threshold. This step is required to generate meaningful maps
+            # Set intensity threshold. This step is required to generate meaningful maps
             # as CLIMADA sets intensity_thres = 10 and in certain hazards this excludes all values.
             intensity_thres = self.get_hazard_intensity_thres(hazard_type)
             hazard.intensity_thres = intensity_thres
@@ -386,7 +386,6 @@ class HazardHandler:
         :rtype: Hazard
         :raises ValueError: If an error occurs while retrieving the hazard dataset.
         """
-        # TODO: Continue implementation
         try:
             hazard = Hazard().from_mat(DATA_HAZARDS_DIR / filepath)
             hazard_type = hazard.haz_type
@@ -405,7 +404,6 @@ class HazardHandler:
             )
             return None
 
-    # TODO: Extract this to settings file
     def get_hazard_intensity_thres(self, hazard_type: str) -> float:
         """
         Get the intensity threshold for a given hazard type.
@@ -557,8 +555,14 @@ class HazardHandler:
         try:
             country_iso3 = self.base_handler.get_iso3_country_code(country_name)
             admin_gdf = self.base_handler.get_admin_data(country_iso3, 2)
+
+            # The latest .h5 Thailand - Drought hazard files have minor inconsistencies compared
+            # to the other ones (lat/lon values not present). Use this to populate the coord
+            # hazard attribute from the meta group if no centroid lat/lon values are available.
+            hazard._set_coords_centroids()
+
             coords = np.array(hazard.centroids.coord)
-            # TODO: There's an issue with the UNU EHS hazard datasets. These datasets contain
+            # TODO: There's an issue with the UNU EHS ERA hazard datasets. These datasets contain
             # the RPL calculated values and not the absolute hazard intensity values.
             # This means that calculating the local exceedance intensity values is wrong,
             # as it's already pre-calculated. Each dataset contains bands that represent
@@ -722,7 +726,7 @@ class HazardHandler:
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.tif"
         elif hazard_code == "HW":
             hazard_filename = f"hazard_{hazard_code}_{country_code}_{scenario}.h5"
-        return hazard_filename  # TODO: Extract this to settings file
+        return hazard_filename
 
     def generate_hazard_report_dataset(
         self, hazard: Hazard, country_name: str, return_periods: tuple

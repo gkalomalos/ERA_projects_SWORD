@@ -5,7 +5,6 @@ import { Box, Grid } from "@mui/material";
 import Country from "./Country";
 import MacroEconomicViewTitle from "../title/MacroEconomicViewTitle";
 import Sector from "./Sector";
-import Hazard from "./Hazard";
 import MacroEconomicVariable from "./MacroEconomicVariable";
 import Scenario from "./Scenario";
 import useStore from "../../store";
@@ -30,16 +29,13 @@ const MacroEconomicInput = () => {
             <Country />
           </Grid>
           <Grid item xs={12}>
-            <Hazard />
-          </Grid>
-          <Grid item xs={12}>
             <Scenario />
           </Grid>
           <Grid item xs={12}>
-            <Sector />
+            <MacroEconomicVariable />
           </Grid>
           <Grid item xs={12}>
-            <MacroEconomicVariable />
+            <Sector />
           </Grid>
         </Grid>
 

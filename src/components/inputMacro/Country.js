@@ -5,7 +5,7 @@ import { Box, Card, CardContent, Typography, TextField } from "@mui/material";
 import useStore from "../../store";
 
 const Country = () => {
-  const { selectedCountry, setActiveViewControl, setSelectedMacroCard } = useStore();
+  const { selectedMacroCountry, setActiveViewControl, setSelectedMacroCard } = useStore();
   const { t } = useTranslation();
   const [clicked, setClicked] = useState(false); // State to manage click animation
   const [bgcolor, setBgcolor] = useState("#CCE1E7"); // State to manage background color
@@ -20,11 +20,11 @@ const Country = () => {
 
   const handleClick = () => {
     setSelectedMacroCard("country");
-    setActiveViewControl("display_macro_parameters")
+    setActiveViewControl("display_macro_parameters");
   };
 
   const handleBgColor = () => {
-    if (selectedCountry) {
+    if (selectedMacroCountry) {
       setBgcolor("#C0E7CF"); // green
     } else {
       setBgcolor("#CCE1E7"); // default light blue
@@ -33,7 +33,7 @@ const Country = () => {
 
   useEffect(() => {
     handleBgColor();
-  }, [selectedCountry]);
+  }, [selectedMacroCountry]);
 
   return (
     <Card
@@ -60,12 +60,12 @@ const Country = () => {
           <Typography id="country-label" gutterBottom variant="h6" component="div" m={0}>
             {t("country")}
           </Typography>
-          {selectedCountry && (
+          {selectedMacroCountry && (
             <TextField
               id="country"
               fullWidth
               variant="outlined"
-              value={t(`input_country_${selectedCountry}`)}
+              value={t(`input_country_${selectedMacroCountry}`)}
               disabled
               InputProps={{
                 readOnly: true,

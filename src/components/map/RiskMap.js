@@ -35,14 +35,18 @@ const RiskMap = () => {
   const [divisor, setDivisor] = useState(1);
 
   const getSuffixAndDivisor = (value) => {
-    if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
-    if (value >= 1e6) return { suffix: "Millions", divisor: 1e6 };
-    if (value >= 1e3) return { suffix: "Thousands", divisor: 1e3 };
+    if (value >= 1e9) return { suffix: t("map_legend_title_billions_suffix"), divisor: 1e9 };
+    if (value >= 1e6) return { suffix: t("map_legend_title_millions_suffix"), divisor: 1e6 };
+    if (value >= 1e3) return { suffix: t("map_legend_title_thousands_suffix"), divisor: 1e3 };
     return { suffix: "", divisor: 1 };
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    return `Risk${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    return `Risk${
+      unit
+        ? ` (${unit}${suffix ? ` ${t("map_legend_legacy_title_in_suffix")} ${suffix}` : ""})`
+        : ""
+    }`;
   };
 
   const fetchGeoJson = useCallback(
@@ -86,13 +90,13 @@ const RiskMap = () => {
 
         // In case of no impact centroids or another error occurs
         if (error.message.includes("ERR_FILE_NOT_FOUND")) {
-          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertMessage(t("alert_message_risk_map_no_impact"));
           setAlertSeverity("info");
           setAlertShowMessage(true);
         }
 
         if (error instanceof TypeError && error.message === "Failed to fetch") {
-          setAlertMessage("No impact centroids found for selected input parameters.");
+          setAlertMessage(t("alert_message_risk_map_no_impact"));
           setAlertSeverity("info");
           setAlertShowMessage(true);
         }

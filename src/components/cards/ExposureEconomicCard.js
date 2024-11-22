@@ -65,7 +65,7 @@ const ExposureEconomicCard = () => {
 
   const handleLoadButtonClick = () => {
     if (!selectedExposureEconomic) {
-      setAlertMessage("Please select an Economic Asset first");
+      setAlertMessage(t("alert_message_exposure_economic_card_select_asset"));
       setAlertSeverity("warning");
       setAlertShowMessage(true);
     } else {

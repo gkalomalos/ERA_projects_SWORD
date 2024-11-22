@@ -72,7 +72,7 @@ const ExposureNonEconomicCard = () => {
 
   const handleLoadButtonClick = () => {
     if (!selectedExposureNonEconomic) {
-      setAlertMessage("Please select a Non-Economic Asset first");
+      setAlertMessage(t("alert_message_non_exposure_economic_card_select_asset"));
       setAlertSeverity("warning");
       setAlertShowMessage(true);
     } else {

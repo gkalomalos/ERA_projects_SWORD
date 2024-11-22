@@ -6,9 +6,11 @@ const useStore = create((set, get) => ({
   activeMap: "hazard",
   activeMapRef: null,
   activeViewControl: "display_map",
+  available_macro_sectors: [],
   alertMessage: "",
   alertSeverity: "info",
   alertShowMessage: false,
+  credOutputData: [],
   isPlotMacroChartCompleted: false,
   isPlotMacroChartRunning: false,
   isScenarioRunCompleted: false,
@@ -33,6 +35,8 @@ const useStore = create((set, get) => ({
   selectedHazard: "",
   selectedHazardFile: "",
   selectedMacroCard: "country",
+  selectedMacroCountry: "",
+  selectedMacroScenario: "",
   selectedMacroSector: "",
   selectedMacroVariable: "",
   selectedReport: null,
@@ -72,6 +76,7 @@ const useStore = create((set, get) => ({
   setAlertMessage: (message) => set({ alertMessage: message }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertShowMessage: (show) => set({ alertShowMessage: show }),
+  setCredOutputData: (data) => set({ credOutputData: data }),
   setIsPlotMacroChartCompleted: (data) => set({ isPlotMacroChartCompleted: data }),
   setIsPlotMacroChartRunning: (data) => set({ isPlotMacroChartRunning: data }),
   setIsScenarioRunCompleted: (data) => set({ isScenarioRunCompleted: data }),
@@ -128,10 +133,17 @@ const useStore = create((set, get) => ({
       isValidHazard: false,
       mapTitle: "",
       isScenarioRunCompleted: false,
-      // selectedReport: null,
     });
   },
   setSelectedMacroCard: (card) => set({ selectedMacroCard: card }),
+  setSelectedMacroCountry: (country) => {
+    set({
+      selectedMacroCountry: country,
+      selectedMacroScenario: "",
+      selectedMacroSector: "",
+      selectedMacroVariable: "",
+    });
+  },
   setSelectedExposureEconomic: (exposureEconomic) => {
     set({ selectedExposureEconomic: exposureEconomic, selectedAnnualGrowth: 0 });
   },
@@ -151,11 +163,20 @@ const useStore = create((set, get) => ({
       isValidExposureNonEconomic: false,
       mapTitle: "",
       isScenarioRunCompleted: false,
-      // selectedReport: null,
     });
   },
+  setSelectedMacroScenario: (scenario) =>
+    set({
+      selectedMacroScenario: scenario,
+      selectedMacroVariable: "",
+      selectedMacroSector: "",
+    }),
   setSelectedMacroSector: (sector) => set({ selectedMacroSector: sector }),
-  setSelectedMacroVariable: (variable) => set({ selectedMacroVariable: variable }),
+  setSelectedMacroVariable: (variable) =>
+    set({
+      selectedMacroVariable: variable,
+      selectedMacroSector: "",
+    }),
   setSelectedExposureFile: (exposureFile) => set({ selectedExposureFile: exposureFile }),
   setSelectedHazardFile: (hazardFile) => set({ selectedHazardFile: hazardFile }),
   setSelectedReportType: (reportType) => set({ selectedReportType: reportType }),

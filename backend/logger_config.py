@@ -23,6 +23,7 @@ log:
 """
 
 import logging
+from logging.handlers import RotatingFileHandler
 import json
 
 from constants import BACKEND_DIR, LOG_DIR
@@ -82,20 +83,28 @@ class LoggerConfig:
 
     def setup_file_logging(self):
         """
-        Set up file logging using the specified configuration.
-
-        This method configures file logging according to the parameters set in the object's
-        attributes. It creates a FileHandler, sets its level and format, and adds it to the
-        list of loggers. If any error occurs during setup, it raises a RuntimeError.
-
-        :return: None
-        :raises RuntimeError: If an error occurs during file logging setup.
+        Set up file logging with a rotating handler to manage file size and log rotation.
+        This method uses RotatingFileHandler to manage file size and backup count,
+        ensuring that older logs are automatically cleaned up. It removes any existing
+        handlers on the same file before adding a new one.
         """
         log_file = LOG_DIR / self.filename
+
+        # Clear any existing handlers on the root logger
+        root_logger = logging.getLogger()
+        for handler in root_logger.handlers[:]:
+            if isinstance(handler, RotatingFileHandler) and handler.baseFilename == str(log_file):
+                root_logger.removeHandler(handler)
+                handler.close()  # Close the handler to release the file
+
         try:
-            file_handler = logging.FileHandler(log_file)
+            # Set up a rotating file handler with a max size and backup count
+            file_handler = RotatingFileHandler(
+                log_file, maxBytes=1 * 1024 * 1024, backupCount=5
+            )  # 1MB per file
             file_handler.setLevel(self.level)
             file_handler.setFormatter(logging.Formatter(self.format))
+            root_logger.addHandler(file_handler)
             self.loggers.append(file_handler)
         except Exception as e:
             raise RuntimeError(f"Error setting up file logging: {e}") from e

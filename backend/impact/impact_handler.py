@@ -537,7 +537,6 @@ class ImpactHandler:
 
             # Spatial join with administrative areas
             joined_gdf = gpd.sjoin(impact_gdf, admin_gdf, how="left", predicate="within")
-            # TODO: Test if this needs to be refined
             joined_gdf = joined_gdf[~joined_gdf["country"].isna()]
 
             radius = self.get_circle_radius(impact.haz_type, country_iso3, exposure_type)

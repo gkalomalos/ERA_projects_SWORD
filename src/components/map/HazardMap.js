@@ -28,22 +28,26 @@ const HazardMap = () => {
   const [divisor, setDivisor] = useState(1);
 
   const getSuffixAndDivisor = (value) => {
-    if (value >= 1e9) return { suffix: "Billions", divisor: 1e9 };
-    if (value >= 1e6) return { suffix: "Millions", divisor: 1e6 };
-    if (value >= 1e3) return { suffix: "Thousands", divisor: 1e3 };
+    if (value >= 1e9) return { suffix: t("map_legend_title_billions_suffix"), divisor: 1e9 };
+    if (value >= 1e6) return { suffix: t("map_legend_title_millions_suffix"), divisor: 1e6 };
+    if (value >= 1e3) return { suffix: t("map_legend_title_thousands_suffix"), divisor: 1e3 };
     return { suffix: "", divisor: 1 };
   };
 
   const updateLegendTitle = (unit, suffix) => {
-    let prefix = "Hazard";
+    let prefix = t("map_hazard_legend_title_generic_prefix");
     if (selectedHazard === "flood") {
-      prefix = "Flood depth";
+      prefix = t("map_hazard_legend_title_flood_prefix");
     } else if (selectedHazard === "drought") {
-      prefix = "Standard Precipitation Index";
+      prefix = t("map_hazard_legend_title_drought_prefix");
     } else if (selectedHazard === "heatwaves") {
-      prefix = "Warm Spell Duration Index";
+      prefix = t("map_hazard_legend_title_heatwaves_prefix");
     }
-    return `${prefix}${unit ? ` (${unit}${suffix ? ` in ${suffix}` : ""})` : ""}`;
+    return `${prefix}${
+      unit
+        ? ` (${unit}${suffix ? ` ${t("map_legend_legacy_title_in_suffix")} ${suffix}` : ""})`
+        : ""
+    }`;
   };
 
   const fetchGeoJson = useCallback(

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Box, Button, Tabs, Tab, Paper } from "@mui/material";
 
@@ -6,18 +7,20 @@ import useStore from "../../store";
 import { useMapTools } from "../../utils/mapTools";
 
 const MainSubTabs = () => {
-  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } =
-    useStore();
+  const { activeViewControl, selectedSubTab, selectedTab, setSelectedSubTab } = useStore();
   const { handleSaveImage, handleSaveMap, handleAddToOutput } = useMapTools();
+  const { t } = useTranslation();
 
   const subTabsMap = {
     0: [], // Subtabs for "Parameters section"
     1: [
-      "Risk",
-      "Adaptation",
-      "+ Save Scenario",
-      activeViewControl === "display_map" ? "+ Save Map" : "+ Save Chart", // Dynamically change label
-    ], // Added "Save to Map" or "+ Save Chart" button
+      t("main_subsection_title_risk"),
+      t("main_subsection_title_adaptation"),
+      t("main_subsection_title_save_scenario"),
+      activeViewControl === "display_map"
+        ? t("main_subsection_title_save_map")
+        : t("main_subsection_title_save_chart"), // Dynamically change label
+    ],
     2: [], // Subtabs for "Macroeconomic section"
     3: [], // Subtabs for "Outputs (reporting) section"
   };

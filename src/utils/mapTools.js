@@ -51,12 +51,12 @@ export const useMapTools = () => {
       // Listen for the save screenshot response
       window.electron.onSaveScreenshotReply((event, { success, error, filePath }) => {
         if (success) {
-          setAlertMessage(`Screenshot saved successfully!::${filePath}`);
+          setAlertMessage(`${t("alert_message_successful_screenshot")}::${filePath}`);
           setAlertSeverity("success");
           setAlertShowMessage(true);
           resolve(filePath); // Resolve the promise with the file path on success
         } else {
-          setAlertMessage(`Failed to save screenshot: ${error}`);
+          setAlertMessage(`${t("alert_message_error_screenshot")}: ${error}`);
           setAlertSeverity("error");
           setAlertShowMessage(true);
           reject(new Error(error)); // Reject the promise on error
@@ -85,15 +85,13 @@ export const useMapTools = () => {
     }
     // Restored scenario (already exists)
     if (selectedReport && isReportExisting) {
-      setAlertMessage("Report already available in Outputs (Reporting) section.");
+      setAlertMessage(t("alert_message_report_available"));
       setAlertSeverity("info");
       setAlertShowMessage(true);
     }
     // Not selected restored scenario and no new scenario run
     if (!selectedReport && !isScenarioRunCompleted) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output (Reporting) section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -108,23 +106,35 @@ export const useMapTools = () => {
   const getSaveMapTitle = () => {
     let title = "";
     if (activeMap === "hazard") {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${t(
         `results_report_card_hazard_${selectedHazard}`
-      )} in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      )} ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     } else if (activeMap === "exposure") {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${
         selectedExposureEconomic
           ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
           : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
-      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      } ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     } else {
-      title = `${t(`results_report_card_hazard_type_${activeMap}`)} map of ${t(
+      title = `${t(`results_report_card_hazard_type_${activeMap}`)} ${t(
+        "map_legend_legacy_title_map_suffix"
+      )} ${t("map_legend_legacy_title_of_suffix")} ${t(
         `results_report_card_hazard_${selectedHazard}`
-      )} on ${
+      )} ${t("map_legend_legacy_title_on_suffix")} ${
         selectedExposureEconomic
           ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
           : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
-      } in ${t(`results_report_card_country_${selectedCountry}`)}`;
+      } ${t("map_legend_legacy_title_in_suffix")} ${t(
+        `results_report_card_country_${selectedCountry}`
+      )}`;
     }
 
     return title;
@@ -134,9 +144,7 @@ export const useMapTools = () => {
     const reportPath = await window.electron.fetchReportDir();
 
     if (!selectedReport) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -194,12 +202,12 @@ export const useMapTools = () => {
       // Listen for the copy file response
       window.electron.onCopyFileReply((event, { success, error, destinationPath }) => {
         if (success) {
-          setAlertMessage("File copied successfully!");
+          setAlertMessage(t("alert_message_successful_copy_file"));
           setAlertSeverity("success");
           setAlertShowMessage(true);
           resolve(destinationPath); // Resolve the promise with the destination path on success
         } else {
-          setAlertMessage(`Failed to copy file: ${error}`);
+          setAlertMessage(`${t("alert_message_error_copy_file")}: ${error}`);
           setAlertSeverity("error");
           setAlertShowMessage(true);
           reject(new Error(error)); // Reject the promise on error
@@ -217,9 +225,7 @@ export const useMapTools = () => {
     const reportPath = await window.electron.fetchReportDir();
 
     if (!selectedReport) {
-      setAlertMessage(
-        "No report selected. Select a report from the Output section or run a new scenario."
-      );
+      setAlertMessage(t("alert_message_select_report"));
       setAlertSeverity("error");
       setAlertShowMessage(true);
     }
@@ -249,7 +255,7 @@ export const useMapTools = () => {
             image: destinationFile,
             title: `${t("results_report_card_risk_plot_title")} ${t(
               `results_report_card_hazard_${selectedHazard}`
-            )} on ${
+            )}${t("map_legend_legacy_title_on_suffix")} ${
               selectedExposureEconomic
                 ? t(`results_report_card_exposure_${selectedExposureEconomic}`)
                 : t(`results_report_card_exposure_${selectedExposureNonEconomic}`)
@@ -265,7 +271,11 @@ export const useMapTools = () => {
 
     // Checks if the scenario has finished running, the selected sub tab is Adaptation
     // and the selected view control is the display chart
-    if (isScenarioRunCompleted && activeViewControl === "display_chart" && selectedSubTab === 1) {
+    if (
+      (isScenarioRunCompleted || selectedReport) &&
+      activeViewControl === "display_chart" &&
+      selectedSubTab === 1
+    ) {
       const id = new Date().getTime().toString();
       const sourceFile = `${tempPath}\\cost_benefit_plot.png`;
       const destinationFile = `${reportPath}\\${scenarioRunCode}\\snapshot_adaptation_plot_data_${id}.png`;

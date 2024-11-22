@@ -42,7 +42,7 @@ const TimeHorizon = () => {
     // Deactivate input card click in case of ERA project scenario.
     // Time horizon is set to 2050
     if (selectedAppOption === "era") {
-      setAlertMessage("Time Horizon is fixed to 2024 - 2050 for ERA Project");
+      setAlertMessage(t("alert_message_time_horizon_fixed_time"));
       setAlertSeverity("info");
       setAlertShowMessage(true);
       return;

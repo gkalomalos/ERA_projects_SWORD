@@ -101,6 +101,40 @@ sphinx-build -b html docs/ docs/_build
 
 Developer documentation, including a detailed description of API endpoints and usage examples, can be found [here](https://ath-git.swordgroup.lan/unu/climada-unu/).
 
+### Install LaTeX (for PDF Generation)
+
+To generate PDFs, you'll need a LaTeX distribution. Follow these instructions based on your operating system:
+
+1. **Windows**: Install [MiKTeX](https://miktex.org/download). During installation, ensure you select the option to install packages on-the-fly, so MiKTeX can automatically download any missing packages.
+
+2. **macOS**: Install [MacTeX](https://tug.org/mactex/). After installation, make sure `pdflatex` is in your PATH by opening a terminal and running:
+   ```sh
+   which pdflatex
+   ```
+
+To generate a PDF version of the documentation, follow these steps:
+
+1. **Build LaTeX Files**: Run the following command to create LaTeX files in the `docs/_build/latex` directory.
+
+   ```sh
+   sphinx-build -b latex docs/ docs/_build/latex
+
+   ```
+
+2. **Navigate to LaTeX Directory**:
+
+   ```sh
+   cd docs/_build/latex
+
+   ```
+
+3. **Generate PDF with pdflatex**:
+   Run the command below, which compiles the tex file to PDF format. If needed, run this command multiple times to ensure cross-references resolve properly.
+
+   ```sh
+   pdflatex riskwise.tex
+   ```
+
 ## Before Opening a Pull Request
 
 Ensure you run the tests and comply with the linting standards before opening a pull request:
@@ -132,17 +166,195 @@ Failure to meet the test coverage and linting standards will result in CI pipeli
 
 ## Tag new version
 
-Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly. 
+Upon merging a feature branch to the main branch, make sure you tag the new version of the application accordingly.
 
 ```sh
 git tag -a <version> -m "<tag_title>" -m "tag_comments"
 
 # Example
 git tag -a v0.5.5 -m "RISK WISE version 0.5.5" -m "
->> 
+>>
 >> - Refactor run scenario process to increase performance and readability.
 >> - Modify information shown on Hazard and Risk maps.
 >> - Modify the run era scenario process with proper entity files.
 >> - Fix minor issues when extracting information out of hazard .mat and .tif files.
 >> "
 ```
+
+# Working with Forks and Pull Requests
+
+If you're contributing to RISK WISE, it’s recommended to fork the repository and follow the steps below to make changes, ensure your contributions are tested, and submit them for review by the maintainers. This process helps keep the original repository clean and organized.
+
+---
+
+## 1. Fork the Repository
+
+1. Go to the GitHub repository for RISK WISE.
+2. Click the **Fork** button in the top-right corner of the repository page.
+3. This will create a copy of the repository under your GitHub account.
+
+---
+
+## 2. Clone Your Fork Locally
+
+1. Copy the URL of your forked repository (e.g., `https://github.com/username/climada-unu.git`).
+2. Clone it to your local machine:
+   ```bash
+   git clone <your-fork-url>
+   cd climada-unu
+   ```
+
+3. Add the original repository as the `upstream` remote:
+   ```bash
+   git remote add upstream git@github.com:original-organization/climada-unu.git
+   ```
+
+4. Verify your remotes:
+   ```bash
+   git remote -v
+   ```
+   You should see:
+   ```
+   origin    https://github.com/username/climada-unu.git (fetch)
+   origin    https://github.com/username/climada-unu.git (push)
+   upstream  https://github.com/original-organization/climada-unu.git (fetch)
+   upstream  https://github.com/original-organization/climada-unu.git (push)
+   ```
+
+---
+
+## 3. Keep Your Fork Updated
+
+Before starting any work, ensure your fork is up-to-date with the original repository:
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+```
+
+---
+
+## 4. Create a New Branch
+
+1. Always create a new branch for your changes:
+   ```bash
+   git checkout -b feature/my-new-feature
+   ```
+2. Work on your changes in this branch.
+
+---
+
+## 5. Make Changes and Commit
+
+1. Make your changes, and test them locally.
+2. Add your changes to the staging area:
+   ```bash
+   git add .
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "Add feature X to improve functionality"
+   ```
+
+---
+
+## 6. Push Changes to Your Fork
+
+1. Push your branch to your forked repository:
+   ```bash
+   git push origin feature/my-new-feature
+   ```
+
+---
+
+## 7. Open a Pull Request
+
+1. Go to your forked repository on GitHub.
+2. Click the **Compare & pull request** button.
+3. Select the branch you want to merge into in the original repository (e.g., `main`).
+4. Provide a descriptive title and detailed description of your changes.
+5. Submit the pull request.
+
+---
+
+## 8. Respond to Review Feedback
+
+1. If maintainers request changes:
+   - Make updates locally in the same branch.
+   - Commit and push the changes:
+     ```bash
+     git add .
+     git commit -m "Address review comments"
+     git push origin feature/my-new-feature
+     ```
+   - The pull request will automatically update.
+
+---
+
+## 9. Delete Your Branch After Merging
+
+Once your pull request is merged:
+1. Delete your local branch:
+   ```bash
+   git branch -d feature/my-new-feature
+   ```
+2. Delete the branch from your forked repository:
+   ```bash
+   git push origin --delete feature/my-new-feature
+   ```
+
+---
+
+## Example Workflow
+
+### Scenario: Adding a New Feature to Enhance the Hazard Map Functionality
+
+1. Fork the repository and clone your fork:
+   ```bash
+   git clone https://github.com/username/climada-unu.git
+   cd climada-unu
+   git remote add upstream https://github.com/original-organization/climada-unu.git
+   ```
+
+2. Ensure your fork is up-to-date:
+   ```bash
+   git fetch upstream
+   git checkout main
+   git merge upstream/main
+   ```
+
+3. Create a new branch:
+   ```bash
+   git checkout -b feature/enhance-hazard-map
+   ```
+
+4. Make your changes, test them, and commit:
+   ```bash
+   # After making changes...
+   git add .
+   git commit -m "Enhance hazard map by adding XYZ functionality"
+   ```
+
+5. Push your branch to your fork:
+   ```bash
+   git push origin feature/enhance-hazard-map
+   ```
+
+6. Open a pull request on GitHub, targeting the `main` branch of the original repository.
+
+7. Respond to any review comments, make changes, and push updates:
+   ```bash
+   git add .
+   git commit -m "Fix issue as per review comments"
+   git push origin feature/enhance-hazard-map
+   ```
+
+8. After the PR is merged, delete your branch locally and on your fork:
+   ```bash
+   git branch -d feature/enhance-hazard-map
+   git push origin --delete feature/enhance-hazard-map
+   ```
+
+---
+
+This structured workflow ensures contributors work efficiently without cluttering the main repository while providing maintainers with a clear and organized review process.

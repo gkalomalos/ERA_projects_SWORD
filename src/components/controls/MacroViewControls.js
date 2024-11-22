@@ -2,8 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { Box, IconButton, Typography, Card, CardContent, Divider } from "@mui/material";
-import InputIcon from '@mui/icons-material/Input';
-import GridOnIcon from "@mui/icons-material/GridOn";
+import InputIcon from "@mui/icons-material/Input";
 import StackedLineChartIcon from "@mui/icons-material/StackedLineChart";
 
 import useStore from "../../store";
@@ -11,7 +10,6 @@ import useStore from "../../store";
 const controls = [
   { id: "display_macro_parameters", icon: <InputIcon /> },
   { id: "display_macro_chart", icon: <StackedLineChartIcon /> },
-  { id: "display_macro_table", icon: <GridOnIcon /> },
 ];
 
 const MainViewControls = () => {

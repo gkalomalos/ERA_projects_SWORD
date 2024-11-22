@@ -22,7 +22,6 @@ from time import time
 from constants import REQUIREMENTS_DIR
 from costben.costben_handler import CostBenefitHandler
 from base_handler import BaseHandler
-from hazard.hazard_handler import HazardHandler
 from macroeconomic.macroeconomic_handler import MacroeconomicHandler
 from logger_config import LoggerConfig
 
@@ -31,19 +30,17 @@ class RunFetchMacroChartData:
     def __init__(self, request):
         self.base_handler = BaseHandler()
         self.costben_handler = CostBenefitHandler()
-        self.hazard_handler = HazardHandler()
         self.macro_handler = MacroeconomicHandler()
         self.logger = LoggerConfig(logger_types=["file"])
         self.request = request
 
         self.country_name = str(request.get("countryName")).strip()
-        self.hazard_type = str(request.get("hazardType")).strip()
         self.scenario = str(request.get("scenario")).strip()
         self.sector = str(request.get("sector")).strip()
         self.macro_variable = str(request.get("variable")).strip()
 
     def valid_request(self) -> bool:
-        required_fields = ["countryName", "hazardType", "scenario", "sector", "variable"]
+        required_fields = ["countryName", "scenario", "sector", "variable"]
         for field in required_fields:
             if field not in self.request:
                 self.logger.log("error", f"Missing required field: {field}")
@@ -77,7 +74,6 @@ class RunFetchMacroChartData:
             chart_data = self.macro_handler.get_cred_data_from_excel(
                 REQUIREMENTS_DIR / "cred_output.xlsx",
                 country_name=self.country_name,
-                hazard_type=self.hazard_type,
                 scenario=self.scenario,
                 sector=self.sector,
                 macro_variable=self.macro_variable,
