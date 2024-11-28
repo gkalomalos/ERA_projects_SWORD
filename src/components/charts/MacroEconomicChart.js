@@ -67,10 +67,18 @@ const MacroEconomicChart = () => {
       // No adaptation
       borderColor = "rgba(255, 99, 132, 1)"; // Red
       backgroundColor = "rgba(255, 99, 132, 0.2)";
+    } else if (key === "0.25") {
+      // 25% Adaptation
+      borderColor = "rgba(255, 206, 86, 1)"; // Yellow
+      backgroundColor = "rgba(255, 206, 86, 0.2)";
     } else if (key === "0.33") {
       // 33% Adaptation
       borderColor = "rgba(54, 162, 235, 1)"; // Blue
       backgroundColor = "rgba(54, 162, 235, 0.2)";
+    } else if (key === "0.5") {
+      // 50% Adaptation
+      borderColor = "rgba(255, 159, 64, 1)"; // Orange
+      backgroundColor = "rgba(255, 159, 64, 0.2)";
     } else if (key === "0.67") {
       // 67% Adaptation
       borderColor = "rgba(75, 192, 192, 1)"; // Green
