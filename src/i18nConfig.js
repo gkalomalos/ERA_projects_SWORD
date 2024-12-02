@@ -21,31 +21,38 @@ const resources = {
 const fallbackWhitespacePostProcessor = {
   type: "postProcessor",
   name: "fallbackWhitespace",
-  process(value, key, options, translator) {
+  process(value, key, options) {
+    const lng = options.lng || i18n.language; // Get current language
     // Check if the value is null, undefined, empty, or whitespace-only
     if (value === undefined || value === null || /^\s*$/.test(value)) {
-      // Fetch the English translation as a fallback
-      const fallbackValue = translator(key, { ...options, lng: "en", postProcess: [] });
-      return fallbackValue || key; // Return the key if fallback is also missing
+      // If current language is not English, fallback to English
+      if (lng !== "en") {
+        const fallbackValue = i18n.t(key, { ...options, lng: "en", postProcess: [] });
+        // If English fallback is also empty or whitespace-only, return nothing
+        return /^\s*$/.test(fallbackValue) ? "" : fallbackValue;
+      }
+      // If current language is English and the value is empty, return nothing
+      return "";
     }
-    return value; // Return the original value if it's not empty or whitespace
+    // If value is valid (non-empty), return it
+    return value;
   },
 };
 
 // Register the custom post-processor
 i18n.use(fallbackWhitespacePostProcessor);
 
-// Initialize i18next with the custom post-processor
+// Initialize i18next
 i18n.use(initReactI18next).init({
   resources,
   lng: "en", // Default language
   fallbackLng: "en", // Fallback language
-  keySeparator: false, // We do not use keys in form messages.welcome
+  keySeparator: false, // Do not use nested keys with dots
 
   interpolation: {
-    escapeValue: false, // React already safes from xss
+    escapeValue: false, // React already protects from XSS
   },
-  returnEmptyString: false, // Treat empty strings as missing keys
+  returnEmptyString: true, // Ensure empty strings are handled in the post-processor
   postProcess: ["fallbackWhitespace"], // Use the custom post-processor
 });
 
