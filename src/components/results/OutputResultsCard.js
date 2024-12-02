@@ -23,22 +23,28 @@ const OutputResultsCard = () => {
       scenarioRunCode: selectedScenarioRunCode,
       report: selectedReport,
     };
-    APIService.ExportReport(body)
-      .then((response) => {
-        const { status, data } = response.result;
-        const reportPath = data.report_path || "";
-        const alertMessage = reportPath ? `${status.message}::${reportPath}` : status.message;
+    if (type === "gis") {
+      setAlertMessage("GeoJSON data generated successfully.");
+      setAlertSeverity("success");
+      setAlertShowMessage(true);
+    } else {
+      APIService.ExportReport(body)
+        .then((response) => {
+          const { status, data } = response.result;
+          const reportPath = data.report_path || "";
+          const alertMessage = reportPath ? `${status.message}::${reportPath}` : status.message;
 
-        setAlertMessage(alertMessage);
-        setAlertSeverity(status.code === 2000 ? "success" : "error");
-        setAlertShowMessage(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        setAlertMessage("An error occurred while exporting the report.");
-        setAlertSeverity("error");
-        setAlertShowMessage(true);
-      });
+          setAlertMessage(alertMessage);
+          setAlertSeverity(status.code === 2000 ? "success" : "error");
+          setAlertShowMessage(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          setAlertMessage("An error occurred while exporting the report.");
+          setAlertSeverity("error");
+          setAlertShowMessage(true);
+        });
+    }
   };
 
   return (
